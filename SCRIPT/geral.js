@@ -1441,11 +1441,15 @@ document.addEventListener('DOMContentLoaded', function () {
     botao.innerHTML = svg('sino') + '<span class="sino-contador" hidden></span>';
     topBar.appendChild(botao);
 
-    const painel = document.createElement('div');
+    // Painel da direita como gaveta (igual ao menu da esquerda, do outro lado)
+    const painel = document.createElement('aside');
     painel.className = 'sino-painel';
-    painel.hidden = true;
+    painel.setAttribute('aria-label', 'Painel lateral');
     painel.innerHTML = '<div class="sino-painel-corpo"></div>';
-    topBar.appendChild(painel);
+    document.body.appendChild(painel);
+    const sombra = document.createElement('div');
+    sombra.className = 'sino-overlay';
+    document.body.appendChild(sombra);
 
     const contador = botao.querySelector('.sino-contador');
     const corpo = painel.querySelector('.sino-painel-corpo');
@@ -1462,23 +1466,30 @@ document.addEventListener('DOMContentLoaded', function () {
       corpo.innerHTML = '';
       corpo.appendChild(fonte.cloneNode(true));
       corpo.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
-      painel.hidden = false;
+      // Fecha o menu da esquerda se estiver aberto
+      const menuEsq = document.querySelector('.menu.aberto');
+      if (menuEsq) document.querySelector('.menu-toggle')?.click();
+      painel.classList.add('aberto');
+      sombra.classList.add('ativo');
       botao.setAttribute('aria-expanded', 'true');
     }
 
     function fechar() {
-      painel.hidden = true;
+      painel.classList.remove('aberto');
+      sombra.classList.remove('ativo');
       botao.setAttribute('aria-expanded', 'false');
     }
 
     botao.addEventListener('click', e => {
       e.stopPropagation();
-      if (painel.hidden) abrir(); else fechar();
+      if (painel.classList.contains('aberto')) fechar(); else abrir();
     });
 
-    document.addEventListener('click', e => {
-      if (!painel.hidden && !painel.contains(e.target)) fechar();
-    });
+    sombra.addEventListener('click', fechar);
+    // Abrir o menu da esquerda fecha este painel
+    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+      if (painel.classList.contains('aberto')) fechar();
+    }, true);
 
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') fechar();
