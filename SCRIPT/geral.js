@@ -1521,3 +1521,37 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
     });
   });
 };
+
+// Carregamento com a logo enchendo de baixo para cima.
+// Uso: const fim = mostrarCarregandoLogo(); ... fim();
+(function () {
+  let camada = null;
+  let pedidos = 0;
+  const TEMPO_MINIMO = 900;
+
+  function criar() {
+    camada = document.createElement('div');
+    camada.className = 'carregando-logo';
+    camada.setAttribute('role', 'status');
+    camada.setAttribute('aria-label', 'Carregando');
+    camada.innerHTML = '<div class="carregando-logo-marca"><span class="carregando-logo-liquido"></span></div>';
+    document.body.appendChild(camada);
+  }
+
+  window.mostrarCarregandoLogo = function () {
+    if (!camada) criar();
+    pedidos++;
+    const inicio = Date.now();
+    requestAnimationFrame(() => camada.classList.add('visivel'));
+    let encerrado = false;
+    return function () {
+      if (encerrado) return;
+      encerrado = true;
+      const espera = Math.max(0, TEMPO_MINIMO - (Date.now() - inicio));
+      setTimeout(() => {
+        pedidos = Math.max(0, pedidos - 1);
+        if (!pedidos) camada.classList.remove('visivel');
+      }, espera);
+    };
+  };
+})();

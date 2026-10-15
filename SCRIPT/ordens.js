@@ -2575,6 +2575,15 @@ function adicionarListenersAcoesOS(container) {
 }
 
 async function abrirModalEdicao(id) {
+  const fim = window.mostrarCarregandoLogo ? window.mostrarCarregandoLogo() : null;
+  try {
+    await abrirModalEdicaoInterno(id);
+  } finally {
+    if (fim) fim();
+  }
+}
+
+async function abrirModalEdicaoInterno(id) {
   try {
     const resp = await fetch(osApiUrl(`ordens/buscar/${id}`), { headers: authHeaders() });
     const data = await resp.json();

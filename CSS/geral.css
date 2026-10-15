@@ -2371,3 +2371,61 @@ button[type="submit"]:hover, .btn-primario:hover {
     margin-right: auto;
   }
 }
+
+/* ===================================================================
+   CARREGANDO: logo enchendo como líquido
+   =================================================================== */
+.carregando-logo {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(246, 245, 242, .72);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+.carregando-logo.visivel { opacity: 1; pointer-events: auto; }
+.carregando-logo-marca {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  background: #e4ddd0;
+  -webkit-mask: url(../IMG/Icone.png) center / contain no-repeat;
+          mask: url(../IMG/Icone.png) center / contain no-repeat;
+  overflow: hidden;
+}
+.carregando-logo-liquido {
+  position: absolute;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  top: 100%;
+  background: var(--cor-primaria);
+  animation: carregando-encher 1.8s cubic-bezier(.45,.05,.35,1) infinite;
+}
+.carregando-logo-liquido::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -9px;
+  width: 100%;
+  height: 18px;
+  background: radial-gradient(ellipse 12% 50% at 50% 100%, var(--cor-primaria) 98%, transparent 100%) 0 0 / 25% 100% repeat-x;
+  animation: carregando-onda .9s linear infinite;
+}
+@keyframes carregando-encher {
+  0%   { top: 100%; }
+  80%  { top: -10%; }
+  100% { top: -10%; }
+}
+@keyframes carregando-onda {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-25%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .carregando-logo-liquido, .carregando-logo-liquido::before { animation-duration: 3s; }
+}
