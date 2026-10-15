@@ -15,7 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
   togglePwd.addEventListener('click', () => {
     const type = pwdInput.type === 'password' ? 'text' : 'password';
     pwdInput.type = type;
-    togglePwd.style.color = type === 'text' ? '#475569' : '#888';
+    const visivel = type === 'text';
+    togglePwd.classList.toggle('visivel', visivel);
+    togglePwd.setAttribute('aria-label', visivel ? 'Ocultar senha' : 'Mostrar senha');
+    togglePwd.title = visivel ? 'Ocultar senha' : 'Mostrar senha';
   });
 
 

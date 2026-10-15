@@ -114,3 +114,41 @@ html, body {
   margin-bottom: 1rem;
 }
 
+
+/* Mostrar/ocultar senha: ícone de traço igual em todos os aparelhos */
+.login-form .password-wrapper input { padding-right: 48px; }
+.toggle-senha {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  border: 0;
+  border-radius: 6px;
+  background: transparent !important;
+  color: #8a8a8a !important;
+  cursor: pointer;
+}
+.login-form .toggle-senha:hover { color: #262626 !important; transform: translateY(-50%); background: #f3f1ec !important; }
+.toggle-senha .olho-fechado { display: none; }
+.toggle-senha.visivel .olho-aberto { display: none; }
+.toggle-senha.visivel .olho-fechado { display: block; }
+.toggle-senha.visivel { color: #A8864F !important; }
+
+/* Celular: cartão com margem, logo menor, campos confortáveis ao toque */
+@media (max-width: 600px) {
+  .login-page { padding: 24px 16px; align-items: center; }
+  .login-container {
+    padding: 2rem 1.5rem 1.75rem;
+    border-radius: 14px;
+  }
+  .logo { max-width: 170px; margin-bottom: 1.5rem; }
+  .login-form { gap: 0.85rem; }
+  .login-form input { font-size: 16px; padding: 13px 14px; border-radius: 8px; }
+  .login-form button[type="submit"] { padding: 14px; border-radius: 8px; font-size: 16px; }
+}
