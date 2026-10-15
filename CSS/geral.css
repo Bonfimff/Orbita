@@ -2676,3 +2676,13 @@ button[type="submit"]:hover, .btn-primario:hover {
 .cartao-link:hover { border-color: #d9c9a8 !important; box-shadow: 0 6px 18px rgba(16, 24, 40, 0.08); }
 .cartao-link:active { transform: scale(0.99); }
 .cartao-link:focus-visible { outline: 2px solid rgba(168,134,79,.5); outline-offset: 2px; }
+
+/* Menu no celular: sem a linha abaixo do último módulo */
+@media (max-width: 768px) {
+  .menu-modulos { border-bottom: 0 !important; margin-bottom: 0 !important; }
+}
+
+/* Menu no celular: sem a linha abaixo do último módulo */
+@media (max-width: 768px) {
+  .menu-modulos { border-bottom: 0 !important; margin-bottom: 0 !important; }
+}
