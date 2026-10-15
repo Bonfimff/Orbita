@@ -11,10 +11,10 @@
   //  - aberto em localhost / 127.0.0.1 / rede interna / file://  -> API local
   //  - aberto em qualquer outro dominio                          -> API publica
   // Para forcar um ambiente (ex.: testar a API de producao rodando local),
-  // use no console: localStorage.setItem('apiBaseUrl', 'https://api.exksvol.com')
+  // use no console: localStorage.setItem('apiBaseUrl', 'https://kernel-api.exksvol.com')
   // e para voltar ao automatico: localStorage.removeItem('apiBaseUrl')
   // ================================================================
-  const API_PRODUCAO = 'https://api.exksvol.com';
+  const API_PRODUCAO = 'https://kernel-api.exksvol.com';
   const PORTA_API_LOCAL = 5000;
 
   function detectarAmbiente() {
