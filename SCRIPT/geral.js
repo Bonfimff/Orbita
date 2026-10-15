@@ -1805,3 +1805,55 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
     };
   };
 })();
+
+
+//======================================================================================================
+// Cartões dos painéis que levam a algum lugar.
+// Um elemento com data-ir-aba="<data-tab>" vira clicável e abre a aba.
+// Opcionais: data-ir-sub="<id de botão>" (sub-aba), data-ir-filtro="<id do campo>=<valor>",
+// data-ir-acao="<função global>" (ex.: refazer a busca), data-ir-rolar="<id>".
+//======================================================================================================
+(function () {
+  function irPara(alvo) {
+    const aba = alvo.dataset.irAba;
+    const botaoAba = aba && document.querySelector('.tab-btn[data-tab="' + aba + '"]');
+    if (botaoAba) botaoAba.click();
+    setTimeout(() => {
+      if (alvo.dataset.irSub) document.getElementById(alvo.dataset.irSub)?.click();
+      if (alvo.dataset.irFiltro) {
+        const pos = alvo.dataset.irFiltro.indexOf('=');
+        const campo = document.getElementById(alvo.dataset.irFiltro.slice(0, pos));
+        if (campo) {
+          campo.value = alvo.dataset.irFiltro.slice(pos + 1);
+          campo.dispatchEvent(new Event('input', { bubbles: true }));
+          campo.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+      const acao = alvo.dataset.irAcao;
+      if (acao && typeof window[acao] === 'function') window[acao]();
+      const rolar = alvo.dataset.irRolar && document.getElementById(alvo.dataset.irRolar);
+      if (rolar) rolar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 120);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-ir-aba]').forEach((cartao) => {
+      cartao.classList.add('cartao-link');
+      if (!cartao.hasAttribute('tabindex')) cartao.setAttribute('tabindex', '0');
+      cartao.setAttribute('role', 'link');
+    });
+  });
+  document.addEventListener('click', (e) => {
+    const alvo = e.target.closest('[data-ir-aba]');
+    if (!alvo || e.target.closest('button, a, input, select, textarea, label')) return;
+    irPara(alvo);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const alvo = e.target.closest && e.target.closest('[data-ir-aba]');
+    if (!alvo || alvo !== e.target) return;
+    e.preventDefault();
+    irPara(alvo);
+  });
+})();

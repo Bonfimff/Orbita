@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=24" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=25" />
   <link rel="stylesheet" href="../CSS/frota.css?v=2" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link
@@ -63,7 +63,7 @@
     <hr class="aba-linha">
     <div id="gerenciamento" class="tab-content">
       <div class="painel-cards">
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="veiculos" title="Ver veículos">
           <span class="painel-card-icone painel-icone-teal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M3 13l2-5h11l3 5"/><path d="M2 13h19v4H2z"/><circle cx="7" cy="18" r="1.8"/><circle cx="16" cy="18" r="1.8"/>
@@ -72,7 +72,7 @@
           <span class="painel-card-label">Total de veículos</span>
           <span class="painel-card-valor" id="frota-total-veiculos">0</span>
         </div>
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="veiculos" title="Ver veículos">
           <span class="painel-card-icone painel-icone-azul">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
@@ -81,7 +81,7 @@
           <span class="painel-card-label">Em operação</span>
           <span class="painel-card-valor" id="frota-total-operacao">0</span>
         </div>
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="veiculos" title="Ver veículos">
           <span class="painel-card-icone painel-icone-verde">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>
@@ -90,7 +90,7 @@
           <span class="painel-card-label">Disponível</span>
           <span class="painel-card-valor" id="frota-total-disponivel">0</span>
         </div>
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="manutencao" title="Ver manutenções">
           <span class="painel-card-icone painel-icone-ambar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M14.7 6.3a4 4 0 0 1 5 5l-9 9-5 1 1-5z"/><path d="M13 8l3 3"/>
@@ -641,7 +641,7 @@
   ></script>
     <script src="../SCRIPT/config.js?v=2"></script>
     <script src="../SCRIPT/frota.js?v=3"></script>
-  <script src="../SCRIPT/geral.js?v=19"></script>
+  <script src="../SCRIPT/geral.js?v=20"></script>
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=7"></script>
 

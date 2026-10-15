@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=24" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=25" />
   <link rel="stylesheet" href="../CSS/almoxarifado.css?v=5" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
@@ -79,7 +79,7 @@
       <hr class="aba-linha">
       <div class="painel-cards painel-cards-largos">
         <!-- Estoque Principal -->
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="busca" title="Ver itens em estoque">
           <div class="painel-card-topo">
             <span class="painel-card-icone painel-icone-teal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -94,7 +94,7 @@
           </div>
         </div>
         <!-- Estoque Secundário -->
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="busca" title="Ver itens em estoque">
           <div class="painel-card-topo">
             <span class="painel-card-icone painel-icone-teal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -109,7 +109,7 @@
           </div>
         </div>
         <!-- Pendências -->
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="movimentacoes" data-ir-sub="btn-devolucao1" title="Ver devoluções">
           <div class="painel-card-topo">
             <span class="painel-card-icone painel-icone-vermelho">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -125,7 +125,7 @@
           </div>
         </div>
         <!-- Alertas -->
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="busca" title="Ver itens em estoque">
           <div class="painel-card-topo">
             <span class="painel-card-icone painel-icone-ambar">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1430,7 +1430,7 @@ document.addEventListener('DOMContentLoaded', function() {
   mostrarCamposProdutos();
 });
 </script>
-  <script src="../SCRIPT/geral.js?v=19"></script>
+  <script src="../SCRIPT/geral.js?v=20"></script>
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=7"></script>
   <script src="../SCRIPT/outos.js"></script>

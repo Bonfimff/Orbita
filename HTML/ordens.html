@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=24" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=25" />
   <link rel="stylesheet" href="../CSS/ordens.css?v=31" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
@@ -61,7 +61,7 @@
 
       <!-- Cards de totalizadores -->
       <div class="painel-cards">
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="busca" data-ir-filtro="busca-os-status=Aberta" data-ir-acao="buscarOrdens" title="Ver O.S. abertas">
           <span class="painel-card-icone painel-icone-laranja">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 4h9l5 5v11H5z"/><path d="M14 4v5h5"/><path d="M9 13h6M9 17h4"/>
@@ -70,7 +70,7 @@
           <span class="painel-card-label">Abertas</span>
           <span class="painel-card-valor" id="total-abertas">0</span>
         </div>
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="busca" data-ir-filtro="busca-os-status=Em Andamento" data-ir-acao="buscarOrdens" title="Ver O.S. em andamento">
           <span class="painel-card-icone painel-icone-azul">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
@@ -79,7 +79,7 @@
           <span class="painel-card-label">Em Andamento</span>
           <span class="painel-card-valor" id="total-andamento">0</span>
         </div>
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="busca" data-ir-filtro="busca-os-status=Finalizada" data-ir-acao="buscarOrdens" title="Ver O.S. finalizadas">
           <span class="painel-card-icone painel-icone-verde">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>
@@ -88,7 +88,7 @@
           <span class="painel-card-label">Finalizadas</span>
           <span class="painel-card-valor" id="total-finalizadas">0</span>
         </div>
-        <div class="painel-card">
+        <div class="painel-card" data-ir-aba="busca" data-ir-filtro="busca-os-status=Cancelada" data-ir-acao="buscarOrdens" title="Ver O.S. canceladas">
           <span class="painel-card-icone painel-icone-cinza">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>
@@ -534,7 +534,7 @@
   </div>
 
   <script src="../SCRIPT/config.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=19"></script>
+  <script src="../SCRIPT/geral.js?v=20"></script>
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=7"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
