@@ -125,6 +125,31 @@
     });
 
     menu.insertBefore(secao, menu.firstChild);
+
+    // Celular: as opções de Gestão ficam dentro do submenu do módulo Gestão
+    // (como em Estoque), em vez de num bloco separado no topo do menu.
+    const telaPequena = window.matchMedia('(max-width: 768px)');
+    function encaixarNoSubmenu() {
+      const submenu = menu.querySelector('.menu-modulos .menu-submodulos');
+      if (!submenu) return;
+      const itens = Array.from(secao.querySelectorAll('.menu-gestao-item'))
+        .concat(Array.from(submenu.querySelectorAll('.menu-gestao-item')));
+      if (telaPequena.matches) {
+        submenu.querySelectorAll(':scope > .tab-btn:not(.menu-gestao-item)').forEach((b) => { b.hidden = true; });
+        itens.forEach((b) => submenu.appendChild(b));
+        secao.hidden = true;
+      } else {
+        itens.forEach((b) => secao.appendChild(b));
+        secao.hidden = false;
+      }
+    }
+    encaixarNoSubmenu();
+    if (telaPequena.addEventListener) telaPequena.addEventListener('change', encaixarNoSubmenu);
+    menu.addEventListener('click', (e) => {
+      if (telaPequena.matches && e.target.closest('.menu-submodulos .menu-gestao-item')) {
+        setTimeout(() => document.querySelector('.menu-toggle[aria-expanded="true"]')?.click(), 0);
+      }
+    });
     document.body.classList.add('em-gestao');
 
     // Paginas-subarea inteiras (Cadastros/Relatorios/Jornadas): o titulo

@@ -2686,3 +2686,22 @@ button[type="submit"]:hover, .btn-primario:hover {
 @media (max-width: 768px) {
   .menu-modulos { border-bottom: 0 !important; margin-bottom: 0 !important; }
 }
+
+/* Itens de Gestão dentro do submenu, no mesmo visual das abas do módulo */
+@media (max-width: 768px) {
+  .menu .menu-submodulos .menu-gestao-item {
+    width: 100%;
+    text-align: left;
+    padding: 11px 16px !important;
+    font-size: 15px !important;
+    border: 0 !important;
+    background: none;
+    color: #d6d6d6;
+    cursor: pointer;
+  }
+  .menu .menu-submodulos .menu-gestao-item.active {
+    color: var(--cor-primaria);
+    background: rgba(168,134,79,.08);
+  }
+  .menu-gestao-secao[hidden] { display: none !important; }
+}
