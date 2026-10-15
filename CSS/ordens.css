@@ -1828,12 +1828,6 @@ body.modal-foto-ponto-aberto {
   margin-top: 18px;
 }
 
-/* Lado a lado só a partir de 1024px: em tablet dois blocos de lista ficam
-   estreitos demais para o rótulo do problema caber. */
-@media (min-width: 1024px) {
-  .os-painel-blocos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
 .os-painel-bloco {
   background: #fff;
   border: 1px solid #edf1f3;
@@ -1901,4 +1895,25 @@ body.modal-foto-ponto-aberto {
 @media (max-width: 767px) {
   .os-painel-bloco { padding: 12px; border-radius: 14px; }
   .os-mini-lista li { padding: 10px; }
+}
+
+/* Classificação pendente no painel lateral direito: sem cartão, alinhada ao
+   resto do painel. */
+.os-painel-lateral {
+  width: 100%;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 4px 6px;
+  text-align: left;
+}
+
+.os-painel-lateral .os-mini-lista li:hover { background: #f1efea; }
+
+.os-painel-lateral .os-pendencia-nota {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #8a8a8a;
 }

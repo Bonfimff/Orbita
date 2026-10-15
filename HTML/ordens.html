@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=10" />
-  <link rel="stylesheet" href="../CSS/ordens.css?v=5" />
+  <link rel="stylesheet" href="../CSS/ordens.css?v=6" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
@@ -119,14 +119,6 @@
             <a href="relatorios.html" class="os-alertas-link">Ver todos</a>
           </div>
           <div id="os-problemas-recorrentes"></div>
-        </section>
-
-        <section class="os-painel-bloco" hidden>
-          <div class="os-painel-bloco-topo">
-            <h3>Classificação pendente</h3>
-            <a href="relatorios.html?pendentes=1" class="os-alertas-link">Classificar</a>
-          </div>
-          <div id="os-classificacao-pendente"></div>
         </section>
       </div>
 
@@ -529,7 +521,15 @@
     <img src="../IMG/Logo.png" alt="Logo" class="logo">
     <hr class="logo-divider">
     <div id="sidebar-content">
-      <!-- Conteúdo dinâmico -->
+      <!-- Classificação pendente (módulo Relatórios): fica oculta até ter
+           conteúdo. No celular aparece pelo sino, que copia este painel. -->
+      <section class="os-painel-bloco os-painel-lateral" hidden>
+        <div class="os-painel-bloco-topo">
+          <h3>Classificação pendente</h3>
+          <a href="relatorios.html?pendentes=1" class="os-alertas-link">Classificar</a>
+        </div>
+        <div id="os-classificacao-pendente"></div>
+      </section>
     </div>
   </div>
 
