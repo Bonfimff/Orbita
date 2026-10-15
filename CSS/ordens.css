@@ -1981,3 +1981,21 @@ body.modal-foto-ponto-aberto {
     letter-spacing: -0.2px;
   }
 }
+
+/* Linha do ponto: bolinhas, + e mapa juntos, sem quebrar */
+.ponto-row-modal .ponto-row-info {
+  width: 100%;
+  box-sizing: border-box;
+}
+.ponto-row-modal .pontos-modal-nav-inline,
+.ponto-row-modal .pontos-modal-nav-inline .ponto-modal-bolinha,
+.ponto-row-modal .btn-ponto-rota-modal { margin-top: 0; margin-bottom: 0; }
+.ponto-row-modal .ponto-row-info > .ponto-status-select { flex: 1 1 100%; }
+@media (max-width: 768px) {
+  .modal-etapa-pill,
+  .modal-etapa-pill[data-etapa="1"],
+  .modal-etapa-pill[data-etapa="3"] {
+    padding: 5px 1px;
+    letter-spacing: -0.3px;
+  }
+}
