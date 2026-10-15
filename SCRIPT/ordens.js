@@ -2870,7 +2870,7 @@ function renderizarPontosModal(pontos, ordemId) {
     return;
   }
 
-  const botoesSelecaoPontos = pontos.length > 1
+  const botoesSelecaoPontos = pontos.length >= 1
     ? pontos.map((p, index) => `
         <button type="button" class="ponto-modal-bolinha${index === 0 ? ' ativo' : ''}" data-ponto-idx="${index}" aria-label="Mostrar ponto ${index + 1}" aria-pressed="${index === 0 ? 'true' : 'false'}">${index + 1}</button>
       `).join('')
