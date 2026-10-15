@@ -1522,26 +1522,165 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
   });
 };
 
-// Carregamento com a logo enchendo de baixo para cima.
-// Uso: const fim = mostrarCarregandoLogo(); ... fim();
+// Carregamento com a logo enchendo de petróleo.
+// A superfície é simulada como uma fileira de molas (equação de onda):
+// o recipiente balança, o líquido responde com atraso, as ondas se
+// propagam e perdem força aos poucos. Uso: const fim = mostrarCarregandoLogo(); ... fim();
 (function () {
   let camada = null;
+  let canvas = null;
+  let ctx = null;
   let pedidos = 0;
+  let quadro = 0;
   const TEMPO_MINIMO = 900;
+  const TAMANHO = 96;
+  const COLUNAS = 48;
+  const TEMPO_ENCHER = 9000;   // ms até ficar cheio
+  const TEMPO_CHEIO = 900;     // ms parado cheio antes de recomeçar
+
+  let altura = new Float32Array(COLUNAS + 1);
+  let velocidade = new Float32Array(COLUNAS + 1);
+  let inicioCiclo = 0;
+  let ultimo = 0;
+  let proximaGota = 0;
 
   function criar() {
     camada = document.createElement('div');
     camada.className = 'carregando-logo';
     camada.setAttribute('role', 'status');
     camada.setAttribute('aria-label', 'Carregando');
-    camada.innerHTML = '<div class="carregando-logo-recipiente"><div class="carregando-logo-marca"><span class="carregando-logo-liquido"></span></div></div>';
+    camada.innerHTML = '<div class="carregando-logo-recipiente"><div class="carregando-logo-marca"><canvas class="carregando-logo-canvas"></canvas></div></div>';
     document.body.appendChild(camada);
+    canvas = camada.querySelector('canvas');
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    canvas.width = TAMANHO * dpr;
+    canvas.height = TAMANHO * dpr;
+    ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+  }
+
+  function reiniciar(agora) {
+    altura.fill(0);
+    velocidade.fill(0);
+    inicioCiclo = agora;
+    proximaGota = agora + 400;
+  }
+
+  // Nível sobe rápido no começo e desacelera perto do topo, como um
+  // recipiente que vai ficando mais estreito para o olho.
+  function nivel(p) {
+    return 1 - Math.pow(1 - p, 1.6);
+  }
+
+  function passo(dt, t) {
+    // Balanço do recipiente: duas frequências fora de fase dão um
+    // movimento que não se repete de forma mecânica.
+    const inclinacao = 0.55 * Math.sin(t * 1.3) + 0.25 * Math.sin(t * 2.1 + 1.2);
+    const RIGIDEZ = 0.018, AMORTECIMENTO = 0.012, ESPALHAR = 0.24;
+    for (let i = 0; i <= COLUNAS; i++) {
+      const x = i / COLUNAS - 0.5;
+      // força do balanço empurra o líquido para um dos lados
+      const alvo = inclinacao * x * 6;
+      velocidade[i] += (alvo - altura[i]) * RIGIDEZ - velocidade[i] * AMORTECIMENTO;
+    }
+    for (let i = 0; i <= COLUNAS; i++) altura[i] += velocidade[i] * dt;
+    // propagação entre vizinhos (duas passadas suavizam)
+    for (let k = 0; k < 2; k++) {
+      const delta = new Float32Array(COLUNAS + 1);
+      for (let i = 0; i <= COLUNAS; i++) {
+        if (i > 0) delta[i] += ESPALHAR * (altura[i - 1] - altura[i]);
+        if (i < COLUNAS) delta[i] += ESPALHAR * (altura[i + 1] - altura[i]);
+      }
+      for (let i = 0; i <= COLUNAS; i++) velocidade[i] += delta[i] * dt;
+    }
+  }
+
+  function desenhar(t, base) {
+    ctx.clearRect(0, 0, TAMANHO, TAMANHO);
+    const passoX = TAMANHO / COLUNAS;
+    const y = i => base + altura[i];
+
+    // corpo do líquido
+    ctx.beginPath();
+    ctx.moveTo(0, TAMANHO);
+    ctx.lineTo(0, y(0));
+    for (let i = 1; i <= COLUNAS; i++) {
+      const xm = (i - 0.5) * passoX;
+      ctx.quadraticCurveTo((i - 1) * passoX, y(i - 1), xm, (y(i - 1) + y(i)) / 2);
+    }
+    ctx.lineTo(TAMANHO, y(COLUNAS));
+    ctx.lineTo(TAMANHO, TAMANHO);
+    ctx.closePath();
+    const corpo = ctx.createLinearGradient(0, base - 6, 0, TAMANHO);
+    corpo.addColorStop(0, '#2b2621');
+    corpo.addColorStop(0.18, '#120f0d');
+    corpo.addColorStop(1, '#000');
+    ctx.fillStyle = corpo;
+    ctx.fill();
+
+    // reflexo interno: faixa larga e suave que acompanha a inclinação
+    ctx.save();
+    ctx.clip();
+    const desloc = Math.sin(t * 0.6) * 10;
+    const brilho = ctx.createLinearGradient(20 + desloc, base, 70 + desloc, base + 40);
+    brilho.addColorStop(0, 'rgba(255,255,255,0)');
+    brilho.addColorStop(0.45, 'rgba(255,248,235,0.07)');
+    brilho.addColorStop(0.55, 'rgba(255,248,235,0.11)');
+    brilho.addColorStop(0.65, 'rgba(255,248,235,0.05)');
+    brilho.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = brilho;
+    ctx.fillRect(0, base - 10, TAMANHO, TAMANHO);
+    ctx.restore();
+
+    // reflexo na superfície: mais forte onde a onda está virada para a luz (vinda de cima à esquerda)
+    for (let i = 1; i <= COLUNAS; i++) {
+      const inclin = y(i) - y(i - 1);
+      const luz = Math.max(0, Math.min(1, -inclin * 0.9 + 0.25));
+      if (luz <= 0.02) continue;
+      ctx.strokeStyle = 'rgba(255,246,228,' + (0.42 * luz).toFixed(3) + ')';
+      ctx.lineWidth = 1.1;
+      ctx.beginPath();
+      ctx.moveTo((i - 1) * passoX, y(i - 1) + 0.6);
+      ctx.lineTo(i * passoX, y(i) + 0.6);
+      ctx.stroke();
+    }
+  }
+
+  function animar(agora) {
+    if (!pedidos && !camada.classList.contains('visivel')) { quadro = 0; return; }
+    const dt = Math.min(2.5, (agora - (ultimo || agora)) / 16.67) || 1;
+    ultimo = agora;
+    let decorrido = agora - inicioCiclo;
+    if (decorrido > TEMPO_ENCHER + TEMPO_CHEIO) { reiniciar(agora); decorrido = 0; }
+    const p = Math.min(1, decorrido / TEMPO_ENCHER);
+    const base = TAMANHO * (1.06 - nivel(p) * 1.16);
+
+    // gotas caindo de cima de tempos em tempos: perturbação local que se espalha
+    if (agora > proximaGota && p < 0.97) {
+      const c = Math.floor(COLUNAS * (0.3 + Math.random() * 0.4));
+      for (let k = -2; k <= 2; k++) {
+        const j = c + k;
+        if (j >= 0 && j <= COLUNAS) velocidade[j] += (1.6 - Math.abs(k) * 0.5);
+      }
+      proximaGota = agora + 700 + Math.random() * 900;
+    }
+
+    const t = agora / 1000;
+    passo(dt, t);
+    passo(dt, t);
+    desenhar(t, base);
+    quadro = requestAnimationFrame(animar);
   }
 
   window.mostrarCarregandoLogo = function () {
     if (!camada) criar();
     pedidos++;
     const inicio = Date.now();
+    if (!quadro) {
+      ultimo = 0;
+      reiniciar(performance.now());
+      quadro = requestAnimationFrame(animar);
+    }
     requestAnimationFrame(() => camada.classList.add('visivel'));
     let encerrado = false;
     return function () {
