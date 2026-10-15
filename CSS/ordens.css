@@ -1920,3 +1920,32 @@ body.modal-foto-ponto-aberto {
   line-height: 1.4;
   color: #8a8a8a;
 }
+
+/* Etapas do modal de O.S.: etapa ativa legível e rolagem no celular */
+.modal-etapa-pill.active { color: #fff; }
+@media (max-width: 768px) {
+  #modal-editar-os .modal-content {
+    width: 94% !important;
+    padding: 20px 14px 16px;
+  }
+  .modal-etapas-indicador {
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 6px;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+  .modal-etapas-indicador::-webkit-scrollbar { display: none; }
+  .modal-etapa-pill,
+  .modal-etapa-pill[data-etapa="1"],
+  .modal-etapa-pill[data-etapa="3"] {
+    flex: 0 0 auto;
+    padding: 6px 12px;
+    font-size: 12px;
+    overflow: visible;
+    text-overflow: clip;
+    scroll-snap-align: start;
+  }
+  .os-resumo-minimizado { text-align: left; }
+}

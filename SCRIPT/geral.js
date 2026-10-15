@@ -1071,6 +1071,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 0);
       }).observe(alvo, { childList: true, subtree: true });
     }
+    // Modais ficam fora de .content: campos de arquivo criados neles também viram botão
+    if (window.MutationObserver) {
+      let agendadoArquivo = false;
+      new MutationObserver(() => {
+        if (agendadoArquivo) return;
+        agendadoArquivo = true;
+        setTimeout(() => { agendadoArquivo = false; melhorarCamposArquivo(document); }, 0);
+      }).observe(document.body, { childList: true, subtree: true });
+    }
   });
 
   window.tornarTabelasResponsivas = tornarTabelasResponsivas;

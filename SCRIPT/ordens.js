@@ -142,7 +142,7 @@ function tecnicoExibicao(os) {
 function atualizarLegendaTecnicoModal(os) {
   const el = document.getElementById('edit-os-tecnico-legenda');
   if (!el) return;
-  el.textContent = `Técnico responsavel: ${tecnicoExibicao(os)}`;
+  el.textContent = `Técnico responsável: ${tecnicoExibicao(os)}`;
 }
 
 function badgePontoStatus(status) {
@@ -997,9 +997,9 @@ function atualizarResumoDadosOSModal() {
   const descricao = descricaoBruta.length > 140 ? `${descricaoBruta.slice(0, 140)}...` : descricaoBruta;
 
   resumo.innerHTML = `
-    <div><strong>Responsavel da equipe:</strong> ${escapeHtml(responsavel)}</div>
+    <div><strong>Responsável da equipe:</strong> ${escapeHtml(responsavel)}</div>
     <div><strong>Prioridade:</strong> ${escapeHtml(prioridade)}</div>
-    <div><strong>Descricao do Servico:</strong> ${escapeHtml(descricao)}</div>
+    <div><strong>Descrição do serviço:</strong> ${escapeHtml(descricao)}</div>
   `;
 }
 
