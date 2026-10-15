@@ -2570,3 +2570,43 @@ button[type="submit"]:hover, .btn-primario:hover {
     background: rgba(168,134,79,.08);
   }
 }
+
+/* ===================================================================
+   BUSCA (Estoque): filtros e seletor de colunas no celular
+   =================================================================== */
+@media (max-width: 1024px) {
+  .busca-filtro-item { max-width: none !important; min-width: 0 !important; width: 100%; }
+  .busca-filtro-item input,
+  .busca-filtro-item select { width: 100%; box-sizing: border-box; height: 42px; font-size: 16px; border-radius: 8px; }
+  .busca-controles { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .busca-controle-item { grid-column: 1 / -1; min-width: 0; }
+  .busca-controle-item select,
+  .busca-controle-item input { width: 100%; box-sizing: border-box; min-width: 0; }
+  .busca-controle-item > div[style*="display: flex"] > input { flex: 1 1 0; }
+  .busca-controles > button { width: 100%; margin: 0 !important; }
+}
+/* Botão "Escolha as colunas" no mesmo visual dos cartões */
+.btn-toggle-colunas {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px !important;
+  background: #fff !important;
+  color: #262626 !important;
+  border: 1px solid #e6e1d8 !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-align: left;
+  box-shadow: 0 1px 6px rgba(16, 24, 40, 0.05);
+}
+.btn-toggle-colunas:hover { border-color: var(--cor-primaria) !important; }
+/* "Baixar Tabela": secundário claro em vez do cinza-azulado antigo */
+#btn-baixar-tabela {
+  background: #fff !important;
+  color: #262626 !important;
+  border: 1px solid #262626 !important;
+}
+#btn-baixar-tabela:hover { background: #f3f1ec !important; }
