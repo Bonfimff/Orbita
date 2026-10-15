@@ -10,16 +10,12 @@ let _promessaModulos = null;
 window.obterModulos = function obterModulos() {
   if (_promessaModulos) return _promessaModulos;
 
-  const cache = localStorage.getItem('userData');
-  if (cache) {
-    try {
-      _promessaModulos = Promise.resolve(JSON.parse(cache));
-      return _promessaModulos;
-    } catch (e) {
-      // Cache corrompido: ignora e busca de novo em vez de travar o menu.
-    }
-  }
-
+  // Sempre pergunta ao servidor: as permissões podem ter mudado desde o login
+  // (perfil alterado, módulo novo). A cópia guardada só é usada se o servidor
+  // não responder, para o menu não sumir sem conexão.
+  const cache = (() => {
+    try { return JSON.parse(localStorage.getItem('userData') || 'null'); } catch (e) { return null; }
+  })();
   const token = localStorage.getItem('token');
   _promessaModulos = fetch(apiUrl('/modulos'), {
     method: 'GET',
@@ -31,6 +27,10 @@ window.obterModulos = function obterModulos() {
       const info = { usuario: data.usuario, modulos: data.modulos };
       localStorage.setItem('userData', JSON.stringify(info));
       return info;
+    })
+    .catch(erro => {
+      if (cache) return cache;
+      throw erro;
     });
   return _promessaModulos;
 };
