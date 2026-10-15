@@ -2351,3 +2351,22 @@ button.ponto-foto-modal-tags {
   cursor: pointer;
 }
 .os-op-remover:hover { background: #fbf0ee; color: #9B3B32; }
+
+/* Remover: botão pequeno, todos do mesmo tamanho, cinza escuro */
+#modal-editar-os button.os-op-remover {
+  width: 28px !important;
+  min-width: 28px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 !important;
+  margin: 0 0 0 4px !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: #4a4a4a !important;
+  color: #fff !important;
+  flex: 0 0 28px !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+#modal-editar-os button.os-op-remover:hover { background: #2e2e2e !important; }
+#modal-editar-os button.os-op-remover svg { width: 14px; height: 14px; }
