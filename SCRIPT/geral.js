@@ -42,7 +42,7 @@ window.obterModulos = function obterModulos() {
 document.addEventListener('DOMContentLoaded', async function () {
   const moduleTabs = document.querySelectorAll('.top-tab');
   const modules = {
-    estoque: 'almoxarifado.html',
+    almoxarifado: 'almoxarifado.html',
     frota: 'frota.html',
     ordens: 'ordens.html',
     gestao: 'gestao.html',
