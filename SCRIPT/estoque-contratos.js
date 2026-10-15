@@ -325,3 +325,111 @@
   document.addEventListener('DOMContentLoaded', carregar);
   window.recarregarUtilizacaoItens = carregar;
 })();
+
+// ===================== AGENDAMENTO DE ENTRADAS (Painel) =====================
+(function () {
+  'use strict';
+  const el = (id) => document.getElementById(id);
+  const esc = (t) => String(t == null ? '' : t)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const cab = () => ({ 'Content-Type': 'application/json', Authorization: 'Bearer ' + localStorage.getItem('token') });
+  const dataBr = (iso) => (iso ? iso.split('-').reverse().join('/') : '-');
+  const X = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+  async function chamar(metodo, caminho, corpo) {
+    const resp = await fetch(apiUrl(caminho), { method: metodo, headers: cab(), body: corpo ? JSON.stringify(corpo) : undefined });
+    const dados = await resp.json().catch(() => ({}));
+    if (!resp.ok || dados.status !== 'ok') throw new Error(dados.mensagem || 'Falha na requisição.');
+    return dados;
+  }
+
+  function render(lista) {
+    const box = el('agendamento-entradas-info');
+    if (!box) return;
+    if (!lista.length) {
+      box.innerHTML = '<p class="utilizacao-vazio">Nenhuma entrada agendada.</p>';
+      return;
+    }
+    const hoje = new Date().toISOString().slice(0, 10);
+    box.innerHTML = lista.map((a) => {
+      const atrasado = a.previsao_entrega && a.previsao_entrega < hoje;
+      return '<div class="agenda-card">' +
+        '<div class="agenda-topo"><strong>' + dataBr(a.data_agendada) + '</strong>' +
+        (atrasado ? '<span class="utilizacao-tag utilizacao-tag-devolver">Atrasada</span>' : '') +
+        '<button type="button" class="os-op-remover agenda-remover" data-id="' + a.id + '" title="Remover" aria-label="Remover">' + X + '</button></div>' +
+        '<dl class="agenda-dados">' +
+          '<dt>Nº nota</dt><dd>' + esc(a.numero_nota || '-') + '</dd>' +
+          (a.fornecedor ? '<dt>Fornecedor</dt><dd>' + esc(a.fornecedor) + '</dd>' : '') +
+          '<dt>Previsão</dt><dd>' + dataBr(a.previsao_entrega) + '</dd>' +
+          '<dt>Destinação</dt><dd>' + esc(a.destinacao || '-') + '</dd>' +
+        '</dl>' +
+        '<button type="button" class="utilizacao-btn agenda-recebido" data-id="' + a.id + '">Marcar como recebida</button>' +
+        '</div>';
+    }).join('');
+    box.querySelectorAll('.agenda-remover').forEach((b) => b.addEventListener('click', async () => {
+      if (b.dataset.confirmar !== '1') {
+        b.dataset.confirmar = '1';
+        b.classList.add('confirmando');
+        b.title = 'Toque de novo para remover';
+        setTimeout(() => { b.dataset.confirmar = ''; b.classList.remove('confirmando'); b.title = 'Remover'; }, 3000);
+        return;
+      }
+      try { await chamar('DELETE', '/estoque/agendamentos/' + b.dataset.id); carregar(); } catch (e) { alert(e.message); }
+    }));
+    box.querySelectorAll('.agenda-recebido').forEach((b) => b.addEventListener('click', async () => {
+      b.disabled = true;
+      try { await chamar('PUT', '/estoque/agendamentos/' + b.dataset.id); carregar(); } catch (e) { alert(e.message); b.disabled = false; }
+    }));
+  }
+
+  async function carregar() {
+    try {
+      const dados = await chamar('GET', '/estoque/agendamentos');
+      render(dados.agendamentos || []);
+    } catch (e) {
+      const box = el('agendamento-entradas-info');
+      if (box) box.innerHTML = '<p class="utilizacao-vazio">Não foi possível carregar os agendamentos.</p>';
+    }
+  }
+
+  function abrirForm(abrir) {
+    const form = el('agenda-form');
+    if (!form) return;
+    form.hidden = !abrir;
+    el('agenda-novo-btn').hidden = abrir;
+    if (abrir) {
+      if (!el('agenda-data').value) el('agenda-data').value = new Date().toISOString().slice(0, 10);
+      el('agenda-previsao').focus();
+    } else {
+      form.reset();
+      el('agenda-erro').hidden = true;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!el('agendamento-entradas-info')) return;
+    carregar();
+    el('agenda-novo-btn')?.addEventListener('click', () => abrirForm(true));
+    el('agenda-cancelar')?.addEventListener('click', () => abrirForm(false));
+    el('agenda-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const erro = el('agenda-erro');
+      erro.hidden = true;
+      if (!el('agenda-data').value) { erro.textContent = 'Informe a data agendada.'; erro.hidden = false; return; }
+      try {
+        await chamar('POST', '/estoque/agendamentos', {
+          data_agendada: el('agenda-data').value,
+          previsao_entrega: el('agenda-previsao').value,
+          numero_nota: el('agenda-nota').value,
+          fornecedor: el('agenda-fornecedor').value,
+          destinacao: el('agenda-destinacao').value,
+        });
+        abrirForm(false);
+        carregar();
+      } catch (err) {
+        erro.textContent = err.message;
+        erro.hidden = false;
+      }
+    });
+  });
+})();

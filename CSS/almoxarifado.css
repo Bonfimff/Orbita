@@ -997,3 +997,59 @@
   #fornecedores .form-coluna textarea { width: 100%; box-sizing: border-box; font-size: 16px; }
   .btn-salvar-cadastro { width: 100%; }
 }
+
+/* ===== Painel: agendamento de entradas ===== */
+.painel-secao-topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.agenda-novo-btn {
+  flex: 0 0 auto;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid #262626;
+  border-radius: 999px;
+  background: #262626;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.agenda-novo-btn:hover { background: #0f0f0f; }
+.agenda-novo-btn[hidden] { display: none; }
+.agenda-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1px solid #ece6db;
+  border-radius: 12px;
+  background: #faf8f4;
+}
+.agenda-form[hidden] { display: none; }
+.agenda-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: #555; }
+.agenda-form input {
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #ddd8cf;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  box-sizing: border-box;
+  width: 100%;
+}
+.agenda-form-largo { grid-column: 1 / -1; }
+.agenda-form-acoes { display: flex; justify-content: flex-end; gap: 8px; }
+.agenda-cancelar { height: 38px; padding: 0 16px; border: 1px solid #ddd8cf; border-radius: 8px; background: #fff; color: #444; font: inherit; font-size: 14px; cursor: pointer; }
+.agenda-salvar { height: 38px; padding: 0 16px !important; border-radius: 8px !important; font-size: 14px !important; }
+.agenda-erro { margin: 0; color: #9B3B32; font-size: 13px; }
+.agenda-lista { display: flex; flex-direction: column; gap: 10px; }
+.agenda-card { border: 1px solid #ebe8e2; border-radius: 12px; padding: 12px 14px; background: #fff; display: flex; flex-direction: column; gap: 8px; }
+.agenda-topo { display: flex; align-items: center; gap: 8px; }
+.agenda-topo strong { font-size: 14px; color: #1a1a1a; }
+.agenda-topo .os-op-remover { margin-left: auto; width: 26px; height: 26px; border: 0; border-radius: 6px; background: #4a4a4a; color: #fff; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; }
+.agenda-topo .os-op-remover.confirmando { background: #9B3B32; }
+.agenda-dados { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; font-size: 13px; }
+.agenda-dados dt { color: #8a8a8a; }
+.agenda-dados dd { margin: 0; text-align: right; color: #262626; word-break: break-word; }
+@media (max-width: 480px) { .agenda-form { grid-template-columns: 1fr; } }

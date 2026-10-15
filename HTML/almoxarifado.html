@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=24" />
-  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=4" />
+  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=5" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Estoque</title>
@@ -153,33 +153,21 @@
             </span>
             Agendamento de Entradas
           </h3>
+          <button type="button" class="agenda-novo-btn" id="agenda-novo-btn">+ Novo</button>
         </div>
-        <div id="agendamento-entradas-info">
-          <table class="estilo-tabela">
-            <thead>
-              <tr class="inline-style-881bd5">
-                <th class="inline-style-f91e21">Data Agendada</th>
-                <th class="inline-style-f91e21">Nº Nota</th>
-                <th class="inline-style-f91e21">Data Prevista Entrega</th>
-                <th class="inline-style-f91e21">Destinação</th>
-              </tr>
-            </thead>
-            <tbody class="inline-style-b82c65">
-              <tr>
-                <td class="inline-style-f91e21" data-label="Data agendada">10/06/2025</td>
-                <td class="inline-style-f91e21" data-label="Nº Nota">123456</td>
-                <td class="inline-style-f91e21" data-label="Entrega prevista">12/06/2025</td>
-                <td class="inline-style-f91e21" data-label="Destinação">Almoxarifado Central</td>
-              </tr>
-              <tr>
-                <td class="inline-style-f91e21" data-label="Data agendada">15/06/2025</td>
-                <td class="inline-style-f91e21" data-label="Nº Nota">654321</td>
-                <td class="inline-style-f91e21" data-label="Entrega prevista">18/06/2025</td>
-                <td class="inline-style-f91e21" data-label="Destinação">Obra Setor B</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <form class="agenda-form" id="agenda-form" hidden>
+          <label>Data agendada<input type="date" id="agenda-data" required /></label>
+          <label>Previsão de entrega<input type="date" id="agenda-previsao" /></label>
+          <label>Nº da nota<input type="text" id="agenda-nota" maxlength="100" /></label>
+          <label>Fornecedor<input type="text" id="agenda-fornecedor" maxlength="255" /></label>
+          <label class="agenda-form-largo">Destinação<input type="text" id="agenda-destinacao" maxlength="255" placeholder="Ex.: Almoxarifado Central" /></label>
+          <div class="agenda-form-acoes agenda-form-largo">
+            <button type="button" class="agenda-cancelar" id="agenda-cancelar">Cancelar</button>
+            <button type="submit" class="btn-primario agenda-salvar">Salvar agendamento</button>
+          </div>
+          <p class="agenda-erro agenda-form-largo" id="agenda-erro" hidden></p>
+        </form>
+        <div id="agendamento-entradas-info" class="agenda-lista"><p class="utilizacao-vazio">Carregando...</p></div>
       </div>
 
       <!-- Utilização e devolução de itens -->
@@ -1446,7 +1434,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=7"></script>
   <script src="../SCRIPT/outos.js"></script>
-  <script src="../SCRIPT/estoque-contratos.js?v=2"></script>
+  <script src="../SCRIPT/estoque-contratos.js?v=3"></script>
   <script src="../SCRIPT/pre-tranferencia.js"></script>
 
 
