@@ -1341,7 +1341,7 @@ function coletarDadosFechamento() {
 }
 
 function todosPontosFinalizadosOuCancelados() {
-  const selects = Array.from(document.querySelectorAll('#modal-pontos-lista .ponto-status-select'));
+  const selects = Array.from(document.querySelectorAll('#modal-pontos-lista .ponto-status-select, .os-status-ponto-slot .ponto-status-select'));
   if (selects.length === 0) return true;
   return selects.every(sel => {
     const status = String(sel.value || '').trim();
@@ -3567,3 +3567,53 @@ document.addEventListener('DOMContentLoaded', async function () {
 })(); // fim IIFE
 
 
+
+// Leva o seletor de status do ponto ativo para o canto do cabeçalho do
+// despacho (no lugar da legenda "Status: ...") enquanto a etapa Pontos
+// estiver aberta. O seletor é movido, não copiado, então os eventos continuam.
+(function () {
+  let ocupado = false;
+
+  function sincronizarStatusPontoCabecalho() {
+    if (ocupado) return;
+    const cabecalho = document.querySelector('#modal-editar-os .os-pontos-header');
+    const lista = document.getElementById('modal-pontos-lista');
+    if (!cabecalho || !lista) return;
+    let slot = cabecalho.querySelector('.os-status-ponto-slot');
+    if (!slot) {
+      slot = document.createElement('div');
+      slot.className = 'os-status-ponto-slot';
+      cabecalho.appendChild(slot);
+    }
+    const blocoPontos = lista.closest('.modal-etapa');
+    const etapaPontosVisivel = !blocoPontos || blocoPontos.style.display !== 'none';
+    const linhaAtiva = lista.querySelector('.ponto-row-modal.ativo') || lista.querySelector('.ponto-row-modal');
+    const desejado = etapaPontosVisivel && linhaAtiva ? linhaAtiva.querySelector('.ponto-status-select') : null;
+    const atual = slot.querySelector('.ponto-status-select');
+
+    if (atual !== (desejado || null) || (desejado && desejado.parentNode !== slot)) {
+      ocupado = true;
+      if (atual && atual !== desejado) {
+        if (atual._origem && atual._origem.isConnected) atual._origem.appendChild(atual);
+        else atual.remove();
+      }
+      if (desejado && desejado.parentNode !== slot) {
+        desejado._origem = desejado.parentNode;
+        slot.appendChild(desejado);
+      }
+      ocupado = false;
+    }
+    cabecalho.classList.toggle('com-status-ponto', !!slot.querySelector('.ponto-status-select'));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('modal-editar-os');
+    if (!modal || !window.MutationObserver) return;
+    let agendado = false;
+    new MutationObserver(() => {
+      if (ocupado || agendado) return;
+      agendado = true;
+      requestAnimationFrame(() => { agendado = false; sincronizarStatusPontoCabecalho(); });
+    }).observe(modal, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
+  });
+})();

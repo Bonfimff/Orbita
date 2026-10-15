@@ -1107,11 +1107,11 @@
   border-color: #89c791;
   color: #1f7a34;
   font-weight: 700;
+}
 
 #btn-salvar-fechamento.botao-fechamento-bloqueado {
   opacity: 0.75;
   cursor: not-allowed;
-}
 }
 
 .ponto-status-select.ponto-status-cancelado {
@@ -2034,5 +2034,21 @@ body.modal-foto-ponto-aberto {
   position: static !important;
   transform: none !important;
   top: auto !important;
+  align-self: center;
+}
+
+/* Status do ponto no canto superior do despacho (no lugar da legenda) */
+.os-pontos-header { gap: 10px; }
+.os-status-ponto-slot { display: none; margin-left: auto; }
+.os-pontos-header.com-status-ponto .os-status-ponto-slot { display: block; }
+.os-pontos-header.com-status-ponto #edit-os-status-label { display: none; }
+.os-status-ponto-slot .ponto-status-select {
+  width: auto;
+  min-width: 0;
+  max-width: 170px;
+  height: 30px;
+  padding: 4px 26px 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
   align-self: center;
 }
