@@ -3029,6 +3029,10 @@ function renderizarPontosModal(pontos, ordemId) {
   lista.querySelectorAll('.ponto-foto-arquivo').forEach(input => {
     input.addEventListener('change', async function () {
       const form = this.closest('.ponto-foto-form');
+      const arquivo = this.files?.[0];
+      if (!form || !arquivo) return;
+      const confirmado = await confirmarFotoPonto(form, arquivo);
+      if (!confirmado) { this.value = ''; return; }
       await enviarFotoPonto(form);
     });
   });
@@ -3620,3 +3624,61 @@ document.addEventListener('DOMContentLoaded', async function () {
     }).observe(modal, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
   });
 })();
+
+// Antes de enviar a foto do ponto: mostra a imagem e pede o tipo e a legenda.
+// Resolve true se a pessoa confirmar (já com os valores gravados no formulário).
+function confirmarFotoPonto(form, arquivo) {
+  return new Promise(resolve => {
+    const tipoForm = form.querySelector('.ponto-foto-tipo');
+    const legendaForm = form.querySelector('.ponto-foto-legenda');
+    const url = URL.createObjectURL(arquivo);
+
+    const fundo = document.createElement('div');
+    fundo.className = 'foto-confirma-fundo';
+    fundo.innerHTML = `
+      <div class="foto-confirma" role="dialog" aria-modal="true" aria-labelledby="foto-confirma-titulo">
+        <h4 id="foto-confirma-titulo">Confirmar foto</h4>
+        <div class="foto-confirma-imagem"><img alt="Pré-visualização da foto" /></div>
+        <label class="foto-confirma-campo">
+          <span>Tipo</span>
+          <select class="foto-confirma-tipo"></select>
+        </label>
+        <label class="foto-confirma-campo">
+          <span>Legenda</span>
+          <input type="text" class="foto-confirma-legenda" maxlength="255" placeholder="Descreva a foto (opcional)" />
+        </label>
+        <div class="foto-confirma-acoes">
+          <button type="button" class="foto-confirma-cancelar">Cancelar</button>
+          <button type="button" class="foto-confirma-enviar">Enviar</button>
+        </div>
+      </div>`;
+    fundo.querySelector('img').src = url;
+    const tipo = fundo.querySelector('.foto-confirma-tipo');
+    tipo.innerHTML = tipoForm ? tipoForm.innerHTML : '';
+    if (tipoForm) tipo.value = tipoForm.value;
+    const legenda = fundo.querySelector('.foto-confirma-legenda');
+    legenda.value = legendaForm ? legendaForm.value : '';
+    document.body.appendChild(fundo);
+    requestAnimationFrame(() => fundo.classList.add('visivel'));
+    legenda.focus();
+
+    function fechar(ok) {
+      if (ok) {
+        if (tipoForm) tipoForm.value = tipo.value;
+        if (legendaForm) legendaForm.value = legenda.value;
+      }
+      document.removeEventListener('keydown', teclas);
+      URL.revokeObjectURL(url);
+      fundo.remove();
+      resolve(ok);
+    }
+    function teclas(e) {
+      if (e.key === 'Escape') fechar(false);
+      if (e.key === 'Enter' && e.target === legenda) fechar(true);
+    }
+    document.addEventListener('keydown', teclas);
+    fundo.querySelector('.foto-confirma-cancelar').addEventListener('click', () => fechar(false));
+    fundo.querySelector('.foto-confirma-enviar').addEventListener('click', () => fechar(true));
+    fundo.addEventListener('click', e => { if (e.target === fundo) fechar(false); });
+  });
+}
