@@ -962,3 +962,38 @@
   cursor: pointer;
 }
 .utilizacao-btn:hover { background: #262626; color: #fff; }
+
+/* ===== Cadastros no celular ===== */
+.btn-salvar-cadastro {
+  display: block;
+  margin-top: 16px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+@media (max-width: 768px) {
+  /* Abas de Cadastros/Movimentações: rolam para o lado sem cortar */
+  .entrada-header .opcoes-abas {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .entrada-header .opcoes-abas::-webkit-scrollbar { display: none; }
+  .entrada-header .opcoes-abas .top-tab2 { flex: 0 0 auto; margin: 0 !important; white-space: nowrap; }
+  /* Colunas do formulário empilhadas sem espaço sobrando entre elas */
+  #requisitantes .form-group,
+  #fornecedores .form-group { gap: 14px !important; }
+  #requisitantes .form-coluna,
+  #fornecedores .form-coluna { width: 100%; gap: 14px; margin: 0 !important; padding: 0 !important; }
+  #requisitantes .form-coluna input,
+  #requisitantes .form-coluna textarea,
+  #fornecedores .form-coluna input,
+  #fornecedores .form-coluna select,
+  #fornecedores .form-coluna textarea { width: 100%; box-sizing: border-box; font-size: 16px; }
+  .btn-salvar-cadastro { width: 100%; }
+}
