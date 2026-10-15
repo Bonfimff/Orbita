@@ -911,3 +911,54 @@
   font-size: 13px;
   line-height: 1.4;
 }
+
+/* ===== Painel: utilização e devolução de itens das O.S. ===== */
+.utilizacao-lista { display: flex; flex-direction: column; gap: 10px; }
+.utilizacao-vazio { margin: 6px 0; font-size: 13px; color: #8a8a8a; }
+.utilizacao-card {
+  border: 1px solid #ebe8e2;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.utilizacao-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.utilizacao-topo strong { font-size: 14px; color: #1a1a1a; }
+.utilizacao-ids { font-size: 12px; color: #8a8a8a; }
+.utilizacao-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+.utilizacao-tag-andamento { background: #f3f1ec; color: #6b6b6b; }
+.utilizacao-tag-devolver { background: #f6efe2; color: #86683A; }
+.utilizacao-tag-ok { background: #eef7ef; color: #1f6b33; }
+.utilizacao-tabela { width: 100%; border-collapse: collapse; font-size: 13px; }
+.utilizacao-tabela th {
+  text-align: right;
+  font-weight: 500;
+  font-size: 11px;
+  color: #8a8a8a;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  padding: 4px 0 6px 8px;
+  border-bottom: 1px solid #f1efea;
+  background: none !important;
+}
+.utilizacao-tabela th:first-child, .utilizacao-tabela td:first-child { text-align: left; padding-left: 0; }
+.utilizacao-tabela td { text-align: right; padding: 7px 0 7px 8px; border-bottom: 1px solid #f6f4f0; color: #333; }
+.utilizacao-tabela tr:last-child td { border-bottom: 0; }
+.utilizacao-item { word-break: break-word; }
+.utilizacao-devolver { color: #86683A !important; font-weight: 700; }
+.utilizacao-btn {
+  align-self: flex-end;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid #262626;
+  border-radius: 8px;
+  background: #fff;
+  color: #262626;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.utilizacao-btn:hover { background: #262626; color: #fff; }

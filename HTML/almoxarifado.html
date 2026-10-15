@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=23" />
-  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=2" />
+  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=3" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Estoque</title>
@@ -182,7 +182,7 @@
         </div>
       </div>
 
-      <!-- Confirmação de Utilização de Itens -->
+      <!-- Utilização e devolução de itens -->
       <div class="inline-style-5d47ce">
         <div class="painel-secao-topo">
           <h3 class="inline-style-7bbfe0">
@@ -194,41 +194,7 @@
             Confirmação de Utilização de Itens
           </h3>
         </div>
-        <div id="confirmacao-utilizacao-info">
-        <table class="estilo-tabela">
-          <thead>
-            <tr class="inline-style-881bd5">
-              <th class="inline-style-f91e21">Nº OS</th>
-              <th class="inline-style-f91e21">ID Retirada</th>
-              <th class="inline-style-f91e21">Itens Utilizados</th>
-              <th class="inline-style-f91e21">Ações</th>
-            </tr>
-          </thead>
-          <tbody class="inline-style-b82c65">
-            <tr>
-              <td class="inline-style-f91e21" data-label="Nº OS">OS-2025-0012</td>
-              <td class="inline-style-f91e21" data-label="ID Retirada">145</td>
-              <td class="inline-style-f91e21" data-label="Itens utilizados">
-                <button type="button" onclick="mostrarDetalhesItens(this)" class="inline-style-bfaa2f">
-                  +
-                </button>
-                <div class="detalhes-itens inline-style-ccc240">
-                  <b>Itens usados:</b>
-                  <ul >
-                    <li>Parafuso M10 (ID: 101) - Qtde: 12</li>
-                    <li>Fita Isolante (ID: 102) - Qtde: 2</li>
-                  </ul>
-                </div>
-              </td>
-              <td class="inline-style-f91e21" data-label="Ações">
-                <button type="button" class="inline-style-940163">
-                  Confirmar Retirada
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        </div>
+        <div id="confirmacao-utilizacao-info" class="utilizacao-lista"><p class="utilizacao-vazio">Carregando...</p></div>
       </div>
 
       <!-- Resumo Rápido -->
@@ -1480,7 +1446,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=7"></script>
   <script src="../SCRIPT/outos.js"></script>
-  <script src="../SCRIPT/estoque-contratos.js?v=1"></script>
+  <script src="../SCRIPT/estoque-contratos.js?v=2"></script>
   <script src="../SCRIPT/pre-tranferencia.js"></script>
 
 

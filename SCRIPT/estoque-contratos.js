@@ -244,3 +244,84 @@
     });
   });
 })();
+
+// ===================== UTILIZAÇÃO E DEVOLUÇÃO (Painel) =====================
+// Para cada O.S. com material retirado: saiu, foi usado no relatório, já
+// voltou e quanto ainda falta devolver (só depois que a O.S. é finalizada).
+(function () {
+  'use strict';
+  const el = (id) => document.getElementById(id);
+  const esc = (t) => String(t == null ? '' : t)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const fmt = (n) => (Math.round(Number(n || 0) * 100) / 100).toLocaleString('pt-BR');
+
+  function irParaDevolucao(idRetirada) {
+    const botao = el('btn-devolucao1') || document.querySelector('[data-tab="devolucao"]');
+    const aba = document.querySelector('.tab-btn[data-tab="movimentacoes"]');
+    if (aba) aba.click();
+    setTimeout(() => {
+      if (botao) botao.click();
+      setTimeout(() => {
+        const campo = el('devolucao-id');
+        if (campo && idRetirada) {
+          campo.value = idRetirada;
+          campo.dispatchEvent(new Event('input', { bubbles: true }));
+          campo.dispatchEvent(new Event('change', { bubbles: true }));
+          campo.focus();
+        }
+      }, 150);
+    }, 100);
+  }
+
+  function render(ordens) {
+    const box = el('confirmacao-utilizacao-info');
+    if (!box) return;
+    if (!ordens.length) {
+      box.innerHTML = '<p class="utilizacao-vazio">Nenhuma O.S. com material retirado.</p>';
+      return;
+    }
+    box.innerHTML = ordens.map((o) => {
+      const linhas = o.itens.map((i) =>
+        '<tr>' +
+          '<td class="utilizacao-item">' + esc(i.nome) + '</td>' +
+          '<td>' + fmt(i.retirado) + '</td>' +
+          '<td>' + (o.finalizada ? fmt(i.usado) : '-') + '</td>' +
+          '<td class="' + (i.devolver > 0 ? 'utilizacao-devolver' : '') + '">' + (o.finalizada ? fmt(i.devolver) : '-') + '</td>' +
+        '</tr>').join('');
+      const situacao = !o.finalizada
+        ? '<span class="utilizacao-tag utilizacao-tag-andamento">Em andamento</span>'
+        : (o.total_devolver > 0
+          ? '<span class="utilizacao-tag utilizacao-tag-devolver">Devolver ' + fmt(o.total_devolver) + '</span>'
+          : '<span class="utilizacao-tag utilizacao-tag-ok">Tudo conferido</span>');
+      const acao = (o.finalizada && o.total_devolver > 0 && o.ids_retirada.length)
+        ? '<button type="button" class="utilizacao-btn" data-id-retirada="' + esc(o.ids_retirada[0]) + '">Registrar devolução</button>'
+        : '';
+      return '<div class="utilizacao-card">' +
+        '<div class="utilizacao-topo"><strong>' + esc(o.numero_os || ('O.S. #' + o.id)) + '</strong>' + situacao + '</div>' +
+        '<div class="utilizacao-ids">Retirada ' + esc(o.ids_retirada.join(', ') || '-') + '</div>' +
+        '<table class="utilizacao-tabela sem-cartao"><thead><tr><th>Item</th><th>Saiu</th><th>Usado</th><th>Devolver</th></tr></thead>' +
+        '<tbody>' + linhas + '</tbody></table>' + acao +
+        '</div>';
+    }).join('');
+    box.querySelectorAll('.utilizacao-btn').forEach((b) =>
+      b.addEventListener('click', () => irParaDevolucao(b.dataset.idRetirada)));
+  }
+
+  async function carregar() {
+    const box = el('confirmacao-utilizacao-info');
+    if (!box) return;
+    try {
+      const resp = await fetch(apiUrl('/estoque/utilizacao-os'), {
+        headers: { Authorization: 'Bearer ' + localStorage.getItem('token') },
+      });
+      const dados = await resp.json();
+      if (!resp.ok || dados.status !== 'ok') throw new Error(dados.mensagem || 'Erro');
+      render(dados.ordens || []);
+    } catch (e) {
+      box.innerHTML = '<p class="utilizacao-vazio">Não foi possível carregar a utilização dos itens.</p>';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', carregar);
+  window.recarregarUtilizacaoItens = carregar;
+})();
