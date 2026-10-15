@@ -94,8 +94,7 @@
       'gap:8px;padding:10px;border:1px solid #e0e0e0;border-radius:6px;margin-bottom:6px;min-height:44px;">' +
       '<div><strong>' + escapar(m.usuario_nome || m.usuario_login) + '</strong>' +
       (m.funcao_nome ? ' <span style="color:#666;">(' + escapar(m.funcao_nome) + ')</span>' : '') +
-      ' <span style="font-size:11px;color:' + (m.tipo === 'realizado' ? '#1a7f37' : '#999') + ';">' +
-      escapar(m.tipo === 'realizado' ? 'Realizado' : 'Planejado') + '</span></div>' +
+      '</div>' +
       '<button type="button" class="os-op-remover os-op-equipe-remover" title="Remover" aria-label="Remover" data-id="' + m.id +
       '"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'
     )).join('');
@@ -177,4 +176,23 @@
   }
 
   window.OSEquipe = { carregar };
+  // Ao escolher a pessoa, já seleciona a função que ela usou por último.
+  document.addEventListener('DOMContentLoaded', function () {
+    const selUsuario = elemento('os-op-equipe-usuario');
+    const selFuncao = elemento('os-op-equipe-funcao');
+    if (!selUsuario || !selFuncao) return;
+    selUsuario.addEventListener('change', async function () {
+      const usuarioId = selUsuario.value;
+      if (!usuarioId) return;
+      try {
+        const dados = await chamar('GET', '/funcoes-os/ultima/' + usuarioId);
+        if (selUsuario.value !== usuarioId) return;
+        if (dados && dados.funcao_id && selFuncao.querySelector('option[value="' + dados.funcao_id + '"]')) {
+          selFuncao.value = String(dados.funcao_id);
+        }
+      } catch (erro) {
+        console.warn('[equipe.js] ultima funcao', erro.message);
+      }
+    });
+  });
 })();

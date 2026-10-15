@@ -2386,3 +2386,5 @@ button.ponto-foto-modal-tags {
 }
 #modal-editar-os button.modal-os-fechar:hover { background: #f3f1ec !important; }
 #modal-editar-os button.modal-os-fechar svg { width: 16px; height: 16px; }
+#modal-editar-os button.os-op-remover { margin-left: auto !important; }
+#modal-editar-os .os-op-card { justify-content: flex-start !important; }
