@@ -1763,21 +1763,33 @@ function garantirModalFotoPonto() {
       <button type="button" class="ponto-foto-modal-fechar" data-acao="fechar" aria-label="Fechar visualização">×</button>
       <div class="ponto-foto-modal-corpo">
         <img src="" alt="Foto ampliada do ponto" class="ponto-foto-modal-imagem" />
+        <img src="../IMG/Logoescura.png" alt="" aria-hidden="true" class="ponto-foto-modal-marca" />
         <div class="ponto-foto-modal-info">
-          <div class="ponto-foto-modal-tags">
+          <button type="button" class="ponto-foto-modal-tags" aria-expanded="false" title="Mostrar legenda e ações">
             <span class="ponto-foto-modal-tipo"></span>
             <span class="ponto-foto-modal-data"></span>
-          </div>
+            <span class="ponto-foto-modal-resumo"></span>
+            <svg class="ponto-foto-modal-seta" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
+          </button>
+          <div class="ponto-foto-modal-detalhes">
           <label class="ponto-foto-modal-label" for="ponto-foto-modal-legenda">Legenda</label>
           <textarea id="ponto-foto-modal-legenda" class="ponto-foto-modal-legenda" rows="3" maxlength="255" placeholder="Digite a legenda da imagem"></textarea>
           <div class="ponto-foto-modal-acoes">
             <button type="button" class="btn-secundario btn-sm ponto-foto-modal-excluir">Excluir</button>
             <button type="button" class="btn-primario btn-sm ponto-foto-modal-salvar">Salvar legenda</button>
           </div>
+          </div>
         </div>
       </div>
     </div>
   `;
+
+  modal.querySelector('.ponto-foto-modal-tags')?.addEventListener('click', () => {
+    const info = modal.querySelector('.ponto-foto-modal-info');
+    const aberto = info.classList.toggle('aberto');
+    modal.querySelector('.ponto-foto-modal-tags').setAttribute('aria-expanded', aberto ? 'true' : 'false');
+    if (aberto) modal.querySelector('.ponto-foto-modal-legenda')?.focus();
+  });
 
   modal.addEventListener('click', (event) => {
     if (event.target.dataset.acao === 'fechar') {
@@ -1821,9 +1833,30 @@ function garantirModalFotoPonto() {
     const ordemId = modal.dataset.ordemId;
 
     if (!fotoId || !ordemId) return;
-    if (!confirm('Excluir esta foto?')) return;
 
+    // Confirmação no próprio botão: o primeiro clique pede confirmação,
+    // o segundo (em até 4 s) exclui. Evita o confirm() do navegador, que
+    // alguns navegadores bloqueiam.
     const botaoExcluir = modal.querySelector('.ponto-foto-modal-excluir');
+    if (botaoExcluir && botaoExcluir.dataset.confirmar !== '1') {
+      botaoExcluir.dataset.confirmar = '1';
+      botaoExcluir.textContent = 'Confirmar exclusão';
+      botaoExcluir.classList.add('confirmando');
+      clearTimeout(botaoExcluir._tempo);
+      botaoExcluir._tempo = setTimeout(() => {
+        botaoExcluir.dataset.confirmar = '';
+        botaoExcluir.textContent = 'Excluir';
+        botaoExcluir.classList.remove('confirmando');
+      }, 4000);
+      return;
+    }
+    if (botaoExcluir) {
+      clearTimeout(botaoExcluir._tempo);
+      botaoExcluir.dataset.confirmar = '';
+      botaoExcluir.textContent = 'Excluir';
+      botaoExcluir.classList.remove('confirmando');
+    }
+
     if (botaoExcluir) botaoExcluir.disabled = true;
 
     try {
@@ -1871,6 +1904,10 @@ function abrirModalFotoPonto(dados) {
   if (tipo) tipo.innerHTML = badgeTipoFoto(dados.tipo || 'extra');
   if (data) data.textContent = dados.criadoEm || '';
   if (legenda) legenda.value = dados.legenda || '';
+  const resumo = modal.querySelector('.ponto-foto-modal-resumo');
+  if (resumo) resumo.textContent = dados.legenda || 'Sem legenda';
+  modal.querySelector('.ponto-foto-modal-info')?.classList.remove('aberto');
+  modal.querySelector('.ponto-foto-modal-tags')?.setAttribute('aria-expanded', 'false');
 
   modal.classList.add('ativo');
   document.body.classList.add('modal-foto-ponto-aberto');
