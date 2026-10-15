@@ -565,19 +565,6 @@
 }
 
 /* ===== BOTÕES DE AÇÃO NAS TABELAS ===== */
-.btn-acao {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 17px;
-  padding: 3px 5px;
-  border-radius: 4px;
-  transition: background 0.15s;
-}
-
-.btn-acao:hover {
-  background: rgba(0,0,0,0.07);
-}
 
 /* ===== CÉLULA DE DESCRIÇÃO TRUNCADA ===== */
 .os-descricao-cell {
