@@ -3746,3 +3746,20 @@ function confirmarFotoPonto(form, arquivo) {
     }, 1000);
   });
 })();
+
+// Novo ponto: botões explícitos para adicionar ou desistir depois de buscar.
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btn-confirmar-novo-ponto')?.addEventListener('click', async () => {
+    const ordemId = document.getElementById('edit-os-id')?.value;
+    if (!ordemId) return;
+    await adicionarPontoModal(ordemId);
+  });
+  document.getElementById('btn-cancelar-novo-ponto')?.addEventListener('click', () => {
+    ['novo-ponto-id-local', 'novo-ponto-endereco', 'novo-ponto-complemento'].forEach(id => {
+      const campo = document.getElementById(id);
+      if (campo) campo.value = '';
+    });
+    const form = document.getElementById('form-novo-ponto-modal');
+    if (form) form.style.display = 'none';
+  });
+});

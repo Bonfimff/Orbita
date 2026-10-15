@@ -2266,3 +2266,16 @@ button.ponto-foto-modal-tags {
 #modal-editar-os .campo-legado.campo-legado-visivel { display: flex !important; }
 
 #modal-editar-os .os-form-item[hidden] { display: none !important; }
+
+/* Formulário de novo ponto: campos na largura toda e ações no fim */
+#form-novo-ponto-modal .ponto-input,
+#form-novo-ponto-modal > input { width: 100% !important; max-width: none; margin: 0; }
+#form-novo-ponto-modal .ponto-busca-id-row { width: 100%; }
+#form-novo-ponto-modal .ponto-busca-id-row .ponto-input { flex: 1 1 auto; }
+.ponto-novo-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+.ponto-novo-acoes button { min-width: 0; }
