@@ -163,7 +163,7 @@
     try {
       const pontos = await api.buscar('/pontos-atendimento', { limite: 500 }, 'pontos-filtro');
       await preencherSelect('rel-ponto', pontos,
-        (p) => ({ valor: p.id, texto: p.codigo + ' — ' + (p.nome || p.endereco) }), 'Todos');
+        (p) => ({ valor: p.id, texto: p.codigo + ' · ' + (p.nome || p.endereco) }), 'Todos');
     } catch (erro) {
       console.warn('[relatorios] pontos indisponiveis:', erro.message);
     }

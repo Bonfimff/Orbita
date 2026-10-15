@@ -1,7 +1,7 @@
 //======================================================================================================
 // FONTE ÚNICA DOS MÓDULOS PERMITIDOS
 // Antes a resposta de /modulos era lida em dois caminhos separados (cache e
-// fetch), cada um com a sua cópia do laço que aplica as permissões ao menu —
+// fetch), cada um com a sua cópia do laço que aplica as permissões ao menu,
 // duas cópias da mesma regra, que podiam divergir. Aqui vira uma promessa só,
 // reaproveitada por quem precisar (menu principal e barra de Gestão), sem
 // disparar dois fetches na mesma carga de página.
@@ -750,7 +750,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       // Gestão virou o guarda-chuva administrativo. Ela precisa aparecer para
       // quem tem QUALQUER uma das suas subáreas: esconder aqui tiraria de um
       // usuário que só tem 'relatorios' o único caminho que restou até ele.
-      // Isso não concede acesso novo — cada subaba continua exibida apenas
+      // Isso não concede acesso novo, cada subaba continua exibida apenas
       // com a permissão dela, e o bloqueio real segue nos endpoints da API.
       if (modulo === 'gestao' && window.GestaoNav) {
         const primeira = window.GestaoNav.primeiraPermitida(modulos);
@@ -793,7 +793,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 // FUNÇÃO PRINCIPAL: Botão de Informações e Ajuda
 // O ícone (i) do rodapé do menu lateral abre a Central de Informação e Ajuda
 // (SCRIPT/ajuda/central.js): manual, perguntas frequentes, guia rápido e
-// informações da plataforma. Continua sendo UM único ícone — o que ganhou
+// informações da plataforma. Continua sendo UM único ícone, o que ganhou
 // seções foi a Central, não o rodapé.
 //
 // Se a Central não estiver carregada na página, cai no balão simples que

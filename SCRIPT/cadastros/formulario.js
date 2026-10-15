@@ -114,7 +114,7 @@
         + (registro.atualizado_em ? ' em ' + api.dataCurta(registro.atualizado_em) : ''));
     }
     if (registro.vinculos) {
-      partes.push('<b>' + registro.vinculos + ' registro(s)</b> do histórico usam este item — '
+      partes.push('<b>' + registro.vinculos + ' registro(s)</b> do histórico usam este item, '
         + 'por isso ele não pode ser excluído, apenas desativado.');
     }
     return partes.length ? partes.map((p) => '<span>' + p + '</span>').join('') : '';

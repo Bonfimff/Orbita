@@ -1,5 +1,5 @@
 /* ======================================================
-   Ordens de Serviço — CSS específico
+   Ordens de Serviço, CSS específico
    (complementa geral.css)
 ====================================================== */
 
@@ -659,7 +659,7 @@
   .os-form-full { grid-column: 1; }
 }
 
-/* ===== PONTOS DE ATENDIMENTO — Seção no formulário e no modal ===== */
+/* ===== PONTOS DE ATENDIMENTO, Seção no formulário e no modal ===== */
 .os-pontos-secao {
   border: 1px solid #e0e0e0;
   border-radius: 8px;

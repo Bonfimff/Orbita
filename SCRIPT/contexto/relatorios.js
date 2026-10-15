@@ -30,7 +30,7 @@
 
   function contextoOutraAba(tabId) {
     const explicacoes = {
-      auditoria: 'Trilha de alterações dos cadastros e classificações — somente leitura.',
+      auditoria: 'Trilha de alterações dos cadastros e classificações, somente leitura.',
     };
     CP.render({
       titulo: 'Contexto Operacional',

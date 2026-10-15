@@ -1,6 +1,6 @@
 ﻿
 // ============================================================
-//  Ordens de Serviço — SCRIPT principal
+//  Ordens de Serviço, SCRIPT principal
 // ============================================================
 (function () {
 
@@ -136,7 +136,7 @@ function badgePrioridade(p) {
 function tecnicoExibicao(os) {
   const respEquipe = (os?.responsavel_equipe || '').trim();
   const tecnico = (os?.tecnico_responsavel || '').trim();
-  return respEquipe || tecnico || '—';
+  return respEquipe || tecnico || '-';
 }
 
 function atualizarLegendaTecnicoModal(os) {
@@ -419,11 +419,11 @@ async function renderizarMapaBasesGerenciamento() {
       <div style="min-width:180px;">
         <strong>🚗 ${escapeHtml(veiculo.placa || 'Sem placa')}</strong><br>
         ${escapeHtml([veiculo.marca, veiculo.modelo].filter(Boolean).join(' ') || 'Veículo')}<br>
-        Status: ${escapeHtml(veiculo.status || '—')}<br>
+        Status: ${escapeHtml(veiculo.status || '-')}<br>
         <em style="font-size:11px;color:#888;">Posição estimada</em>
       </div>
     `);
-    itensLegenda.push(`<div class="pontos-mapa-legenda-item"><strong>🚗 ${escapeHtml(veiculo.placa || 'Sem placa')}</strong> - ${escapeHtml(veiculo.status || '—')} (posição estimada)</div>`);
+    itensLegenda.push(`<div class="pontos-mapa-legenda-item"><strong>🚗 ${escapeHtml(veiculo.placa || 'Sem placa')}</strong> - ${escapeHtml(veiculo.status || '-')} (posição estimada)</div>`);
   });
 
   legendaEl.innerHTML = itensLegenda.join('') || '<div class="pontos-mapa-legenda-item">Nenhum ponto localizado no mapa.</div>';
@@ -1453,7 +1453,7 @@ async function carregarOrdensParaSelectAgendamento() {
     console.warn('Falha ao carregar O.S. para o cronograma:', e);
   }
   select.innerHTML = '<option value="">Nenhuma O.S. vinculada</option>' +
-    cronogramaOrdensCache.map(os => `<option value="${os.id}">${escapeHtml(os.numero_os)} — ${escapeHtml(os.solicitante || '')}</option>`).join('');
+    cronogramaOrdensCache.map(os => `<option value="${os.id}">${escapeHtml(os.numero_os)} · ${escapeHtml(os.solicitante || '')}</option>`).join('');
 }
 
 async function carregarVeiculosParaSelectAgendamento() {
@@ -1467,7 +1467,7 @@ async function carregarVeiculosParaSelectAgendamento() {
     console.warn('Falha ao carregar veículos para o cronograma:', e);
   }
   select.innerHTML = '<option value="">Selecione o veículo alocado...</option>' +
-    cronogramaVeiculosCache.map(v => `<option value="${v.id}">${escapeHtml(v.placa)} — ${escapeHtml(v.modelo)}</option>`).join('');
+    cronogramaVeiculosCache.map(v => `<option value="${v.id}">${escapeHtml(v.placa)} · ${escapeHtml(v.modelo)}</option>`).join('');
 }
 
 async function carregarLocaisParaSelectAgendamento() {
@@ -1482,7 +1482,7 @@ async function carregarLocaisParaSelectAgendamento() {
   }
   select.innerHTML = '<option value="">Selecione local / base...</option>' +
     cronogramaLocaisCache.map(l => {
-      const rotulo = [l.endereco, l.complemento].filter(Boolean).join(' — ') || l.nome || ('Base #' + l.id);
+      const rotulo = [l.endereco, l.complemento].filter(Boolean).join(' · ') || l.nome || ('Base #' + l.id);
       return `<option value="${l.id}">${escapeHtml(rotulo)}</option>`;
     }).join('');
 }
@@ -1948,7 +1948,7 @@ async function enviarFotoPonto(form) {
 }
 
 // ============================================================
-//  GERENCIAMENTO — Dashboard
+//  GERENCIAMENTO, Dashboard
 // ============================================================
 
 async function carregarDashboard() {
@@ -2505,14 +2505,14 @@ function popularTabelaBusca(ordens) {
       <td data-coluna="numero_os">${os.numero_os || ''}</td>
       <td data-coluna="data_abertura">${os.data_abertura || ''}</td>
       <td data-coluna="solicitante">${os.solicitante || ''}</td>
-      <td data-coluna="setor">${os.setor || '—'}</td>
-      <td data-coluna="contrato">${escapeHtml(os.contrato || '—')}</td>
+      <td data-coluna="setor">${os.setor || '-'}</td>
+      <td data-coluna="contrato">${escapeHtml(os.contrato || '-')}</td>
       <td data-coluna="tipo_servico">${os.tipo_servico || ''}</td>
       <td data-coluna="prioridade">${badgePrioridade(os.prioridade)}</td>
       <td data-coluna="tecnico_responsavel">${escapeHtml(tecnicoExibicao(os))}</td>
       <td data-coluna="status">${badgeStatus(os.status)}</td>
-      <td data-coluna="data_prevista">${os.data_prevista || '—'}</td>
-      <td data-coluna="data_conclusao">${os.data_conclusao || '—'}</td>
+      <td data-coluna="data_prevista">${os.data_prevista || '-'}</td>
+      <td data-coluna="data_conclusao">${os.data_conclusao || '-'}</td>
       <td data-coluna="descricao" class="os-descricao-cell" title="${(os.descricao || '').replace(/"/g, '&quot;')}">${os.descricao || ''}</td>
       <td>
         <button class="btn-acao btn-editar-os" data-id="${os.id}" title="Editar">✏️</button>
@@ -2526,7 +2526,7 @@ function popularTabelaBusca(ordens) {
 }
 
 // ============================================================
-//  FILTRO EM TEMPO REAL — tabela de busca
+//  FILTRO EM TEMPO REAL, tabela de busca
 // ============================================================
 
 function filtrarTabelaOS() {
@@ -2553,7 +2553,7 @@ function filtrarTabelaOS() {
 }
 
 // ============================================================
-//  AÇÕES — Editar / Excluir
+//  AÇÕES, Editar / Excluir
 // ============================================================
 
 function adicionarListenersAcoesOS(container) {
@@ -2843,7 +2843,7 @@ async function recarregarDadosOrdemModal(id) {
 }
 
 // ============================================================
-//  PONTOS DE ATENDIMENTO — Modal
+//  PONTOS DE ATENDIMENTO, Modal
 // ============================================================
 
 function renderizarPontosModal(pontos, ordemId) {

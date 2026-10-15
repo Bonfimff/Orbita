@@ -31,11 +31,11 @@ window.OrbitaAjuda.registrarSecao({
       titulo: 'A plataforma',
       modulo: 'Institucional',
       corpo: [
-        { tipo: 'paragrafo', texto: '**KERNEL** é uma plataforma de gestão operacional. Ela reúne, num só lugar, o controle de estoque, a gestão da frota, as ordens de serviço e a administração da operação — usuários, perfis de acesso, contratos, cadastros, relatórios e jornadas.' },
+        { tipo: 'paragrafo', texto: '**KERNEL** é uma plataforma de gestão operacional. Ela reúne, num só lugar, o controle de estoque, a gestão da frota, as ordens de serviço e a administração da operação, usuários, perfis de acesso, contratos, cadastros, relatórios e jornadas.' },
         { tipo: 'subtitulo', texto: 'O que ela se propõe a fazer' },
         { tipo: 'lista', itens: [
           'Manter o estoque e a operação ligados: material usado numa O.S. sai do mesmo saldo do estoque.',
-          'Preservar o histórico: mudanças de status, alocações e movimentações de estoque não são apagadas — correções entram como novos registros.',
+          'Preservar o histórico: mudanças de status, alocações e movimentações de estoque não são apagadas, correções entram como novos registros.',
           'Separar os dados por contrato, de modo que cada usuário enxergue apenas o que lhe cabe.',
           'Registrar quem fez cada alteração relevante, e quando.',
         ] },
@@ -52,7 +52,7 @@ window.OrbitaAjuda.registrarSecao({
           ['Versão', 'Versão 1.0.0 (desenvolvimento)'],
           ['Documentação atualizada em', '26/08/2026'],
         ] },
-        { tipo: 'paragrafo', texto: 'Esta Central acompanha a evolução da plataforma. Sempre que um módulo muda, o tópico correspondente é atualizado — e recursos que ainda não existem são identificados como tal, em vez de descritos como prontos.' },
+        { tipo: 'paragrafo', texto: 'Esta Central acompanha a evolução da plataforma. Sempre que um módulo muda, o tópico correspondente é atualizado, e recursos que ainda não existem são identificados como tal, em vez de descritos como prontos.' },
         { tipo: 'nota', texto: 'A versão e a data exibidas no topo da Central vêm de um único ponto de configuração, no arquivo de conteúdo institucional.' },
       ],
       relacionados: ['sobre-plataforma', 'sobre-roadmap'],

@@ -56,7 +56,7 @@ window.OrbitaAjuda.registrarSecao({
           'Vá em **Gestão › Usuários**.',
           'Localize a conta na lista.',
           'Clique em **Editar** na linha correspondente.',
-          'Altere o que for necessário — perfil, permissões customizadas ou contratos liberados.',
+          'Altere o que for necessário, perfil, permissões customizadas ou contratos liberados.',
           'Salve.',
         ] },
         { tipo: 'aviso', texto: 'Alterar o perfil muda o acesso imediatamente. Se a pessoa estiver com a sessão aberta, o novo acesso vale na próxima vez que a tela consultar as permissões.' },
@@ -91,7 +91,7 @@ window.OrbitaAjuda.registrarSecao({
           'Clique em **Salvar Contrato**.',
           'Com o contrato salvo, use **Arquivos do contrato** para anexar documentos.',
         ] },
-        { tipo: 'aviso', texto: 'Os anexos só podem ser enviados após salvar — antes disso a tela exibe um aviso.' },
+        { tipo: 'aviso', texto: 'Os anexos só podem ser enviados após salvar, antes disso a tela exibe um aviso.' },
         { tipo: 'nota', texto: 'Para dar acesso ao contrato, edite o **usuário** e marque o contrato em "Contratos com acesso liberado".' },
       ],
       relacionados: ['gestao-contratos'],
@@ -178,7 +178,7 @@ window.OrbitaAjuda.registrarSecao({
       corpo: [
         { tipo: 'passos', itens: [
           'Abra a O.S. desejada.',
-          'Na seção de materiais, adicione o produto e a quantidade prevista — ele entra como **planejado** e ainda não afeta o estoque.',
+          'Na seção de materiais, adicione o produto e a quantidade prevista, ele entra como **planejado** e ainda não afeta o estoque.',
           'Quando o material for realmente usado, clique em **confirmar utilização**: aí sim o estoque é debitado.',
         ] },
         { tipo: 'subtitulo', texto: 'Errei a quantidade' },

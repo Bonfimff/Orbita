@@ -149,7 +149,7 @@
       const dados = await api.buscar('/analitico/ranking-pontos',
         filtros.parametros({ limite: 8 }), 'gr-pontos');
       graficos.barras(alvoPontos, (dados.itens || []).map((item) => ({
-        id: item.ponto_id, rotulo: item.codigo + ' — ' + (item.nome || item.endereco || ''),
+        id: item.ponto_id, rotulo: item.codigo + ' · ' + (item.nome || item.endereco || ''),
         valor: item.ocorrencias, detalhe: item.problema_frequente || '',
       })), { acao: 'ponto' });
     } catch (erro) {
@@ -242,11 +242,11 @@
         { titulo: 'Ponto', valor: (i) => '<strong>' + escapar(i.codigo) + '</strong><br>'
             + '<small>' + escapar(i.nome || i.endereco || '') + '</small>', ocultarCard: true },
         { titulo: 'Base / Região',
-          valor: (i) => escapar(i.regiao || i.base_id || '—') },
-        { titulo: 'Contrato', valor: (i) => escapar(i.contrato || '—') },
+          valor: (i) => escapar(i.regiao || i.base_id || '-') },
+        { titulo: 'Contrato', valor: (i) => escapar(i.contrato || '-') },
         { titulo: 'Chamados', valor: (i) => api.numero(i.ocorrencias), numerica: true },
         { titulo: 'Problema mais frequente',
-          valor: (i) => escapar(i.problema_frequente || '— não classificado —') },
+          valor: (i) => escapar(i.problema_frequente || 'Não classificado') },
         { titulo: 'Última ocorrência', valor: (i) => api.dataCurta(i.ultima_ocorrencia) },
         { titulo: 'Índice de reincidência',
           valor: (i) => api.percentual(i.indice_reincidencia), numerica: true },
@@ -278,8 +278,8 @@
       renderizarColecao(alvo, dados.itens, [
         { titulo: '#', valor: (i) => i.posicao, numerica: true, ocultarCard: true },
         { titulo: 'Problema', valor: (i) => escapar(i.problema), ocultarCard: true },
-        { titulo: 'Categoria', valor: (i) => escapar(i.categoria || '—') },
-        { titulo: 'Criticidade', valor: (i) => escapar(i.criticidade || '—') },
+        { titulo: 'Categoria', valor: (i) => escapar(i.categoria || '-') },
+        { titulo: 'Criticidade', valor: (i) => escapar(i.criticidade || '-') },
         { titulo: 'Ocorrências', valor: (i) => api.numero(i.ocorrencias), numerica: true },
         { titulo: '% do total', valor: (i) => api.percentual(i.percentual), numerica: true },
         { titulo: 'Pontos afetados', valor: (i) => api.numero(i.pontos_afetados), numerica: true },
@@ -323,7 +323,7 @@
         { titulo: 'Problema', valor: (i) => escapar(i.problema)
             + (i.cronico ? ' <span class="rel-tag rel-tag-erro">crônico</span>' : ''),
           ocultarCard: true },
-        { titulo: 'Categoria', valor: (i) => escapar(i.categoria || '—') },
+        { titulo: 'Categoria', valor: (i) => escapar(i.categoria || '-') },
         { titulo: 'Ocorrências', valor: (i) => api.numero(i.ocorrencias), numerica: true },
         { titulo: 'Primeira', valor: (i) => api.dataCurta(i.primeira_ocorrencia) },
         { titulo: 'Última', valor: (i) => api.dataCurta(i.ultima_ocorrencia) },
@@ -367,7 +367,7 @@
         + '<small>' + escapar(item.os_atual) + ' pode ser reincidência de '
         + escapar(item.os_origem)
         + (item.intervalo_dias !== null && item.intervalo_dias !== undefined
-           ? ' — ' + api.dias(item.intervalo_dias) + ' depois do encerramento' : '')
+           ? ' · ' + api.dias(item.intervalo_dias) + ' depois do encerramento' : '')
         + '</small></div>'
         + '<div class="rel-sugestao-acoes">'
         + '<button type="button" class="rel-btn rel-btn-primario" data-decisao="Confirmada">Confirmar</button>'

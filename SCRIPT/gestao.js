@@ -588,8 +588,8 @@
       tbody.innerHTML = dados.contratos.map(c => `
         <tr data-contrato-id="${c.id}">
           <td>${escapeHtml(c.nome)}</td>
-          <td>${escapeHtml(c.cnpj || '—')}</td>
-          <td>${(c.usuarios || []).map(u => escapeHtml(u.usuario)).join(', ') || '—'}</td>
+          <td>${escapeHtml(c.cnpj || '-')}</td>
+          <td>${(c.usuarios || []).map(u => escapeHtml(u.usuario)).join(', ') || '-'}</td>
           <td>${(c.arquivos || []).length}</td>
           <td>
             <div class="gestao-acoes-cell">

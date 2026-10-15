@@ -63,7 +63,7 @@
     if (sel) {
       sel.innerHTML = '<option value="">Selecione o material...</option>'
         + produtosCache.map((p) => '<option value="' + p.id + '">' + escapar(p.nome_produto) +
-          ' (saldo: ' + (p.quantidade == null ? '—' : p.quantidade) + ' ' + escapar(p.unidade_medida || '') + ')</option>').join('');
+          ' (saldo: ' + (p.quantidade == null ? '-' : p.quantidade) + ' ' + escapar(p.unidade_medida || '') + ')</option>').join('');
     }
   }
 
@@ -92,7 +92,7 @@
       return (
         '<div class="os-op-card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;' +
         'gap:8px;padding:10px;border:1px solid #e0e0e0;border-radius:6px;margin-bottom:6px;min-height:44px;">' +
-        '<div><strong>' + escapar(m.nome_produto) + '</strong> — ' + m.quantidade + ' ' + escapar(m.unidade || '') +
+        '<div><strong>' + escapar(m.nome_produto) + '</strong> · ' + m.quantidade + ' ' + escapar(m.unidade || '') +
         ' <span style="font-size:11px;color:' + (STATUS_COR[m.status] || '#999') + ';">' +
         escapar(STATUS_ROTULO[m.status] || m.status) + '</span></div>' +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;">' + acoes.join('') + '</div></div>'

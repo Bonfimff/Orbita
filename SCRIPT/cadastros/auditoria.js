@@ -34,10 +34,10 @@
     const depois = registro.dados_depois || {};
 
     if (registro.acao === 'criar') {
-      return escapar(depois.nome || depois.codigo || '—');
+      return escapar(depois.nome || depois.codigo || '-');
     }
     if (registro.acao === 'excluir') {
-      return escapar(antes.nome || antes.codigo || '—');
+      return escapar(antes.nome || antes.codigo || '-');
     }
 
     // Mostra só o que mudou: a trilha já guarda apenas o delta, então listar
@@ -47,10 +47,10 @@
       const de = antes[campo];
       const para = depois[campo];
       return '<span class="aud-campo"><b>' + escapar(campo) + '</b>: '
-        + escapar(de === null || de === undefined ? '—' : de) + ' → '
-        + escapar(para === null || para === undefined ? '—' : para) + '</span>';
+        + escapar(de === null || de === undefined ? '-' : de) + ' → '
+        + escapar(para === null || para === undefined ? '-' : para) + '</span>';
     });
-    return partes.length ? partes.join('') : '—';
+    return partes.length ? partes.join('') : '-';
   }
 
   async function carregar() {

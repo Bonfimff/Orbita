@@ -49,9 +49,9 @@
     { titulo: 'Código', ocultarCard: true,
       valor: (i) => '<strong>' + escapar(i.codigo) + '</strong>'
         + (i.nome ? '<br><small>' + escapar(i.nome) + '</small>' : '') },
-    { titulo: 'Endereço', valor: (i) => escapar(i.endereco || '—') },
-    { titulo: 'Região', valor: (i) => escapar(i.regiao || '—') },
-    { titulo: 'Contrato', valor: (i) => escapar(i.contrato || '—') },
+    { titulo: 'Endereço', valor: (i) => escapar(i.endereco || '-') },
+    { titulo: 'Região', valor: (i) => escapar(i.regiao || '-') },
+    { titulo: 'Contrato', valor: (i) => escapar(i.contrato || '-') },
     { titulo: 'Chamados', numerica: true,
       valor: (i) => api.numero(i.total_ocorrencias || 0) },
     { titulo: 'Último', valor: (i) => api.dataCurta(i.ultima_ocorrencia) },
@@ -60,7 +60,7 @@
   const COLUNAS_REGIAO = [
     { titulo: 'Nome', ocultarCard: true,
       valor: (i) => '<strong>' + escapar(i.nome) + '</strong>' },
-    { titulo: 'Descrição', valor: (i) => escapar(i.descricao || '—') },
+    { titulo: 'Descrição', valor: (i) => escapar(i.descricao || '-') },
   ];
 
   //---------------------------------------------------------------- acoes

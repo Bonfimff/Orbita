@@ -93,7 +93,7 @@
       const texto = elemento('cr-criterio-texto');
       if (texto) {
         texto.textContent = 'Critério aplicado: ' + (dados.criterio || '')
-          + '. Sem score composto — o cálculo é reproduzível na mão.';
+          + '. Sem score composto, o cálculo é reproduzível na mão.';
       }
 
       tabelaOuCards(alvo, dados.itens, [
@@ -101,7 +101,7 @@
           valor: (i) => '<strong>' + escapar(i.codigo) + '</strong><br><small>'
             + escapar(i.ponto_nome || i.endereco || '') + '</small>' },
         { titulo: 'Problema', ocultarCard: true, valor: (i) => escapar(i.problema) },
-        { titulo: 'Região/Base', valor: (i) => escapar(i.regiao || i.base_id || '—') },
+        { titulo: 'Região/Base', valor: (i) => escapar(i.regiao || i.base_id || '-') },
         { titulo: 'Chamados', numerica: true, valor: (i) => api.numero(i.ocorrencias) },
         { titulo: 'Reincidências', numerica: true,
           valor: (i) => api.numero(Math.max(0, (i.ocorrencias || 1) - 1)) },
@@ -144,7 +144,7 @@
         { titulo: '#', numerica: true, ocultarCard: true, valor: (i) => i.posicao },
         { titulo: ROTULO_DIMENSAO[dimensaoAtual], ocultarCard: true,
           valor: (i) => escapar(i.rotulo) },
-        { titulo: 'Agrupador', valor: (i) => escapar(i.agrupador ?? '—') },
+        { titulo: 'Agrupador', valor: (i) => escapar(i.agrupador ?? '-') },
         { titulo: 'Ocorrências', numerica: true, valor: (i) => api.numero(i.ocorrencias) },
         { titulo: '% do total', numerica: true, valor: (i) => api.percentual(i.percentual) },
         { titulo: 'Pontos afetados', numerica: true,
@@ -204,7 +204,7 @@
       + '<div class="rel-aviso rel-aviso-inline rel-pendencia-nota">'
       + api.percentual(resumo.percentual_completo) + ' das ocorrências do período '
       + 'estão com classificação completa. '
-      + api.numero(resumo.sem_equipamento) + ' sem equipamento informado — '
+      + api.numero(resumo.sem_equipamento) + ' sem equipamento informado, '
       + 'isso <b>não</b> é pendência: equipamento pode não se aplicar.</div>';
 
       alvoKpis.querySelectorAll('[data-motivo-kpi]').forEach((cartao) => {
@@ -246,13 +246,13 @@
         { titulo: 'O.S.', ocultarCard: true,
           valor: (i) => '<strong>' + escapar(i.numero_os || i.ordem_id) + '</strong>'
             + '<br><small>' + escapar(i.status_os || '') + '</small>' },
-        { titulo: 'Ponto', valor: (i) => escapar(i.ponto_codigo || '—') },
+        { titulo: 'Ponto', valor: (i) => escapar(i.ponto_codigo || '-') },
         { titulo: 'Data', valor: (i) => api.dataCurta(i.detectado_em) },
-        { titulo: 'Problema', valor: (i) => escapar(i.problema || '—') },
-        { titulo: 'Causa', valor: (i) => escapar(i.causa || '—') },
-        { titulo: 'Solução', valor: (i) => escapar(i.solucao || '—') },
+        { titulo: 'Problema', valor: (i) => escapar(i.problema || '-') },
+        { titulo: 'Causa', valor: (i) => escapar(i.causa || '-') },
+        { titulo: 'Solução', valor: (i) => escapar(i.solucao || '-') },
         { titulo: 'Resultado',
-          valor: (i) => escapar(i.resultado_nome || i.resultado_texto || '—') },
+          valor: (i) => escapar(i.resultado_nome || i.resultado_texto || '-') },
         { titulo: 'Falta', valor: falta },
       ], {
         tituloCard: (i) => escapar(i.numero_os || ('O.S. ' + i.ordem_id)),

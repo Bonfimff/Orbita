@@ -42,9 +42,9 @@
   }
 
   function dataCurta(valor) {
-    if (!valor) return '—';
+    if (!valor) return '-';
     const data = new Date(String(valor).replace(' ', 'T'));
-    return isNaN(data.getTime()) ? '—' : data.toLocaleDateString('pt-BR');
+    return isNaN(data.getTime()) ? '-' : data.toLocaleDateString('pt-BR');
   }
 
   async function buscar(caminho) {
@@ -99,7 +99,7 @@
     try {
       const dados = await buscar('/equipamentos?limite=300');
       preencherSelect('an-equipamento', dados.itens, 'Nenhum',
-        (e) => ({ valor: e.id, texto: e.codigo + (e.nome ? ' — ' + e.nome : '') }));
+        (e) => ({ valor: e.id, texto: e.codigo + (e.nome ? ' · ' + e.nome : '') }));
     } catch (erro) {
       console.warn('[analise-os] equipamentos', erro.message);
     }
@@ -145,7 +145,7 @@
       + '<strong>' + (confirmada ? 'Reincidência confirmada' : 'Possível reincidência')
       + '</strong>'
       + '<span>Este ponto já apresentou este problema anteriormente.</span>'
-      + '<small>O.S. anterior: <b>' + escapar(item.numero_os || '—') + '</b>'
+      + '<small>O.S. anterior: <b>' + escapar(item.numero_os || '-') + '</b>'
       + ' · Data: ' + dataCurta(item.origem_detectado_em)
       + (item.intervalo_dias !== null && item.intervalo_dias !== undefined
          ? ' · Intervalo: <b>' + item.intervalo_dias + ' dias</b>' : '')

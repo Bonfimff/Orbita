@@ -154,7 +154,7 @@
           }).join('') + '</ul>'
         + (dados.sem_equipamento
            ? '<small class="os-pendencia-nota">' + dados.sem_equipamento
-             + ' sem equipamento informado — não é erro: equipamento pode não se aplicar.</small>'
+             + ' sem equipamento informado, não é erro: equipamento pode não se aplicar.</small>'
            : '');
 
       alvoPendencias.querySelectorAll('[data-motivo]').forEach((linha) => {

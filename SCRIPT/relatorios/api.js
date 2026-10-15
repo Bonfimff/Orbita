@@ -78,35 +78,35 @@
   }
 
   function dataCurta(valor) {
-    if (!valor) return '—';
+    if (!valor) return '-';
     const data = new Date(String(valor).replace(' ', 'T'));
-    if (isNaN(data.getTime())) return '—';
+    if (isNaN(data.getTime())) return '-';
     return data.toLocaleDateString('pt-BR');
   }
 
   function numero(valor) {
-    if (valor === null || valor === undefined || valor === '') return '—';
+    if (valor === null || valor === undefined || valor === '') return '-';
     return Number(valor).toLocaleString('pt-BR');
   }
 
   // Indicador sem amostra suficiente nao vira numero: vira travessao. Exibir
   // "0 dias" para quem nunca teve intervalo medido seria informacao falsa.
   function dias(valor) {
-    if (valor === null || valor === undefined || valor === '') return '—';
+    if (valor === null || valor === undefined || valor === '') return '-';
     const n = Number(valor);
-    return isNaN(n) ? '—' : n.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' d';
+    return isNaN(n) ? '-' : n.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' d';
   }
 
   function horas(valor) {
-    if (valor === null || valor === undefined || valor === '') return '—';
+    if (valor === null || valor === undefined || valor === '') return '-';
     const n = Number(valor);
-    if (isNaN(n)) return '—';
+    if (isNaN(n)) return '-';
     if (n < 48) return n.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' h';
     return (n / 24).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' d';
   }
 
   function percentual(valor) {
-    if (valor === null || valor === undefined) return '—';
+    if (valor === null || valor === undefined) return '-';
     return Number(valor).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%';
   }
 

@@ -64,7 +64,7 @@
     const selVeiculo = elemento('os-op-frota-veiculo');
     if (selVeiculo) {
       selVeiculo.innerHTML = '<option value="">Selecione o veículo...</option>'
-        + veiculosCache.map((v) => '<option value="' + v.id + '">' + escapar(v.placa) + ' — ' + escapar(v.modelo) + '</option>').join('');
+        + veiculosCache.map((v) => '<option value="' + v.id + '">' + escapar(v.placa) + ' · ' + escapar(v.modelo) + '</option>').join('');
     }
     const selMotorista = elemento('os-op-frota-motorista');
     if (selMotorista) {
@@ -83,7 +83,7 @@
     container.innerHTML = veiculos.map((v) => (
       '<div class="os-op-card" style="display:flex;justify-content:space-between;align-items:center;' +
       'gap:8px;padding:10px;border:1px solid #e0e0e0;border-radius:6px;margin-bottom:6px;min-height:44px;">' +
-      '<div><strong>' + escapar(v.placa) + '</strong> — ' + escapar(v.modelo) +
+      '<div><strong>' + escapar(v.placa) + '</strong> · ' + escapar(v.modelo) +
       (v.motorista_nome ? ' <span style="color:#666;">(motorista: ' + escapar(v.motorista_nome) + ')</span>' : '') +
       '</div>' +
       '<button type="button" class="btn-secundario btn-sm os-op-frota-remover" data-id="' + v.id +

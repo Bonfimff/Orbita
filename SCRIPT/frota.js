@@ -168,7 +168,7 @@
 
       return `
         <div class="frota-mapa-item">
-          <strong>${escapeHtml(veiculo.placa || 'Sem placa')}</strong> · ${escapeHtml(veiculo.marca || '—')} ${escapeHtml(veiculo.modelo || '')}<br>
+          <strong>${escapeHtml(veiculo.placa || 'Sem placa')}</strong> · ${escapeHtml(veiculo.marca || '-')} ${escapeHtml(veiculo.modelo || '')}<br>
           Status: <em>${escapeHtml(status)}</em><br>
           ${localizacaoReal ? 'Posição real' : 'Posição estimada'}: ${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}
         </div>
@@ -311,15 +311,15 @@
         <td>${escapeHtml(v.marca)}</td>
         <td>${escapeHtml(v.placa)}</td>
         <td>${statusBadge(v.status)}</td>
-        <td>${v.ano ?? '—'}</td>
-        <td>${v.quilometragem ?? '—'}</td>
-        <td>${escapeHtml(v.tipo_veiculo || '—')}</td>
-        <td>${v.km_revisoes ?? '—'}</td>
-        <td>${escapeHtml(v.tipo_combustivel || '—')}</td>
-        <td>${v.km_por_litro ?? '—'}</td>
+        <td>${v.ano ?? '-'}</td>
+        <td>${v.quilometragem ?? '-'}</td>
+        <td>${escapeHtml(v.tipo_veiculo || '-')}</td>
+        <td>${v.km_revisoes ?? '-'}</td>
+        <td>${escapeHtml(v.tipo_combustivel || '-')}</td>
+        <td>${v.km_por_litro ?? '-'}</td>
         <td>${renderListaTags(v.itens_checklist_especificos, 'Nenhum item específico')}</td>
         <td>${renderListaTags(v.equipamentos_ferramentas, 'Nenhum equipamento/ferramenta')}</td>
-        <td>${escapeHtml(v.obs || '—')}</td>
+        <td>${escapeHtml(v.obs || '-')}</td>
       </tr>
     `);
 
@@ -821,20 +821,20 @@
     const linhas = lista.map(item => {
       const link = item.url_localizacao
         ? `<a class="frota-link-localizacao" href="${escapeHtml(item.url_localizacao)}" target="_blank" rel="noopener">Abrir mapa</a>`
-        : '—';
+        : '-';
 
       return `
         <tr>
-          <td>${escapeHtml(item.nome_oficina || '—')}</td>
-          <td>${escapeHtml(item.endereco || '—')}</td>
+          <td>${escapeHtml(item.nome_oficina || '-')}</td>
+          <td>${escapeHtml(item.endereco || '-')}</td>
           <td>${link}</td>
-          <td>${escapeHtml(item.servicos || '—')}</td>
-          <td>${escapeHtml(item.area_atendimento || '—')}</td>
-          <td>${escapeHtml(item.horario_funcionamento || '—')}</td>
-            <td>${escapeHtml(item.responsavel_tecnico || '—')}</td>
-            <td>${escapeHtml(item.cnpj || '—')}</td>
-          <td>${escapeHtml(item.numero_contato || '—')}</td>
-          <td>${escapeHtml(item.obs || '—')}</td>
+          <td>${escapeHtml(item.servicos || '-')}</td>
+          <td>${escapeHtml(item.area_atendimento || '-')}</td>
+          <td>${escapeHtml(item.horario_funcionamento || '-')}</td>
+            <td>${escapeHtml(item.responsavel_tecnico || '-')}</td>
+            <td>${escapeHtml(item.cnpj || '-')}</td>
+          <td>${escapeHtml(item.numero_contato || '-')}</td>
+          <td>${escapeHtml(item.obs || '-')}</td>
         </tr>
       `;
     });
@@ -1033,15 +1033,15 @@
     const linhas = lista.map(item => {
       const comprovante = item.comprovante_foto
         ? `<a class="frota-link-comprovante" href="${item.comprovante_foto}" target="_blank" rel="noopener">Ver foto</a>`
-        : '—';
+        : '-';
 
       return `
         <tr>
-          <td>${escapeHtml(item.data_abastecimento || '—')}</td>
-          <td>${escapeHtml(item.hora_abastecimento || '—')}</td>
-          <td>${escapeHtml(item.placa || '—')}</td>
-          <td>${escapeHtml(item.numero_cartao || '—')}</td>
-          <td>${escapeHtml(item.obs || '—')}</td>
+          <td>${escapeHtml(item.data_abastecimento || '-')}</td>
+          <td>${escapeHtml(item.hora_abastecimento || '-')}</td>
+          <td>${escapeHtml(item.placa || '-')}</td>
+          <td>${escapeHtml(item.numero_cartao || '-')}</td>
+          <td>${escapeHtml(item.obs || '-')}</td>
           <td>${comprovante}</td>
         </tr>
       `;
@@ -1088,12 +1088,12 @@
 
     const linhas = lista.map(item => `
       <tr>
-        <td>${escapeHtml(item.nome || '—')}</td>
-        <td>${escapeHtml(item.numero || '—')}</td>
-        <td>${escapeHtml(item.placa || '—')}</td>
-        <td>${escapeHtml(item.bandeira || '—')}</td>
-        <td>${escapeHtml(item.status || '—')}</td>
-        <td>${escapeHtml(item.obs || '—')}</td>
+        <td>${escapeHtml(item.nome || '-')}</td>
+        <td>${escapeHtml(item.numero || '-')}</td>
+        <td>${escapeHtml(item.placa || '-')}</td>
+        <td>${escapeHtml(item.bandeira || '-')}</td>
+        <td>${escapeHtml(item.status || '-')}</td>
+        <td>${escapeHtml(item.obs || '-')}</td>
       </tr>
     `);
 
@@ -1449,7 +1449,7 @@
       links.push(`<a href="${item.imagem_foto}" target="_blank" rel="noopener">${escapeHtml(legenda)}</a>`);
     }
 
-    if (!links.length) return '—';
+    if (!links.length) return '-';
     return `<div class="frota-checklist-links">${links.join('')}</div>`;
   }
 
@@ -1465,15 +1465,15 @@
     const linhas = lista.map(item => `
       <tr>
         <td>${escapeHtml(formatDataHoraChecklist(item.created_at))}</td>
-        <td>${escapeHtml(item.placa || '—')}</td>
-        <td>${escapeHtml(item.motorista || '—')}</td>
-        <td>${item.km ?? '—'}</td>
-        <td>${escapeHtml(item.verificacao_estepe || '—')}</td>
-        <td>${escapeHtml(item.confirmacao_itens_checklist || '—')}</td>
-        <td>${escapeHtml(item.obs_itens_checklist || '—')}</td>
-        <td>${escapeHtml(item.confirmacao_equipamentos || '—')}</td>
-        <td>${escapeHtml(item.obs_equipamentos || '—')}</td>
-        <td>${escapeHtml(item.obs || '—')}</td>
+        <td>${escapeHtml(item.placa || '-')}</td>
+        <td>${escapeHtml(item.motorista || '-')}</td>
+        <td>${item.km ?? '-'}</td>
+        <td>${escapeHtml(item.verificacao_estepe || '-')}</td>
+        <td>${escapeHtml(item.confirmacao_itens_checklist || '-')}</td>
+        <td>${escapeHtml(item.obs_itens_checklist || '-')}</td>
+        <td>${escapeHtml(item.confirmacao_equipamentos || '-')}</td>
+        <td>${escapeHtml(item.obs_equipamentos || '-')}</td>
+        <td>${escapeHtml(item.obs || '-')}</td>
         <td>${montarLinksChecklist(item)}</td>
       </tr>
     `);

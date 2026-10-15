@@ -117,7 +117,7 @@
           cx: x(indice), cy: y(valor), r: celular ? 3 : 3.5, fill: cor,
         });
         const titulo = criar('title');
-        titulo.textContent = (ponto.rotulo || ponto.chave) + ' — '
+        titulo.textContent = (ponto.rotulo || ponto.chave) + ' · '
           + definicao.nome + ': ' + valor;
         circulo.appendChild(titulo);
         svg.appendChild(circulo);
@@ -194,7 +194,7 @@
         fill: CORES[ordem % CORES.length],
       });
       const titulo = criar('title');
-      titulo.textContent = texto + ' — ' + valor
+      titulo.textContent = texto + ' · ' + valor
         + (item.detalhe ? ' (' + item.detalhe + ')' : '');
       barra.appendChild(titulo);
       grupo.appendChild(barra);
@@ -251,7 +251,7 @@
           });
 
       const titulo = criar('title');
-      titulo.textContent = item.rotulo + ' — ' + item.valor;
+      titulo.textContent = item.rotulo + ' · ' + item.valor;
       caminho.appendChild(titulo);
       svg.appendChild(caminho);
       anguloAtual = fim;

@@ -101,8 +101,8 @@
 
     if (catalogoAtual === 'problemas') {
       base.push(
-        { titulo: 'Categoria', valor: (i) => escapar(i.categoria_nome || '—') },
-        { titulo: 'Criticidade', valor: (i) => escapar(i.criticidade || '—') },
+        { titulo: 'Categoria', valor: (i) => escapar(i.categoria_nome || '-') },
+        { titulo: 'Criticidade', valor: (i) => escapar(i.criticidade || '-') },
         { titulo: 'Janela', valor: (i) => (i.janela_reincidencia_dias || 30) + ' d',
           numerica: true },
         { titulo: 'Ocorrências', valor: (i) => api.numero(i.total_ocorrencias || 0),
@@ -114,7 +114,7 @@
         { titulo: 'Ocorrências', valor: (i) => api.numero(i.total_ocorrencias || 0),
           numerica: true });
     } else if (catalogoAtual === 'causas') {
-      base.push({ titulo: 'Tipo', valor: (i) => escapar(i.categoria_causa || '—') });
+      base.push({ titulo: 'Tipo', valor: (i) => escapar(i.categoria_causa || '-') });
     } else if (catalogoAtual === 'resultados') {
       base.push(
         { titulo: 'Resolvido?', valor: (i) => i.considera_resolvido ? 'Sim' : 'Não' },
@@ -122,12 +122,12 @@
         { titulo: 'Exige retorno?', valor: (i) => i.exige_retorno ? 'Sim' : 'Não' });
     } else if (catalogoAtual === 'tipos-equipamento') {
       base.push(
-        { titulo: 'Categoria', valor: (i) => escapar(i.categoria || '—') },
+        { titulo: 'Categoria', valor: (i) => escapar(i.categoria || '-') },
         { titulo: 'Equipamentos', valor: (i) => api.numero(i.total_equipamentos || 0),
           numerica: true });
     }
 
-    base.push({ titulo: 'Criado por', valor: (i) => escapar(i.criado_por_nome || '—') });
+    base.push({ titulo: 'Criado por', valor: (i) => escapar(i.criado_por_nome || '-') });
     return base;
   }
 
@@ -222,7 +222,7 @@
         tituloCard: (i) => '<strong>' + escapar(i.nome) + '</strong>',
         vazio: 'Nenhum(a) ' + ROTULOS[catalogoAtual] + ' cadastrado(a)',
         vazioDetalhe: catalogoAtual === 'problemas' && !categorias.length
-          ? 'Cadastre primeiro uma Categoria — todo problema pertence a uma.'
+          ? 'Cadastre primeiro uma Categoria, todo problema pertence a uma.'
           : 'Use o botão "+ Novo" para começar. Este catálogo é o vocabulário da sua operação.',
       });
     } catch (erro) {

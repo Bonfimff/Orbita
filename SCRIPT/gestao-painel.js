@@ -102,7 +102,7 @@
     if (item.tipo === 'os_encerrada') {
       return { titulo: 'O.S. ' + escapar(item.os) + ' encerrada', sub: '' };
     }
-    const sub = [item.problema, item.base].filter(Boolean).map(escapar).join(' — ');
+    const sub = [item.problema, item.base].filter(Boolean).map(escapar).join(' · ');
     return { titulo: 'Problema recorrente confirmado', sub: sub };
   }
 

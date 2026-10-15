@@ -32,7 +32,7 @@
     try {
       const d = await CP.buscar('/contexto/base/' + id);
       const blocos = [
-        { tipo: 'titulo', texto: (d.codigo || '') + (d.nome ? ' — ' + d.nome : '') || 'Base de Atendimento' },
+        { tipo: 'titulo', texto: (d.codigo || '') + (d.nome ? ' · ' + d.nome : '') || 'Base de Atendimento' },
       ];
       if (d.regiao) blocos.push({ tipo: 'kpi', rotulo: 'Região', valor: d.regiao });
       if (d.equipamentos_total !== null && d.equipamentos_total !== undefined) {
@@ -103,7 +103,7 @@
     CP.carregando('Contexto Operacional');
     try {
       const d = await CP.buscar('/contexto/equipamento/' + id);
-      const blocos = [{ tipo: 'titulo', texto: (d.codigo || '') + (d.nome ? ' — ' + d.nome : '') || 'Equipamento' }];
+      const blocos = [{ tipo: 'titulo', texto: (d.codigo || '') + (d.nome ? ' · ' + d.nome : '') || 'Equipamento' }];
       if (d.base_nome || d.base_codigo) blocos.push({ tipo: 'kpi', rotulo: 'Base', valor: d.base_nome || d.base_codigo });
       if (d.tipo) blocos.push({ tipo: 'kpi', rotulo: 'Tipo', valor: d.tipo });
       if (d.status) {

@@ -43,14 +43,14 @@
   }
 
   function formatarDataHora(valor) {
-    if (!valor) return '—';
+    if (!valor) return '-';
     const d = new Date(String(valor).replace(' ', 'T'));
     if (isNaN(d.getTime())) return valor;
     return d.toLocaleString('pt-BR');
   }
 
   function formatarDuracao(minutos) {
-    if (minutos === null || minutos === undefined) return '—';
+    if (minutos === null || minutos === undefined) return '-';
     const h = Math.floor(minutos / 60);
     const m = Math.round(minutos % 60);
     return h > 0 ? `${h}h ${m}min` : `${m}min`;
@@ -202,7 +202,7 @@
       tbody.innerHTML = (resp.dados || []).map((j) => `
         <tr>
           <td>${escapar(j.usuario_nome || ('#' + j.usuario_id))}</td>
-          <td>${escapar(j.contrato_nome || '—')}</td>
+          <td>${escapar(j.contrato_nome || '-')}</td>
           <td>${badge(j.status)}</td>
           <td>${formatarDataHora(j.iniciado_em)}</td>
           <td>
@@ -230,7 +230,7 @@
       tbody.innerHTML = (resp.dados || []).map((j) => `
         <tr>
           <td>${escapar(j.usuario_nome || ('#' + j.usuario_id))}</td>
-          <td>${escapar(j.contrato_nome || '—')}</td>
+          <td>${escapar(j.contrato_nome || '-')}</td>
           <td>${formatarDataHora(j.iniciado_em)}</td>
           <td>${formatarDataHora(j.finalizado_em)}</td>
           <td>${formatarDuracao(j.duracao_minutos)}</td>
@@ -239,7 +239,7 @@
             ${(j.status === 'aberta' || j.status === 'pausada')
               ? `<button class="jor-btn jor-btn-admin" data-acao="encerrar" data-id="${j.id}">Encerrar</button>
                  <button class="jor-btn jor-btn-admin" data-acao="cancelar" data-id="${j.id}">Cancelar</button>`
-              : '—'}
+              : '-'}
           </td>
         </tr>`).join('') || '<tr><td colspan="7">Nenhum resultado.</td></tr>';
     } catch (e) {
