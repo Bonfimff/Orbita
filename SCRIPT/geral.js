@@ -986,8 +986,73 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  //====================================================================================================
+  // Campo de arquivo como botão com ícone de upload.
+  // O <input type="file"> continua no lugar (só fica oculto na tela), então os
+  // scripts que leem input.files e ouvem 'change' seguem funcionando. Um <label>
+  // ligado a ele faz o papel de botão e um texto ao lado mostra o que foi escolhido.
+  // Inputs com display:none já têm botão próprio e ficam de fora, assim como .sem-botao-upload.
+  //====================================================================================================
+  const ICONE_UPLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
+    + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+    + '<path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>';
+  let contadorUpload = 0;
+
+  function melhorarCamposArquivo(raiz) {
+    (raiz || document).querySelectorAll('input[type="file"]:not([data-upload-pronto]):not(.sem-botao-upload)').forEach(input => {
+      if (input.style.display === 'none') return;
+      input.dataset.uploadPronto = '1';
+      if (!input.id) input.id = 'upload-campo-' + (++contadorUpload);
+
+      const ehImagem = /image/.test(input.accept || '') && !/\.pdf|\.doc|\.xls/.test(input.accept || '');
+      const textoBotao = ehImagem
+        ? (input.multiple ? 'Enviar fotos' : 'Enviar foto')
+        : (input.multiple ? 'Enviar arquivos' : 'Enviar arquivo');
+      const textoVazio = 'Nenhum arquivo selecionado';
+
+      const campo = document.createElement('div');
+      campo.className = 'upload-campo';
+      const botao = document.createElement('label');
+      botao.className = 'upload-btn';
+      botao.htmlFor = input.id;
+      botao.innerHTML = ICONE_UPLOAD + '<span>' + textoBotao + '</span>';
+      const nomes = document.createElement('span');
+      nomes.className = 'upload-nomes';
+
+      input.parentNode.insertBefore(campo, input);
+      campo.appendChild(input);
+      campo.appendChild(botao);
+      campo.appendChild(nomes);
+      input.classList.add('upload-input-oculto');
+
+      function atualizar() {
+        const arquivos = input.files ? Array.from(input.files) : [];
+        if (!arquivos.length) {
+          nomes.textContent = textoVazio;
+          nomes.classList.remove('upload-nomes-cheio');
+        } else {
+          nomes.textContent = arquivos.length === 1 ? arquivos[0].name : arquivos.length + ' arquivos selecionados';
+          nomes.title = arquivos.map(a => a.name).join(', ');
+          nomes.classList.add('upload-nomes-cheio');
+        }
+      }
+
+      input.addEventListener('change', atualizar);
+      // Scripts limpam o campo com input.value = '' (não dispara 'change')
+      const descritor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+      Object.defineProperty(input, 'value', {
+        configurable: true,
+        get() { return descritor.get.call(this); },
+        set(v) { descritor.set.call(this, v); atualizar(); },
+      });
+      if (input.form) input.form.addEventListener('reset', () => setTimeout(atualizar, 0));
+      atualizar();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     iniciarDrawer();
+    melhorarCamposArquivo(document);
     tornarTabelasResponsivas(document);
     rotularCelulas(document);
 
@@ -1002,6 +1067,7 @@ document.addEventListener('DOMContentLoaded', function () {
           agendado = false;
           tornarTabelasResponsivas(alvo);
           rotularCelulas(alvo);
+          melhorarCamposArquivo(alvo);
         }, 0);
       }).observe(alvo, { childList: true, subtree: true });
     }
@@ -1009,6 +1075,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.tornarTabelasResponsivas = tornarTabelasResponsivas;
   window.rotularCelulas = rotularCelulas;
+  window.melhorarCamposArquivo = melhorarCamposArquivo;
 })();
 
 //======================================================================================================

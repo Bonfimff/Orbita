@@ -2236,3 +2236,83 @@ button[type="submit"]:hover, .btn-primario:hover {
     color: #7a7a7a;
   }
 }
+
+/* ===================================================================
+   CAMPO DE ARQUIVO (botão com ícone de upload)
+   Montado pelo geral.js em volta de cada <input type="file"> visível.
+   =================================================================== */
+.upload-campo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.upload-input-oculto {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid #dcd8d0;
+  border-radius: 8px;
+  background: #fff;
+  color: #262626;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  margin: 0;
+}
+
+.upload-btn svg {
+  width: 18px;
+  height: 18px;
+  color: var(--cor-primaria-escura);
+  flex-shrink: 0;
+}
+
+.upload-btn:hover {
+  background: #f6f5f2;
+  border-color: var(--cor-primaria);
+}
+
+.upload-input-oculto:focus-visible + .upload-btn {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}
+
+.upload-input-oculto:disabled + .upload-btn {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #fff;
+  border-color: #dcd8d0;
+}
+
+.upload-nomes {
+  font-size: 13px;
+  color: #8a8a8a;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 140px;
+}
+
+.upload-nomes-cheio {
+  color: #262626;
+}
