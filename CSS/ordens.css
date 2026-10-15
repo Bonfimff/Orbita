@@ -2301,3 +2301,17 @@ button.ponto-foto-modal-tags {
 }
 .modal-os-fechar:hover { color: #111; border-color: var(--cor-primaria); background: #faf7f1; }
 #modal-editar-os .modal-content > h3 { padding: 0 40px; }
+
+.ponto-status-select.ponto-status-em-preparo {
+  background: #f6efe2;
+  border-color: #d6bf94;
+  color: #6b5228;
+  font-weight: 600;
+}
+
+.ponto-status-select.ponto-status-em-preparo {
+  background: #f6efe2;
+  border-color: #d6bf94;
+  color: #6b5228;
+  font-weight: 600;
+}

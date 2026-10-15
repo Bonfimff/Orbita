@@ -148,6 +148,7 @@ function atualizarLegendaTecnicoModal(os) {
 function badgePontoStatus(status) {
   const mapa = {
     'Pendente':         { bg: '#e0e0e0', txt: '#333' },
+    'Em Preparo':       { bg: '#f3ead8', txt: '#6b5228' },
     'Em Deslocamento':  { bg: '#7b1fa2', txt: '#fff' },
     'Chegada no Local': { bg: '#00796b', txt: '#fff' },
     'Finalizado':       { bg: '#4caf50', txt: '#fff' },
@@ -1698,12 +1699,14 @@ function atualizarClasseStatusPonto(selectEl) {
     'ponto-status-pendente',
     'ponto-status-em-deslocamento',
     'ponto-status-chegada',
+    'ponto-status-em-preparo',
     'ponto-status-finalizado',
     'ponto-status-cancelado'
   );
 
   const mapaClasse = {
     'Pendente': 'ponto-status-pendente',
+    'Em Preparo': 'ponto-status-em-preparo',
     'Em Deslocamento': 'ponto-status-em-deslocamento',
     'Chegada no Local': 'ponto-status-chegada',
     'Finalizado': 'ponto-status-finalizado',
@@ -1717,7 +1720,8 @@ function atualizarClasseStatusPonto(selectEl) {
 function obterTransicoesStatusPonto(statusAtual = 'Pendente') {
   const status = String(statusAtual || 'Pendente');
   const mapa = {
-    'Pendente': ['Pendente', 'Em Deslocamento', 'Cancelado'],
+    'Pendente': ['Pendente', 'Em Preparo', 'Em Deslocamento', 'Cancelado'],
+    'Em Preparo': ['Em Preparo', 'Pendente', 'Em Deslocamento', 'Cancelado'],
     'Em Deslocamento': ['Em Deslocamento', 'Chegada no Local', 'Cancelado'],
     'Chegada no Local': ['Chegada no Local', 'Finalizado', 'Cancelado'],
     'Finalizado': ['Finalizado', 'Cancelado'],
@@ -2635,7 +2639,7 @@ async function abrirModalEdicaoInterno(id) {
     document.getElementById('edit-os-status-atual').value = statusEfetivo;
     document.getElementById('edit-os-prioridade').value = os.prioridade || 'Média';
     document.getElementById('edit-os-descricao').value = os.descricao || '';
-    document.getElementById('edit-os-status-label').textContent = `Status: ${statusEfetivo}`;
+    document.getElementById('edit-os-status-label').textContent = `Status: ${statusEfetivo === "Chegada no Local" ? "Em Atuação no Local" : statusEfetivo}`;
     atualizarLegendaTecnicoModal(os);
 
     despachoResponsaveis = parseListaTexto(os.responsavel_equipe);
@@ -2814,7 +2818,7 @@ async function recarregarDadosOrdemModal(id) {
     const statusEfetivo = obterStatusEfetivoOS(os);
     const modoVisualizacao = statusEfetivo === 'Finalizada' || statusEfetivo === 'Cancelada';
     document.getElementById('edit-os-status-atual').value = statusEfetivo;
-    document.getElementById('edit-os-status-label').textContent = `Status: ${statusEfetivo}`;
+    document.getElementById('edit-os-status-label').textContent = `Status: ${statusEfetivo === "Chegada no Local" ? "Em Atuação no Local" : statusEfetivo}`;
     atualizarLegendaTecnicoModal(os);
     despachoResponsaveis = parseListaTexto(os.responsavel_equipe);
     despachoIntegrantes = parseListaTexto(os.equipe_membros);
@@ -2943,8 +2947,9 @@ function renderizarPontosModal(pontos, ordemId) {
         </button>
         <select class="ponto-status-select" data-ponto-id="${p.id}" data-tem-foto-inicio="${temFotoInicio ? 'true' : 'false'}" aria-label="Status do ponto de atendimento">
           <option value="Pendente"${p.status === 'Pendente' ? ' selected' : ''}>Pendente</option>
+          <option value="Em Preparo"${p.status === 'Em Preparo' ? ' selected' : ''}>Em Preparo</option>
           <option value="Em Deslocamento"${p.status === 'Em Deslocamento' ? ' selected' : ''}>Em Deslocamento</option>
-          <option value="Chegada no Local"${p.status === 'Chegada no Local' ? ' selected' : ''}>Chegada no Local</option>
+          <option value="Chegada no Local"${p.status === 'Chegada no Local' ? ' selected' : ''}>Em Atuação no Local</option>
           <option value="Finalizado"${p.status === 'Finalizado' ? ' selected' : ''}>Finalizado</option>
           <option value="Cancelado"${p.status === 'Cancelado' ? ' selected' : ''}>Cancelado</option>
         </select>
@@ -3769,3 +3774,38 @@ document.addEventListener('DOMContentLoaded', () => {
     void sairDaEdicaoComAutosave();
   });
 });
+
+// Ao alocar equipe, veículo ou material, o servidor passa os pontos
+// "Pendente" para "Em Preparo"; aqui o seletor é atualizado na hora.
+(function () {
+  if (!window.fetch) return;
+  const fetchOriginal = window.fetch.bind(window);
+  const ALOCACAO = /\/ordens\/(\d+)\/(funcionarios|veiculos|materiais|equipes-padrao)/;
+  window.fetch = async function (recurso, opcoes) {
+    const resposta = await fetchOriginal(recurso, opcoes);
+    try {
+      const url = typeof recurso === 'string' ? recurso : (recurso && recurso.url) || '';
+      const metodo = String((opcoes && opcoes.method) || 'GET').toUpperCase();
+      const achou = metodo === 'POST' && url.match(ALOCACAO);
+      if (achou && resposta.ok) {
+        const temPendente = document.querySelector('.ponto-status-select[data-status-atual="Pendente"]');
+        if (temPendente) setTimeout(() => recarregarPontosModal(achou[1]), 300);
+      }
+    } catch (e) { /* nunca atrapalha a requisição original */ }
+    return resposta;
+  };
+})();
+
+// "Chegada no Local" continua sendo o valor gravado; na tela aparece como
+// "Em Atuação no Local".
+(function () {
+  const ROTULO = { 'Chegada no Local': 'Em Atuação no Local' };
+  const badgeOriginal = badgeStatus;
+  const badgePontoOriginal = badgePontoStatus;
+  badgeStatus = function (status) {
+    return badgeOriginal(status).replace('>' + status + '<', '>' + (ROTULO[status] || status) + '<');
+  };
+  badgePontoStatus = function (status) {
+    return badgePontoOriginal(status).replace('>' + status + '<', '>' + (ROTULO[status] || status) + '<');
+  };
+})();
