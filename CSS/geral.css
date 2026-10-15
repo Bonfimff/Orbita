@@ -2373,7 +2373,8 @@ button[type="submit"]:hover, .btn-primario:hover {
 }
 
 /* ===================================================================
-   CARREGANDO: logo enchendo como líquido
+   CARREGANDO: a logo é um recipiente branco que vai enchendo de
+   petróleo (líquido preto, viscoso, com brilho e superfície ondulando)
    =================================================================== */
 .carregando-logo {
   position: fixed;
@@ -2382,50 +2383,77 @@ button[type="submit"]:hover, .btn-primario:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(246, 245, 242, .72);
-  backdrop-filter: blur(2px);
+  background: rgba(38, 38, 38, .28);
+  backdrop-filter: blur(3px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .2s ease;
+  transition: opacity .25s ease;
 }
 .carregando-logo.visivel { opacity: 1; pointer-events: auto; }
+.carregando-logo-recipiente {
+  filter: drop-shadow(0 0 1px rgba(0,0,0,.35)) drop-shadow(0 6px 14px rgba(0,0,0,.18));
+}
 .carregando-logo-marca {
   position: relative;
-  width: 88px;
-  height: 88px;
-  background: #e4ddd0;
+  width: 96px;
+  height: 96px;
+  background: #fff;
   -webkit-mask: url(../IMG/Icone.png) center / contain no-repeat;
           mask: url(../IMG/Icone.png) center / contain no-repeat;
   overflow: hidden;
 }
 .carregando-logo-liquido {
   position: absolute;
-  left: -50%;
-  width: 200%;
-  height: 100%;
+  left: -60%;
+  width: 220%;
+  height: 130%;
   top: 100%;
-  background: var(--cor-primaria);
-  animation: carregando-encher 1.8s cubic-bezier(.45,.05,.35,1) infinite;
+  background:
+    linear-gradient(100deg, transparent 38%, rgba(255,255,255,.16) 46%, rgba(255,255,255,.04) 52%, transparent 60%) 0 0 / 50% 100% repeat-x,
+    linear-gradient(180deg, #2a2622 0%, #0d0c0b 35%, #000 100%);
+  animation:
+    petroleo-encher 3.2s cubic-bezier(.55,.1,.35,1) infinite,
+    petroleo-balanco 1.6s ease-in-out infinite alternate,
+    petroleo-brilho 2.4s linear infinite;
 }
-.carregando-logo-liquido::before {
+/* Superfície ondulada e espessa */
+.carregando-logo-liquido::before,
+.carregando-logo-liquido::after {
   content: "";
   position: absolute;
   left: 0;
-  top: -9px;
   width: 100%;
-  height: 18px;
-  background: radial-gradient(ellipse 12% 50% at 50% 100%, var(--cor-primaria) 98%, transparent 100%) 0 0 / 25% 100% repeat-x;
-  animation: carregando-onda .9s linear infinite;
+  height: 14px;
+  top: -12px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14' preserveAspectRatio='none'%3E%3Cpath d='M0 8 C20 0 40 0 60 8 S100 16 120 8 V14 H0Z' fill='%232a2622'/%3E%3C/svg%3E") 0 0 / 50% 100% repeat-x;
+  animation: petroleo-onda 2.6s linear infinite;
 }
-@keyframes carregando-encher {
-  0%   { top: 100%; }
-  80%  { top: -10%; }
-  100% { top: -10%; }
+.carregando-logo-liquido::after {
+  top: -9px;
+  opacity: .6;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14' preserveAspectRatio='none'%3E%3Cpath d='M0 7 C25 13 35 13 60 7 S95 1 120 7' fill='none' stroke='%23ffffff' stroke-opacity='.35' stroke-width='1.2'/%3E%3C/svg%3E");
+  animation-duration: 3.4s;
+  animation-direction: reverse;
 }
-@keyframes carregando-onda {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-25%); }
+@keyframes petroleo-encher {
+  0%   { top: 104%; }
+  72%  { top: -14%; }
+  88%  { top: -14%; opacity: 1; }
+  100% { top: -14%; opacity: 0; }
+}
+@keyframes petroleo-balanco {
+  from { transform: rotate(-2.5deg) translateY(1px); }
+  to   { transform: rotate(2.5deg) translateY(-1px); }
+}
+@keyframes petroleo-onda {
+  from { background-position-x: 0; }
+  to   { background-position-x: -50%; }
+}
+@keyframes petroleo-brilho {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: -50% 0, 0 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .carregando-logo-liquido, .carregando-logo-liquido::before { animation-duration: 3s; }
+  .carregando-logo-liquido { animation: petroleo-encher 5s ease-in-out infinite; }
+  .carregando-logo-liquido::before, .carregando-logo-liquido::after { animation: none; }
 }

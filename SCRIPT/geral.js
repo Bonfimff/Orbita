@@ -1534,7 +1534,7 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
     camada.className = 'carregando-logo';
     camada.setAttribute('role', 'status');
     camada.setAttribute('aria-label', 'Carregando');
-    camada.innerHTML = '<div class="carregando-logo-marca"><span class="carregando-logo-liquido"></span></div>';
+    camada.innerHTML = '<div class="carregando-logo-recipiente"><div class="carregando-logo-marca"><span class="carregando-logo-liquido"></span></div></div>';
     document.body.appendChild(camada);
   }
 
