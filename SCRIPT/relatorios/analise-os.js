@@ -229,14 +229,18 @@
     }
   }
 
+  let salvando = false;
+  let salvarDeNovo = false;
+
   async function salvar() {
+    if (salvando) { salvarDeNovo = true; return; }
     if (!ocorrenciaAtual) {
       return feedback('Esta O.S. ainda não tem ocorrência registrada. '
                     + 'Salve os pontos de atendimento primeiro.', 'erro');
     }
     const valor = (id) => elemento(id)?.value || null;
-    const botao = elemento('an-salvar');
-    botao.disabled = true;
+    salvando = true;
+    feedback('Salvando...', 'ok');
     try {
       const resposta = await fetch(
         urlApi('/ocorrencias/' + ocorrenciaAtual.id + '/classificar'),
@@ -254,17 +258,33 @@
       if (!resposta.ok || !corpo || corpo.status !== 'ok') {
         throw new Error((corpo && corpo.mensagem) || 'Não foi possível salvar a análise.');
       }
-      feedback('Análise salva.', 'ok');
-      await carregar(ordemAtual);
+      feedback('Salvo automaticamente.', 'ok');
+      // Recarrega o resumo de pendências só se a pessoa não estiver
+      // digitando em outro campo da análise (para não apagar o que digita).
+      const secao = elemento('an-salvar')?.closest('section') || document.getElementById('os-analise-ocorrencia');
+      if (!secao || !secao.contains(document.activeElement)) await carregar(ordemAtual);
     } catch (erro) {
       feedback(erro.message, 'erro');
     } finally {
-      botao.disabled = false;
+      salvando = false;
+      if (salvarDeNovo) { salvarDeNovo = false; salvar(); }
     }
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     elemento('an-salvar')?.addEventListener('click', salvar);
+
+    // Salva sozinho: listas e caixas ao mudar; observação ao sair do campo.
+    ['an-problema', 'an-causa', 'an-solucao', 'an-resultado', 'an-equipamento',
+     'an-equipamento-na', 'an-evento-externo'].forEach((id) => {
+      elemento(id)?.addEventListener('change', () => setTimeout(salvar, 0));
+    });
+    const observacao = elemento('an-observacao');
+    if (observacao) {
+      let valorAoEntrar = '';
+      observacao.addEventListener('focus', () => { valorAoEntrar = observacao.value; });
+      observacao.addEventListener('blur', () => { if (observacao.value !== valorAoEntrar) salvar(); });
+    }
 
     // Equipamento "não se aplica" e equipamento escolhido são excludentes:
     // marcar os dois deixaria a pendência num estado ambíguo.
