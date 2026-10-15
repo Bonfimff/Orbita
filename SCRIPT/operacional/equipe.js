@@ -82,6 +82,8 @@
     }
   }
 
+  let responsavelAtual = '';
+
   function renderLista(membros) {
     const container = elemento('os-op-equipe-lista');
     if (!container) return;
@@ -89,15 +91,36 @@
       container.innerHTML = '<p style="color:#888;font-size:13px;">Nenhum funcionário cadastrado nesta O.S. ainda.</p>';
       return;
     }
+    const nomeDe = (m) => String(m.usuario_nome || m.usuario_login || '');
+    const atual = String(responsavelAtual || '').trim().toLowerCase();
     container.innerHTML = membros.map((m) => (
       '<div class="os-op-card" style="display:flex;justify-content:flex-start;align-items:center;' +
       'gap:8px;padding:10px;border:1px solid #e0e0e0;border-radius:6px;margin-bottom:6px;min-height:44px;">' +
-      '<div><strong>' + escapar(m.usuario_nome || m.usuario_login) + '</strong>' +
+      '<label class="os-op-responsavel" title="Responsável da O.S.">' +
+      '<input type="radio" name="os-op-responsavel" value="' + escapar(nomeDe(m)) + '"' +
+      (atual && nomeDe(m).trim().toLowerCase() === atual ? ' checked' : '') + ' aria-label="Responsável da O.S.">' +
+      '</label>' +
+      '<div><strong>' + escapar(nomeDe(m)) + '</strong>' +
       (m.funcao_nome ? ' <span style="color:#666;">(' + escapar(m.funcao_nome) + ')</span>' : '') +
       '</div>' +
       '<button type="button" class="os-op-remover os-op-equipe-remover" title="Remover" aria-label="Remover" data-id="' + m.id +
       '"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'
     )).join('');
+
+    container.querySelectorAll('input[name="os-op-responsavel"]').forEach((radio) => {
+      radio.addEventListener('change', async () => {
+        if (!radio.checked || !ordemAtual) return;
+        try {
+          await chamar('PUT', '/ordens/' + ordemAtual + '/responsavel', { nome: radio.value });
+          responsavelAtual = radio.value;
+          if (typeof window.definirResponsavelEquipeOS === 'function') window.definirResponsavelEquipeOS(radio.value);
+          feedback(radio.value + ' é o responsável da O.S.', 'ok');
+        } catch (erro) {
+          feedback(erro.message, 'erro');
+          await recarregarLista();
+        }
+      });
+    });
 
     container.querySelectorAll('.os-op-equipe-remover').forEach((botao) => {
       botao.addEventListener('click', async () => {
@@ -115,7 +138,11 @@
   async function recarregarLista() {
     if (!ordemAtual) return;
     try {
-      const membros = await chamar('GET', '/ordens/' + ordemAtual + '/funcionarios');
+      const [membros, resp] = await Promise.all([
+        chamar('GET', '/ordens/' + ordemAtual + '/funcionarios'),
+        chamar('GET', '/ordens/' + ordemAtual + '/responsavel').catch(() => null),
+      ]);
+      responsavelAtual = (resp && resp.responsavel) || '';
       renderLista(membros);
     } catch (erro) {
       console.warn('[equipe.js] listar', erro.message);

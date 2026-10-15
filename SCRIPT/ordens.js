@@ -3809,3 +3809,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return badgePontoOriginal(status).replace('>' + status + '<', '>' + (ROTULO[status] || status) + '<');
   };
 })();
+
+// Chamado pela lista da equipe quando o responsável é escolhido no seletor
+// redondo: mantém a lista antiga em sincronia para o salvamento do despacho
+// não sobrescrever a escolha, e atualiza o resumo do topo.
+window.definirResponsavelEquipeOS = function (nome) {
+  despachoResponsaveis = nome ? [nome] : [];
+  try { renderizarListaItens('edit-despacho-responsavel-list', despachoResponsaveis); } catch (e) { /* lista antiga oculta */ }
+  atualizarResumoDadosOSModal();
+};

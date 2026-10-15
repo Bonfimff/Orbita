@@ -2388,3 +2388,39 @@ button.ponto-foto-modal-tags {
 #modal-editar-os button.modal-os-fechar svg { width: 16px; height: 16px; }
 #modal-editar-os button.os-op-remover { margin-left: auto !important; }
 #modal-editar-os .os-op-card { justify-content: flex-start !important; }
+
+/* Seletor redondo do responsável da O.S. na lista da equipe */
+.os-op-responsavel {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  margin: 0 !important;
+  cursor: pointer;
+}
+.os-op-responsavel input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1.5px solid #9a9a9a;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+}
+.os-op-responsavel input[type="radio"]::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cor-primaria);
+  transform: scale(0);
+  transition: transform .12s ease;
+}
+.os-op-responsavel input[type="radio"]:checked { border-color: var(--cor-primaria); }
+.os-op-responsavel input[type="radio"]:checked::before { transform: scale(1); }
+.os-op-responsavel input[type="radio"]:focus-visible { outline: 2px solid rgba(168,134,79,.4); outline-offset: 2px; }
