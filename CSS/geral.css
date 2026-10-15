@@ -2429,3 +2429,105 @@ button[type="submit"]:hover, .btn-primario:hover {
 }
 ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
 ::-webkit-scrollbar-corner { background: transparent; }
+
+/* ===================================================================
+   SESSÃO: aviso discreto e caixa para continuar conectado
+   =================================================================== */
+.sessao-aviso {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100% - 24px);
+  padding: 8px 8px 8px 16px;
+  background: #262626;
+  color: #fff;
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  font-size: 13px;
+  font-weight: 500;
+}
+.sessao-aviso-texto { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sessao-aviso-continuar {
+  flex: 0 0 auto;
+  height: 30px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--cor-primaria);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sessao-aviso-continuar:hover { background: var(--cor-primaria-escura); }
+.sessao-aviso-fechar {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255,255,255,.7);
+  cursor: pointer;
+}
+.sessao-aviso-fechar:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+.sessao-renovar-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(20,20,20,.45);
+  backdrop-filter: blur(2px);
+}
+.sessao-renovar {
+  width: 100%;
+  max-width: 340px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px 20px 18px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sessao-renovar h4 { margin: 0; font-size: 17px; font-weight: 600; color: #1a1a1a; }
+.sessao-renovar-usuario { margin: 0; font-size: 13px; color: #6b6b6b; line-height: 1.4; }
+.sessao-renovar-senha {
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #ddd8cf;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 16px;
+}
+.sessao-renovar-senha:focus { outline: none; border-color: var(--cor-primaria); box-shadow: 0 0 0 3px rgba(168,134,79,.15); }
+.sessao-renovar-erro { margin: 0; font-size: 13px; color: #9B3B32; }
+.sessao-renovar-acoes { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.sessao-renovar-acoes button {
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.sessao-renovar-sair { background: #fff; border: 1px solid #ddd8cf; color: #444; }
+.sessao-renovar-ok { background: var(--cor-destaque); border: 1px solid var(--cor-destaque); color: #fff; }
+.sessao-renovar-ok:disabled { opacity: .7; cursor: wait; }
+@media (max-width: 480px) {
+  .sessao-aviso { top: auto; bottom: 76px; }
+}

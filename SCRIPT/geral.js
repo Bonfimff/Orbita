@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   const userNameElement = document.getElementById('logged-user');
   const userIconElement = document.querySelector('.user-icon'); // Elemento da imagem do usuário
-  const token = localStorage.getItem('token');
+  let token = localStorage.getItem('token');
   
   if (!token) {
     console.error('Token não encontrado. Faça login novamente.');
@@ -193,66 +193,104 @@ document.addEventListener('DOMContentLoaded', async function () {
   // @param {number} tempoRestante - Tempo restante em segundos para expiração do token.
   //======================================================================================================
   function mostrarAvisoTokenProximoVencimento(tempoRestante) {
-    // Remove aviso existente se houver
-    const avisoExistente = document.getElementById('token-warning-banner');
-    if (avisoExistente) {
-      avisoExistente.remove();
-    }
-    
+    // Se a caixa de senha já está aberta, não mostra o aviso por cima.
+    if (document.getElementById('sessao-renovar-fundo')) return;
+    let banner = document.getElementById('token-warning-banner');
     const minutos = Math.floor(tempoRestante / 60);
     const segundos = tempoRestante % 60;
-    
-    // Cria banner de aviso
-    const banner = document.createElement('div');
+    const texto = 'Sua sessão expira em ' + minutos + 'm ' + String(segundos).padStart(2, '0') + 's.';
+
+    if (banner) {
+      if (banner.dataset.fechado === '1') return;
+      const t = banner.querySelector('.sessao-aviso-texto');
+      if (t) t.textContent = texto;
+      return;
+    }
+
+    banner = document.createElement('div');
     banner.id = 'token-warning-banner';
-    banner.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background-color: #ff6b35;
-      color: white;
-      text-align: center;
-      padding: 10px;
-      z-index: 9999;
-      font-weight: bold;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    `;
-    
-    banner.innerHTML = `
-      ⏰ ATENÇÃO: Sua sessão expira em ${minutos}m ${segundos}s! 
-      <button onclick="renovarSessao()" style="
-        background: white;
-        color: #ff6b35;
-        border: none;
-        padding: 5px 10px;
-        margin-left: 10px;
-        border-radius: 3px;
-        cursor: pointer;
-        font-weight: bold;
-      ">Renovar Sessão</button>
-      <button onclick="fecharAviso()" style="
-        background: transparent;
-        color: white;
-        border: 1px solid white;
-        padding: 5px 10px;
-        margin-left: 5px;
-        border-radius: 3px;
-        cursor: pointer;
-      ">Fechar</button>
-    `;
-    
-    document.body.insertBefore(banner, document.body.firstChild);
-    
-    //  FUNÇÕES GLOBAIS PARA OS BOTÕES
-    window.renovarSessao = function() {
-      alert('Você será redirecionado para fazer login novamente.');
-      limparStorageERedirecionarLogin();
-    };
-    
-    window.fecharAviso = function() {
+    banner.className = 'sessao-aviso';
+    banner.setAttribute('role', 'alert');
+    banner.innerHTML =
+      '<span class="sessao-aviso-texto"></span>' +
+      '<button type="button" class="sessao-aviso-continuar">Continuar conectado</button>' +
+      '<button type="button" class="sessao-aviso-fechar" aria-label="Fechar aviso">' +
+      '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
+    banner.querySelector('.sessao-aviso-texto').textContent = texto;
+    document.body.appendChild(banner);
+
+    banner.querySelector('.sessao-aviso-continuar').addEventListener('click', abrirRenovacaoSessao);
+    banner.querySelector('.sessao-aviso-fechar').addEventListener('click', () => {
+      banner.dataset.fechado = '1';
       banner.remove();
-    };
+    });
+
+    // compatibilidade com chamadas antigas
+    window.renovarSessao = abrirRenovacaoSessao;
+    window.fecharAviso = () => banner.remove();
+  }
+
+  // Caixa flutuante: digita só a senha e continua na mesma página.
+  function abrirRenovacaoSessao() {
+    if (document.getElementById('sessao-renovar-fundo')) return;
+    let usuarioLogado = {};
+    try { usuarioLogado = JSON.parse(localStorage.getItem('usuario') || '{}') || {}; } catch (e) { usuarioLogado = {}; }
+    const login = usuarioLogado.usuario || usuarioLogado.username || usuarioLogado.login || '';
+    if (!login) { limparStorageERedirecionarLogin(); return; }
+
+    const fundo = document.createElement('div');
+    fundo.id = 'sessao-renovar-fundo';
+    fundo.className = 'sessao-renovar-fundo';
+    fundo.innerHTML =
+      '<form class="sessao-renovar" role="dialog" aria-modal="true" aria-labelledby="sessao-renovar-titulo">' +
+        '<h4 id="sessao-renovar-titulo">Continuar conectado</h4>' +
+        '<p class="sessao-renovar-usuario"></p>' +
+        '<input type="password" class="sessao-renovar-senha" placeholder="Senha" autocomplete="current-password" required />' +
+        '<p class="sessao-renovar-erro" hidden></p>' +
+        '<div class="sessao-renovar-acoes">' +
+          '<button type="button" class="sessao-renovar-sair">Sair</button>' +
+          '<button type="submit" class="sessao-renovar-ok">Continuar</button>' +
+        '</div>' +
+      '</form>';
+    fundo.querySelector('.sessao-renovar-usuario').textContent = 'Digite a senha de ' + login + ' para continuar nesta página.';
+    document.body.appendChild(fundo);
+    document.getElementById('token-warning-banner')?.remove();
+
+    const form = fundo.querySelector('form');
+    const campo = fundo.querySelector('.sessao-renovar-senha');
+    const erro = fundo.querySelector('.sessao-renovar-erro');
+    const botao = fundo.querySelector('.sessao-renovar-ok');
+    setTimeout(() => campo.focus(), 30);
+
+    fundo.querySelector('.sessao-renovar-sair').addEventListener('click', limparStorageERedirecionarLogin);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      erro.hidden = true;
+      botao.disabled = true;
+      botao.textContent = 'Entrando...';
+      try {
+        const resp = await originalFetch(window.apiUrl('/login'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: login, password: campo.value }),
+        });
+        const dados = await resp.json().catch(() => ({}));
+        if (!resp.ok || dados.status !== 'ok' || !dados.token) {
+          throw new Error(dados.mensagem || 'Senha incorreta.');
+        }
+        localStorage.setItem('token', dados.token);
+        if (dados.usuario) localStorage.setItem('usuario', JSON.stringify(dados.usuario));
+        token = dados.token;
+        fundo.remove();
+      } catch (err) {
+        erro.textContent = err.message || 'Não foi possível continuar.';
+        erro.hidden = false;
+        campo.select();
+      } finally {
+        botao.disabled = false;
+        botao.textContent = 'Continuar';
+      }
+    });
   }
 
   //  VERIFICAÇÃO INICIAL DO TOKEN
