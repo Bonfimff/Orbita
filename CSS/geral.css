@@ -2194,7 +2194,10 @@ button[type="submit"]:hover, .btn-primario:hover {
     align-items: center;
     gap: 12px;
     padding: 8px 0;
-    border-bottom: 1px solid #f1efea;
+    border: none !important;
+    border-bottom: 1px solid #f1efea !important;
+    background: transparent !important;
+    border-radius: 0 !important;
     text-align: right;
     white-space: normal;
     word-break: break-word;
@@ -2202,7 +2205,7 @@ button[type="submit"]:hover, .btn-primario:hover {
   }
 
   table.estilo-tabela:not(.sem-cartao) td:last-child {
-    border-bottom: none;
+    border-bottom: none !important;
   }
 
   table.estilo-tabela:not(.sem-cartao) td[data-rotulo]::before {
