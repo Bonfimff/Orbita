@@ -1287,6 +1287,10 @@
               <input type="text" id="nome-produto" name="nome-produto" required />
             </div>
             <div>
+              <label for="outros-nomes-produto">OUTROS NOMES</label>
+              <input type="text" id="outros-nomes-produto" name="outros-nomes-produto" placeholder="Separe por vírgula. Ex.: enforca gato, abraçadeira pequena" />
+            </div>
+            <div>
               <label for="custo">CUSTO</label>
               <input type="text" id="custo" name="custo" class="custo-input" required />
             </div>
@@ -1412,7 +1416,7 @@
 
  <script src="../SCRIPT/config.js?v=2"></script>
  <script src="../SCRIPT/xlsx.full.min.js"></script>
- <script src="../SCRIPT/almoxarifado.js"></script>
+ <script src="../SCRIPT/almoxarifado.js?v=2"></script>
 <script>
 // Exibe campos extras de produtos apenas quando "produtos" está selecionado
 document.addEventListener('DOMContentLoaded', function() {

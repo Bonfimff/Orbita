@@ -1052,6 +1052,8 @@ if (!isNaN(dataObj3.getTime())) {
       }
     }
     idField.value = produto.id || '';
+    const campoOutrosNomes = document.getElementById('outros-nomes-produto');
+    if (campoOutrosNomes) campoOutrosNomes.value = (produto.outros_nomes || []).join(', ');
 
     // Muda o texto do botão para indicar que é uma edição
     const btnSalvar = document.getElementById('btn-novoProduto');
@@ -1993,6 +1995,7 @@ document.getElementById("btn-novoProduto").addEventListener("click", async funct
     data_validade: dataValidade,
     garantia: terminoGarantia,
     outras_informacoes: outras_informacoes,
+    outros_nomes: document.getElementById('outros-nomes-produto')?.value || '',
   };
 
   try {
@@ -2036,6 +2039,9 @@ document.getElementById("btn-novoProduto").addEventListener("click", async funct
     const data = await response.json();
 
     if (response.ok && data.status === "ok") {
+      if (Array.isArray(data.outros_nomes_conflito) && data.outros_nomes_conflito.length) {
+        mensagemSucesso += '\n\nEstes nomes não foram salvos porque já pertencem a outro item: ' + data.outros_nomes_conflito.join(', ');
+      }
       alert(mensagemSucesso);
       
       // Limpa os campos do formulário
