@@ -3719,3 +3719,30 @@ function confirmarFotoPonto(form, arquivo) {
     fundo.addEventListener('click', e => { if (e.target === fundo) fechar(false); });
   });
 }
+
+// Campos antigos do relatório (diagnóstico separado, observação da análise,
+// materiais em texto livre) ficam ocultos e só aparecem quando a O.S. já
+// tem algo salvo neles, para não perder o que foi registrado antes.
+(function () {
+  function temConteudo(alvo) {
+    if (!alvo) return false;
+    if (alvo.tagName === 'TEXTAREA' || alvo.tagName === 'INPUT') return String(alvo.value || '').trim() !== '';
+    return !!alvo.querySelector('table, li, tr, .material-item');
+  }
+  function atualizarCamposLegados() {
+    document.querySelectorAll('#modal-editar-os .campo-legado').forEach(item => {
+      const alvo = document.getElementById(item.dataset.campoLegado);
+      item.classList.toggle('campo-legado-visivel', temConteudo(alvo));
+    });
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('modal-editar-os');
+    if (!modal) return;
+    modal.addEventListener('click', e => {
+      if (e.target.closest('.modal-etapa-pill')) setTimeout(atualizarCamposLegados, 50);
+    });
+    setInterval(() => {
+      if (getComputedStyle(modal).display !== 'none') atualizarCamposLegados();
+    }, 1000);
+  });
+})();

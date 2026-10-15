@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=19" />
-  <link rel="stylesheet" href="../CSS/ordens.css?v=21" />
+  <link rel="stylesheet" href="../CSS/ordens.css?v=22" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
@@ -538,7 +538,7 @@
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=7"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="../SCRIPT/ordens.js?v=14"></script>
+  <script src="../SCRIPT/ordens.js?v=15"></script>
   <script src="../SCRIPT/relatorios/alertas-dashboard.js?v=5"></script>
   <script src="../SCRIPT/relatorios/analise-os.js?v=2"></script>
   <script src="../SCRIPT/operacional/equipe.js?v=1"></script>
@@ -755,7 +755,7 @@
                 <label for="an-solucao">Solução / procedimento</label>
                 <select id="an-solucao"><option value="">Não informada</option></select>
               </div>
-              <div class="os-form-item">
+              <div class="os-form-item" hidden><!-- coberto pela Situação Final, que o servidor copia para a ocorrência -->
                 <label for="an-resultado">Resultado</label>
                 <select id="an-resultado"><option value="">Não informado</option></select>
               </div>
@@ -773,7 +773,7 @@
                   <span>Evento externo (não conta como reincidência)</span>
                 </label>
               </div>
-              <div class="os-form-item os-form-full">
+              <div class="os-form-item os-form-full campo-legado" data-campo-legado="an-observacao">
                 <label for="an-observacao">Observação da análise</label>
                 <textarea id="an-observacao" rows="2"
                   placeholder="Informação que não se encaixa no catálogo..."></textarea>
@@ -788,13 +788,13 @@
           </section>
 
           <div class="os-form-grid" style="margin-top:0;">
-            <div class="os-form-item os-form-full">
+            <div class="os-form-item os-form-full campo-legado" data-campo-legado="fech-diagnostico">
               <label>Diagnóstico do Equipamento</label>
               <textarea id="fech-diagnostico" rows="3" placeholder="Descreva o diagnóstico do equipamento..." style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; resize:vertical; font-size:14px;"></textarea>
             </div>
             <div class="os-form-item os-form-full">
-              <label>Procedimento Executado</label>
-              <textarea id="fech-procedimento" rows="3" placeholder="Descreva o procedimento executado..." style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; resize:vertical; font-size:14px;"></textarea>
+              <label>Descrição do atendimento</label>
+              <textarea id="fech-procedimento" rows="3" placeholder="O que foi encontrado e o que foi feito..." style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; resize:vertical; font-size:14px;"></textarea>
             </div>
             <div class="os-form-item">
               <label>Situação Final</label>
@@ -806,7 +806,7 @@
                 <option value="Aguardando Peças">Aguardando Peças</option>
               </select>
             </div>
-            <div class="os-form-item os-form-full">
+            <div class="os-form-item os-form-full campo-legado" data-campo-legado="fech-materiais-lista">
               <label>Materiais Utilizados</label>
               <div style="display:flex; gap:8px; margin-top:6px; align-items:center;">
                 <input type="text" id="fech-material-nome" list="fech-material-sugestoes" placeholder="Nome do material" style="flex:2; padding:8px; border:1px solid #ccc; border-radius:4px; font-size:13px;" autocomplete="off">
@@ -823,7 +823,7 @@
                  antes disso e apenas planejamento, sem baixa. -->
             <section class="os-analise os-form-full" id="os-op-materiais-secao" style="margin-top:14px;">
               <div class="os-analise-cabecalho">
-                <h4>Materiais do estoque (baixa integrada)</h4>
+                <h4>Materiais utilizados</h4>
               </div>
               <div id="os-op-materiais-lista"></div>
               <div class="os-op-form-row" style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; align-items:center;">
