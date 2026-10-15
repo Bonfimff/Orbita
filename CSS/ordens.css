@@ -2370,3 +2370,19 @@ button.ponto-foto-modal-tags {
 }
 #modal-editar-os button.os-op-remover:hover { background: #2e2e2e !important; }
 #modal-editar-os button.os-op-remover svg { width: 14px; height: 14px; }
+
+/* Fechar do modal da O.S.: só o X, botão branco com borda preta arredondada */
+#modal-editar-os button.modal-os-fechar {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  padding: 0 !important;
+  border: 1.5px solid #1a1a1a !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  color: #1a1a1a !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+#modal-editar-os button.modal-os-fechar:hover { background: #f3f1ec !important; }
+#modal-editar-os button.modal-os-fechar svg { width: 16px; height: 16px; }
