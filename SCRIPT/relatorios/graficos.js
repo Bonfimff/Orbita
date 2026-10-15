@@ -19,7 +19,7 @@
   // Paleta alinhada ao KERNEL: teal da marca como cor principal, cinza-azulado
   // como apoio, ambar/vermelho reservados para alerta.
   const CORES = ['#A8864F', '#475569', '#86683A', '#94a3b8', '#ed6c02',
-                 '#c62828', '#334155', '#5eead4'];
+                 '#c62828', '#334155', '#d6c3a0'];
 
   function ehCelular() {
     return window.matchMedia('(max-width: 767px)').matches;
