@@ -964,9 +964,32 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  //====================================================================================================
+  // Tabela em cartões no celular: cada célula ganha data-rotulo com o título da
+  // coluna, e o CSS (geral.css, "TABELAS EM CARTÕES") mostra "rótulo: valor".
+  // Vale para toda .estilo-tabela; quem não quiser usa a classe .sem-cartao.
+  //====================================================================================================
+  function rotularCelulas(raiz) {
+    (raiz || document).querySelectorAll('table.estilo-tabela:not(.sem-cartao)').forEach(tabela => {
+      const titulos = Array.from(tabela.querySelectorAll('thead th')).map(th => th.textContent.trim());
+      if (!titulos.length) return;
+      tabela.querySelectorAll('tbody tr').forEach(linha => {
+        let coluna = 0;
+        Array.from(linha.cells).forEach(celula => {
+          const vao = celula.colSpan || 1;
+          if (vao === 1 && titulos[coluna] && celula.dataset.rotulo !== titulos[coluna]) {
+            celula.dataset.rotulo = titulos[coluna];
+          }
+          coluna += vao;
+        });
+      });
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     iniciarDrawer();
     tornarTabelasResponsivas(document);
+    rotularCelulas(document);
 
     // Tabelas criadas dinamicamente também recebem o wrapper
     const alvo = document.querySelector('.content');
@@ -978,12 +1001,14 @@ document.addEventListener('DOMContentLoaded', function () {
         setTimeout(() => {
           agendado = false;
           tornarTabelasResponsivas(alvo);
+          rotularCelulas(alvo);
         }, 0);
       }).observe(alvo, { childList: true, subtree: true });
     }
   });
 
   window.tornarTabelasResponsivas = tornarTabelasResponsivas;
+  window.rotularCelulas = rotularCelulas;
 })();
 
 //======================================================================================================
