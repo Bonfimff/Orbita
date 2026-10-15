@@ -1532,7 +1532,7 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
   let ctx = null;
   let pedidos = 0;
   let quadro = 0;
-  const TEMPO_MINIMO = 900;
+  const TEMPO_MINIMO = 500;
   const TAMANHO = 96;
   const COLUNAS = 48;
   const TEMPO_ENCHER = 9000;   // ms até ficar cheio
@@ -1543,6 +1543,9 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
   let inicioCiclo = 0;
   let ultimo = 0;
   let proximaGota = 0;
+  let nivelAtual = 0;
+  let rapido = null;          // { inicio, de } quando os dados chegaram
+  const TEMPO_RAPIDO = 650;   // ms para encher o resto depois que os dados chegam
 
   function criar() {
     camada = document.createElement('div');
@@ -1563,6 +1566,7 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
     altura.fill(0);
     velocidade.fill(0);
     inicioCiclo = agora;
+    nivelAtual = 0;
     proximaGota = agora + 400;
   }
 
@@ -1575,18 +1579,18 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
   function passo(dt, t) {
     // Balanço do recipiente: duas frequências fora de fase dão um
     // movimento que não se repete de forma mecânica.
-    const inclinacao = 0.55 * Math.sin(t * 1.3) + 0.25 * Math.sin(t * 2.1 + 1.2);
-    const RIGIDEZ = 0.012, AMORTECIMENTO = 0.025, ESPALHAR = 0.1;
+    const inclinacao = 0.6 * Math.sin(t * 1.6) + 0.35 * Math.sin(t * 2.7 + 1.2) + 0.15 * Math.sin(t * 4.3 + 0.5);
+    const RIGIDEZ = 0.014, AMORTECIMENTO = 0.016, ESPALHAR = 0.1;
     for (let i = 0; i <= COLUNAS; i++) {
       const x = i / COLUNAS - 0.5;
       // força do balanço empurra o líquido para um dos lados
-      const alvo = inclinacao * x * 10;
+      const alvo = inclinacao * x * 15;
       velocidade[i] += (alvo - altura[i]) * RIGIDEZ - velocidade[i] * AMORTECIMENTO;
     }
     for (let i = 0; i <= COLUNAS; i++) {
       altura[i] += velocidade[i] * dt;
       if (!isFinite(altura[i])) { altura[i] = 0; velocidade[i] = 0; }
-      altura[i] = Math.max(-14, Math.min(14, altura[i]));
+      altura[i] = Math.max(-16, Math.min(16, altura[i]));
     }
     // propagação entre vizinhos (duas passadas suavizam)
     for (let k = 0; k < 2; k++) {
@@ -1655,18 +1659,33 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
     const dt = Math.min(2.5, (agora - (ultimo || agora)) / 16.67) || 1;
     ultimo = agora;
     let decorrido = agora - inicioCiclo;
-    if (decorrido > TEMPO_ENCHER + TEMPO_CHEIO) { reiniciar(agora); decorrido = 0; }
-    const p = Math.min(1, decorrido / TEMPO_ENCHER);
-    const base = TAMANHO * (1.06 - nivel(p) * 1.16);
+    let p;
+    if (rapido) {
+      // dados prontos: termina de encher depressa, com uma agitação a mais
+      if (!rapido.inicio) {
+        rapido.inicio = agora;
+        rapido.de = nivelAtual;
+        for (let i = 0; i <= COLUNAS; i++) velocidade[i] += (Math.random() - 0.5) * 2.2;
+      }
+      const q = Math.min(1, (agora - rapido.inicio) / TEMPO_RAPIDO);
+      nivelAtual = rapido.de + (1 - rapido.de) * (1 - Math.pow(1 - q, 3));
+      if (q >= 1 && !rapido.fechou) { rapido.fechou = true; setTimeout(rapido.aoEncher, 180); }
+      p = 1;
+    } else {
+      if (decorrido > TEMPO_ENCHER + TEMPO_CHEIO) { reiniciar(agora); decorrido = 0; }
+      p = Math.min(1, decorrido / TEMPO_ENCHER);
+      nivelAtual = nivel(p);
+    }
+    const base = TAMANHO * (1.06 - nivelAtual * 1.16);
 
     // gotas caindo de cima de tempos em tempos: perturbação local que se espalha
     if (agora > proximaGota && p < 0.97) {
       const c = Math.floor(COLUNAS * (0.3 + Math.random() * 0.4));
       for (let k = -2; k <= 2; k++) {
         const j = c + k;
-        if (j >= 0 && j <= COLUNAS) velocidade[j] += (0.9 - Math.abs(k) * 0.25);
+        if (j >= 0 && j <= COLUNAS) velocidade[j] += (1.4 - Math.abs(k) * 0.35);
       }
-      proximaGota = agora + 700 + Math.random() * 900;
+      proximaGota = agora + 450 + Math.random() * 600;
     }
 
     const t = agora / 1000;
@@ -1681,6 +1700,7 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
     if (!camada) criar();
     pedidos++;
     const inicio = Date.now();
+    rapido = null;
     if (!quadro) {
       ultimo = 0;
       reiniciar(performance.now());
@@ -1694,7 +1714,8 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
       const espera = Math.max(0, TEMPO_MINIMO - (Date.now() - inicio));
       setTimeout(() => {
         pedidos = Math.max(0, pedidos - 1);
-        if (!pedidos) camada.classList.remove('visivel');
+        if (pedidos) return;
+        rapido = { aoEncher: () => { if (!pedidos) camada.classList.remove('visivel'); } };
       }, espera);
     };
   };
