@@ -2424,3 +2424,25 @@ button.ponto-foto-modal-tags {
 .os-op-responsavel input[type="radio"]:checked { border-color: var(--cor-primaria); }
 .os-op-responsavel input[type="radio"]:checked::before { transform: scale(1); }
 .os-op-responsavel input[type="radio"]:focus-visible { outline: 2px solid rgba(168,134,79,.4); outline-offset: 2px; }
+
+/* ===== Bases no celular: fotos e documentos ===== */
+@media (max-width: 768px) {
+  .bases-preview-grid { grid-template-columns: 1fr !important; gap: 12px; }
+  .bases-preview-panel { padding: 14px !important; min-width: 0; }
+  .bases-preview-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px;
+  }
+  .bases-preview-header h4 { margin: 0 0 2px; font-size: 15px; }
+  .bases-photo-selector, .bases-photo-selector .upload-campo { width: 100%; }
+  .bases-photo-selector .upload-campo { display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
+  .bases-photo-selector .upload-btn { justify-content: center; width: 100%; }
+  .bases-photo-selector .upload-nomes:not(.upload-nomes-cheio) { display: none; }
+  .bases-photo-selector .upload-nomes { text-align: center; white-space: normal; }
+  .base-files-preview { min-height: 72px !important; font-size: 13px !important; color: #8a8a8a; padding: 12px !important; }
+  #form-bases .gestao-modal-acoes,
+  #form-bases .os-form-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #form-bases button[type="submit"] { width: 100%; }
+}
