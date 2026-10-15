@@ -2457,3 +2457,25 @@ button[type="submit"]:hover, .btn-primario:hover {
   .carregando-logo-liquido { animation: petroleo-encher 5s ease-in-out infinite; }
   .carregando-logo-liquido::before, .carregando-logo-liquido::after { animation: none; }
 }
+
+/* ===================================================================
+   BARRAS DE ROLAGEM finas e discretas
+   =================================================================== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(38, 38, 38, .22) transparent;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(38, 38, 38, .2);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 134, 79, .7);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+::-webkit-scrollbar-corner { background: transparent; }
