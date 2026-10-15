@@ -1296,9 +1296,9 @@ button[type="submit"]:hover, .btn-primario:hover {
     padding-bottom: 78px;
   }
 
-  /* O drawer também precisa parar acima da barra */
+  /* O drawer fica por cima da barra inferior, entao nao reserva espaco pra ela */
   body.tem-nav-inferior .menu {
-    padding-bottom: 78px;
+    padding-bottom: 0;
   }
 }
 
@@ -1713,8 +1713,9 @@ button[type="submit"]:hover, .btn-primario:hover {
     padding-bottom: 78px;
   }
 
+  /* O drawer fica por cima da barra inferior, entao nao reserva espaco pra ela */
   body.tem-nav-inferior .menu {
-    padding-bottom: 78px;
+    padding-bottom: 0;
   }
 }
 
