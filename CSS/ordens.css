@@ -2079,3 +2079,71 @@ body.modal-foto-ponto-aberto {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Foto do ponto: legenda é pedida na confirmação, não no formulário */
+.ponto-foto-form .ponto-foto-linha-secundaria { display: none !important; }
+
+/* Confirmação da foto antes de enviar */
+.foto-confirma-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(20, 20, 20, .45);
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+.foto-confirma-fundo.visivel { opacity: 1; }
+.foto-confirma {
+  width: 100%;
+  max-width: 380px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .18);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.foto-confirma h4 { margin: 0; font-size: 16px; font-weight: 600; color: #1a1a1a; }
+.foto-confirma-imagem {
+  background: #f4f2ee;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+.foto-confirma-imagem img { display: block; max-width: 100%; max-height: 42vh; object-fit: contain; }
+.foto-confirma-campo { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #6b6b6b; font-weight: 500; }
+.foto-confirma-campo select,
+.foto-confirma-campo input {
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #ddd8cf;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: #fff;
+}
+.foto-confirma-campo select:focus,
+.foto-confirma-campo input:focus { outline: none; border-color: var(--cor-primaria); box-shadow: 0 0 0 3px rgba(168, 134, 79, .15); }
+.foto-confirma-acoes { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.foto-confirma-acoes button {
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.foto-confirma-cancelar { background: #fff; border: 1px solid #ddd8cf; color: #444; }
+.foto-confirma-cancelar:hover { background: #f6f4f0; }
+.foto-confirma-enviar { background: var(--cor-destaque); border: 1px solid var(--cor-destaque); color: #fff; }
+.foto-confirma-enviar:hover { background: var(--cor-destaque-escura); }
