@@ -16,7 +16,7 @@
   const NS = 'http://www.w3.org/2000/svg';
   const escapar = (t) => window.RelatoriosApi.escaparHtml(t);
 
-  // Paleta alinhada ao KERNEL: teal da marca como cor principal, cinza-azulado
+  // Paleta alinhada ao KERNEL: bronze da marca como cor principal, cinza-azulado
   // como apoio, ambar/vermelho reservados para alerta.
   const CORES = ['#A8864F', '#475569', '#86683A', '#94a3b8', '#ed6c02',
                  '#c62828', '#334155', '#d6c3a0'];

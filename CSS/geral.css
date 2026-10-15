@@ -1919,43 +1919,43 @@ button[type="submit"]:hover, .btn-primario:hover {
 /* Paleta dos quadrados de ícone - a cor carrega o significado
    (status da O.S., natureza do indicador) que antes ficava na barra lateral */
 .painel-icone-teal {
-  background: #E6F7F5;
+  background: #F5F0E7;
   color: var(--cor-primaria);
 }
 
 .painel-icone-azul {
-  background: #E7F0FD;
-  color: #1565c0;
+  background: #EEF0F3;
+  color: #3E4C5E;
 }
 
 .painel-icone-verde {
-  background: #E6F6EA;
-  color: #2e7d32;
+  background: #EFF1E8;
+  color: #5E6B3F;
 }
 
 .painel-icone-laranja {
-  background: #FEF0E2;
-  color: #e65100;
+  background: #F6EEE2;
+  color: #9A6A2E;
 }
 
 .painel-icone-ambar {
-  background: #FEF3E2;
-  color: #B26A0B;
+  background: #F6EEE2;
+  color: #9A6A2E;
 }
 
 .painel-icone-vermelho {
-  background: #FDECEC;
-  color: #C0392B;
+  background: #F6ECEA;
+  color: #9B3B32;
 }
 
 .painel-icone-cinza {
-  background: #EEF1F4;
-  color: #5b6b7a;
+  background: #F0EFEC;
+  color: #5C5C5C;
 }
 
 .painel-icone-roxo {
-  background: #F0EBFB;
-  color: #6b46c1;
+  background: #F0EEF3;
+  color: #5B4E6E;
 }
 
 /* Em celular/tablet os cards ficam lado a lado e mais compactos, para
