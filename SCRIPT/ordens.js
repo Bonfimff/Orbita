@@ -3763,3 +3763,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (form) form.style.display = 'none';
   });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btn-fechar-modal-os')?.addEventListener('click', () => {
+    void sairDaEdicaoComAutosave();
+  });
+});
