@@ -840,101 +840,29 @@ function criarModalEscolhaAcao(dados, row, cells) {
 
   const modal = document.createElement('div');
   modal.id = 'modal-escolha-acao';
-  modal.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    font-family: Arial, sans-serif;
-  `;
+  modal.className = 'acao-modal-fundo';
+
+  const esc = (v) => String(v ?? '').trim().replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const codigo = esc(dados.codigo) || '<span class="acao-modal-vazio">sem código</span>';
 
   modal.innerHTML = `
-    <div style="
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
-      text-align: center;
-    ">
-      <h3 style="margin-top: 0; color: #333; font-size: 24px; margin-bottom: 20px;">
-        🔧 Ações do Produto
-      </h3>
-      
-      <div style="margin-bottom: 25px; padding: 20px; background-color: #f8f9fa; border-radius: 10px; text-align: left;">
-        <h4 style="margin: 0 0 15px 0; color: #495057; text-align: center;">📦 Informações do Produto</h4>
-        <p style="margin: 8px 0; color: #495057;"><strong>🆔 ID:</strong> ${dados.id}</p>
-        <p style="margin: 8px 0; color: #495057;"><strong>📝 Nome:</strong> ${dados.nome}</p>
-        <p style="margin: 8px 0; color: #495057;"><strong>🔢 Código:</strong> ${dados.codigo}</p>
-      </div>
+    <div class="acao-modal" role="dialog" aria-modal="true" aria-labelledby="acao-modal-titulo">
+      <header class="acao-modal-topo">
+        <span class="acao-modal-rotulo">Produto #${esc(dados.id)}</span>
+        <h3 id="acao-modal-titulo" class="acao-modal-titulo">${esc(dados.nome)}</h3>
+      </header>
 
-      <div style="margin-bottom: 20px;">
-        <p style="font-size: 16px; color: #666; margin-bottom: 25px;">
-          O que você deseja fazer com este produto?
-        </p>
-      </div>
-      
-      <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-        <button id="btn-editar-produto" style="
-          background: linear-gradient(45deg, #007bff, #0056b3);
-          color: white;
-          border: none;
-          padding: 15px 25px;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 16px;
-          font-weight: bold;
-          transition: all 0.3s;
-          box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        ">
-          ✏️ Editar Produto
-        </button>
-        
-        <button id="btn-excluir-produto" style="
-          background: linear-gradient(45deg, #dc3545, #bd2130);
-          color: white;
-          border: none;
-          padding: 15px 25px;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 16px;
-          font-weight: bold;
-          transition: all 0.3s;
-          box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        ">
-          🗑️ Excluir Produto
-        </button>
-        
-        <button id="btn-cancelar-acao" style="
-          background: #6c757d;
-          color: white;
-          border: none;
-          padding: 15px 25px;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 16px;
-          transition: all 0.3s;
-          box-shadow: 0 3px 10px rgba(108, 117, 125, 0.3);
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        ">
-          ❌ Cancelar
-        </button>
-      </div>
+      <dl class="acao-modal-dados">
+        <div><dt>ID</dt><dd>${esc(dados.id)}</dd></div>
+        <div><dt>Código</dt><dd>${codigo}</dd></div>
+      </dl>
+
+      <footer class="acao-modal-acoes">
+        <button type="button" id="btn-excluir-produto" class="acao-btn acao-btn-perigo">Excluir</button>
+        <span class="acao-modal-espaco"></span>
+        <button type="button" id="btn-cancelar-acao" class="acao-btn acao-btn-neutro">Cancelar</button>
+        <button type="button" id="btn-editar-produto" class="acao-btn acao-btn-principal">Editar produto</button>
+      </footer>
     </div>
   `;
 
@@ -967,21 +895,8 @@ function criarModalEscolhaAcao(dados, row, cells) {
     }
   });
 
-  // Adiciona efeitos hover aos botões
-  const botoes = modal.querySelectorAll('button');
-  botoes.forEach(botao => {
-    botao.addEventListener('mouseenter', function() {
-      this.style.transform = 'translateY(-2px)';
-      this.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
-    });
-    
-    botao.addEventListener('mouseleave', function() {
-      this.style.transform = 'translateY(0)';
-      this.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.1)';
-    });
-  });
-
   document.body.appendChild(modal);
+  modal.querySelector('#btn-editar-produto').focus();
 }
 
 //======================================================================================================

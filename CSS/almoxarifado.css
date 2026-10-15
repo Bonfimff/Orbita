@@ -711,3 +711,134 @@
   padding-left: 2px;
   padding-right: 2px;
 }
+
+/* Modal de ações do produto (clique numa linha da tabela) */
+.acao-modal-fundo {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 17, 17, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  z-index: var(--z-modal, 2000);
+}
+
+.acao-modal {
+  background: #fff;
+  width: 100%;
+  max-width: 440px;
+  border-radius: 12px;
+  border: 1px solid #ececec;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 16px 48px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+  text-align: left;
+}
+
+.acao-modal-topo {
+  padding: 22px 24px 4px;
+}
+
+.acao-modal-rotulo {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor-primaria-escura);
+}
+
+.acao-modal-titulo {
+  margin: 6px 0 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #111;
+}
+
+.acao-modal-dados {
+  margin: 16px 24px 0;
+  padding: 0;
+  border-top: 1px solid #efefef;
+}
+
+.acao-modal-dados > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid #efefef;
+  font-size: 14px;
+}
+
+.acao-modal-dados dt {
+  color: #777;
+}
+
+.acao-modal-dados dd {
+  margin: 0;
+  color: #111;
+  font-weight: 500;
+}
+
+.acao-modal-vazio {
+  color: #aaa;
+  font-weight: 400;
+}
+
+.acao-modal-acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 24px 22px;
+}
+
+.acao-modal-espaco {
+  flex: 1;
+}
+
+.acao-btn {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.acao-btn:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}
+
+.acao-btn-principal {
+  background: var(--cor-destaque);
+  color: #fff;
+}
+
+.acao-btn-principal:hover {
+  background: var(--cor-destaque-escura);
+}
+
+.acao-btn-neutro {
+  background: #fff;
+  border-color: #dcdcdc;
+  color: #333;
+}
+
+.acao-btn-neutro:hover {
+  background: #f6f5f2;
+}
+
+.acao-btn-perigo {
+  background: transparent;
+  color: #9B3B32;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.acao-btn-perigo:hover {
+  color: #7a2a23;
+  text-decoration: underline;
+}
