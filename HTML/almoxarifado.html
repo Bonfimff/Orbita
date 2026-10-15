@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=23" />
-  <link rel="stylesheet" href="../CSS/almoxarifado.css" />
+  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=2" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Estoque</title>
@@ -530,7 +530,7 @@
         </div>
         <hr class="aba-linha">
       <!-- Conteúdo da antiga aba Entrada -->
-      <form id="form-entrada-produto">
+      <form id="form-entrada-produto" novalidate>
         <div class="form-group linha inline-style-f12ec8">
           <!-- Coluna 1: Identificação -->
           <div class="form-coluna">
@@ -637,6 +637,16 @@
           </div>
         </div>
 
+        <div class="entrada-contratos" id="entrada-contratos">
+          <div class="entrada-contratos-cabecalho">
+            <span class="entrada-contratos-titulo">Contratos</span>
+            <span class="entrada-contratos-ajuda" id="entrada-contratos-resumo">Sem contrato: o item fica livre para qualquer contrato.</span>
+          </div>
+          <div id="entrada-contratos-linhas"></div>
+          <button type="button" id="entrada-contratos-add" class="entrada-contratos-add">+ Reservar quantidade para um contrato</button>
+        </div>
+        <div class="entrada-feedback" id="entrada-feedback" hidden></div>
+
         <button id="btn-add" class="acao-btn" type= add-produto>Salvar entrada</button>
         <button type="button" id="btn-carregar-nota" class="acao-btn">Carregar Nota ⭳</button>
         <input type="file" id="input-carregar-nota-movimentacao" accept=".xml" style="display: none;">
@@ -709,6 +719,12 @@
               <input type="date" id="retirada-data" name="retirada-data" required />
             </div>
             <div>
+              <label for="retirada-contrato">CONTRATO</label>
+              <select id="retirada-contrato" name="retirada-contrato">
+                <option value="">Sem contrato (só estoque livre)</option>
+              </select>
+            </div>
+            <div>
               <label for="retirada-requisitante">REQUISITANTE</label>
               <select id="retirada-requisitante" name="retirada-requisitante" required>
                 <option value="">Selecione</option>
@@ -769,6 +785,7 @@
             <div class="inline-style-199b6f">
               <label for="retirada-quantidade">QUANTIDADE</label>
               <input type="number" id="retirada-quantidade" name="retirada-quantidade" min="1" class="inline-style-199b6f" />
+              <div class="retirada-aviso-contrato" id="retirada-aviso-contrato" role="alert" hidden></div>
             </div>
           </div>
         </div>
@@ -1463,6 +1480,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=7"></script>
   <script src="../SCRIPT/outos.js"></script>
+  <script src="../SCRIPT/estoque-contratos.js?v=1"></script>
   <script src="../SCRIPT/pre-tranferencia.js"></script>
 
 
