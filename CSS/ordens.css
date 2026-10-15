@@ -2245,3 +2245,5 @@ button.ponto-foto-modal-tags {
   #modal-editar-os .modal-etapa table th,
   #modal-editar-os .modal-etapa table td { padding: 6px 4px; font-size: 12px; }
 }
+#modal-editar-os .modal-etapa .tabela-responsiva { max-width: 100%; overflow-x: auto; }
+#modal-editar-os .modal-etapa .tabela-responsiva > table { min-width: 0 !important; }
