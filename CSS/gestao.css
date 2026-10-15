@@ -456,3 +456,20 @@
   }
   .gestao-matriz-linha > span { overflow-wrap: anywhere; }
 }
+
+/* Restrições: texto ocupa a linha, caixa à direita */
+.gestao-restricao-item {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+}
+.gestao-restricao-item > input[type="checkbox"] {
+  width: 16px !important;
+  min-width: 16px !important;
+  height: 16px !important;
+  flex: 0 0 16px !important;
+  margin: 0 !important;
+}
