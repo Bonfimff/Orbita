@@ -53,9 +53,10 @@
 
   async function garantirCatalogos() {
     if (!usuariosCache) {
-      const resposta = await fetch(urlApi('/usuarios/listar'), { headers: cabecalhos() });
+      // Funcionários ativos (cadastro de Gestão), com ou sem login
+      const resposta = await fetch(urlApi('/funcionarios?ativos=1'), { headers: cabecalhos() });
       const dados = await resposta.json();
-      usuariosCache = (dados && dados.usuarios) || [];
+      usuariosCache = (dados && dados.funcionarios) || [];
     }
     if (!funcoesCache) {
       funcoesCache = await chamar('GET', '/funcoes-os');
@@ -63,7 +64,8 @@
     const selUsuario = elemento('os-op-equipe-usuario');
     if (selUsuario) {
       selUsuario.innerHTML = '<option value="">Selecione o funcionário...</option>'
-        + usuariosCache.map((u) => '<option value="' + u.id + '">' + escapar(u.usuario) + '</option>').join('');
+        + usuariosCache.map((u) => '<option value="' + u.id + '">' + escapar(u.nome) +
+          (u.matricula ? ' · ' + escapar(u.matricula) : '') + '</option>').join('');
     }
     const selFuncao = elemento('os-op-equipe-funcao');
     if (selFuncao) {
@@ -171,7 +173,7 @@
         if (!ordemAtual || !usuarioId) { feedback('Selecione um funcionário.', 'erro'); return; }
         try {
           await chamar('POST', '/ordens/' + ordemAtual + '/funcionarios', {
-            usuario_id: Number(usuarioId), funcao_id: funcaoId ? Number(funcaoId) : null, tipo: 'planejado',
+            funcionario_id: Number(usuarioId), funcao_id: funcaoId ? Number(funcaoId) : null, tipo: 'planejado',
           });
           feedback('Funcionário adicionado.', 'ok');
           await recarregarLista();
@@ -209,11 +211,20 @@
     const selFuncao = elemento('os-op-equipe-funcao');
     if (!selUsuario || !selFuncao) return;
     selUsuario.addEventListener('change', async function () {
-      const usuarioId = selUsuario.value;
+      const funcionarioId = selUsuario.value;
+      if (!funcionarioId) return;
+      // 1º: função padrão do cadastro do funcionário
+      const func = (usuariosCache || []).find((f) => String(f.id) === String(funcionarioId));
+      if (func && func.funcao_id && selFuncao.querySelector('option[value="' + func.funcao_id + '"]')) {
+        selFuncao.value = String(func.funcao_id);
+        return;
+      }
+      // 2º: a função que a pessoa usou por último numa O.S.
+      const usuarioId = func && func.usuario_id;
       if (!usuarioId) return;
       try {
         const dados = await chamar('GET', '/funcoes-os/ultima/' + usuarioId);
-        if (selUsuario.value !== usuarioId) return;
+        if (selUsuario.value !== funcionarioId) return;
         if (dados && dados.funcao_id && selFuncao.querySelector('option[value="' + dados.funcao_id + '"]')) {
           selFuncao.value = String(dados.funcao_id);
         }
