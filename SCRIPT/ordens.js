@@ -3588,7 +3588,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     const blocoPontos = lista.closest('.modal-etapa');
     const etapaPontosVisivel = !blocoPontos || blocoPontos.style.display !== 'none';
     const linhaAtiva = lista.querySelector('.ponto-row-modal.ativo') || lista.querySelector('.ponto-row-modal');
-    const desejado = etapaPontosVisivel && linhaAtiva ? linhaAtiva.querySelector('.ponto-status-select') : null;
+    const idAtivo = linhaAtiva ? String(linhaAtiva.id || '').replace('ponto-row-', '') : '';
+    const desejado = etapaPontosVisivel && idAtivo
+      ? (linhaAtiva.querySelector('.ponto-status-select') || slot.querySelector('.ponto-status-select[data-ponto-id="' + idAtivo + '"]'))
+      : null;
     const atual = slot.querySelector('.ponto-status-select');
 
     if (atual !== (desejado || null) || (desejado && desejado.parentNode !== slot)) {
