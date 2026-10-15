@@ -2264,3 +2264,5 @@ button.ponto-foto-modal-tags {
 /* Relatório simplificado: campos antigos só aparecem se já têm conteúdo */
 #modal-editar-os .campo-legado { display: none !important; }
 #modal-editar-os .campo-legado.campo-legado-visivel { display: flex !important; }
+
+#modal-editar-os .os-form-item[hidden] { display: none !important; }
