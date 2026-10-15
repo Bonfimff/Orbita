@@ -57,9 +57,10 @@
       veiculosCache = (dados && dados.veiculos) || [];
     }
     if (!usuariosCache) {
-      const resposta = await fetch(urlApi('/usuarios/listar'), { headers: cabecalhos() });
+      // Motorista vem do cadastro de funcionários (com ou sem login)
+      const resposta = await fetch(urlApi('/funcionarios?ativos=1'), { headers: cabecalhos() });
       const dados = await resposta.json();
-      usuariosCache = (dados && dados.usuarios) || [];
+      usuariosCache = (dados && dados.funcionarios) || [];
     }
     const selVeiculo = elemento('os-op-frota-veiculo');
     if (selVeiculo) {
@@ -69,7 +70,7 @@
     const selMotorista = elemento('os-op-frota-motorista');
     if (selMotorista) {
       selMotorista.innerHTML = '<option value="">Sem motorista definido</option>'
-        + usuariosCache.map((u) => '<option value="' + u.id + '">' + escapar(u.usuario) + '</option>').join('');
+        + usuariosCache.map((u) => '<option value="' + u.id + '">' + escapar(u.nome) + '</option>').join('');
     }
   }
 
@@ -135,7 +136,7 @@
         if (!ordemAtual || !veiculoId) { feedback('Selecione um veículo.', 'erro'); return; }
         try {
           await chamar('POST', '/ordens/' + ordemAtual + '/veiculos', {
-            veiculo_id: Number(veiculoId), motorista_usuario_id: motoristaId ? Number(motoristaId) : null,
+            veiculo_id: Number(veiculoId), motorista_funcionario_id: motoristaId ? Number(motoristaId) : null,
           });
           feedback('Veículo alocado.', 'ok');
           await recarregarLista();
