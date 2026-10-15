@@ -652,7 +652,7 @@ function removerItemDespacho(index) {
   const ehItemManual = item.id_retirada && item.id_retirada.startsWith('MANU');
   
   if (!ehItemManual) {
-    alert('Este item foi carregado de uma retirada anterior e não pode ser removido aqui.\n\nPara remover, realize uma devolução no almoxarifado.');
+    alert('Este item foi carregado de uma retirada anterior e não pode ser removido aqui.\n\nPara remover, realize uma devolução no estoque.');
     return;
   }
   

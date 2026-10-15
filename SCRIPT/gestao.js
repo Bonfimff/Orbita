@@ -2,7 +2,7 @@
   const MODULOS = [
     { chave: 'painel_geral', label: 'Início (Dashboard Geral)' },
     { chave: 'frotas', label: 'Frotas (Veículos, Checklists e Abastecimentos)' },
-    { chave: 'almoxarifado', label: 'Almoxarifado (Estoque e Movimentações)' },
+    { chave: 'almoxarifado', label: 'Estoque (Itens e Movimentações)' },
     { chave: 'os_campo', label: 'O.S. Campo (Operações e Bases)' },
     { chave: 'gestao', label: 'Gestão (Usuários e Permissões)' },
     // Cadastros de Análise Operacional têm 4 ações em vez de ver/executar:

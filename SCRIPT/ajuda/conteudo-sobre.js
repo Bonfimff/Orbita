@@ -31,10 +31,10 @@ window.OrbitaAjuda.registrarSecao({
       titulo: 'A plataforma',
       modulo: 'Institucional',
       corpo: [
-        { tipo: 'paragrafo', texto: '**KERNEL** é uma plataforma de gestão operacional. Ela reúne, num só lugar, o controle de almoxarifado, a gestão da frota, as ordens de serviço e a administração da operação — usuários, perfis de acesso, contratos, cadastros, relatórios e jornadas.' },
+        { tipo: 'paragrafo', texto: '**KERNEL** é uma plataforma de gestão operacional. Ela reúne, num só lugar, o controle de estoque, a gestão da frota, as ordens de serviço e a administração da operação — usuários, perfis de acesso, contratos, cadastros, relatórios e jornadas.' },
         { tipo: 'subtitulo', texto: 'O que ela se propõe a fazer' },
         { tipo: 'lista', itens: [
-          'Manter o estoque e a operação ligados: material usado numa O.S. sai do mesmo saldo do almoxarifado.',
+          'Manter o estoque e a operação ligados: material usado numa O.S. sai do mesmo saldo do estoque.',
           'Preservar o histórico: mudanças de status, alocações e movimentações de estoque não são apagadas — correções entram como novos registros.',
           'Separar os dados por contrato, de modo que cada usuário enxergue apenas o que lhe cabe.',
           'Registrar quem fez cada alteração relevante, e quando.',

@@ -17,9 +17,9 @@ window.OrbitaAjuda.registrarSecao({
       modulo: 'Geral',
       corpo: [
         { tipo: 'pergunta', texto: 'O que é o KERNEL?',
-          resposta: 'É a plataforma de gestão operacional que concentra almoxarifado, frota, ordens de serviço e a administração da operação (usuários, perfis, contratos, cadastros, relatórios e jornadas).' },
+          resposta: 'É a plataforma de gestão operacional que concentra estoque, frota, ordens de serviço e a administração da operação (usuários, perfis, contratos, cadastros, relatórios e jornadas).' },
         { tipo: 'pergunta', texto: 'Como navego pela plataforma?',
-          resposta: 'Os módulos ficam na barra superior: Almoxarifado, Frota, Ordens de Serviço e Gestão. O menu lateral esquerdo mostra as seções do módulo em que você está. Em celular, o menu lateral vira uma gaveta aberta pelo botão de três traços.' },
+          resposta: 'Os módulos ficam na barra superior: Estoque, Frota, Ordens de Serviço e Gestão. O menu lateral esquerdo mostra as seções do módulo em que você está. Em celular, o menu lateral vira uma gaveta aberta pelo botão de três traços.' },
         { tipo: 'pergunta', texto: 'Como saio do sistema?',
           resposta: 'Pelo ícone **Sair**, no rodapé do menu lateral. Ele encerra a sessão e leva você de volta ao login.' },
         { tipo: 'pergunta', texto: 'Fui desconectado sozinho. Por quê?',
@@ -49,16 +49,16 @@ window.OrbitaAjuda.registrarSecao({
     },
     {
       id: 'faq-almoxarifado',
-      titulo: 'Almoxarifado',
-      modulo: 'Almoxarifado',
+      titulo: 'Estoque',
+      modulo: 'Estoque',
       corpo: [
         { tipo: 'pergunta', texto: 'Como consulto o estoque?',
-          resposta: 'Em **Almoxarifado**, use a seção **Busca** para um item específico ou **Produtos** para a lista completa. O Painel Geral traz os números consolidados e a seção Relatório permite extrair dados.' },
+          resposta: 'Em **Estoque**, use a seção **Busca** para um item específico ou **Produtos** para a lista completa. O Painel Geral traz os números consolidados e a seção Relatório permite extrair dados.' },
         { tipo: 'pergunta', texto: 'Como registro movimentações?',
-          resposta: 'Em **Almoxarifado › Movimentações**, escolhendo **Retirada** (saída) ou **Devolução** (retorno), e informando produto, quantidade e os dados da movimentação.' },
+          resposta: 'Em **Estoque › Movimentações**, escolhendo **Retirada** (saída) ou **Devolução** (retorno), e informando produto, quantidade e os dados da movimentação.' },
         { tipo: 'pergunta', texto: 'Como funciona uma retirada?',
           resposta: 'A retirada registra a saída do material com requisitante, responsável, destino, finalidade e observações, e desconta a quantidade do saldo do produto. Retiradas originadas de uma O.S. entram na mesma lista, para que os relatórios de estoque fiquem completos.' },
-        { tipo: 'pergunta', texto: 'Qual é a diferença entre retirada pelo Almoxarifado e material de O.S.?',
+        { tipo: 'pergunta', texto: 'Qual é a diferença entre retirada pelo Estoque e material de O.S.?',
           resposta: 'Nenhuma quanto ao saldo: os dois descontam do mesmo estoque. A diferença é a rastreabilidade — o material lançado pela O.S. fica ligado àquela ordem, permitindo saber para qual serviço ele foi.' },
       ],
       relacionados: ['almoxarifado', 'os-materiais'],
@@ -66,7 +66,7 @@ window.OrbitaAjuda.registrarSecao({
     {
       id: 'faq-almox-corrigir',
       titulo: 'Como corrigir uma movimentação',
-      modulo: 'Almoxarifado',
+      modulo: 'Estoque',
       corpo: [
         { tipo: 'pergunta', texto: 'Lancei a quantidade errada. Posso editar o registro?',
           resposta: 'Depende da situação. Um material de O.S. ainda **planejado** pode ter a quantidade alterada ou ser removido, porque ainda não mexeu no estoque. Depois de **confirmado**, não: a correção é feita por estorno.' },

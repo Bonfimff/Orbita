@@ -99,10 +99,10 @@ window.OrbitaAjuda.registrarSecao({
     {
       id: 'guia-cadastrar-item',
       titulo: 'Como cadastrar um item (produto)',
-      modulo: 'Almoxarifado',
+      modulo: 'Estoque',
       corpo: [
         { tipo: 'passos', itens: [
-          'No menu principal, clique em **Almoxarifado**.',
+          'No menu principal, clique em **Estoque**.',
           'No menu lateral, vá em **Cadastros**.',
           'Escolha a aba **Produtos**.',
           'Preencha os dados do item (nome, código, categoria, unidade, quantidade, estoque mínimo, custo, fornecedor e o que mais se aplicar).',
@@ -115,11 +115,11 @@ window.OrbitaAjuda.registrarSecao({
     {
       id: 'guia-movimentacao',
       titulo: 'Como realizar uma movimentação',
-      modulo: 'Almoxarifado',
+      modulo: 'Estoque',
       corpo: [
-        { tipo: 'paragrafo', texto: 'Movimentação é a saída ou o retorno de material do almoxarifado.' },
+        { tipo: 'paragrafo', texto: 'Movimentação é a saída ou o retorno de material do estoque.' },
         { tipo: 'passos', itens: [
-          'Vá em **Almoxarifado › Movimentações**.',
+          'Vá em **Estoque › Movimentações**.',
           'Escolha **Retirada** (saída de material) ou **Devolução** (retorno).',
           'Informe o produto, a quantidade e os dados da movimentação (requisitante, responsável, destino, finalidade e observações).',
           'Confirme o registro.',
@@ -131,10 +131,10 @@ window.OrbitaAjuda.registrarSecao({
     {
       id: 'guia-consultar-estoque',
       titulo: 'Como consultar o estoque',
-      modulo: 'Almoxarifado',
+      modulo: 'Estoque',
       corpo: [
         { tipo: 'passos', itens: [
-          'Vá em **Almoxarifado**.',
+          'Vá em **Estoque**.',
           'Use **Busca** para procurar um item específico, ou **Produtos** para ver a lista completa.',
           'Para números consolidados, use **Painel Geral**; para extrair dados, use **Relatório**.',
         ] },

@@ -16,10 +16,10 @@ window.OrbitaAjuda.registrarSecao({
       titulo: 'Visão geral do KERNEL',
       modulo: 'Geral',
       corpo: [
-        { tipo: 'paragrafo', texto: 'O KERNEL é a plataforma de gestão operacional usada para controlar almoxarifado, frota, ordens de serviço e a administração da operação (usuários, perfis de acesso, contratos, cadastros e relatórios).' },
+        { tipo: 'paragrafo', texto: 'O KERNEL é a plataforma de gestão operacional usada para controlar estoque, frota, ordens de serviço e a administração da operação (usuários, perfis de acesso, contratos, cadastros e relatórios).' },
         { tipo: 'subtitulo', texto: 'Módulos disponíveis' },
         { tipo: 'lista', itens: [
-          '**Almoxarifado** — produtos, estoque, movimentações (retirada e devolução) e cadastros de apoio.',
+          '**Estoque** — produtos, estoque, movimentações (retirada e devolução) e cadastros de apoio.',
           '**Frota** — veículos, manutenção, abastecimento, cartões de abastecimento e checklist.',
           '**Ordens de Serviço** — abertura, acompanhamento, execução e encerramento das O.S.',
           '**Gestão** — área administrativa que reúne Painel Geral, Usuários, Perfis de Acesso, Contratos, Cadastros, Relatórios e Jornadas.',
@@ -51,7 +51,7 @@ window.OrbitaAjuda.registrarSecao({
       modulo: 'Geral',
       corpo: [
         { tipo: 'subtitulo', texto: 'Menu principal (topo)' },
-        { tipo: 'paragrafo', texto: 'Os módulos ficam na barra superior: **Almoxarifado**, **Frota**, **Ordens de Serviço** e **Gestão**. Relatórios e Cadastros não aparecem mais no topo — passaram a ser áreas dentro de Gestão.' },
+        { tipo: 'paragrafo', texto: 'Os módulos ficam na barra superior: **Estoque**, **Frota**, **Ordens de Serviço** e **Gestão**. Relatórios e Cadastros não aparecem mais no topo — passaram a ser áreas dentro de Gestão.' },
         { tipo: 'subtitulo', texto: 'Menu lateral (esquerda)' },
         { tipo: 'paragrafo', texto: 'O menu lateral mostra as seções do módulo em que você está. Nas páginas de Gestão ele traz também a seção **Gestão**, com atalho direto para Painel Geral, Usuários, Perfis de Acesso, Contratos, Cadastros, Relatórios e Jornadas.' },
         { tipo: 'subtitulo', texto: 'Rodapé do menu lateral' },
@@ -71,12 +71,12 @@ window.OrbitaAjuda.registrarSecao({
     //----------------------------------------------------------- Almoxarifado
     {
       id: 'almoxarifado',
-      titulo: 'Almoxarifado',
-      modulo: 'Almoxarifado',
+      titulo: 'Estoque',
+      modulo: 'Estoque',
       corpo: [
         { tipo: 'paragrafo', texto: 'Controla os produtos em estoque e a saída/entrada de material. As seções do menu lateral são:' },
         { tipo: 'tabela', cabecalho: ['Seção', 'O que faz'], linhas: [
-          ['Painel Geral', 'Visão consolidada do almoxarifado.'],
+          ['Painel Geral', 'Visão consolidada do estoque.'],
           ['Busca', 'Localiza produtos no estoque.'],
           ['Produtos', 'Consulta da lista de produtos cadastrados.'],
           ['Movimentações', 'Registro de **Retirada** e **Devolução** de material.'],
@@ -197,14 +197,14 @@ window.OrbitaAjuda.registrarSecao({
       titulo: 'Materiais na O.S. e baixa de estoque',
       modulo: 'O.S.',
       corpo: [
-        { tipo: 'paragrafo', texto: 'Materiais usados na O.S. são vinculados ao produto do almoxarifado, com quantidade. Cada material passa por situações bem definidas:' },
+        { tipo: 'paragrafo', texto: 'Materiais usados na O.S. são vinculados ao produto do estoque, com quantidade. Cada material passa por situações bem definidas:' },
         { tipo: 'tabela', cabecalho: ['Situação', 'O que significa'], linhas: [
           ['Planejado', 'Previsto para a O.S. Ainda **não** descontou do estoque.'],
           ['Utilizado', 'Uso confirmado. O estoque foi debitado neste momento.'],
           ['Estornado', 'A utilização foi revertida e a quantidade voltou ao estoque.'],
         ] },
         { tipo: 'subtitulo', texto: 'Confirmar a utilização' },
-        { tipo: 'paragrafo', texto: 'Confirmar desconta a quantidade do saldo do produto e registra a movimentação, inclusive na tela de retiradas do almoxarifado, para que os relatórios de estoque continuem completos.' },
+        { tipo: 'paragrafo', texto: 'Confirmar desconta a quantidade do saldo do produto e registra a movimentação, inclusive na tela de retiradas do estoque, para que os relatórios de estoque continuem completos.' },
         { tipo: 'subtitulo', texto: 'Corrigir uma utilização' },
         { tipo: 'paragrafo', texto: 'Uma utilização já confirmada nunca é apagada nem editada. A correção é feita por **estorno**: o sistema devolve a quantidade ao estoque e grava um novo lançamento apontando para o original. Os dois registros ficam visíveis.' },
         { tipo: 'subtitulo', texto: 'Editar ou remover' },
@@ -260,8 +260,8 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'subtitulo', texto: 'Perfis que já vêm no sistema' },
         { tipo: 'tabela', cabecalho: ['Perfil', 'Característica'], linhas: [
           ['Administrador Completo', 'Acesso total a todos os módulos.'],
-          ['Operador de Despacho', 'Opera almoxarifado, frota e O.S.; não acessa Gestão.'],
-          ['Técnico de Campo', 'Foco em O.S.; não acessa almoxarifado nem Gestão, e tem restrições operacionais.'],
+          ['Operador de Despacho', 'Opera estoque, frota e O.S.; não acessa Gestão.'],
+          ['Técnico de Campo', 'Foco em O.S.; não acessa estoque nem Gestão, e tem restrições operacionais.'],
         ] },
         { tipo: 'subtitulo', texto: 'Restrições adicionais' },
         { tipo: 'paragrafo', texto: 'Além das permissões por módulo, um perfil pode ter restrições específicas: bloquear cadastro de veículo, bloquear abertura de nova O.S., permitir apenas finalizar O.S. e bloquear atividade por contrato.' },
