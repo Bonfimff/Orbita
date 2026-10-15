@@ -2019,3 +2019,20 @@ body.modal-foto-ponto-aberto {
     padding: 12px 10px !important;
   }
 }
+
+/* Linha do ponto em grade: bolinhas e + à esquerda, mapa à direita, status embaixo */
+.ponto-row-modal .ponto-row-info {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+.ponto-row-modal .ponto-row-info > .pontos-modal-nav-inline { margin: 0 !important; }
+.ponto-row-modal .ponto-row-info > .ponto-status-select { grid-column: 1 / -1; width: 100%; }
+.ponto-row-modal .ponto-row-info > *:not(.pontos-modal-nav-inline):not(.btn-ponto-rota-modal):not(.ponto-status-select) { grid-column: 1 / -1; }
+.pontos-modal-nav-inline .ponto-modal-bolinha {
+  position: static !important;
+  transform: none !important;
+  top: auto !important;
+  align-self: center;
+}
