@@ -2260,3 +2260,7 @@ button.ponto-foto-modal-tags {
 .btn-ponto-rota-modal .ponto-icone-mapa *,
 .btn-ponto-rota-form .ponto-icone-mapa,
 .btn-ponto-rota-form .ponto-icone-mapa * { color: #fff !important; fill: #fff !important; }
+
+/* Relatório simplificado: campos antigos só aparecem se já têm conteúdo */
+#modal-editar-os .campo-legado { display: none !important; }
+#modal-editar-os .campo-legado.campo-legado-visivel { display: flex !important; }
