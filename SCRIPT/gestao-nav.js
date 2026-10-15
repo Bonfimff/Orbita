@@ -48,6 +48,7 @@
     { id: 'painel-geral', rotulo: 'Painel Geral',     pagina: 'gestao.html',     tab: 'painel-geral', modulo: 'gestao' },
     { id: 'usuarios',     rotulo: 'Usuários',         pagina: 'gestao.html',     tab: 'usuarios',     modulo: 'gestao' },
     { id: 'contratos',    rotulo: 'Contratos',        pagina: 'gestao.html',     tab: 'contratos',    modulo: 'gestao' },
+    { id: 'funcionarios', rotulo: 'Funcionários',     pagina: 'gestao.html',     tab: 'funcionarios', modulo: 'gestao' },
     { id: 'cadastros',    rotulo: 'Cadastros',        pagina: 'cadastros.html',  tab: null,           modulo: 'cadastros' },
     { id: 'relatorios',   rotulo: 'Relatórios',       pagina: 'relatorios.html', tab: null,           modulo: 'relatorios' },
     { id: 'jornada',      rotulo: 'Jornadas',         pagina: 'jornada.html',    tab: null,           modulo: 'jornada' },

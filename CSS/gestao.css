@@ -473,3 +473,44 @@
   flex: 0 0 16px !important;
   margin: 0 !important;
 }
+
+/* ===== Gestão › Funcionários ===== */
+.func-mesma-pessoa {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f6efe2;
+  border: 1px solid #e3d3b3;
+  color: #5e4a26;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.func-mesma-pessoa[hidden] { display: none; }
+.func-mesma-acao {
+  margin-left: 6px;
+  padding: 4px 10px !important;
+  border: 1px solid #86683A !important;
+  border-radius: 6px !important;
+  background: #fff !important;
+  color: #86683A !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+}
+.func-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 1.5rem 0 .75rem;
+}
+.func-filtros input[type="search"] {
+  flex: 1 1 240px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid #ddd8cf;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+}
+.func-filtros label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #555; }
