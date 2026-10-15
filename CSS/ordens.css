@@ -2315,3 +2315,39 @@ button.ponto-foto-modal-tags {
   color: #6b5228;
   font-weight: 600;
 }
+
+/* Equipe, veículos e materiais da O.S.: seletor em cima, lista embaixo */
+#os-op-equipe-secao, #os-op-frota-secao, #os-op-materiais-secao { display: flex; flex-direction: column; }
+#os-op-equipe-secao > .os-analise-cabecalho,
+#os-op-frota-secao > .os-analise-cabecalho,
+#os-op-materiais-secao > .os-analise-cabecalho { order: 0; }
+#os-op-equipe-secao > *, #os-op-frota-secao > *, #os-op-materiais-secao > * { order: 1; }
+#os-op-equipe-lista, #os-op-frota-lista, #os-op-materiais-lista { order: 2; margin-top: 10px; }
+#os-op-equipe-feedback, #os-op-frota-feedback, #os-op-materiais-feedback { order: 3; }
+
+/* Itens compactos com o remover discreto ao lado do nome */
+#modal-editar-os .os-op-card {
+  padding: 8px 10px !important;
+  min-height: 0 !important;
+  border-color: #ece8e0 !important;
+  border-radius: 8px !important;
+  background: #fff;
+  font-size: 14px;
+  gap: 6px !important;
+}
+#modal-editar-os .os-op-card > div:first-child { flex: 0 1 auto; min-width: 0; }
+.os-op-remover {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #9a9a9a;
+  cursor: pointer;
+}
+.os-op-remover:hover { background: #fbf0ee; color: #9B3B32; }

@@ -85,7 +85,7 @@
       const acoes = [];
       if (m.status === 'planejado') {
         acoes.push('<button type="button" class="btn-primario btn-sm os-op-mat-confirmar" data-id="' + m.id + '" style="min-height:36px;">Confirmar utilização</button>');
-        acoes.push('<button type="button" class="btn-secundario btn-sm os-op-mat-remover" data-id="' + m.id + '" style="min-height:36px;">Remover</button>');
+        acoes.push('<button type="button" class="os-op-remover os-op-mat-remover" title="Remover" aria-label="Remover" data-id="' + m.id + '"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>');
       } else if (m.status === 'utilizado') {
         acoes.push('<button type="button" class="btn-secundario btn-sm os-op-mat-estornar" data-id="' + m.id + '" style="min-height:36px;">Estornar</button>');
       }

@@ -90,14 +90,14 @@
       return;
     }
     container.innerHTML = membros.map((m) => (
-      '<div class="os-op-card" style="display:flex;justify-content:space-between;align-items:center;' +
+      '<div class="os-op-card" style="display:flex;justify-content:flex-start;align-items:center;' +
       'gap:8px;padding:10px;border:1px solid #e0e0e0;border-radius:6px;margin-bottom:6px;min-height:44px;">' +
       '<div><strong>' + escapar(m.usuario_nome || m.usuario_login) + '</strong>' +
       (m.funcao_nome ? ' <span style="color:#666;">(' + escapar(m.funcao_nome) + ')</span>' : '') +
       ' <span style="font-size:11px;color:' + (m.tipo === 'realizado' ? '#1a7f37' : '#999') + ';">' +
       escapar(m.tipo === 'realizado' ? 'Realizado' : 'Planejado') + '</span></div>' +
-      '<button type="button" class="btn-secundario btn-sm os-op-equipe-remover" data-id="' + m.id +
-      '" style="min-height:36px;">Remover</button></div>'
+      '<button type="button" class="os-op-remover os-op-equipe-remover" title="Remover" aria-label="Remover" data-id="' + m.id +
+      '"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'
     )).join('');
 
     container.querySelectorAll('.os-op-equipe-remover').forEach((botao) => {
