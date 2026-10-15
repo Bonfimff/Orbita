@@ -45,8 +45,8 @@ document.getElementById('btn-adicionar-item-kit')?.addEventListener('click', fun
       <img src="${imagemSrc}" alt="Imagem do Produto" style="max-width:60px;max-height:60px;border-radius:6px;box-shadow:0 1.5px 6px #0002;cursor:pointer;" onerror="this.onerror=null;this.src='../IMG/Sem_imagem.png';" onclick="expandirImagemProduto && expandirImagemProduto('${imagemSrc.replace(/'/g, '\'')}', '${produto}')">
     </td>
     <td style="text-align:center;vertical-align:middle;">
-      <button class="btn-editar-kit-item" title="Editar" style="background:#475569;color:#222;border:none;border-radius:4px;padding:4px 8px;margin-right:4px;cursor:pointer;font-size:1em;">✎</button>
-      <button class="btn-excluir-kit-item" title="Excluir" style="background:#e53935;color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:1em;">🗑</button>
+      <button class="btn-editar-kit-item" title="Editar" style="background:#475569;color:#222;border:none;border-radius:4px;padding:4px 8px;margin-right:4px;cursor:pointer;font-size:1em;"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+      <button class="btn-excluir-kit-item" title="Excluir" style="background:#e53935;color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:1em;"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
     </td>
   `;
   tbody.appendChild(tr);

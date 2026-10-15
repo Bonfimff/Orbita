@@ -1540,8 +1540,8 @@ async function carregarCronograma() {
         </div>
         ${a.observacoes ? `<div class="cronograma-item-meta">${escapeHtml(a.observacoes)}</div>` : ''}
         <div class="cronograma-item-acoes" style="margin-top:10px;">
-          <button type="button" class="btn-editar-agendamento" data-id="${a.id}" title="Editar">✏️</button>
-          <button type="button" class="btn-excluir-agendamento" data-id="${a.id}" title="Excluir">🗑️</button>
+          <button type="button" class="btn-editar-agendamento" data-id="${a.id}" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+          <button type="button" class="btn-excluir-agendamento" data-id="${a.id}" title="Excluir"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
         </div>
       </div>
     `).join('');
@@ -2515,8 +2515,8 @@ function popularTabelaBusca(ordens) {
       <td data-coluna="data_conclusao">${os.data_conclusao || '-'}</td>
       <td data-coluna="descricao" class="os-descricao-cell" title="${(os.descricao || '').replace(/"/g, '&quot;')}">${os.descricao || ''}</td>
       <td>
-        <button class="btn-acao btn-editar-os" data-id="${os.id}" title="Editar">✏️</button>
-        <button class="btn-acao btn-excluir-os" data-id="${os.id}" title="Excluir">🗑️</button>
+        <button class="btn-acao btn-editar-os" data-id="${os.id}" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+        <button class="btn-acao btn-excluir-os" data-id="${os.id}" title="Excluir"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
       </td>
     `;
     tbody.appendChild(row);

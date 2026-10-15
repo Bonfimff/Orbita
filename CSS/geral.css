@@ -2319,3 +2319,55 @@ button[type="submit"]:hover, .btn-primario:hover {
 .upload-nomes-cheio {
   color: #262626;
 }
+
+/* ===================================================================
+   BOTÕES DE AÇÃO COM ÍCONE (editar / excluir)
+   =================================================================== */
+.icone-acao { display: block; pointer-events: none; }
+.btn-acao, .gestao-btn-icone,
+.btn-editar-agendamento, .btn-excluir-agendamento {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #e6e1d8;
+  border-radius: 8px;
+  background: #fff;
+  color: #5c5c5c;
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.btn-acao:hover, .gestao-btn-icone:hover:not(:disabled),
+.btn-editar-agendamento:hover, .btn-excluir-agendamento:hover {
+  color: var(--cor-primaria-escura);
+  border-color: var(--cor-primaria);
+  background: #faf7f1;
+}
+.btn-excluir-os:hover, .gestao-excluir-usuario:hover:not(:disabled),
+.gestao-excluir-perfil:hover:not(:disabled), .gestao-excluir-contrato:hover,
+[data-remove-contrato-arquivo]:hover, .btn-excluir-agendamento:hover {
+  color: #9B3B32;
+  border-color: #d9b5b0;
+  background: #fbf3f2;
+}
+.gestao-btn-icone:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Cartões no celular: valores com respiro e botões juntos */
+@media (max-width: 768px) {
+  table.estilo-tabela:not(.sem-cartao) td {
+    padding-left: 2px !important;
+    padding-right: 4px !important;
+    max-width: none !important;
+    width: auto !important;
+    overflow: visible !important;
+  }
+  table.estilo-tabela:not(.sem-cartao) td:has(> button) {
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  table.estilo-tabela:not(.sem-cartao) td:has(> button)::before {
+    margin-right: auto;
+  }
+}

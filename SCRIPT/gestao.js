@@ -202,8 +202,8 @@
             <td>${u.email || '-'}</td>
             <td>
               <div class="gestao-acoes-cell">
-                <button type="button" class="gestao-btn-icone gestao-editar-usuario" title="Editar">✎</button>
-                <button type="button" class="gestao-btn-icone gestao-excluir-usuario" title="${u.pode_excluir ? 'Excluir' : 'Não é possível excluir este usuário'}" ${u.pode_excluir ? '' : 'disabled'}>🗑</button>
+                <button type="button" class="gestao-btn-icone gestao-editar-usuario" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+                <button type="button" class="gestao-btn-icone gestao-excluir-usuario" title="${u.pode_excluir ? 'Excluir' : 'Não é possível excluir este usuário'}" ${u.pode_excluir ? '' : 'disabled'}><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
               </div>
             </td>
           </tr>
@@ -398,8 +398,8 @@
             </div>
             ${restricoesAtivas.length ? `<div class="gestao-perfil-restricoes">${restricoesAtivas.map(r => `<span class="gestao-restricao-pill">${r.label}</span>`).join('')}</div>` : ''}
             <div class="gestao-perfil-card-acoes">
-              <button type="button" class="gestao-btn-icone gestao-editar-perfil" title="Editar">✎</button>
-              <button type="button" class="gestao-btn-icone gestao-excluir-perfil" title="${p.fabrica ? 'Perfis de fábrica não podem ser excluídos' : 'Excluir'}" ${p.fabrica ? 'disabled' : ''}>🗑</button>
+              <button type="button" class="gestao-btn-icone gestao-editar-perfil" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+              <button type="button" class="gestao-btn-icone gestao-excluir-perfil" title="${p.fabrica ? 'Perfis de fábrica não podem ser excluídos' : 'Excluir'}" ${p.fabrica ? 'disabled' : ''}><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
             </div>
           </div>
         `;
@@ -522,7 +522,7 @@
             <tr>
               <td><a href="${a.arquivo_base64}" download="${escapeHtml(a.nome_arquivo || 'arquivo')}">${escapeHtml(a.nome_arquivo || 'arquivo')}</a></td>
               <td>${a.criado_em || ''}</td>
-              <td><button type="button" class="gestao-btn-icone" data-remove-contrato-arquivo="${a.id}" title="Remover">🗑</button></td>
+              <td><button type="button" class="gestao-btn-icone" data-remove-contrato-arquivo="${a.id}" title="Remover"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button></td>
             </tr>
           `).join('')}
         </tbody>
@@ -592,8 +592,8 @@
           <td>${(c.arquivos || []).length}</td>
           <td>
             <div class="gestao-acoes-cell">
-              <button type="button" class="gestao-btn-icone gestao-editar-contrato" title="Editar">✎</button>
-              <button type="button" class="gestao-btn-icone gestao-excluir-contrato" title="Excluir">🗑</button>
+              <button type="button" class="gestao-btn-icone gestao-editar-contrato" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+              <button type="button" class="gestao-btn-icone gestao-excluir-contrato" title="Excluir"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
             </div>
           </td>
         </tr>
