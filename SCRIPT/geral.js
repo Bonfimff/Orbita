@@ -1576,14 +1576,18 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
     // Balanço do recipiente: duas frequências fora de fase dão um
     // movimento que não se repete de forma mecânica.
     const inclinacao = 0.55 * Math.sin(t * 1.3) + 0.25 * Math.sin(t * 2.1 + 1.2);
-    const RIGIDEZ = 0.018, AMORTECIMENTO = 0.012, ESPALHAR = 0.24;
+    const RIGIDEZ = 0.012, AMORTECIMENTO = 0.025, ESPALHAR = 0.1;
     for (let i = 0; i <= COLUNAS; i++) {
       const x = i / COLUNAS - 0.5;
       // força do balanço empurra o líquido para um dos lados
-      const alvo = inclinacao * x * 6;
+      const alvo = inclinacao * x * 10;
       velocidade[i] += (alvo - altura[i]) * RIGIDEZ - velocidade[i] * AMORTECIMENTO;
     }
-    for (let i = 0; i <= COLUNAS; i++) altura[i] += velocidade[i] * dt;
+    for (let i = 0; i <= COLUNAS; i++) {
+      altura[i] += velocidade[i] * dt;
+      if (!isFinite(altura[i])) { altura[i] = 0; velocidade[i] = 0; }
+      altura[i] = Math.max(-14, Math.min(14, altura[i]));
+    }
     // propagação entre vizinhos (duas passadas suavizam)
     for (let k = 0; k < 2; k++) {
       const delta = new Float32Array(COLUNAS + 1);
@@ -1660,14 +1664,15 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
       const c = Math.floor(COLUNAS * (0.3 + Math.random() * 0.4));
       for (let k = -2; k <= 2; k++) {
         const j = c + k;
-        if (j >= 0 && j <= COLUNAS) velocidade[j] += (1.6 - Math.abs(k) * 0.5);
+        if (j >= 0 && j <= COLUNAS) velocidade[j] += (0.9 - Math.abs(k) * 0.25);
       }
       proximaGota = agora + 700 + Math.random() * 900;
     }
 
     const t = agora / 1000;
-    passo(dt, t);
-    passo(dt, t);
+    // passos fixos: a simulação fica estável mesmo se a tela travar
+    const passos = Math.max(1, Math.round(dt * 2));
+    for (let k = 0; k < passos; k++) passo(0.5, t);
     desenhar(t, base);
     quadro = requestAnimationFrame(animar);
   }
