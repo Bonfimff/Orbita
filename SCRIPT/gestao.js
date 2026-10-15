@@ -563,7 +563,6 @@
     contratoEditandoId = null;
     document.dispatchEvent(new CustomEvent('orbita:contrato-selecionado', { detail: { id: null } }));
     document.getElementById('btn-salvar-contrato').textContent = 'Salvar Contrato';
-    document.getElementById('contrato-arquivo-aviso').style.display = 'block';
     renderizarArquivosContrato([]);
     const feedback = document.getElementById('contrato-form-feedback');
     feedback.style.display = 'none';
@@ -629,7 +628,6 @@
       document.getElementById('contrato-cnpj').value = c.cnpj || '';
       document.getElementById('contrato-especificacoes').value = c.especificacoes || '';
       document.getElementById('btn-salvar-contrato').textContent = 'Atualizar Contrato';
-      document.getElementById('contrato-arquivo-aviso').style.display = 'none';
       renderizarArquivosContrato(c.arquivos || []);
     } catch (error) {
       console.error('Erro ao carregar contrato:', error);
@@ -762,7 +760,6 @@
     inicializarSubabaUsuarios();
     carregarUsuarios();
     carregarPerfis();
-    document.getElementById('contrato-arquivo-aviso').style.display = 'block';
     renderizarArquivosContrato([]);
 
     document.getElementById('btn-novo-usuario')?.addEventListener('click', () => abrirModalUsuario(null));
