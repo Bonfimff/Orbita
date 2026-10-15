@@ -433,3 +433,26 @@
   padding: 0;
   accent-color: var(--cor-primaria);
 }
+
+/* Matriz de permissões e restrições: caixas alinhadas em coluna */
+.gestao-matriz-linha > input[type="checkbox"],
+.gestao-matriz-cabecalho > *:not(:first-child) {
+  justify-self: center;
+  text-align: center;
+  margin: 0;
+}
+.gestao-restricao-item > input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+}
+@media (max-width: 768px) {
+  .gestao-matriz-linha {
+    grid-template-columns: minmax(0, 1fr) 64px 64px;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .gestao-matriz-linha > span { overflow-wrap: anywhere; }
+}
