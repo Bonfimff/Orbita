@@ -1999,3 +1999,23 @@ body.modal-foto-ponto-aberto {
     letter-spacing: -0.3px;
   }
 }
+
+/* Modal da O.S. no celular: sem caixas dentro de caixas */
+@media (max-width: 768px) {
+  #modal-editar-os .os-pontos-secao {
+    padding: 12px 10px;
+  }
+  #modal-editar-os .os-pontos-secao .os-pontos-secao,
+  #modal-editar-os .modal-etapa .ponto-row-modal,
+  #modal-editar-os .modal-etapa .pontos-modal-conteudo {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  #modal-editar-os .modal-etapa {
+    padding: 12px 10px !important;
+  }
+}
