@@ -140,7 +140,7 @@
       const motivos = [
         ['sem_problema', 'Sem problema'],
         ['sem_causa', 'Sem causa'],
-        ['sem_solucao', 'Sem solucao'],
+        ['sem_solucao', 'Sem solução'],
         ['sem_resultado', 'Sem resultado'],
       ].filter(function (par) { return dados[par[0]] > 0; });
 

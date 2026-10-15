@@ -1908,6 +1908,22 @@ body.modal-foto-ponto-aberto {
   text-align: left;
 }
 
+.os-painel-lateral .os-mini-lista {
+  width: 100%;
+  margin: 0;
+}
+
+.os-painel-lateral .os-mini-lista li {
+  margin: 0;
+  padding: 8px 6px;
+  background: none;
+  border-left: none;
+  border-bottom: 1px solid #ebe8e2;
+  border-radius: 0;
+}
+
+.os-painel-lateral .os-mini-lista li:last-child { border-bottom: none; }
+
 .os-painel-lateral .os-mini-lista li:hover { background: #f1efea; }
 
 .os-painel-lateral .os-pendencia-nota {
