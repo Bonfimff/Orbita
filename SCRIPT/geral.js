@@ -938,6 +938,42 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       });
       abasModulo.forEach(aba => observer.observe(aba, { attributes: true, attributeFilter: ['style', 'class'] }));
+
+      // Tela pequena: as abas do módulo atual (Painel Geral, Busca...)
+      // aparecem dentro do módulo ativo, como submenu. Na tela grande
+      // voltam para o lugar original.
+      const moduloAtivo = secao.querySelector('[data-modulo-ref].active');
+      if (moduloAtivo) {
+        const submenu = document.createElement('div');
+        submenu.className = 'menu-submodulos';
+        moduloAtivo.after(submenu);
+        moduloAtivo.classList.add('com-submenu');
+        moduloAtivo.setAttribute('aria-expanded', 'true');
+        const abasDoModulo = Array.from(menu.querySelectorAll(':scope > .tab-btn'));
+        const ancora = document.createComment('abas-do-modulo');
+        if (abasDoModulo.length) abasDoModulo[0].before(ancora);
+        const telaPequena = window.matchMedia('(max-width: 768px)');
+        function posicionarAbas() {
+          if (!abasDoModulo.length) return;
+          if (telaPequena.matches) {
+            abasDoModulo.forEach(b => submenu.appendChild(b));
+          } else {
+            abasDoModulo.forEach(b => ancora.parentNode.insertBefore(b, ancora));
+          }
+        }
+        posicionarAbas();
+        if (telaPequena.addEventListener) telaPequena.addEventListener('change', posicionarAbas);
+        else if (telaPequena.addListener) telaPequena.addListener(posicionarAbas);
+        // Tocar no módulo ativo recolhe/abre o submenu em vez de recarregar
+        moduloAtivo.addEventListener('click', (e) => {
+          if (!telaPequena.matches) return;
+          e.stopImmediatePropagation();
+          const aberto = !submenu.classList.toggle('recolhido');
+          moduloAtivo.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+        }, true);
+        // Tocar numa aba do submenu fecha o drawer
+        submenu.addEventListener('click', (e) => { if (e.target.closest('.tab-btn')) setTimeout(fechar, 0); });
+      }
     }
 
     function estaAberto() {

@@ -2531,3 +2531,42 @@ button[type="submit"]:hover, .btn-primario:hover {
 @media (max-width: 480px) {
   .sessao-aviso { top: auto; bottom: 76px; }
 }
+
+/* Drawer no celular: abas do módulo ativo como submenu */
+@media (max-width: 768px) {
+  .menu-modulos button.com-submenu {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .menu-modulos button.com-submenu::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    margin-right: 4px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translateY(-3px);
+    transition: transform .2s ease;
+  }
+  .menu-modulos button.com-submenu[aria-expanded="false"]::after {
+    transform: rotate(-45deg);
+  }
+  .menu-submodulos {
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 6px 24px;
+    border-left: 1px solid #4a4a4a;
+  }
+  .menu-submodulos.recolhido { display: none; }
+  .menu .menu-submodulos .tab-btn {
+    padding: 11px 16px !important;
+    font-size: 15px !important;
+    border-left: 0 !important;
+    color: #d6d6d6;
+  }
+  .menu .menu-submodulos .tab-btn.active {
+    color: var(--cor-primaria);
+    background: rgba(168,134,79,.08);
+  }
+}
