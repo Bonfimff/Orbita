@@ -2052,3 +2052,30 @@ body.modal-foto-ponto-aberto {
   font-weight: 600;
   align-self: center;
 }
+
+/* Foto do ponto: botão de envio e tipo de foto na mesma linha, sem a legenda "Nenhum arquivo" */
+.ponto-foto-linha-principal {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: 8px;
+}
+.ponto-foto-linha-principal > .upload-campo {
+  order: -1;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  flex-wrap: nowrap;
+}
+.ponto-foto-linha-principal > .ponto-foto-tipo {
+  flex: 1 1 auto !important;
+  min-width: 0;
+  width: auto !important;
+}
+.ponto-foto-linha-principal .upload-nomes:not(.upload-nomes-cheio) { display: none; }
+.ponto-foto-linha-principal .upload-nomes-cheio {
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
