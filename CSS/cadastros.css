@@ -29,7 +29,7 @@
 }
 
 .cad-busca input:focus {
-  outline: 2px solid rgba(18, 181, 172, .25);
+  outline: 2px solid rgba(168, 134, 79, .25);
   border-color: var(--cor-primaria);
 }
 
@@ -57,6 +57,27 @@
 .cad-check-inline input { accent-color: var(--cor-primaria); width: 16px; height: 16px; }
 
 .cad-subabas { margin-bottom: 16px; }
+
+.cad-subabas-select {
+  display: block;
+  width: auto;
+  min-width: 220px;
+  max-width: 100%;
+  padding: 9px 12px;
+  margin-bottom: 18px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 40px;
+  background: #fff;
+  color: var(--cor-texto);
+}
+
+.cad-subabas-select:focus {
+  outline: 2px solid rgba(168, 134, 79, .25);
+  border-color: var(--cor-primaria);
+}
 
 /* ------------------------------------------------------------ acoes */
 .cad-acoes { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -120,7 +141,7 @@
 .cad-campo input:focus,
 .cad-campo select:focus,
 .cad-campo textarea:focus {
-  outline: 2px solid rgba(18, 181, 172, .25);
+  outline: 2px solid rgba(168, 134, 79, .25);
   border-color: var(--cor-primaria);
 }
 

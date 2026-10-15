@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=5" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=10" />
+  <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
   <link rel="stylesheet" href="../CSS/gestao.css?v=3" />
+  <link rel="stylesheet" href="../CSS/gestao-nav.css?v=3" />
+  <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Gestão de Usuários</title>
 </head>
@@ -13,7 +16,7 @@
   <div class="top-bar">
     <div class="top-bar-left">
       <!-- Marca no topo: so aparece em celular/tablet (ver geral.css) -->
-      <img src="../IMG/Logoescura.png" alt="ORBITA" class="top-bar-logo">
+      <img src="../IMG/Logoescura.png" alt="KERNEL" class="top-bar-logo">
       <span class="account-info">
         <img src="../IMG/user-icon.png" alt="Usuário" class="user-icon">
         <span id="logged-user"></span>
@@ -24,16 +27,14 @@
       <button class="top-tab" id="almoxarifado-tab">Almoxarifado</button>
       <button class="top-tab" id="frota-tab">Frota</button>
       <button class="top-tab" id="ordens-tab">Ordens de Serviço</button>
-      <button class="top-tab" id="relatorios-tab">Relatórios</button>
-      <button class="top-tab" id="cadastros-tab">Cadastros</button>
       <button class="top-tab active" id="gestao-tab">Gestão</button>
     </div>
   </div>
 
   <!-- Menu lateral Gestão -->
   <div class="menu menu-gestao">
+    <button class="tab-btn active" data-tab="painel-geral" data-nav-label="Painel" data-nav-icone="painel">Painel Geral</button>
     <button class="tab-btn" data-tab="usuarios" data-nav-label="Usuários" data-nav-icone="usuarios">Usuários</button>
-    <button class="tab-btn" data-tab="perfis" data-nav-label="Perfis" data-nav-icone="cadastros">Perfis de Acesso</button>
     <button class="tab-btn" data-tab="contratos" data-nav-label="Contratos" data-nav-icone="agenda">Contratos</button>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
@@ -50,70 +51,78 @@
 
   <!-- Conteúdo principal Gestão -->
   <div class="content">
-    <h2 id="legenda-principal" class="aba-legenda">Usuários</h2>
+    <h2 id="legenda-principal" class="aba-legenda">Painel Geral</h2>
     <hr class="aba-linha">
 
-    <!-- ===== ABA: USUÁRIOS ===== -->
-    <div id="usuarios" class="tab-content">
-      <div class="painel-cards">
-        <div class="painel-card">
-          <span class="painel-card-icone painel-icone-teal">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M17 8.5a3 3 0 0 1 0 5"/><path d="M18 20a6 6 0 0 0-2-4.5"/>
-            </svg>
-          </span>
-          <span class="painel-card-label">Total de cadastros</span>
-          <span class="painel-card-valor" id="gestao-total-cadastros">0</span>
-        </div>
-        <div class="painel-card">
-          <span class="painel-card-icone painel-icone-roxo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 3l7.5 3v5.5c0 4.3-3 8.2-7.5 9.5-4.5-1.3-7.5-5.2-7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/>
-            </svg>
-          </span>
-          <span class="painel-card-label">Administradores</span>
-          <span class="painel-card-valor" id="gestao-total-admins">0</span>
-        </div>
-        <div class="painel-card">
-          <span class="painel-card-icone painel-icone-azul">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M14.7 6.3a4 4 0 0 1 5 5l-9 9-5 1 1-5z"/><path d="M13 8l3 3"/>
-            </svg>
-          </span>
-          <span class="painel-card-label">Técnicos &amp; operadores</span>
-          <span class="painel-card-valor" id="gestao-total-tecnicos">0</span>
-        </div>
+    <!-- ===== ABA: PAINEL GERAL ===== -->
+    <div id="painel-geral" class="tab-content active">
+      <div class="painel-cards" id="pg-kpis"></div>
+
+      <div class="rel-duas-colunas">
+        <section class="rel-bloco">
+          <div class="rel-bloco-cabecalho">
+            <h3>Evolução das O.S.</h3>
+            <small class="rel-ajuda">Últimos 7 dias</small>
+          </div>
+          <div class="rel-grafico" id="pg-gr-evolucao"></div>
+        </section>
+        <section class="rel-bloco">
+          <div class="rel-bloco-cabecalho">
+            <h3>Situação das atividades</h3>
+            <small class="rel-ajuda">Últimos 30 dias</small>
+          </div>
+          <div class="rel-grafico" id="pg-gr-situacao"></div>
+        </section>
       </div>
 
-      <div class="gestao-toolbar">
-        <button type="button" id="btn-novo-usuario" class="btn-primario">+ Novo Usuário</button>
-      </div>
+      <section class="rel-bloco" id="pg-alertas-bloco" hidden>
+        <div class="rel-bloco-cabecalho"><h3>Alertas e informações importantes</h3></div>
+        <div class="painel-cards" id="pg-alertas"></div>
+      </section>
 
-      <div class="tabela-responsiva">
-        <table class="estilo-tabela" id="tabela-usuarios">
-          <thead>
-            <tr>
-              <th>Usuário</th>
-              <th>Cargo / Perfil</th>
-              <th>E-mail</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td colspan="4" style="padding:0.75rem;">Carregando...</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <section class="rel-bloco">
+        <div class="rel-bloco-cabecalho"><h3>Últimas atividades</h3></div>
+        <ul class="rel-cronologia" id="pg-atividades"></ul>
+      </section>
     </div>
 
-    <!-- ===== ABA: PERFIS DE ACESSO ===== -->
-    <div id="perfis" class="tab-content">
-      <div class="gestao-toolbar">
-        <button type="button" id="btn-novo-perfil" class="btn-primario">+ Novo Perfil</button>
+    <!-- ===== ABA: USUÁRIOS (com Perfis de Acesso como sub-secao) ===== -->
+    <div id="usuarios" class="tab-content">
+      <div class="opcoes-abas cad-subabas" id="usuarios-subabas">
+        <button type="button" class="top-tab2 ativo" data-usu="usuarios">Usuários</button>
+        <button type="button" class="top-tab2" data-usu="perfis">Perfis de Acesso</button>
       </div>
 
-      <div class="gestao-perfis-grid" id="grid-perfis">
-        <p style="padding:0.75rem;">Carregando...</p>
+      <div id="usuarios-lista" class="usuarios-subaba ativa">
+        <div class="gestao-toolbar">
+          <button type="button" id="btn-novo-usuario" class="btn-primario">+ Novo Usuário</button>
+        </div>
+
+        <div class="tabela-responsiva">
+          <table class="estilo-tabela" id="tabela-usuarios">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Cargo / Perfil</th>
+                <th>E-mail</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="4" style="padding:0.75rem;">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="perfis" class="usuarios-subaba" hidden>
+        <div class="gestao-toolbar">
+          <button type="button" id="btn-novo-perfil" class="btn-primario">+ Novo Perfil</button>
+        </div>
+
+        <div class="gestao-perfis-grid" id="grid-perfis">
+          <p style="padding:0.75rem;">Carregando...</p>
+        </div>
       </div>
     </div>
 
@@ -175,13 +184,7 @@
   <div class="sidebar-right sidebar-gestao">
     <img src="../IMG/Logo.png" alt="Logo" class="logo">
     <hr class="logo-divider">
-    <div id="sidebar-content">
-      <h4>Sobre esta tela</h4>
-      <ul>
-        <li>Aqui você cadastra usuários, vincula perfis de acesso prontos ou customiza permissões por pessoa.</li>
-        <li>Perfis de fábrica não podem ser excluídos, só editados.</li>
-      </ul>
-    </div>
+    <div id="sidebar-content"></div>
   </div>
 
   <!-- ===== MODAL: NOVO/EDITAR USUÁRIO ===== -->
@@ -321,8 +324,15 @@
   </div>
 
   <script src="../SCRIPT/config.js?v=2"></script>
-  <script src="../SCRIPT/gestao.js?v=3"></script>
-  <script src="../SCRIPT/geral.js?v=4"></script>
+  <script src="../SCRIPT/gestao.js?v=6"></script>
+  <script src="../SCRIPT/geral.js?v=8"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=1"></script>
+  <script src="../SCRIPT/gestao-nav.js?v=7"></script>
+  <script src="../SCRIPT/relatorios/api.js?v=1"></script>
+  <script src="../SCRIPT/relatorios/graficos.js?v=1"></script>
+  <script src="../SCRIPT/contexto/painel.js?v=1"></script>
+  <script src="../SCRIPT/gestao-painel.js?v=2"></script>
+  <script src="../SCRIPT/contexto/gestao.js?v=2"></script>
 
   <!-- Painel notificação -->
   <div id="info-modal" class="modal" style="display: none;">

@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=5" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=10" />
   <link rel="stylesheet" href="../CSS/frota.css?v=2" />
+  <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -19,7 +20,7 @@
   <div class="top-bar">
     <div class="top-bar-left">
       <!-- Marca no topo: so aparece em celular/tablet (ver geral.css) -->
-      <img src="../IMG/Logoescura.png" alt="ORBITA" class="top-bar-logo">
+      <img src="../IMG/Logoescura.png" alt="KERNEL" class="top-bar-logo">
       <span class="account-info">
         <img src="../IMG/user-icon.png" alt="Usuário" class="user-icon">
         <span id="logged-user"></span>
@@ -30,8 +31,6 @@
       <button class="top-tab" id="almoxarifado-tab">Almoxarifado</button>
       <button class="top-tab active" id="frota-tab">Frota</button>
       <button class="top-tab" id="ordens-tab">Ordens de Serviço</button>
-      <button class="top-tab" id="relatorios-tab">Relatórios</button>
-      <button class="top-tab" id="cadastros-tab">Cadastros</button>
       <button class="top-tab" id="gestao-tab">Gestão</button>
     </div>
   </div>
@@ -642,7 +641,9 @@
   ></script>
     <script src="../SCRIPT/config.js?v=2"></script>
     <script src="../SCRIPT/frota.js?v=3"></script>
-  <script src="../SCRIPT/geral.js?v=4"></script>
+  <script src="../SCRIPT/geral.js?v=8"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=1"></script>
+  <script src="../SCRIPT/gestao-nav.js?v=7"></script>
 
     <!-- Painel notificação -->
 <div id="info-modal" class="modal" style="display: none;">

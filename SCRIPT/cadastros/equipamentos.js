@@ -86,6 +86,7 @@
       feedback: 'eq-feedback',
       tituloNovo: 'Novo equipamento',
       tituloEdicao: 'Editar equipamento',
+      tipoContexto: 'equipamento',
     }, completo);
   }
 
@@ -162,7 +163,7 @@
         vazio: 'Nenhum equipamento cadastrado',
         vazioDetalhe: tipos.length
           ? 'Use "+ Novo equipamento" para cadastrar os ativos identificáveis em campo.'
-          : 'Cadastre primeiro um Tipo de equipamento em Análise Operacional.',
+          : 'Cadastre primeiro um Tipo de equipamento em Cadastro de Parâmetros.',
       });
     } catch (erro) {
       api.estadoErro(alvo, erro.message);

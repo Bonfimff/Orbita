@@ -1,0 +1,69 @@
+/* ---------------------------------------------------------------------------
+   Secao "Gestão" injetada no PAINEL LATERAL ESQUERDO (.menu) de toda pagina
+   administrativa (gestao.html, cadastros.html, relatorios.html, jornada.html).
+
+   Os botoes (.menu-gestao-item) sao <button> soltos dentro de .menu, entao ja
+   herdam de graca o visual padrao do menu lateral (regra `.menu button` em
+   geral.css: cor branca, hover escuro, borda esquerda teal quando .active).
+   Aqui so entra o agrupamento visual da secao - titulo + separador - para
+   distinguir "Gestão" da navegacao propria da pagina, que continua logo
+   abaixo, exatamente como sempre esteve.
+   --------------------------------------------------------------------------- */
+
+.menu-gestao-secao {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.menu-gestao-titulo {
+  padding: 12px 20px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.menu-gestao-item {
+  font-size: 15px;
+}
+
+/* ---------------------------------------------------------------------------
+   Atalhos das secoes internas, logo abaixo do titulo mobile
+   (.painel-cabecalho, ja existente em geral.js/geral.css - so aparece em
+   telas <=1024px). Espelham os botoes do menu lateral daquela pagina, para
+   trocar de secao sem abrir a gaveta.
+   --------------------------------------------------------------------------- */
+.painel-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.painel-subnav-item {
+  background: none;
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  padding: 6px 13px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.painel-subnav-item:hover {
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria-escura);
+}
+
+.painel-subnav-item.active {
+  background: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+  color: #fff;
+}

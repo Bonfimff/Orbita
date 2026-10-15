@@ -1,16 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 /* ===================================================================
    TOKENS GLOBAIS - cores, escala de z-index e breakpoints
    Breakpoints padrao do sistema: 480px / 768px / 1024px / 1280px
    =================================================================== */
 :root {
-  /* Cores da marca. --cor-primaria (teal) fica reservada só pra aba/menu
+  /* Cores da marca. --cor-primaria (bronze) fica reservada só pra aba/menu
      ativo e pra logo; o resto da interface usa --cor-destaque, um
      cinza-azulado neutro, pra não pesar a tela com a cor de marca em todo
      canto. */
-  --cor-primaria: #12B5AC;
-  --cor-primaria-escura: #0D948C;
-  --cor-destaque: #475569;
-  --cor-destaque-escura: #334155;
+  --cor-primaria: #A8864F;
+  --cor-primaria-escura: #86683A;
+  --cor-destaque: #262626;
+  --cor-destaque-escura: #0F0F0F;
   --cor-escura: #292929;
   --cor-texto: #060606;
   --cor-fundo: #FFFFFF;
@@ -42,7 +43,8 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  letter-spacing: -0.005em;
   min-height: 100vh;
   display: grid;
   grid-template-columns: 200px 1fr 300px;
@@ -98,14 +100,14 @@ body {
 .top-tab:hover {
   background-color: #444;
   color: #FFFFFF; 
-  border: 1px solid #12B5AC; 
+  border: 1px solid #A8864F; 
   transform: none; 
 }
 
 .top-tab.active {
   background-color: #FFFFFF;
   color: #292929; /* Cor cinza para o texto */
-  border: 2px solid #12B5AC;
+  border: 2px solid #A8864F;
 }
 
 .top-tab.visible {
@@ -155,9 +157,9 @@ body {
 }
 
 .menu button.active {
-  border-left-color: #12B5AC;
+  border-left-color: #A8864F;
   font-weight: bold;
-  color: #12B5AC;
+  color: #A8864F;
 }
 
 
@@ -531,7 +533,7 @@ button[type="submit"]:hover, .btn-primario:hover {
     text-align: center;
     font-size: 16px;
     font-weight: bold;
-    color: #12B5AC;
+    color: #A8864F;
     background-color: #292929;
     padding: 10px 20px;
     border-radius: 8px;
@@ -800,6 +802,95 @@ button[type="submit"]:hover, .btn-primario:hover {
   border-radius: 4px;
   font-size: 14px;
   color: #060606;
+}
+
+/* ================== Contexto Operacional (painel lateral direito) ================== */
+/* Reaproveita a mesma linguagem visual do bloco antigo (h4 + ul/li com borda
+   esquerda teal) - so os tipos de <li> abaixo sao novos. */
+
+.ctx-subtitulo-topo {
+  width: 95%;
+  margin: -4px auto 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b7280;
+  text-align: center;
+}
+
+.sidebar-right li.ctx-subtitulo {
+  background: none;
+  border-left: none;
+  padding: 12px 4px 4px;
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.sidebar-right li.ctx-kpi {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ctx-kpi-rotulo {
+  color: #4b5563;
+}
+
+.ctx-kpi-valor {
+  font-weight: 700;
+  color: #292929;
+  font-size: 15px;
+}
+
+.sidebar-right li.ctx-alerta {
+  border-left-color: #d97706;
+  background-color: #fffbeb;
+  color: #92400e;
+}
+
+.sidebar-right li.ctx-status {
+  border-left-color: #cbd5e1;
+}
+
+.sidebar-right li.ctx-atalho {
+  background: none;
+  border-left: none;
+  padding: 6px 10px;
+}
+
+.ctx-atalho a {
+  color: var(--cor-primaria, #0f766e);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13.5px;
+}
+
+.ctx-atalho a:hover {
+  text-decoration: underline;
+}
+
+.sidebar-right li.ctx-separador {
+  background: none;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 4px 8px 10px;
+  padding: 0;
+  height: 0;
+}
+
+.sidebar-right li.ctx-vazio,
+.sidebar-right li.ctx-texto {
+  background: none;
+  border-left: none;
+  color: #6b7280;
+  font-size: 13.5px;
+  text-align: center;
 }
 
 /* Modal */
@@ -1346,11 +1437,44 @@ button[type="submit"]:hover, .btn-primario:hover {
 }
 
 /* ---------- Cabeçalho do painel: título + trilha ---------- */
+/* Só substitui a legenda (.aba-legenda) em telas de celular - a partir de
+   tablet a legenda normal volta e as opções de sub-aba (.painel-subnav)
+   ficam de fora, já que o menu lateral fixo cobre a mesma navegação. */
 .painel-cabecalho {
   display: none;
 }
 
-@media (max-width: 1024px) {
+/* Estilo da trilha (Módulo › Área › Aba) - compartilhado pelas duas versões:
+   a que substitui a legenda no celular (.painel-trilha, dentro de
+   .painel-cabecalho) e a que fica logo abaixo da legenda normal em telas
+   maiores (.aba-trilha, ver iniciarCabecalhoPainel() em geral.js). */
+.painel-trilha,
+.aba-trilha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.painel-trilha-item {
+  color: var(--cor-primaria);
+  font-weight: 600;
+}
+
+.painel-trilha-atual {
+  color: #8a97a3;
+}
+
+.painel-trilha-sep {
+  color: #c4ced6;
+}
+
+.aba-trilha {
+  margin: 6px 0 18px;
+}
+
+@media (max-width: 767px) {
   .painel-cabecalho {
     display: block;
     margin-bottom: 16px;
@@ -1365,70 +1489,58 @@ button[type="submit"]:hover, .btn-primario:hover {
   }
 
   .painel-trilha {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px;
     margin-top: 4px;
-    font-size: 13px;
   }
 
-  .painel-trilha-item {
-    color: var(--cor-primaria);
-    font-weight: 600;
-  }
-
-  .painel-trilha-atual {
-    color: #8a97a3;
-  }
-
-  .painel-trilha-sep {
-    color: #c4ced6;
-  }
-
-  /* A faixa escura .aba-legenda é substituída pelo título acima */
+  /* A faixa escura .aba-legenda é substituída pelo título acima, e a trilha
+     "sempre visível" cede lugar à trilha do próprio painel-cabecalho. */
   .aba-legenda,
-  .aba-linha {
+  .aba-linha,
+  .aba-trilha {
     display: none;
   }
 }
 
 /* ---------- Sub-abas em pílula (Entrada / Retirada / ...) ---------- */
+/* Visual fixo em qualquer tamanho de tela - não é só um ajuste de celular,
+   então fica FORA de media query (antes só valia até 1024px; acima disso a
+   pílula perdia o arredondado/espaçamento e virava uma faixa com bordas
+   coladas, tipo abas de tabela). */
+.opcoes-abas {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  margin: 0 0 16px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.opcoes-abas::-webkit-scrollbar {
+  display: none;
+}
+
+.opcoes-abas .top-tab2 {
+  flex: 0 0 auto;
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8a97a3;
+  white-space: nowrap;
+}
+
+.opcoes-abas .top-tab2.active,
+.opcoes-abas .top-tab2.active-requisitantes {
+  color: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+  background: #fff;
+}
+
 @media (max-width: 1024px) {
-  .opcoes-abas {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 4px;
-    margin: 0 0 16px;
-    padding-bottom: 4px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .opcoes-abas::-webkit-scrollbar {
-    display: none;
-  }
-
-  .opcoes-abas .top-tab2 {
-    flex: 0 0 auto;
-    background: none;
-    border: 2px solid transparent;
-    border-radius: 8px;
-    padding: 7px 12px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #8a97a3;
-    white-space: nowrap;
-  }
-
-  .opcoes-abas .top-tab2.active,
-  .opcoes-abas .top-tab2.active-requisitantes {
-    color: var(--cor-primaria);
-    border-color: var(--cor-primaria);
-    background: #fff;
-  }
-
   .entrada-header {
     display: block;
   }
@@ -1477,7 +1589,7 @@ button[type="submit"]:hover, .btn-primario:hover {
   .content form textarea:focus {
     outline: none;
     border-color: var(--cor-primaria);
-    box-shadow: 0 0 0 3px rgba(18, 181, 172, 0.15);
+    box-shadow: 0 0 0 3px rgba(168, 134, 79, 0.15);
   }
 
   /* Botões: primário sólido escuro, secundário contornado */
@@ -1655,7 +1767,7 @@ button[type="submit"]:hover, .btn-primario:hover {
   .busca-produtos-campos select:focus {
     outline: none;
     border-color: var(--cor-primaria);
-    box-shadow: 0 0 0 3px rgba(18, 181, 172, 0.15);
+    box-shadow: 0 0 0 3px rgba(168, 134, 79, 0.15);
   }
 
   /* Seletor de colunas: linha de cartão com o rótulo à esquerda */

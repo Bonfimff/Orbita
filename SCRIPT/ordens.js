@@ -2637,6 +2637,18 @@ async function abrirModalEdicao(id) {
     if (window.AnaliseOS && typeof window.AnaliseOS.carregar === 'function') {
       window.AnaliseOS.carregar(os.id);
     }
+
+    // Integracao operacional (equipe/frota/materiais cadastrados). Mesma
+    // regra: falha aqui nunca derruba a tela de O.S.
+    if (window.OSEquipe && typeof window.OSEquipe.carregar === 'function') {
+      window.OSEquipe.carregar(os.id);
+    }
+    if (window.OSFrota && typeof window.OSFrota.carregar === 'function') {
+      window.OSFrota.carregar(os.id);
+    }
+    if (window.OSMateriais && typeof window.OSMateriais.carregar === 'function') {
+      window.OSMateriais.carregar(os.id, os.numero_os);
+    }
   } catch (e) {
     console.error('Erro ao carregar OS para edição:', e);
   }

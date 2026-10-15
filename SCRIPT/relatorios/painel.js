@@ -84,6 +84,10 @@
 
       // Ocorrência sem problema classificado é contada no volume mas não pode
       // entrar nos rankings por problema. Avisar é mais honesto que omitir.
+      // Contexto Operacional (painel lateral) reaproveita este mesmo resumo -
+      // ja respeita os filtros atuais e evita uma segunda consulta identica.
+      document.dispatchEvent(new CustomEvent('orbita:resumo-relatorio', { detail: dados }));
+
       const aviso = elemento('rel-aviso-classificacao');
       if (aviso) {
         const pendentes = Number(dados.sem_classificacao) || 0;

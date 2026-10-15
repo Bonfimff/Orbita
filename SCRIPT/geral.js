@@ -1,4 +1,41 @@
 //======================================================================================================
+// FONTE ÚNICA DOS MÓDULOS PERMITIDOS
+// Antes a resposta de /modulos era lida em dois caminhos separados (cache e
+// fetch), cada um com a sua cópia do laço que aplica as permissões ao menu —
+// duas cópias da mesma regra, que podiam divergir. Aqui vira uma promessa só,
+// reaproveitada por quem precisar (menu principal e barra de Gestão), sem
+// disparar dois fetches na mesma carga de página.
+//======================================================================================================
+let _promessaModulos = null;
+window.obterModulos = function obterModulos() {
+  if (_promessaModulos) return _promessaModulos;
+
+  const cache = localStorage.getItem('userData');
+  if (cache) {
+    try {
+      _promessaModulos = Promise.resolve(JSON.parse(cache));
+      return _promessaModulos;
+    } catch (e) {
+      // Cache corrompido: ignora e busca de novo em vez de travar o menu.
+    }
+  }
+
+  const token = localStorage.getItem('token');
+  _promessaModulos = fetch(apiUrl('/modulos'), {
+    method: 'GET',
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status !== 'ok') throw new Error(data.mensagem || 'Falha ao obter módulos');
+      const info = { usuario: data.usuario, modulos: data.modulos };
+      localStorage.setItem('userData', JSON.stringify(info));
+      return info;
+    });
+  return _promessaModulos;
+};
+
+//======================================================================================================
 // FUNÇÃO PRINCIPAL: Inicialização do Sistema
 // Inicializa o sistema ao carregar a página, configurando módulos, autenticação, eventos de interface e responsividade.
 //======================================================================================================
@@ -10,7 +47,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     ordens: 'ordens.html',
     gestao: 'gestao.html',
     relatorios: 'relatorios.html',
-    cadastros: 'cadastros.html'
+    cadastros: 'cadastros.html',
+    jornada: 'jornada.html'
   };
 
   const userNameElement = document.getElementById('logged-user');
@@ -534,7 +572,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       
       #profile-photo:hover {
         transform: scale(1.05);
-        box-shadow: 0 5px 15px rgba(18, 181, 172, 0.3);
+        box-shadow: 0 5px 15px rgba(168, 134, 79, 0.3);
       }
     `;
     document.head.appendChild(style);
@@ -695,64 +733,51 @@ document.addEventListener('DOMContentLoaded', async function () {
     userNameElement.textContent = `Bem-vindo, ${username}!`;
   }
 
-  const cachedData = localStorage.getItem('userData');
-  if (cachedData) {
-    const userData = JSON.parse(cachedData);
-    const { usuario, modulos } = userData;
-    if (userNameElement && !username && usuario) {
-      userNameElement.textContent = `Bem-vindo, ${usuario}!`;
-    }
+  // Aplica as permissões ao menu principal. Um caminho só, alimentado por
+  // window.obterModulos() (cache ou servidor), em vez das duas cópias que
+  // existiam aqui antes.
+  function aplicarPermissoesMenu(modulos) {
     Object.keys(modules).forEach(modulo => {
       const tab = document.getElementById(`${modulo}-tab`);
+      // Relatórios/Cadastros/Jornada não são mais botões do menu principal
+      // (viraram subabas de Gestão); continuam no mapa porque ele é o
+      // registro de destinos usado pela navegação.
       if (!tab) return;
-      if (modulos && modulos[modulo]) {
+
+      let permitido = !!(modulos && modulos[modulo]);
+      let destino = modules[modulo];
+
+      // Gestão virou o guarda-chuva administrativo. Ela precisa aparecer para
+      // quem tem QUALQUER uma das suas subáreas: esconder aqui tiraria de um
+      // usuário que só tem 'relatorios' o único caminho que restou até ele.
+      // Isso não concede acesso novo — cada subaba continua exibida apenas
+      // com a permissão dela, e o bloqueio real segue nos endpoints da API.
+      if (modulo === 'gestao' && window.GestaoNav) {
+        const primeira = window.GestaoNav.primeiraPermitida(modulos);
+        permitido = !!primeira;
+        if (primeira) destino = primeira.pagina;
+      }
+
+      if (permitido) {
         tab.classList.remove('modulo-oculto');
         tab.addEventListener('click', () => {
           if (typeof window.fecharDrawer === 'function') window.fecharDrawer();
-          window.location.href = modules[modulo];
+          window.location.href = destino;
         });
       } else {
         tab.classList.add('modulo-oculto');
       }
     });
-  } else {
-    try {
-      const res = await fetch(apiUrl('/modulos'), {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        }
-      });
-      const data = await res.json();
-      if (data.status === 'ok') {
-        const modulos = data.modulos; //  PEGA OS MÓDULOS DO SERVIDOR
-        const usuario = data.usuario;
-        // Salva dados SEM incluir o userId (já está no localStorage)
-        localStorage.setItem('userData', JSON.stringify({ usuario, modulos }));
-        //  SÓ ATUALIZA O NOME SE NÃO CONSEGUIU PEGAR DO USUARIO DO LOCALSTORAGE
-        if (userNameElement && !username && usuario) {
-          userNameElement.textContent = `Bem-vindo, ${usuario}!`;
-        }
-        Object.keys(modules).forEach(modulo => {
-          const tab = document.getElementById(`${modulo}-tab`);
-          if (!tab) return;
-          if (modulos[modulo]) {
-            tab.classList.remove('modulo-oculto');
-            tab.addEventListener('click', () => {
-              if (typeof window.fecharDrawer === 'function') window.fecharDrawer();
-              window.location.href = modules[modulo];
-            });
-          } else {
-            tab.classList.add('modulo-oculto');
-          }
-        });
-      } else {
-        console.error('Erro ao obter módulos:', data.mensagem);
-      }
-    } catch (err) {
-      console.error('Erro ao conectar com o servidor:', err);
+  }
+
+  try {
+    const info = await window.obterModulos();
+    if (userNameElement && !username && info.usuario) {
+      userNameElement.textContent = `Bem-vindo, ${info.usuario}!`;
     }
+    aplicarPermissoesMenu(info.modulos);
+  } catch (err) {
+    console.error('Erro ao obter módulos:', err);
   }
 
   // MODIFICA O LOGOUT BUTTON PARA USAR A NOVA FUNÇÃO
@@ -765,30 +790,43 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 //======================================================================================================
-// FUNÇÃO PRINCIPAL: Configurar Modal de Informações
-// Configura o modal de informações (Info) e seus eventos ao carregar a página.
+// FUNÇÃO PRINCIPAL: Botão de Informações e Ajuda
+// O ícone (i) do rodapé do menu lateral abre a Central de Informação e Ajuda
+// (SCRIPT/ajuda/central.js): manual, perguntas frequentes, guia rápido e
+// informações da plataforma. Continua sendo UM único ícone — o que ganhou
+// seções foi a Central, não o rodapé.
+//
+// Se a Central não estiver carregada na página, cai no balão simples que
+// existia antes, para nenhuma tela ficar com um botão morto.
 //======================================================================================================
 document.addEventListener('DOMContentLoaded', function () {
-  const infoButton = document.getElementById('btn-info'); // Botão "Info"
-  const modal = document.getElementById('info-modal'); // Painel flutuante
-  const modalOkButton = document.getElementById('modal-ok-btn'); // Botão "OK" no modal
+  const infoButton = document.getElementById('btn-info');
+  const modal = document.getElementById('info-modal');
+  const modalOkButton = document.getElementById('modal-ok-btn');
 
-  // Exibir o modal ao clicar no botão "Info"
-  infoButton.addEventListener('click', function () {
-    modal.style.display = 'flex'; // Exibe o modal
-  });
+  if (infoButton) {
+    infoButton.addEventListener('click', function () {
+      if (window.OrbitaAjuda && typeof window.OrbitaAjuda.abrir === 'function') {
+        window.OrbitaAjuda.abrir();
+        return;
+      }
+      if (modal) modal.style.display = 'flex';
+    });
+  }
 
-  // Fechar o modal ao clicar no botão "OK"
-  modalOkButton.addEventListener('click', function () {
-    modal.style.display = 'none'; // Oculta o modal
-  });
-
-  // Fechar o modal ao clicar fora do conteúdo
-  modal.addEventListener('click', function (event) {
-    if (event.target === modal) {
-      modal.style.display = 'none'; // Oculta o modal
+  // Balão legado: só é ligado se ainda existir na página.
+  if (modal) {
+    if (modalOkButton) {
+      modalOkButton.addEventListener('click', function () {
+        modal.style.display = 'none';
+      });
     }
-  });
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  }
 });
 
 
@@ -1074,6 +1112,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const elTitulo = bloco.querySelector('.painel-titulo');
     const elTrilha = bloco.querySelector('.painel-trilha');
+
+    // A partir de tablet a legenda normal (.aba-legenda) volta a aparecer -
+    // mas a orientacao hierarquica (mesma trilha do titulo mobile) continua
+    // valendo em qualquer tamanho de tela, agora logo ABAIXO da legenda em
+    // vez de substitui-la. E um unico nav, reposicionado a cada troca de
+    // aba - igual ao SCRIPT/relatorios/filtros.js faz com a barra de filtros.
+    const elTrilhaSempre = document.createElement('nav');
+    elTrilhaSempre.className = 'aba-trilha';
+    elTrilhaSempre.setAttribute('aria-label', 'Trilha de navegacao');
     const moduloAtivo = document.getElementById('modulo-ativo');
     const nomeModulo = moduloAtivo ? moduloAtivo.textContent.trim() : '';
 
@@ -1133,22 +1180,49 @@ document.addEventListener('DOMContentLoaded', function () {
         if (daLegenda && !mesmoNome(daLegenda, nomeAba)) subAba = daLegenda;
       }
 
-      elTitulo.textContent = subAba || nomeAba;
+      // Ponto de extensao: uma pagina inteira pode ser, ela propria, uma
+      // subarea de outra (ex.: cadastros.html e "Cadastros" dentro de
+      // Gestao). Nesse caso o titulo mobile deve mostrar o nome da PAGINA,
+      // nao o nome da aba interna - a aba interna vira o nivel seguinte da
+      // trilha, e so isso muda; a logica de nomeAba/subAba acima continua a
+      // mesma usada por almoxarifado.html e por toda pagina de duas abas.
+      // Ausente (undefined) em toda pagina que nao se registrar - zero
+      // mudanca de comportamento fora disso.
+      const subareaFixa = window.__painelSubareaFixa;
+
+      elTitulo.textContent = subareaFixa || subAba || nomeAba;
 
       const partes = [];
       if (nomeModulo) partes.push(nomeModulo);
+      if (subareaFixa) partes.push(subareaFixa);
       if (nomeAba) partes.push(nomeAba);
       if (subAba && !mesmoNome(subAba, nomeAba)) partes.push(subAba);
 
-      elTrilha.innerHTML = partes.map((parte, i) => {
-        const classe = i === partes.length - 1 ? 'painel-trilha-atual' : 'painel-trilha-item';
-        const sep = i ? '<span class="painel-trilha-sep" aria-hidden="true">&rsaquo;</span>' : '';
-        return sep + '<span class="' + classe + '"></span>';
-      }).join('');
-      // textContent (e nao innerHTML) para nao interpretar o texto vindo da pagina
-      elTrilha.querySelectorAll('span:not(.painel-trilha-sep)').forEach((el, i) => {
-        el.textContent = partes[i];
-      });
+      function renderTrilha(nav) {
+        nav.innerHTML = partes.map((parte, i) => {
+          const classe = i === partes.length - 1 ? 'painel-trilha-atual' : 'painel-trilha-item';
+          const sep = i ? '<span class="painel-trilha-sep" aria-hidden="true">&rsaquo;</span>' : '';
+          return sep + '<span class="' + classe + '"></span>';
+        }).join('');
+        // textContent (e nao innerHTML) para nao interpretar o texto vindo da pagina
+        nav.querySelectorAll('span:not(.painel-trilha-sep)').forEach((el, i) => {
+          el.textContent = partes[i];
+        });
+      }
+
+      renderTrilha(elTrilha);
+      renderTrilha(elTrilhaSempre);
+
+      // Reposiciona a trilha "sempre visivel" logo abaixo da legenda ativa
+      // (ou do wrapper .aba-legenda-linha, quando a pagina tiver um - ver
+      // relatorios.html) - assim ela acompanha qualquer troca de aba. Usa a
+      // mesma `legenda` (com fallback para #legenda-principal) calculada
+      // acima, porque paginas como gestao.html/frota.html tem UM h2 global
+      // fora de cada .tab-content, reescrito por JS - nao um por aba.
+      if (legenda) {
+        const host = legenda.closest('.aba-legenda-linha') || legenda;
+        host.insertAdjacentElement('afterend', elTrilhaSempre);
+      }
     }
 
     atualizar();

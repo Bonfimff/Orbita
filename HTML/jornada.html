@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=10" />
+  <link rel="stylesheet" href="../CSS/jornada.css?v=1" />
+  <link rel="stylesheet" href="../CSS/gestao-nav.css?v=3" />
+  <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
+  <link rel="icon" href="../IMG/Icone.png" type="image/png">
+  <title>Jornada Operacional</title>
+</head>
+<body>
+
+  <!-- Menu lateral -->
+  <div class="menu">
+    <button class="tab-btn active" data-tab="meu-painel" data-nav-label="Meu Painel" data-nav-icone="painel">Meu Painel</button>
+    <button class="tab-btn" data-tab="administracao" data-nav-label="Administração" data-nav-icone="usuarios">Administração</button>
+    <div class="menu-bottom">
+      <button class="menu-icon-btn" id="btn-config">
+        <img src="../IMG/configuracoes.png" alt="Configurações">
+      </button>
+      <button class="menu-icon-btn" id="btn-info">
+        <img src="../IMG/info.png" alt="Informações">
+      </button>
+      <button class="menu-icon-btn" id="btn-logout">
+        <img src="../IMG/sair.png" alt="Sair">
+      </button>
+    </div>
+  </div>
+
+  <!-- Barra superior -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <img src="../IMG/Logoescura.png" alt="KERNEL" class="top-bar-logo">
+      <span class="account-info">
+        <img src="../IMG/user-icon.png" alt="Usuário" class="user-icon">
+        <span id="logged-user"></span>
+        <span id="modulo-ativo">Gestão</span>
+      </span>
+    </div>
+    <div class="top-bar-right">
+      <button class="top-tab" id="almoxarifado-tab">Almoxarifado</button>
+      <button class="top-tab" id="frota-tab">Frota</button>
+      <button class="top-tab" id="ordens-tab">Ordens de Serviço</button>
+      <button class="top-tab active" id="gestao-tab">Gestão</button>
+    </div>
+  </div>
+
+  <!-- Conteúdo principal -->
+  <div class="content">
+
+    <!-- ===== ABA: MEU PAINEL ===== -->
+    <div id="meu-painel" class="tab-content active">
+      <h2 class="aba-legenda">Minha Jornada</h2>
+      <hr class="aba-linha">
+
+      <div id="jor-status-card" class="jor-status-card jor-status-fora">
+        <div class="jor-status-titulo">
+          <span id="jor-status-icone">●</span>
+          <span id="jor-status-texto">FORA DE JORNADA</span>
+        </div>
+        <div class="jor-status-detalhe" id="jor-status-detalhe">Nenhuma jornada em andamento.</div>
+        <div class="jor-status-tempo" id="jor-status-tempo"></div>
+
+        <div class="jor-acoes">
+          <button id="jor-btn-iniciar" class="jor-btn jor-btn-iniciar">Iniciar Jornada</button>
+          <button id="jor-btn-pausar" class="jor-btn jor-btn-pausar" style="display:none">Pausar</button>
+          <button id="jor-btn-retomar" class="jor-btn jor-btn-retomar" style="display:none">Retomar</button>
+          <button id="jor-btn-finalizar" class="jor-btn jor-btn-finalizar" style="display:none">Finalizar Jornada</button>
+        </div>
+        <div id="jor-mensagem" class="jor-mensagem"></div>
+      </div>
+
+      <h3 class="jor-subtitulo">Meu histórico recente</h3>
+      <div class="jor-tabela-wrap">
+        <table class="jor-tabela" id="jor-tabela-historico">
+          <thead>
+            <tr>
+              <th>Início</th>
+              <th>Término</th>
+              <th>Duração</th>
+              <th>Status</th>
+              <th>Observação</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== ABA: ADMINISTRAÇÃO ===== -->
+    <div id="administracao" class="tab-content">
+      <h2 class="aba-legenda">Administração de Jornadas</h2>
+      <hr class="aba-linha">
+
+      <h3 class="jor-subtitulo">Funcionários em jornada agora</h3>
+      <div class="jor-tabela-wrap">
+        <table class="jor-tabela" id="jor-tabela-painel">
+          <thead>
+            <tr>
+              <th>Funcionário</th>
+              <th>Contrato</th>
+              <th>Situação</th>
+              <th>Desde</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h3 class="jor-subtitulo">Histórico / busca</h3>
+      <div class="jor-filtros">
+        <input type="text" id="jor-filtro-usuario" placeholder="ID do funcionário">
+        <select id="jor-filtro-status">
+          <option value="">Todos os status</option>
+          <option value="aberta">Aberta</option>
+          <option value="pausada">Pausada</option>
+          <option value="encerrada">Encerrada</option>
+          <option value="cancelada">Cancelada</option>
+        </select>
+        <input type="date" id="jor-filtro-inicio">
+        <input type="date" id="jor-filtro-fim">
+        <button id="jor-btn-buscar" class="jor-btn jor-btn-iniciar">Buscar</button>
+      </div>
+      <div class="jor-tabela-wrap">
+        <table class="jor-tabela" id="jor-tabela-busca">
+          <thead>
+            <tr>
+              <th>Funcionário</th>
+              <th>Contrato</th>
+              <th>Início</th>
+              <th>Término</th>
+              <th>Duração</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="jor-admin-mensagem" class="jor-mensagem"></div>
+    </div>
+
+  </div>
+
+  <script src="../SCRIPT/config.js"></script>
+  <script src="../SCRIPT/geral.js?v=8"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=1"></script>
+  <script src="../SCRIPT/gestao-nav.js?v=7"></script>
+  <script src="../SCRIPT/jornada.js"></script>
+
+  <!-- Painel notificação -->
+  <div id="info-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <p>Versão de desenvolvimento: 1.0.0</p>
+      <button id="modal-ok-btn">OK</button>
+    </div>
+  </div>
+</body>
+</html>

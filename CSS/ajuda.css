@@ -1,0 +1,525 @@
+/* ---------------------------------------------------------------------------
+   Central de Informacao e Ajuda.
+
+   Usa os tokens da marca ja definidos em geral.css (--cor-primaria teal,
+   --cor-destaque, --cor-borda...) para que a Central pareca parte nativa do
+   ORBITA, e nao uma ferramenta externa embutida.
+   --------------------------------------------------------------------------- */
+
+.ajuda-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 24px;
+}
+
+.ajuda-overlay.aberto {
+  display: flex;
+}
+
+body.ajuda-aberta {
+  overflow: hidden;
+}
+
+.ajuda-painel {
+  display: flex;
+  flex-direction: column;
+  width: min(1080px, 100%);
+  height: min(760px, 100%);
+  background: var(--cor-fundo);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+}
+
+/* ----------------------------------------------------------- cabecalho */
+.ajuda-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--cor-escura);
+  color: #fff;
+}
+
+.ajuda-cabecalho-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ajuda-cabecalho-titulo {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.ajuda-cabecalho-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.ajuda-fechar {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.2s;
+}
+
+.ajuda-fechar:hover {
+  color: #fff;
+}
+
+/* -------------------------------------------------------------- busca */
+.ajuda-busca-area {
+  padding: 12px 20px 0;
+}
+
+.ajuda-busca {
+  width: 100%;
+  padding: 9px 14px;
+  font-size: 14px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.ajuda-busca:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+}
+
+/* ------------------------------------------------------------- secoes */
+.ajuda-secoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.ajuda-secao-btn {
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #808080;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.ajuda-secao-btn:hover {
+  background: #f0f0f0;
+  color: #606060;
+}
+
+.ajuda-secao-btn.active {
+  color: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+}
+
+/* -------------------------------------------------------------- corpo */
+.ajuda-corpo {
+  display: grid;
+  grid-template-columns: 232px 1fr;
+  flex: 1;
+  min-height: 0;
+}
+
+.ajuda-indice {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 10px;
+  overflow-y: auto;
+  background: var(--cor-fundo-alt);
+  border-right: 1px solid var(--cor-borda);
+}
+
+.ajuda-indice-titulo {
+  padding: 4px 10px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9aa5b1;
+}
+
+.ajuda-indice-vazio {
+  padding: 4px 10px;
+  font-size: 13px;
+  color: #8a97a3;
+}
+
+.ajuda-indice-item {
+  background: none;
+  border: none;
+  border-left: 3px solid transparent;
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 13.5px;
+  color: #4b5563;
+  cursor: pointer;
+  border-radius: 0 6px 6px 0;
+  transition: all 0.15s;
+}
+
+.ajuda-indice-item:hover {
+  background: #eceff1;
+  color: var(--cor-texto);
+}
+
+.ajuda-indice-item.active {
+  border-left-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+  font-weight: 700;
+  background: #fff;
+}
+
+.ajuda-conteudo {
+  padding: 20px 26px 40px;
+  overflow-y: auto;
+}
+
+/* ------------------------------------------------------------ conteudo */
+.ajuda-trilha {
+  font-size: 12px;
+  color: #8a97a3;
+  margin-bottom: 14px;
+}
+
+.ajuda-trilha span {
+  color: #c4ced6;
+  margin: 0 4px;
+}
+
+.ajuda-secao-descricao {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.ajuda-topico {
+  padding: 18px 0 8px;
+  border-bottom: 1px solid #eef1f4;
+  scroll-margin-top: 8px;
+}
+
+.ajuda-topico:last-child {
+  border-bottom: none;
+}
+
+.ajuda-topico-destaque {
+  animation: ajuda-pisca 1.6s ease-out;
+}
+
+@keyframes ajuda-pisca {
+  0% { background: rgba(168, 134, 79, 0.14); }
+  100% { background: transparent; }
+}
+
+.ajuda-modulo-tag {
+  display: inline-block;
+  padding: 2px 9px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  background: rgba(168, 134, 79, 0.12);
+  color: var(--cor-primaria-escura);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ajuda-topico-titulo {
+  margin: 0 0 12px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.ajuda-subtitulo {
+  margin: 20px 0 8px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--cor-destaque-escura);
+}
+
+.ajuda-paragrafo {
+  margin: 0 0 12px;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #374151;
+}
+
+.ajuda-lista,
+.ajuda-passos {
+  margin: 0 0 14px;
+  padding-left: 22px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.ajuda-passos li {
+  margin-bottom: 4px;
+}
+
+.ajuda-aviso,
+.ajuda-nota {
+  margin: 0 0 14px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  font-size: 13.8px;
+  line-height: 1.6;
+}
+
+.ajuda-aviso {
+  background: #fff7ed;
+  border-left: 4px solid var(--cor-aviso);
+  color: #7c3f12;
+}
+
+.ajuda-nota {
+  background: #f0fdfa;
+  border-left: 4px solid var(--cor-primaria);
+  color: #115e59;
+}
+
+.ajuda-tabela-wrap {
+  overflow-x: auto;
+  margin: 0 0 16px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+}
+
+.ajuda-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.8px;
+}
+
+.ajuda-tabela th,
+.ajuda-tabela td {
+  text-align: left;
+  padding: 9px 13px;
+  border-bottom: 1px solid var(--cor-borda);
+  vertical-align: top;
+}
+
+.ajuda-tabela th {
+  background: var(--cor-fundo-alt);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ajuda-tabela tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------------------------------------------------------------- FAQ */
+.ajuda-faq-item {
+  margin-bottom: 16px;
+  padding-left: 14px;
+  border-left: 3px solid #e2e8f0;
+}
+
+.ajuda-faq-pergunta {
+  margin: 0 0 5px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.ajuda-faq-resposta {
+  font-size: 14.2px;
+  line-height: 1.65;
+  color: #4b5563;
+}
+
+/* -------------------------------------------------------- relacionados */
+.ajuda-relacionados {
+  margin-top: 16px;
+  font-size: 13px;
+  color: #8a97a3;
+}
+
+.ajuda-relacionados span {
+  margin-right: 4px;
+}
+
+.ajuda-link {
+  background: none;
+  border: none;
+  padding: 2px 6px;
+  font-size: 13px;
+  color: var(--cor-primaria);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.ajuda-link:hover {
+  color: var(--cor-primaria-escura);
+}
+
+/* ------------------------------------------------------------ pesquisa */
+.ajuda-resultado {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ajuda-resultado:hover {
+  border-color: var(--cor-primaria);
+  background: #f7fdfc;
+}
+
+.ajuda-resultado-secao {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cor-primaria);
+}
+
+.ajuda-resultado-titulo {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.ajuda-resultado-trecho {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+.ajuda-vazio {
+  font-size: 14.5px;
+  color: #6b7280;
+}
+
+/* ------------------------------------------------- ajuda contextual (i) */
+.ajuda-contextual {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+  padding: 0;
+  border: 1px solid var(--cor-primaria);
+  border-radius: 50%;
+  background: none;
+  color: var(--cor-primaria);
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: all 0.2s;
+}
+
+.ajuda-contextual:hover {
+  background: var(--cor-primaria);
+  color: #fff;
+}
+
+/* ------------------------------------------------------- responsividade */
+@media (max-width: 900px) {
+  .ajuda-overlay {
+    padding: 0;
+  }
+
+  .ajuda-painel {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  /* O índice lateral vira uma faixa rolável no topo do conteúdo: em tela
+     estreita uma coluna fixa de 232px comeria o texto. */
+  .ajuda-corpo {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .ajuda-indice {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px 14px;
+    border-right: none;
+    border-bottom: 1px solid var(--cor-borda);
+    scrollbar-width: none;
+  }
+
+  .ajuda-indice::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ajuda-indice-titulo {
+    display: none;
+  }
+
+  .ajuda-indice-item {
+    flex: 0 0 auto;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .ajuda-indice-item.active {
+    border-left-color: transparent;
+    border-bottom-color: var(--cor-primaria);
+  }
+
+  .ajuda-secoes {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .ajuda-secoes::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ajuda-conteudo {
+    padding: 16px 16px 40px;
+  }
+
+  .ajuda-topico-titulo {
+    font-size: 17px;
+  }
+}

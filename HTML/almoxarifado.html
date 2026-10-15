@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=5" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=10" />
   <link rel="stylesheet" href="../CSS/almoxarifado.css" />
+  <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Almoxarifado</title>
   <style>
@@ -55,7 +56,7 @@
   <div class="top-bar">
     <div class="top-bar-left">
       <!-- Marca no topo: só aparece em celular/tablet (ver geral.css) -->
-      <img src="../IMG/Logoescura.png" alt="ORBITA" class="top-bar-logo">
+      <img src="../IMG/Logoescura.png" alt="KERNEL" class="top-bar-logo">
       <span class="account-info">
         <img src="../IMG/user-icon.png" alt="Usuário" class="user-icon">
         <span id="logged-user"></span>
@@ -66,8 +67,6 @@
       <button class="top-tab active" id="almoxarifado-tab">Almoxarifado</button>
       <button class="top-tab" id="frota-tab">Frota</button>
       <button class="top-tab" id="ordens-tab">Ordens de Serviço</button>
-      <button class="top-tab" id="relatorios-tab">Relatórios</button>
-      <button class="top-tab" id="cadastros-tab">Cadastros</button>
       <button class="top-tab" id="gestao-tab">Gestão</button>
     </div>
   </div>
@@ -522,7 +521,7 @@
       <div class="entrada-header">
         <h2 class="aba-legenda">Entrada ⮷</h2>
         <div class="opcoes-abas">
-          <button id="btn-entrada1" class="top-tab2" style="color: #12B5AC; border: 2px solid #12B5AC;">Entrada</button>
+          <button id="btn-entrada1" class="top-tab2" style="color: #A8864F; border: 2px solid #A8864F;">Entrada</button>
           <button id="btn-retirada1"class="top-tab2" data-tab="retiradas">Retirada</button>
           <button id="btn-devolucao1"class="top-tab2" data-tab="devolucao">Devolução</button>
           <button id="btn-transferencia1" class="top-tab2">Transferência</button>
@@ -653,7 +652,7 @@
         <button id="btn-entrada2" class="top-tab2">Entrada</button>
         <button id="btn-retirada2"class="top-tab2" data-tab="retiradas">Retirada</button>
         <button id="btn-devolucao2"class="top-tab2" data-tab="devolucao">Devolução</button>
-        <button id="btn-transferencia2" class="top-tab2"style=" color: #12B5AC; border: 2px solid #12B5AC;">Transferência</button>
+        <button id="btn-transferencia2" class="top-tab2"style=" color: #A8864F; border: 2px solid #A8864F;">Transferência</button>
         <button id="btn-baixa2" class="top-tab2">Baixa</button>
       </div>
       </div>
@@ -674,7 +673,7 @@
         <button id="btn-retirada3"class="top-tab2" data-tab="retiradas">Retirada</button>
         <button id="btn-devolucao3"class="top-tab2" data-tab="devolucao">Devolução</button>
         <button id="btn-transferencia3" class="top-tab2">Transferência</button>
-        <button id="btn-baixa3" class="top-tab2"style=" color: #12B5AC; border: 2px solid #12B5AC;">Baixa</button>
+        <button id="btn-baixa3" class="top-tab2"style=" color: #A8864F; border: 2px solid #A8864F;">Baixa</button>
       </div>
       </div>
       <hr class="aba-linha">
@@ -690,7 +689,7 @@
       <h2 class="aba-legenda">Retirada ⮷</h2>
         <div class="opcoes-abas">
           <button id="btn-entrada4" class="top-tab2" >Entrada</button>
-          <button id="btn-retirada4"class="top-tab2" data-tab="retiradas"style="color: #12B5AC; border: 2px solid #12B5AC;">Retirada</button>
+          <button id="btn-retirada4"class="top-tab2" data-tab="retiradas"style="color: #A8864F; border: 2px solid #A8864F;">Retirada</button>
           <button id="btn-devolucao4"class="top-tab2" data-tab="devolucao">Devolução</button>
           <button id="btn-transferencia4" class="top-tab2">Transferência</button>
           <button id="btn-baixa4" class="top-tab2">Baixa</button>
@@ -810,7 +809,7 @@
       <div class="opcoes-abas">
           <button id="btn-entrada5" class="top-tab2" >Entrada</button>
           <button id="btn-retirada5"class="top-tab2" data-tab="retiradas">Retirada</button>
-          <button id="btn-devolucao5"class="top-tab2" data-tab="devolucao"style="color: #12B5AC; border: 2px solid #12B5AC;">Devolução</button>
+          <button id="btn-devolucao5"class="top-tab2" data-tab="devolucao"style="color: #A8864F; border: 2px solid #A8864F;">Devolução</button>
           <button id="btn-transferencia5" class="top-tab2">Transferência</button>
           <button id="btn-baixa5" class="top-tab2">Baixa</button>
       </div>
@@ -901,7 +900,7 @@
   <div class="entrada-header">
     <h2 class="aba-legenda">Requisitantes ⮷</h2>
     <div class="opcoes-abas">
-      <button class="top-tab2" style=" color: #12B5AC; border: 2px solid #12B5AC;" data-tab="requisitantes">Requisitantes</button>
+      <button class="top-tab2" style=" color: #A8864F; border: 2px solid #A8864F;" data-tab="requisitantes">Requisitantes</button>
       <button class="top-tab2" data-tab="fornecedores">Fornecedores</button>
       <button class="top-tab2" data-tab="cadastro-produto">Produtos</button>
       <button class="top-tab2" data-tab="outros">Parâmetros</button>
@@ -954,7 +953,7 @@
     <h2 class="aba-legenda">Fornecedores ⮷</h2>
     <div class="opcoes-abas">
     <button class="top-tab2" data-tab="requisitantes">Requisitantes</button>
-    <button class="top-tab2 " style=" color: #12B5AC; border: 2px solid #12B5AC;" data-tab="fornecedores">Fornecedores</button>
+    <button class="top-tab2 " style=" color: #A8864F; border: 2px solid #A8864F;" data-tab="fornecedores">Fornecedores</button>
     <button class="top-tab2" data-tab="cadastro-produto">Produtos</button>
     <button class="top-tab2" data-tab="outros">Parâmetros</button>
     <button id="btn-kits-fornecedores" class="top-tab2" data-tab="consultas-kits" style="margin-left: 12px;">Kits</button>
@@ -1135,7 +1134,7 @@
           <button class="top-tab2" data-tab="fornecedores">Fornecedores</button>
           <button class="top-tab2" data-tab="cadastro-produto">Produtos</button>
           <button class="top-tab2" data-tab="outros">Parâmetros</button>
-          <button class="top-tab2" style=" color: #12B5AC; border: 2px solid #12B5AC;" data-tab="consultas-kits">Kits</button>
+          <button class="top-tab2" style=" color: #A8864F; border: 2px solid #A8864F;" data-tab="consultas-kits">Kits</button>
         </div>
       </div>
       <hr class="aba-linha">
@@ -1215,7 +1214,7 @@
         <div class="opcoes-abas">
           <button class="top-tab2" data-tab="requisitantes">Requisitantes</button>
           <button class="top-tab2"  data-tab="fornecedores">Fornecedores</button>
-          <button class="top-tab2" style=" color: #12B5AC; border: 2px solid #12B5AC;" data-tab="cadastro-produto">Produto</button>
+          <button class="top-tab2" style=" color: #A8864F; border: 2px solid #A8864F;" data-tab="cadastro-produto">Produto</button>
           <button class="top-tab2" data-tab="outros">Parâmetros</button>
           <button id="btn-kits-produtos" class="top-tab2" data-tab="consultas-kits" style="margin-left: 12px;">Kits</button>
         </div>
@@ -1374,7 +1373,7 @@
         <button class="top-tab2" data-tab="requisitantes">Requisitantes</button>
         <button class="top-tab2" data-tab="fornecedores">Fornecedores</button>
         <button class="top-tab2" data-tab="cadastro-produto">Produtos</button>
-        <button class="top-tab2" style="color: #12B5AC; border: 2px solid #12B5AC;" data-tab="outros">Parâmetros</button>
+        <button class="top-tab2" style="color: #A8864F; border: 2px solid #A8864F;" data-tab="outros">Parâmetros</button>
         <button id="btn-kits-parametros" class="top-tab2" data-tab="consultas-kits" style="margin-left: 12px;">Kits</button>
       </div>
     </div>
@@ -1460,7 +1459,9 @@ document.addEventListener('DOMContentLoaded', function() {
   mostrarCamposProdutos();
 });
 </script>
-  <script src="../SCRIPT/geral.js?v=4"></script>
+  <script src="../SCRIPT/geral.js?v=8"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=1"></script>
+  <script src="../SCRIPT/gestao-nav.js?v=7"></script>
   <script src="../SCRIPT/outos.js"></script>
   <script src="../SCRIPT/pre-tranferencia.js"></script>
 

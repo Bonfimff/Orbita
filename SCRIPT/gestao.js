@@ -162,9 +162,16 @@
         return;
       }
 
-      document.getElementById('gestao-total-cadastros').textContent = dados.kpis.total;
-      document.getElementById('gestao-total-admins').textContent = dados.kpis.administradores;
-      document.getElementById('gestao-total-tecnicos').textContent = dados.kpis.tecnicos_operadores;
+      // Os 3 cards antigos saíram do Painel Geral (virou o dashboard
+      // operacional) - o resumo de usuários agora mora no Contexto
+      // Operacional daquela aba. optional chaining aqui só por segurança,
+      // caso alguma tela antiga ainda tenha esses ids.
+      const elCadastros = document.getElementById('gestao-total-cadastros');
+      const elAdmins = document.getElementById('gestao-total-admins');
+      const elTecnicos = document.getElementById('gestao-total-tecnicos');
+      if (elCadastros) elCadastros.textContent = dados.kpis.total;
+      if (elAdmins) elAdmins.textContent = dados.kpis.administradores;
+      if (elTecnicos) elTecnicos.textContent = dados.kpis.tecnicos_operadores;
 
       if (!dados.usuarios.length) {
         tbody.innerHTML = '<tr><td colspan="4" style="padding:0.75rem;">Nenhum usuário cadastrado.</td></tr>';
@@ -554,6 +561,7 @@
   function limparFormularioContrato() {
     document.getElementById('form-contratos')?.reset();
     contratoEditandoId = null;
+    document.dispatchEvent(new CustomEvent('orbita:contrato-selecionado', { detail: { id: null } }));
     document.getElementById('btn-salvar-contrato').textContent = 'Salvar Contrato';
     document.getElementById('contrato-arquivo-aviso').style.display = 'block';
     renderizarArquivosContrato([]);
@@ -616,6 +624,7 @@
       if (dados.status !== 'ok') return;
       const c = dados.contrato;
       contratoEditandoId = c.id;
+      document.dispatchEvent(new CustomEvent('orbita:contrato-selecionado', { detail: { id: c.id } }));
       document.getElementById('contrato-nome').value = c.nome || '';
       document.getElementById('contrato-cnpj').value = c.cnpj || '';
       document.getElementById('contrato-especificacoes').value = c.especificacoes || '';
@@ -695,12 +704,18 @@
     const tabs = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
 
-    const usuariosTab = document.querySelector('.tab-btn[data-tab="usuarios"]');
-    const usuariosContent = document.getElementById('usuarios');
-    if (usuariosTab && usuariosContent) {
-      usuariosTab.classList.add('active');
-      usuariosContent.classList.add('active');
+    // A aba padrao ja vem marcada 'active' no HTML (painel-geral); o codigo so
+    // reforca aqui caso a marcacao no HTML mude no futuro.
+    const padraoTab = document.querySelector('.tab-btn.active[data-tab]') || document.querySelector('.tab-btn[data-tab="painel-geral"]');
+    const padraoContent = padraoTab && document.getElementById(padraoTab.dataset.tab);
+    if (padraoTab && padraoContent) {
+      padraoTab.classList.add('active');
+      padraoContent.classList.add('active');
     }
+
+    const LEGENDAS = {
+      'painel-geral': 'Painel Geral', usuarios: 'Usuários', contratos: 'Contratos',
+    };
 
     tabs.forEach(tab => {
       tab.addEventListener('click', function () {
@@ -712,19 +727,39 @@
         const contentToShow = document.getElementById(tabId);
         if (contentToShow) contentToShow.classList.add('active');
         if (legendaPrincipal) {
-          legendaPrincipal.textContent = tabId === 'perfis' ? 'Perfis de Acesso' : (tabId === 'contratos' ? 'Contratos' : 'Usuários');
+          legendaPrincipal.textContent = LEGENDAS[tabId] || 'Painel Geral';
         }
 
-        if (tabId === 'perfis') carregarPerfis();
         if (tabId === 'usuarios') carregarUsuarios();
         if (tabId === 'contratos') carregarContratos();
       });
     });
   }
 
+  // Perfis de Acesso agora vive dentro da aba Usuários, como sub-secao -
+  // mesmo padrao das sub-abas de Cadastros (loc-subabas).
+  function inicializarSubabaUsuarios() {
+    const subabas = document.getElementById('usuarios-subabas');
+    if (!subabas) return;
+    subabas.addEventListener('click', (evento) => {
+      const botao = evento.target.closest('[data-usu]');
+      if (!botao) return;
+      subabas.querySelectorAll('.top-tab2').forEach((b) => b.classList.remove('ativo'));
+      botao.classList.add('ativo');
+      const alvo = botao.dataset.usu;
+      document.querySelectorAll('.usuarios-subaba').forEach((painel) => {
+        const ativo = painel.id === alvo || (alvo === 'usuarios' && painel.id === 'usuarios-lista');
+        painel.classList.toggle('ativa', ativo);
+        painel.hidden = !ativo;
+      });
+      if (alvo === 'perfis') carregarPerfis();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     usuarioLogadoId = pegarIdUsuarioLogado();
     inicializarAbas();
+    inicializarSubabaUsuarios();
     carregarUsuarios();
     carregarPerfis();
     document.getElementById('contrato-arquivo-aviso').style.display = 'block';

@@ -24,11 +24,16 @@
   }
 
   function fecharPainel() {
+    const tipoContexto = contextoAtual && contextoAtual.tipoContexto;
     elemento('cad-form-painel').hidden = true;
     elemento('cad-form-overlay').hidden = true;
     document.body.classList.remove('rel-detalhe-aberto');
     contextoAtual = null;
     registroAtual = null;
+    if (tipoContexto) {
+      document.dispatchEvent(new CustomEvent('orbita:registro-selecionado',
+        { detail: { tipo: tipoContexto, id: null } }));
+    }
   }
 
   //--------------------------------------------------------------- campos
@@ -119,6 +124,10 @@
   function abrir(contexto, registro) {
     contextoAtual = contexto;
     registroAtual = registro || null;
+    if (contexto.tipoContexto) {
+      document.dispatchEvent(new CustomEvent('orbita:registro-selecionado',
+        { detail: { tipo: contexto.tipoContexto, id: registro ? registro.id : null } }));
+    }
 
     const campos = typeof contexto.campos === 'function'
       ? contexto.campos(registro) : contexto.campos;

@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=5" />
-  <link rel="stylesheet" href="../CSS/relatorios.css?v=5" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=10" />
+  <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
+  <link rel="stylesheet" href="../CSS/cadastros.css?v=1" />
+  <link rel="stylesheet" href="../CSS/gestao-nav.css?v=3" />
+  <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Relatórios</title>
 </head>
@@ -12,13 +15,20 @@
 
   <!-- Menu lateral -->
   <div class="menu">
-    <button class="tab-btn active" data-tab="analise" data-nav-label="Análise" data-nav-icone="relatorio">Análise de Chamados</button>
-    <button class="tab-btn" data-tab="ranking-pontos" data-nav-label="Pontos" data-nav-icone="mapa">Ranking de Pontos</button>
-    <button class="tab-btn" data-tab="ranking-problemas" data-nav-label="Problemas" data-nav-icone="busca">Ranking de Problemas</button>
-    <button class="tab-btn" data-tab="reincidencia" data-nav-label="Reincidência" data-nav-icone="movimentacoes">Reincidência</button>
-    <button class="tab-btn" data-tab="cronicos" data-nav-label="Crônicos" data-nav-icone="relatorio">Pontos Crônicos</button>
-    <button class="tab-btn" data-tab="dimensoes" data-nav-label="Dimensões" data-nav-icone="busca">Causas e Soluções</button>
-    <button class="tab-btn" data-tab="pendentes" data-nav-label="Pendentes" data-nav-icone="cadastros">Classificação Pendente</button>
+    <!-- Abas internas da pagina: a partir de tablet/desktop elas saem daqui
+         (ver CSS .menu-subtabs) e viram pilulas logo abaixo da legenda da
+         aba ativa (montarSubnavDesktop em gestao-nav.js). No celular (onde
+         o menu vira gaveta) continuam aparecendo aqui normalmente. -->
+    <div class="menu-subtabs">
+      <button class="tab-btn active" data-tab="analise" data-nav-label="Análise" data-nav-icone="relatorio">Análise de Chamados</button>
+      <button class="tab-btn" data-tab="ranking-pontos" data-nav-label="Pontos" data-nav-icone="mapa">Ranking de Pontos</button>
+      <button class="tab-btn" data-tab="ranking-problemas" data-nav-label="Problemas" data-nav-icone="busca">Ranking de Problemas</button>
+      <button class="tab-btn" data-tab="reincidencia" data-nav-label="Reincidência" data-nav-icone="movimentacoes">Reincidência</button>
+      <button class="tab-btn" data-tab="cronicos" data-nav-label="Crônicos" data-nav-icone="relatorio">Pontos Crônicos</button>
+      <button class="tab-btn" data-tab="dimensoes" data-nav-label="Dimensões" data-nav-icone="busca">Causas e Soluções</button>
+      <button class="tab-btn" data-tab="pendentes" data-nav-label="Pendentes" data-nav-icone="cadastros">Classificação Pendente</button>
+      <button class="tab-btn" data-tab="auditoria" data-nav-label="Auditoria" data-nav-icone="relatorio">Auditoria</button>
+    </div>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
         <img src="../IMG/configuracoes.png" alt="Configurações">
@@ -35,20 +45,18 @@
   <!-- Barra superior -->
   <div class="top-bar">
     <div class="top-bar-left">
-      <img src="../IMG/Logoescura.png" alt="ORBITA" class="top-bar-logo">
+      <img src="../IMG/Logoescura.png" alt="KERNEL" class="top-bar-logo">
       <span class="account-info">
         <img src="../IMG/user-icon.png" alt="Usuário" class="user-icon">
         <span id="logged-user"></span>
-        <span id="modulo-ativo">Relatórios</span>
+        <span id="modulo-ativo">Gestão</span>
       </span>
     </div>
     <div class="top-bar-right">
       <button class="top-tab" id="almoxarifado-tab">Almoxarifado</button>
       <button class="top-tab" id="frota-tab">Frota</button>
       <button class="top-tab" id="ordens-tab">Ordens de Serviço</button>
-      <button class="top-tab active" id="relatorios-tab">Relatórios</button>
-      <button class="top-tab" id="cadastros-tab">Cadastros</button>
-      <button class="top-tab" id="gestao-tab">Gestão</button>
+      <button class="top-tab active" id="gestao-tab">Gestão</button>
     </div>
   </div>
 
@@ -56,10 +64,12 @@
   <div class="content">
 
     <!-- ============================================================
-         BARRA DE FILTROS - compartilhada por todas as abas
-         Em celular vira um botão que abre o bottom sheet.
+         BARRA DE FILTROS - compartilhada por todas as abas que filtram.
+         Fica oculta por padrão; o botão "Filtros" - reposicionado ao lado
+         da legenda da aba ativa por SCRIPT/relatorios/filtros.js - abre/fecha.
+         Em celular vira um bottom sheet.
          ============================================================ -->
-    <div class="rel-filtros-barra">
+    <div class="rel-filtros-barra" id="rel-filtros-barra">
       <button type="button" class="rel-filtros-abrir" id="rel-filtros-abrir">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
              stroke-linecap="round" aria-hidden="true">
@@ -106,12 +116,8 @@
           <select id="rel-contrato"><option value="">Todos</option></select>
         </div>
         <div class="rel-campo">
-          <label for="rel-base">Base</label>
-          <select id="rel-base"><option value="">Todas</option></select>
-        </div>
-        <div class="rel-campo">
-          <label for="rel-ponto">Ponto</label>
-          <select id="rel-ponto"><option value="">Todos</option></select>
+          <label for="rel-ponto">Base de Atendimento</label>
+          <select id="rel-ponto"><option value="">Todas</option></select>
         </div>
         <div class="rel-campo">
           <label for="rel-categoria">Categoria</label>
@@ -152,7 +158,9 @@
 
     <!-- ===== ABA: ANÁLISE DE CHAMADOS ===== -->
     <div id="analise" class="tab-content active" data-secao="Análise de Chamados">
-      <h2 class="aba-legenda">Análise de Chamados</h2>
+      <div class="aba-legenda-linha">
+        <h2 class="aba-legenda">Análise de Chamados</h2>
+      </div>
       <hr class="aba-linha">
 
       <div class="painel-cards" id="rel-kpis"></div>
@@ -196,7 +204,9 @@
 
     <!-- ===== ABA: RANKING DE PONTOS ===== -->
     <div id="ranking-pontos" class="tab-content" data-secao="Ranking de Pontos">
-      <h2 class="aba-legenda">Ranking de Pontos</h2>
+      <div class="aba-legenda-linha">
+        <h2 class="aba-legenda">Ranking de Pontos</h2>
+      </div>
       <hr class="aba-linha">
       <div class="rel-tabela-area" id="rel-tabela-pontos"></div>
       <div class="rel-paginacao" id="rel-paginacao-pontos"></div>
@@ -204,7 +214,9 @@
 
     <!-- ===== ABA: RANKING DE PROBLEMAS ===== -->
     <div id="ranking-problemas" class="tab-content" data-secao="Ranking de Problemas">
-      <h2 class="aba-legenda">Ranking de Problemas</h2>
+      <div class="aba-legenda-linha">
+        <h2 class="aba-legenda">Ranking de Problemas</h2>
+      </div>
       <hr class="aba-linha">
       <div class="rel-tabela-area" id="rel-tabela-problemas"></div>
       <div class="rel-paginacao" id="rel-paginacao-problemas"></div>
@@ -212,7 +224,9 @@
 
     <!-- ===== ABA: REINCIDÊNCIA ===== -->
     <div id="reincidencia" class="tab-content" data-secao="Reincidência">
-      <h2 class="aba-legenda">Reincidência</h2>
+      <div class="aba-legenda-linha">
+        <h2 class="aba-legenda">Reincidência</h2>
+      </div>
       <hr class="aba-linha">
 
       <section class="rel-bloco" id="rel-bloco-sugestoes">
@@ -235,7 +249,9 @@
 
     <!-- ===== ABA: PONTOS CRÔNICOS ===== -->
     <div id="cronicos" class="tab-content" data-secao="Pontos Crônicos">
-      <h2 class="aba-legenda">Pontos Crônicos</h2>
+      <div class="aba-legenda-linha">
+        <h2 class="aba-legenda">Pontos Crônicos</h2>
+      </div>
       <hr class="aba-linha">
 
       <div class="rel-bloco">
@@ -261,7 +277,9 @@
 
     <!-- ===== ABA: CAUSAS E SOLUÇÕES ===== -->
     <div id="dimensoes" class="tab-content" data-secao="Causas e Soluções">
-      <h2 class="aba-legenda">Causas, Soluções, Resultados e Equipamentos</h2>
+      <div class="aba-legenda-linha">
+        <h2 class="aba-legenda">Causas, Soluções, Resultados e Equipamentos</h2>
+      </div>
       <hr class="aba-linha">
 
       <div class="opcoes-abas rel-subabas" id="rel-subabas-dimensao">
@@ -283,7 +301,9 @@
 
     <!-- ===== ABA: CLASSIFICAÇÃO PENDENTE ===== -->
     <div id="pendentes" class="tab-content" data-secao="Classificação Pendente">
-      <h2 class="aba-legenda">Classificação Pendente</h2>
+      <div class="aba-legenda-linha">
+        <h2 class="aba-legenda">Classificação Pendente</h2>
+      </div>
       <hr class="aba-linha">
 
       <p class="rel-ajuda rel-ajuda-bloco">
@@ -311,6 +331,36 @@
          ativar/desativar e mais catálogos. A versão antiga foi removida para
          não haver duas telas editando o mesmo dado. -->
 
+    <div id="auditoria" class="tab-content" data-secao="Auditoria">
+      <div class="aba-legenda-linha">
+        <h2 class="aba-legenda">Auditoria</h2>
+      </div>
+      <hr class="aba-linha">
+
+      <p class="rel-ajuda rel-ajuda-bloco">
+        Registro permanente de quem criou, alterou, ativou ou desativou cada
+        cadastro, e de cada classificação de O.S. Nada é apagado desta lista.
+      </p>
+
+      <div class="cad-cabecalho">
+        <select id="aud-entidade" class="cad-filtro">
+          <option value="">Todas as entidades</option>
+          <option value="categorias_problema">Categorias</option>
+          <option value="problemas">Problemas</option>
+          <option value="causas_problema">Causas</option>
+          <option value="solucoes_problema">Soluções</option>
+          <option value="resultados_os">Resultados</option>
+          <option value="tipos_equipamento">Tipos de equipamento</option>
+          <option value="equipamentos">Equipamentos</option>
+          <option value="ordens_ocorrencias">Classificação de O.S.</option>
+        </select>
+        <button type="button" class="rel-btn rel-btn-secundario" id="aud-atualizar">Atualizar</button>
+      </div>
+
+      <div class="rel-tabela-area" id="aud-tabela"></div>
+      <div class="rel-paginacao" id="aud-paginacao"></div>
+    </div>
+
   </div>
 
   <!-- Sidebar direita -->
@@ -331,12 +381,17 @@
   </aside>
 
   <script src="../SCRIPT/config.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=4"></script>
+  <script src="../SCRIPT/geral.js?v=8"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=1"></script>
+  <script src="../SCRIPT/gestao-nav.js?v=7"></script>
   <script src="../SCRIPT/relatorios/api.js?v=1"></script>
   <script src="../SCRIPT/relatorios/graficos.js?v=1"></script>
-  <script src="../SCRIPT/relatorios/filtros.js?v=2"></script>
-  <script src="../SCRIPT/relatorios/painel.js?v=5"></script>
-  <script src="../SCRIPT/relatorios/extras.js?v=1"></script>
+  <script src="../SCRIPT/relatorios/filtros.js?v=7"></script>
+  <script src="../SCRIPT/relatorios/painel.js?v=6"></script>
+  <script src="../SCRIPT/relatorios/extras.js?v=2"></script>
+  <script src="../SCRIPT/cadastros/auditoria.js?v=1"></script>
+  <script src="../SCRIPT/contexto/painel.js?v=1"></script>
+  <script src="../SCRIPT/contexto/relatorios.js?v=2"></script>
 
   <div id="info-modal" class="modal" style="display: none;">
     <div class="modal-content">

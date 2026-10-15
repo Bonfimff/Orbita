@@ -16,13 +16,51 @@
    capturando cliques mesmo depois de "fechados". */
 [hidden] { display: none !important; }
 
+/* ------------------------------------------------- LEGENDA + FILTROS */
+/* O botão de filtros vive ao lado da legenda da aba ativa - o próprio
+   elemento .rel-filtros-barra é movido para dentro do .aba-legenda-linha
+   correspondente por SCRIPT/relatorios/filtros.js quando a aba muda. */
+.aba-legenda-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.aba-legenda-linha .aba-legenda { margin-bottom: 0; }
+
+/* As abas internas (Análise de Chamados, Ranking de Pontos...) só aparecem
+   na gaveta do menu lateral no celular - a partir de tablet elas viram a
+   fileira de pílulas abaixo da legenda (.subnav-abas, montada por
+   montarSubnavDesktop em gestao-nav.js), já que o menu fixo deve mostrar
+   só as áreas de Gestão. */
+@media (min-width: 768px) {
+  .menu-subtabs { display: none; }
+}
+
+/* No celular o título mobile (.painel-cabecalho) já traz sua própria
+   fileira de pílulas (.painel-subnav) - esconde esta para não duplicar. */
+@media (max-width: 767px) {
+  .subnav-abas { display: none; }
+}
+
+.subnav-abas { margin: 0 0 18px; }
+
+.subnav-abas .subnav-abas-item.ativo {
+  color: var(--cor-primaria);
+  border: 2px solid var(--cor-primaria);
+  background: #fff;
+}
+
 /* ---------------------------------------------------- BARRA DE FILTROS */
 .rel-filtros-barra {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+  margin-bottom: 0;
 }
 
 .rel-filtros-abrir {
@@ -67,14 +105,21 @@
   margin-right: auto;
 }
 
-/* Em desktop o formulario fica aberto; no celular vira bottom sheet. */
+/* Oculto por padrão em qualquer tamanho de tela; o botão "Filtros" na
+   legenda da aba alterna body.rel-filtros-aberto para exibir. No celular
+   vira bottom sheet (ver media query abaixo). */
 .rel-filtros {
+  display: none;
   background: #fff;
   border: 1px solid #edf1f3;
   border-radius: 14px;
   padding: 16px;
   margin-bottom: 18px;
   box-shadow: 0 1px 6px rgba(16, 24, 40, .05);
+}
+
+body.rel-filtros-aberto .rel-filtros {
+  display: block;
 }
 
 .rel-filtros-cabecalho { display: none; }
@@ -108,7 +153,7 @@
 
 .rel-campo select:focus,
 .rel-campo input:focus {
-  outline: 2px solid rgba(18, 181, 172, .25);
+  outline: 2px solid rgba(168, 134, 79, .25);
   border-color: var(--cor-primaria);
 }
 
@@ -191,7 +236,7 @@
 }
 .rel-kpi-icone svg { width: 20px; height: 20px; }
 
-.rel-kpi-primario { background: rgba(18, 181, 172, .12); color: var(--cor-primaria-escura); }
+.rel-kpi-primario { background: rgba(168, 134, 79, .12); color: var(--cor-primaria-escura); }
 .rel-kpi-neutro   { background: rgba(71, 85, 105, .10);  color: var(--cor-destaque); }
 .rel-kpi-sucesso  { background: rgba(46, 125, 50, .12);  color: var(--cor-sucesso); }
 .rel-kpi-aviso    { background: rgba(237, 108, 2, .12);  color: var(--cor-aviso); }

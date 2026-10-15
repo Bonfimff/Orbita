@@ -1,0 +1,126 @@
+/* Painel de Jornada Operacional (Fase 10) - so o que e especifico deste
+   modulo; layout de pagina (menu/top-bar/content) vem de geral.css. */
+
+.jor-status-card {
+  border: 1px solid var(--cor-borda);
+  border-radius: 10px;
+  padding: 24px;
+  max-width: 520px;
+  margin-bottom: 28px;
+  background-color: var(--cor-fundo-alt);
+}
+
+.jor-status-fora { border-left: 6px solid var(--cor-destaque); }
+.jor-status-aberta { border-left: 6px solid var(--cor-sucesso); }
+.jor-status-pausada { border-left: 6px solid var(--cor-aviso); }
+
+.jor-status-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.jor-status-fora #jor-status-icone { color: var(--cor-destaque); }
+.jor-status-aberta #jor-status-icone { color: var(--cor-sucesso); }
+.jor-status-pausada #jor-status-icone { color: var(--cor-aviso); }
+
+.jor-status-detalhe {
+  margin-top: 6px;
+  color: var(--cor-destaque);
+  font-size: 0.95rem;
+}
+
+.jor-status-tempo {
+  margin-top: 10px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.jor-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.jor-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+}
+
+.jor-btn-iniciar { background-color: var(--cor-sucesso); }
+.jor-btn-pausar { background-color: var(--cor-aviso); }
+.jor-btn-retomar { background-color: var(--cor-primaria); }
+.jor-btn-finalizar { background-color: var(--cor-erro); }
+.jor-btn-admin { background-color: var(--cor-destaque); padding: 6px 12px; font-size: 0.85rem; }
+.jor-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.jor-mensagem {
+  margin-top: 12px;
+  font-size: 0.9rem;
+}
+.jor-mensagem.erro { color: var(--cor-erro); }
+.jor-mensagem.sucesso { color: var(--cor-sucesso); }
+
+.jor-subtitulo {
+  margin: 22px 0 10px;
+  color: var(--cor-texto);
+}
+
+.jor-tabela-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+}
+
+.jor-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.jor-tabela th, .jor-tabela td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--cor-borda);
+  white-space: nowrap;
+}
+
+.jor-tabela th {
+  background-color: var(--cor-fundo-alt);
+  font-weight: 600;
+}
+
+.jor-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fff;
+}
+.jor-badge-aberta { background-color: var(--cor-sucesso); }
+.jor-badge-pausada { background-color: var(--cor-aviso); }
+.jor-badge-encerrada { background-color: var(--cor-destaque); }
+.jor-badge-cancelada { background-color: var(--cor-erro); }
+
+.jor-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.jor-filtros input, .jor-filtros select {
+  padding: 8px 10px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;
+}

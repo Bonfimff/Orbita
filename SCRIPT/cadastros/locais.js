@@ -14,7 +14,6 @@
   let telaAtual = 'pontos';
   let regioes = [];
   let contratos = [];
-  let bases = [];
   let carregado = false;
 
   //---------------------------------------------------------------- campos
@@ -22,19 +21,17 @@
     return [
       { nome: 'codigo', rotulo: 'Código', max: 50,
         ajuda: 'Deixe em branco para gerar automaticamente (P-0001).' },
-      { nome: 'nome', rotulo: 'Nome do ponto', max: 150, largo: true },
+      { nome: 'nome', rotulo: 'Nome da base', max: 150, largo: true },
       { nome: 'endereco', rotulo: 'Endereço', obrigatorio: true, max: 255, largo: true },
       { nome: 'complemento', rotulo: 'Complemento', max: 255, largo: true },
       { nome: 'regiao_id', rotulo: 'Região', tipo: 'select',
         opcoes: regioes.map((r) => ({ valor: r.id, texto: r.nome })),
         vazio: regioes.length ? 'Sem região' : 'Cadastre uma região primeiro' },
-      { nome: 'base_id', rotulo: 'Base operacional', tipo: 'select',
-        opcoes: bases.map((b) => ({ valor: b.id, texto: b.id + ' — ' + (b.endereco || '') })),
-        vazio: 'Sem base' },
       { nome: 'contrato_id', rotulo: 'Contrato', tipo: 'select',
         opcoes: contratos.map((c) => ({ valor: c.id, texto: c.nome })),
         vazio: 'Sem contrato (visível para todos)',
-        ajuda: 'Define quem enxerga este ponto nos relatórios.' },
+        ajuda: 'Define quem enxerga esta base nos relatórios.' },
+      { nome: 'link_localizacao', rotulo: 'Link do mapa', max: 512, largo: true },
       { nome: 'latitude', rotulo: 'Latitude', tipo: 'number' },
       { nome: 'longitude', rotulo: 'Longitude', tipo: 'number' },
       { nome: 'observacao', rotulo: 'Observação', tipo: 'textarea', largo: true },
@@ -95,12 +92,14 @@
     if (telaAtual === 'pontos') {
       form.abrir({
         campos: camposPonto, aoSalvar: salvarPonto, feedback: 'loc-feedback',
-        tituloNovo: 'Novo ponto de atendimento', tituloEdicao: 'Editar ponto',
+        tituloNovo: 'Nova base de atendimento', tituloEdicao: 'Editar base de atendimento',
+        tipoContexto: 'base',
       }, registro);
     } else {
       form.abrir({
         campos: CAMPOS_REGIAO, aoSalvar: salvarRegiao, feedback: 'loc-feedback',
         tituloNovo: 'Nova região', tituloEdicao: 'Editar região',
+        tipoContexto: 'regiao',
       }, registro);
     }
   }
@@ -118,10 +117,10 @@
   }
 
   async function remover(item) {
-    // Ponto nao tem DELETE proprio: desativar preserva todo o historico de
-    // chamados que aponta para ele, que e justamente o valor do cadastro.
+    // Base nao tem DELETE proprio: desativar preserva todo o historico de
+    // chamados que aponta para ela, que e justamente o valor do cadastro.
     if (telaAtual === 'pontos') {
-      if (!confirm('Desativar o ponto "' + item.codigo + '"?\n\nO histórico de '
+      if (!confirm('Desativar a base "' + item.codigo + '"?\n\nO histórico de '
                  + 'chamados é preservado.')) return;
       return alternarStatus(Object.assign({}, item, { ativo: 1 }));
     }
@@ -147,11 +146,6 @@
         headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } });
       contratos = (await resposta.json()).contratos || [];
     } catch (erro) { contratos = []; }
-    try {
-      const resposta = await fetch(api.urlApi('/bases'), {
-        headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } });
-      bases = (await resposta.json()).bases || [];
-    } catch (erro) { bases = []; }
   }
 
   async function carregar() {
@@ -176,10 +170,10 @@
         aoRemover: remover,
         tituloCard: (i) => '<strong>' + escapar(i.codigo || i.nome) + '</strong>',
         vazio: telaAtual === 'pontos'
-          ? 'Nenhum ponto cadastrado' : 'Nenhuma região cadastrada',
+          ? 'Nenhuma base cadastrada' : 'Nenhuma região cadastrada',
         vazioDetalhe: telaAtual === 'pontos'
-          ? 'Pontos também são criados automaticamente quando uma O.S. é aberta num endereço novo.'
-          : 'Regiões agrupam pontos nos relatórios (problemas por região).',
+          ? 'Bases também são criadas automaticamente quando uma O.S. é aberta num endereço novo.'
+          : 'Regiões agrupam bases de atendimento nos relatórios (problemas por região).',
       });
     } catch (erro) {
       api.estadoErro(alvo, erro.message);

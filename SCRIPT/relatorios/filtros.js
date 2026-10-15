@@ -79,6 +79,26 @@
     });
   }
 
+  //------------------------------------------- posicionar ao lado da legenda
+  // A barra de filtros e o formulario sao elementos unicos compartilhados
+  // por varias abas. Em vez de duplicar o botao (e o id) em cada aba,
+  // movemos os mesmos nos do DOM para dentro do .aba-legenda-linha da aba
+  // ativa - preserva os listeners ja ligados neles. O formulario fica logo
+  // apos essa linha, ou seja, abre para BAIXO da legenda.
+  function reposicionarBarra() {
+    const barra = elemento('rel-filtros-barra');
+    const formulario = elemento('rel-filtros');
+    const ativa = document.querySelector('.content > .tab-content.active');
+    const alvo = ativa && ativa.querySelector('.aba-legenda-linha');
+    if (!alvo) return;
+    if (barra) alvo.appendChild(barra);
+    // Abaixo da trilha e das sub-abas (quando existirem) - preserva a ordem
+    // legenda / trilha / sub-abas / filtros mesmo que esses outros blocos
+    // (geral.js, gestao-nav.js) se reposicionem em outra ordem.
+    const anchor = ativa.querySelector('.subnav-abas') || ativa.querySelector('.aba-trilha') || alvo;
+    if (formulario) anchor.insertAdjacentElement('afterend', formulario);
+  }
+
   //--------------------------------------------------------- bottom sheet
   function abrirPainel() {
     // Um modal de cada vez: se o detalhe do ponto estiver aberto, ele sai
@@ -101,6 +121,11 @@
     if (overlay) overlay.hidden = true;
   }
 
+  function alternarPainel() {
+    if (document.body.classList.contains('rel-filtros-aberto')) fecharPainel();
+    else abrirPainel();
+  }
+
   //--------------------------------------------------- carga das listas
   async function preencherSelect(id, itens, mapear, rotuloVazio) {
     const campo = elemento(id);
@@ -121,8 +146,6 @@
     const tarefas = [
       ['/contratos', 'rel-contrato', (c) => ({ valor: c.id, texto: c.nome }),
        'Todos', (dados) => dados.contratos || dados || []],
-      ['/bases', 'rel-base', (b) => ({ valor: b.id, texto: b.endereco || b.id }),
-       'Todas', (dados) => dados.bases || dados || []],
     ];
 
     for (const [caminho, campo, mapear, vazio, extrair] of tarefas) {
@@ -191,7 +214,7 @@
       });
     });
 
-    [['rel-contrato', 'contrato_id'], ['rel-base', 'base_id'],
+    [['rel-contrato', 'contrato_id'],
      ['rel-ponto', 'ponto_id'], ['rel-categoria', 'categoria_id'],
      ['rel-problema', 'problema_id'], ['rel-causa', 'causa_id'],
      ['rel-equipamento', 'equipamento_id'], ['rel-status', 'status']]
@@ -219,11 +242,11 @@
     const limpar = elemento('rel-limpar');
     if (limpar) {
       limpar.addEventListener('click', () => {
-        ['contrato_id', 'base_id', 'ponto_id', 'categoria_id', 'problema_id',
+        ['contrato_id', 'ponto_id', 'categoria_id', 'problema_id',
          'causa_id', 'equipamento_id', 'status'].forEach((campo) => {
           estado[campo] = '';
         });
-        ['rel-contrato', 'rel-base', 'rel-ponto', 'rel-categoria', 'rel-problema',
+        ['rel-contrato', 'rel-ponto', 'rel-categoria', 'rel-problema',
          'rel-causa', 'rel-equipamento', 'rel-status'].forEach((id) => {
           const entrada = elemento(id);
           if (entrada) entrada.value = '';
@@ -233,7 +256,7 @@
     }
 
     const abrir = elemento('rel-filtros-abrir');
-    if (abrir) abrir.addEventListener('click', abrirPainel);
+    if (abrir) abrir.addEventListener('click', alternarPainel);
     const fechar = elemento('rel-filtros-fechar');
     if (fechar) fechar.addEventListener('click', fecharPainel);
     const overlay = elemento('rel-filtros-overlay');
@@ -244,6 +267,11 @@
 
     const atualizar = elemento('rel-atualizar');
     if (atualizar) atualizar.addEventListener('click', notificar);
+
+    reposicionarBarra();
+    document.querySelectorAll('.menu .tab-btn[data-tab]').forEach((botao) => {
+      botao.addEventListener('click', () => setTimeout(reposicionarBarra, 0));
+    });
 
     atualizarResumo();
     carregarListas();
@@ -261,7 +289,7 @@
       const mapa = {
         ponto_id: 'rel-ponto', problema_id: 'rel-problema',
         categoria_id: 'rel-categoria', contrato_id: 'rel-contrato',
-        base_id: 'rel-base', status: 'rel-status',
+        status: 'rel-status',
       };
       const entrada = elemento(mapa[campo]);
       if (entrada) entrada.value = valor;

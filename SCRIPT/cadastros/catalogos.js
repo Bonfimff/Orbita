@@ -234,12 +234,8 @@
   document.addEventListener('DOMContentLoaded', function () {
     const subabas = elemento('cad-subabas');
     if (subabas) {
-      subabas.addEventListener('click', (evento) => {
-        const botao = evento.target.closest('[data-catalogo]');
-        if (!botao) return;
-        subabas.querySelectorAll('.top-tab2').forEach((b) => b.classList.remove('ativo'));
-        botao.classList.add('ativo');
-        catalogoAtual = botao.dataset.catalogo;
+      subabas.addEventListener('change', () => {
+        catalogoAtual = subabas.value;
         elemento('cad-filtro-categoria').hidden = catalogoAtual !== 'problemas';
         elemento('cad-busca').value = '';
         carregar();

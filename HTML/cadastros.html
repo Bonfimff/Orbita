@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=5" />
-  <link rel="stylesheet" href="../CSS/relatorios.css?v=5" />
-  <link rel="stylesheet" href="../CSS/cadastros.css?v=1" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=10" />
+  <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
+  <link rel="stylesheet" href="../CSS/cadastros.css?v=2" />
+  <link rel="stylesheet" href="../CSS/gestao-nav.css?v=3" />
+  <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Cadastros</title>
 </head>
@@ -13,10 +15,14 @@
 
   <!-- Menu lateral -->
   <div class="menu">
-    <button class="tab-btn active" data-tab="analise-operacional" data-nav-label="Análise" data-nav-icone="cadastros">Análise Operacional</button>
-    <button class="tab-btn" data-tab="ativos" data-nav-label="Ativos" data-nav-icone="veiculo">Equipamentos</button>
-    <button class="tab-btn" data-tab="locais" data-nav-label="Locais" data-nav-icone="mapa">Pontos e Regiões</button>
-    <button class="tab-btn" data-tab="auditoria" data-nav-label="Auditoria" data-nav-icone="relatorio">Auditoria</button>
+    <!-- Abas internas: a partir de tablet/desktop viram pilulas abaixo da
+         legenda (ver .menu-subtabs no CSS e montarSubnavDesktop em
+         gestao-nav.js) - o menu fica só com as áreas de Gestão. -->
+    <div class="menu-subtabs">
+      <button class="tab-btn active" data-tab="analise-operacional" data-nav-label="Parâmetros" data-nav-icone="cadastros">Cadastro de Parâmetros</button>
+      <button class="tab-btn" data-tab="ativos" data-nav-label="Ativos" data-nav-icone="veiculo">Equipamentos</button>
+      <button class="tab-btn" data-tab="locais" data-nav-label="Locais" data-nav-icone="mapa">Bases de Atendimento</button>
+    </div>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
         <img src="../IMG/configuracoes.png" alt="Configurações">
@@ -33,44 +39,36 @@
   <!-- Barra superior -->
   <div class="top-bar">
     <div class="top-bar-left">
-      <img src="../IMG/Logoescura.png" alt="ORBITA" class="top-bar-logo">
+      <img src="../IMG/Logoescura.png" alt="KERNEL" class="top-bar-logo">
       <span class="account-info">
         <img src="../IMG/user-icon.png" alt="Usuário" class="user-icon">
         <span id="logged-user"></span>
-        <span id="modulo-ativo">Cadastros</span>
+        <span id="modulo-ativo">Gestão</span>
       </span>
     </div>
     <div class="top-bar-right">
       <button class="top-tab" id="almoxarifado-tab">Almoxarifado</button>
       <button class="top-tab" id="frota-tab">Frota</button>
       <button class="top-tab" id="ordens-tab">Ordens de Serviço</button>
-      <button class="top-tab" id="relatorios-tab">Relatórios</button>
-      <button class="top-tab active" id="cadastros-tab">Cadastros</button>
-      <button class="top-tab" id="gestao-tab">Gestão</button>
+      <button class="top-tab active" id="gestao-tab">Gestão</button>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- ===== ABA: ANÁLISE OPERACIONAL ===== -->
-    <div id="analise-operacional" class="tab-content active" data-secao="Análise Operacional">
-      <h2 class="aba-legenda">Análise Operacional</h2>
+    <!-- ===== ABA: CADASTRO DE PARÂMETROS ===== -->
+    <div id="analise-operacional" class="tab-content active" data-secao="Cadastro de Parâmetros">
+      <h2 class="aba-legenda">Cadastro de Parâmetros</h2>
       <hr class="aba-linha">
 
-      <p class="rel-ajuda rel-ajuda-bloco">
-        Estes catálogos definem o vocabulário que a análise usa para agrupar
-        chamados. Eles começam vazios de propósito — o vocabulário é da sua
-        operação, não do sistema.
-      </p>
-
-      <div class="opcoes-abas cad-subabas" id="cad-subabas">
-        <button type="button" class="top-tab2 ativo" data-catalogo="categorias">Categorias</button>
-        <button type="button" class="top-tab2" data-catalogo="problemas">Problemas</button>
-        <button type="button" class="top-tab2" data-catalogo="causas">Causas</button>
-        <button type="button" class="top-tab2" data-catalogo="solucoes">Soluções</button>
-        <button type="button" class="top-tab2" data-catalogo="resultados">Resultados</button>
-        <button type="button" class="top-tab2" data-catalogo="tipos-equipamento">Tipos de equipamento</button>
-      </div>
+      <select class="cad-subabas-select" id="cad-subabas">
+        <option value="categorias">Categorias</option>
+        <option value="problemas">Problemas</option>
+        <option value="causas">Causas</option>
+        <option value="solucoes">Soluções</option>
+        <option value="resultados">Resultados</option>
+        <option value="tipos-equipamento">Tipos de equipamento</option>
+      </select>
 
       <div class="cad-cabecalho">
         <div class="cad-busca">
@@ -116,12 +114,12 @@
     </div>
 
     <!-- ===== ABA: PONTOS E REGIÕES ===== -->
-    <div id="locais" class="tab-content" data-secao="Pontos e Regiões">
-      <h2 class="aba-legenda">Pontos e Regiões</h2>
+    <div id="locais" class="tab-content" data-secao="Bases de Atendimento">
+      <h2 class="aba-legenda">Bases de Atendimento</h2>
       <hr class="aba-linha">
 
       <div class="opcoes-abas cad-subabas" id="loc-subabas">
-        <button type="button" class="top-tab2 ativo" data-loc="pontos">Pontos de atendimento</button>
+        <button type="button" class="top-tab2 ativo" data-loc="pontos">Bases de Atendimento</button>
         <button type="button" class="top-tab2" data-loc="regioes">Regiões</button>
       </div>
 
@@ -137,34 +135,6 @@
     </div>
 
     <!-- ===== ABA: AUDITORIA ===== -->
-    <div id="auditoria" class="tab-content" data-secao="Auditoria">
-      <h2 class="aba-legenda">Auditoria</h2>
-      <hr class="aba-linha">
-
-      <p class="rel-ajuda rel-ajuda-bloco">
-        Registro permanente de quem criou, alterou, ativou ou desativou cada
-        cadastro, e de cada classificação de O.S. Nada é apagado desta lista.
-      </p>
-
-      <div class="cad-cabecalho">
-        <select id="aud-entidade" class="cad-filtro">
-          <option value="">Todas as entidades</option>
-          <option value="categorias_problema">Categorias</option>
-          <option value="problemas">Problemas</option>
-          <option value="causas_problema">Causas</option>
-          <option value="solucoes_problema">Soluções</option>
-          <option value="resultados_os">Resultados</option>
-          <option value="tipos_equipamento">Tipos de equipamento</option>
-          <option value="equipamentos">Equipamentos</option>
-          <option value="ordens_ocorrencias">Classificação de O.S.</option>
-        </select>
-        <button type="button" class="rel-btn rel-btn-secundario" id="aud-atualizar">Atualizar</button>
-      </div>
-
-      <div class="rel-tabela-area" id="aud-tabela"></div>
-      <div class="rel-paginacao" id="aud-paginacao"></div>
-    </div>
-
   </div>
 
   <!-- Sidebar direita -->
@@ -192,13 +162,16 @@
   </aside>
 
   <script src="../SCRIPT/config.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=4"></script>
+  <script src="../SCRIPT/geral.js?v=8"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=1"></script>
+  <script src="../SCRIPT/gestao-nav.js?v=7"></script>
   <script src="../SCRIPT/relatorios/api.js?v=1"></script>
-  <script src="../SCRIPT/cadastros/formulario.js?v=1"></script>
-  <script src="../SCRIPT/cadastros/catalogos.js?v=1"></script>
-  <script src="../SCRIPT/cadastros/equipamentos.js?v=1"></script>
-  <script src="../SCRIPT/cadastros/locais.js?v=1"></script>
-  <script src="../SCRIPT/cadastros/auditoria.js?v=1"></script>
+  <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
+  <script src="../SCRIPT/cadastros/catalogos.js?v=2"></script>
+  <script src="../SCRIPT/cadastros/equipamentos.js?v=3"></script>
+  <script src="../SCRIPT/cadastros/locais.js?v=3"></script>
+  <script src="../SCRIPT/contexto/painel.js?v=1"></script>
+  <script src="../SCRIPT/contexto/cadastros.js?v=3"></script>
 
   <div id="info-modal" class="modal" style="display: none;">
     <div class="modal-content">

@@ -423,12 +423,12 @@
 
 .top-tab2.active {
   
-  color: #12B5AC;
+  color: #A8864F;
 }
 
 .top-tab2.active-requisitantes {
-  color: #12B5AC;
-  border: 2px solid #12B5AC;
+  color: #A8864F;
+  border: 2px solid #A8864F;
 }
 
 .top-tab2:hover {
