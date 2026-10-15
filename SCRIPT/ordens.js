@@ -3627,7 +3627,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       cabecalho.appendChild(slot);
     }
     const blocoPontos = lista.closest('.modal-etapa');
-    const etapaPontosVisivel = !blocoPontos || blocoPontos.style.display !== 'none';
+    const etapaPontosVisivel = true; // vale em todas as etapas
     const linhaAtiva = lista.querySelector('.ponto-row-modal.ativo') || lista.querySelector('.ponto-row-modal');
     const idAtivo = linhaAtiva ? String(linhaAtiva.id || '').replace('ponto-row-', '') : '';
     const desejado = etapaPontosVisivel && idAtivo
