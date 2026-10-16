@@ -1013,3 +1013,6 @@ td .frota-status-badge + small { display: block; margin-top: 3px; }
 .frota-status-rapido button:last-child { border-right: none; }
 .frota-status-rapido button.ativo { background: #1F2D3D; color: #fff; cursor: default; }
 .frota-status-rapido button:disabled:not(.ativo) { opacity: .6; cursor: wait; }
+
+/* Base no mapa do painel */
+.frota-mapa-base { background: #1F2D3D; border: 2px solid #fff; border-radius: 3px; box-shadow: 0 1px 4px rgba(0,0,0,.4); }

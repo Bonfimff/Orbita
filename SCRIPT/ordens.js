@@ -251,7 +251,7 @@ async function geocodificarBase(base, cache) {
 
 // Centro de referência quando um veículo não tem posição real (mesma
 // convenção usada no mapa da Frota, pra estimativa cair na mesma região).
-const VEICULOS_MAPA_CENTRO = [-22.9068, -43.1729];
+const VEICULOS_MAPA_CENTRO = [-22.7856, -43.3117]; // Duque de Caxias - RJ
 
 function hashTextoVeiculo(valor) {
   const texto = String(valor || 'SVPLUS');
@@ -281,6 +281,7 @@ function corMarcadorVeiculo(status) {
   const st = String(status || '').trim();
   if (st === 'Em manutenção') return '#f39c12';
   if (st === 'Inativo') return '#8d99ae';
+  if (st === 'Em operação') return '#3E6FB0';
   return '#1a9e55';
 }
 
@@ -407,8 +408,10 @@ async function renderizarMapaBasesGerenciamento() {
 
   // ---- Veículos: posição estimada (sem GPS real integrado ainda) ----
   veiculos.forEach((veiculo, indice) => {
-    const [lat, lng] = coordenadaEstimativaVeiculo(veiculo.placa, indice);
-    const cor = corMarcadorVeiculo(veiculo.status);
+    const temPosicao = veiculo.latitude != null && veiculo.longitude != null;
+    const [lat, lng] = temPosicao ? [Number(veiculo.latitude), Number(veiculo.longitude)] : coordenadaEstimativaVeiculo(veiculo.placa, indice);
+    const situacao = (veiculo.status === 'Ativo' && veiculo.operacao && !veiculo.operacao.reservado) ? 'Em operação' : (veiculo.status || '-');
+    const cor = corMarcadorVeiculo(situacao);
     const marcador = L.circleMarker([lat, lng], {
       radius: 8,
       color: '#ffffff',
@@ -420,11 +423,11 @@ async function renderizarMapaBasesGerenciamento() {
       <div style="min-width:180px;">
         <strong>🚗 ${escapeHtml(veiculo.placa || 'Sem placa')}</strong><br>
         ${escapeHtml([veiculo.marca, veiculo.modelo].filter(Boolean).join(' ') || 'Veículo')}<br>
-        Status: ${escapeHtml(veiculo.status || '-')}<br>
-        <em style="font-size:11px;color:#888;">Posição estimada</em>
+        Situação: ${escapeHtml(situacao)}<br>
+        <em style="font-size:11px;color:#888;">${temPosicao ? 'Última posição' : 'Posição estimada'}</em>
       </div>
     `);
-    itensLegenda.push(`<div class="pontos-mapa-legenda-item"><strong>🚗 ${escapeHtml(veiculo.placa || 'Sem placa')}</strong> - ${escapeHtml(veiculo.status || '-')} (posição estimada)</div>`);
+    itensLegenda.push(`<div class="pontos-mapa-legenda-item"><strong>🚗 ${escapeHtml(veiculo.placa || 'Sem placa')}</strong> - ${escapeHtml(situacao)}${temPosicao ? '' : ' (posição estimada)'}</div>`);
   });
 
   legendaEl.innerHTML = itensLegenda.join('') || '<div class="pontos-mapa-legenda-item">Nenhum ponto localizado no mapa.</div>';
