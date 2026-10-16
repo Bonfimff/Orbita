@@ -3,7 +3,7 @@
   // tabela usada para bloquear as rotas. Colunas: Visualizar, Editar e
   // Criar/Excluir; a linha só mostra caixa nas colunas que fazem sentido.
   const COLUNAS = [
-    { acao: 'ver', rotulo: 'Visualizar' },
+    { acao: 'ver', rotulo: 'Ver' },
     { acao: 'editar', rotulo: 'Editar' },
     { acao: 'excluir', rotulo: 'Criar/Excluir' },
   ];
@@ -65,7 +65,7 @@
     container.innerHTML = `
       <div class="gestao-matriz-linha gestao-matriz-cabecalho">
         <span>Permissão</span>
-        ${COLUNAS.map(c => `<span>${c.rotulo}</span>`).join('')}
+        ${COLUNAS.map(c => `<span>${c.rotulo.replace('/', '/<wbr>')}</span>`).join('')}
       </div>
       ${catalogo.map(g => `
         <div class="gestao-matriz-grupo" data-grupo="${g.grupo}">

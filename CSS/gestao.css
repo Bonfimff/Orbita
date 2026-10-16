@@ -568,3 +568,20 @@
   .gestao-matriz-cabecalho { font-size: 9.5px; }
   .gestao-matriz-todos { padding: 2px 5px; }
 }
+
+.modal-content .gestao-matriz-todos,
+.gestao-matriz-permissoes button.gestao-matriz-todos {
+  width: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 2px 8px !important;
+  border: 1px solid rgba(255,255,255,.35) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: #fff !important;
+  font-size: 10px !important;
+  line-height: 1.4 !important;
+  box-shadow: none !important;
+}
+.modal-content .gestao-matriz-todos:hover { background: rgba(255,255,255,.12) !important; }
+.gestao-matriz-cabecalho > span { overflow-wrap: normal; word-break: normal; hyphens: none; }
