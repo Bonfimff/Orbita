@@ -43,11 +43,12 @@
 }
 
 .cronograma-item {
-  border: 1px solid #e4e4e4;
-  border-radius: 10px;
-  padding: 14px 16px;
+  border: 1px solid #edf1f3;
+  border-left: 3px solid var(--cor-primaria);
+  border-radius: 12px;
+  padding: 14px 16px 10px;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 6px rgba(16, 24, 40, 0.05);
 }
 
 .cronograma-item-topo {
@@ -65,35 +66,120 @@
   flex-wrap: wrap;
 }
 
-.cronograma-item-titulo {
+.cronograma-os {
+  font-size: 12px;
   font-weight: 700;
-  margin-top: 8px;
-  color: #292929;
+  letter-spacing: 0.3px;
+  color: var(--cor-primaria);
+}
+
+.cronograma-data {
+  font-size: 12px;
+  color: #7A8794;
+}
+
+.cronograma-data::before {
+  content: "·";
+  margin-right: 6px;
+  color: #c4cbd2;
+}
+
+.cronograma-os:empty + .cronograma-data::before {
+  content: none;
+}
+
+/* Etiquetas em tons suaves, mesma paleta dos ícones do painel */
+.cronograma-tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #F0EFEC;
+  color: #5C5C5C;
+}
+
+.cronograma-tag.tag-baixa        { background: #EEF0F3; color: #3E4C5E; }
+.cronograma-tag.tag-media        { background: #F6EEE2; color: #9A6A2E; }
+.cronograma-tag.tag-alta,
+.cronograma-tag.tag-urgente      { background: #F6ECEA; color: #9B3B32; }
+.cronograma-tag.tag-pendente     { background: #F6EEE2; color: #9A6A2E; }
+.cronograma-tag.tag-em-andamento { background: #EEF0F3; color: #3E4C5E; }
+.cronograma-tag.tag-concluido    { background: #EFF1E8; color: #5E6B3F; }
+.cronograma-tag.tag-cancelado    { background: #F0EFEC; color: #5C5C5C; }
+
+.cronograma-item-titulo {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 10px;
+  color: #1F2D3D;
+  line-height: 1.3;
 }
 
 .cronograma-item-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 18px;
+  gap: 6px 16px;
   margin-top: 8px;
   font-size: 13px;
-  color: #555;
+  color: #5E6B78;
+}
+
+.cronograma-item-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .cronograma-item-meta strong {
-  color: #292929;
+  color: #1F2D3D;
+  font-weight: 600;
+}
+
+.cronograma-icone {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--cor-primaria);
+}
+
+.cronograma-item-obs {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #7A8794;
 }
 
 .cronograma-item-acoes {
   display: flex;
-  gap: 8px;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f3f5;
 }
 
 .cronograma-item-acoes button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   background: none;
   border: none;
+  border-radius: 8px;
+  color: #7A8794;
   cursor: pointer;
-  font-size: 15px;
+}
+
+.cronograma-item-acoes button:hover {
+  background: #F5F0E7;
+  color: var(--cor-primaria);
+}
+
+.cronograma-item-acoes .btn-excluir-agendamento:hover {
+  background: #F6ECEA;
+  color: #9B3B32;
 }
 
 .cronograma-painel {

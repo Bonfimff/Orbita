@@ -2705,3 +2705,110 @@ button[type="submit"]:hover, .btn-primario:hover {
   }
   .menu-gestao-secao[hidden] { display: none !important; }
 }
+
+/* ===================================================================
+   Painel de resumo em bloco único (ex.: Resumo das Ordens).
+   Os cards viram colunas de um mesmo bloco, separadas por divisórias,
+   sempre lado a lado e na mesma altura, inclusive no celular.
+   Mantém os ícones e as cores de .painel-icone-*.
+   =================================================================== */
+.painel-resumo {
+  background: #fff;
+  border: 1px solid #edf1f3;
+  border-radius: 14px;
+  box-shadow: 0 1px 6px rgba(16, 24, 40, 0.05);
+  padding: 14px 16px 16px;
+  margin-bottom: 18px;
+}
+
+.painel-resumo-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #edf1f3;
+}
+
+.painel-resumo-titulo {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1F2D3D;
+}
+
+.painel-resumo-total {
+  font-size: 13px;
+  color: #7A8794;
+}
+
+.painel-resumo-total strong {
+  color: var(--cor-primaria);
+  font-size: 15px;
+}
+
+.painel-cards.painel-cards-unico {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: 0;
+}
+
+.painel-cards-unico .painel-card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 4px 14px;
+  cursor: pointer;
+}
+
+.painel-cards-unico .painel-card + .painel-card {
+  border-left: 1px solid #edf1f3;
+}
+
+/* Barrinha colorida sob o número, na cor do ícone do card */
+.painel-cards-unico .painel-card-valor::after {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 3px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.painel-cards-unico .painel-card:has(.painel-icone-laranja) .painel-card-valor::after { background: #9A6A2E; }
+.painel-cards-unico .painel-card:has(.painel-icone-azul)    .painel-card-valor::after { background: #3E4C5E; }
+.painel-cards-unico .painel-card:has(.painel-icone-verde)   .painel-card-valor::after { background: #5E6B3F; }
+.painel-cards-unico .painel-card:has(.painel-icone-cinza)   .painel-card-valor::after { background: #5C5C5C; }
+
+@media (max-width: 768px) {
+  .painel-resumo {
+    padding: 12px 10px 14px;
+  }
+
+  .painel-cards.painel-cards-unico {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .painel-cards-unico .painel-card {
+    align-items: center;
+    text-align: center;
+    padding: 2px 4px;
+    gap: 6px;
+  }
+
+  .painel-cards-unico .painel-card-label {
+    font-size: 11px;
+    min-height: 2.6em;
+    display: flex;
+    align-items: center;
+  }
+
+  .painel-cards-unico .painel-card-valor::after {
+    width: 24px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

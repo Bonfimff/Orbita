@@ -1520,27 +1520,35 @@ async function carregarCronograma() {
       lista.innerHTML = '<p class="cronograma-vazio">Nenhum agendamento para este filtro.</p>';
       return;
     }
+    const icone = (d) => `<svg class="cronograma-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+    const ICONES = {
+      hora:    icone('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+      veiculo: icone('<path d="M3 13l2-5h11l3 5"/><path d="M3 13h18v4H3z"/><circle cx="7" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/>'),
+      local:   icone('<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>'),
+      pessoa:  icone('<circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.5 4-5 7-5s5.8 1.5 7 5"/>'),
+    };
+    const classeTag = (v) => 'tag-' + String(v || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, '-');
     lista.innerHTML = agenda.map(a => `
       <div class="cronograma-item" data-id="${a.id}">
         <div class="cronograma-item-topo">
           <div class="cronograma-item-tags">
-            ${a.numero_os ? `<span class="os-badge" style="background:#455a64;color:#fff;">${escapeHtml(a.numero_os)}</span>` : ''}
-            <span>${dataISOParaBR(a.data_agendada) === '' ? a.data_agendada : a.data_agendada}</span>
+            ${a.numero_os ? `<span class="cronograma-os">${escapeHtml(a.numero_os)}</span>` : ''}
+            <span class="cronograma-data">${escapeHtml(a.data_agendada || '')}</span>
           </div>
           <div class="cronograma-item-tags">
-            ${badgePrioridade(a.prioridade)}
-            ${badgeStatusAgendamento(a.status)}
+            <span class="cronograma-tag ${classeTag(a.prioridade)}">${escapeHtml(a.prioridade || '')}</span>
+            <span class="cronograma-tag ${classeTag(a.status)}">${escapeHtml(a.status || '')}</span>
           </div>
         </div>
         <div class="cronograma-item-titulo">${escapeHtml(a.titulo)}</div>
         <div class="cronograma-item-meta">
-          <span>🕒 ${a.hora_inicio} - ${a.hora_fim}</span>
-          ${a.veiculo_placa ? `<span>🚗 Veículo <strong>${escapeHtml(a.veiculo_placa)}</strong></span>` : ''}
-          ${a.local_endereco ? `<span>📍 Local <strong>${escapeHtml(a.local_endereco)}</strong></span>` : ''}
-          <span>👤 Responsável <strong>${escapeHtml(a.responsavel_tecnico)}</strong></span>
+          <span>${ICONES.hora}${a.hora_inicio} – ${a.hora_fim}</span>
+          ${a.veiculo_placa ? `<span>${ICONES.veiculo}<strong>${escapeHtml(a.veiculo_placa)}</strong></span>` : ''}
+          ${a.local_endereco ? `<span>${ICONES.local}${escapeHtml(a.local_endereco)}</span>` : ''}
+          <span>${ICONES.pessoa}${escapeHtml(a.responsavel_tecnico)}</span>
         </div>
-        ${a.observacoes ? `<div class="cronograma-item-meta">${escapeHtml(a.observacoes)}</div>` : ''}
-        <div class="cronograma-item-acoes" style="margin-top:10px;">
+        ${a.observacoes ? `<div class="cronograma-item-obs">${escapeHtml(a.observacoes)}</div>` : ''}
+        <div class="cronograma-item-acoes">
           <button type="button" class="btn-editar-agendamento" data-id="${a.id}" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
           <button type="button" class="btn-excluir-agendamento" data-id="${a.id}" title="Excluir"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
         </div>
@@ -2004,6 +2012,8 @@ async function carregarDashboard() {
     document.getElementById('total-andamento').textContent   = t.andamento   || 0;
     document.getElementById('total-finalizadas').textContent = t.finalizadas || 0;
     document.getElementById('total-canceladas').textContent  = t.canceladas  || 0;
+    const totalGeral = document.getElementById('total-geral');
+    if (totalGeral) totalGeral.textContent = (t.abertas || 0) + (t.andamento || 0) + (t.finalizadas || 0) + (t.canceladas || 0);
 
     const tbody = document.querySelector('#tabela-ordens-recentes tbody');
     if (!tbody) return;

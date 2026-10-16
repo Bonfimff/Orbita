@@ -980,7 +980,23 @@ document.addEventListener('DOMContentLoaded', function () {
       return menu.classList.contains('aberto');
     }
 
+    // O drawer começa logo abaixo do cabeçalho; se o cabeçalho já saiu da
+    // tela pela rolagem, ocupa a altura toda, sem deixar faixa vazia em cima.
+    function ajustarTopoDrawer() {
+      const barra = document.querySelector('.top-bar');
+      const topo = barra ? Math.max(0, Math.round(barra.getBoundingClientRect().bottom)) : 0;
+      menu.style.top = topo + 'px';
+      menu.style.height = `calc(100vh - ${topo}px)`;
+    }
+
+    // Limpa o ajuste quando o drawer termina de fechar, para não afetar o
+    // menu no layout de desktop.
+    menu.addEventListener('transitionend', () => {
+      if (!estaAberto()) { menu.style.top = ''; menu.style.height = ''; }
+    });
+
     function abrir() {
+      ajustarTopoDrawer();
       menu.classList.add('aberto');
       overlay.classList.add('ativo');
       document.body.classList.add('drawer-aberto');
