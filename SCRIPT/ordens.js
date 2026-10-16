@@ -1568,7 +1568,6 @@ async function carregarCronograma() {
 }
 
 async function abrirPainelAgendamento(id) {
-  const painel = document.getElementById('painel-agendamento');
   const titulo = document.getElementById('cronograma-painel-titulo');
   document.getElementById('form-agendamento')?.reset();
   cronogramaEditandoId = id || null;
@@ -1580,7 +1579,7 @@ async function abrirPainelAgendamento(id) {
   ]);
 
   if (id) {
-    titulo.textContent = 'Editar Agendamento Operacional';
+    if (titulo) titulo.textContent = 'Editar agendamento operacional';
     try {
       const resp = await fetch(osApiUrl(`agendamentos/${id}`), { headers: authHeaders() });
       const data = await resp.json();
@@ -1603,19 +1602,19 @@ async function abrirPainelAgendamento(id) {
       console.error('Erro ao carregar agendamento:', e);
     }
   } else {
-    titulo.textContent = 'Novo Agendamento Operacional';
+    if (titulo) titulo.textContent = 'Novo agendamento operacional';
   }
 
   const feedback = document.getElementById('agendamento-feedback');
   if (feedback) { feedback.style.display = 'none'; feedback.textContent = ''; }
 
-  painel.style.display = 'block';
-  painel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  abrirCadastroOS('os-sub-agendamento', 'agendamento-titulo');
 }
 
+// Depois de salvar (ou desistir), volta para a lista do cronograma.
 function fecharPainelAgendamento() {
-  document.getElementById('painel-agendamento').style.display = 'none';
   cronogramaEditandoId = null;
+  irParaAbaOS('cronograma');
 }
 
 async function salvarAgendamento(e) {
@@ -1648,8 +1647,9 @@ async function salvarAgendamento(e) {
       feedback.style.display = 'block';
       return;
     }
+    const editando = Boolean(cronogramaEditandoId);
     fecharPainelAgendamento();
-    carregarCronograma();
+    avisoRapidoOS(editando ? 'Agendamento atualizado.' : 'Agendamento criado.');
   } catch (err) {
     console.error(err);
     feedback.className = 'gestao-feedback erro';
@@ -2289,18 +2289,22 @@ async function cadastrarBase(event) {
   const listaMateriaisBases = document.getElementById('base-materiais-lista');
   if (listaMateriaisBases) listaMateriaisBases.innerHTML = '';
 
+  const baseIdInput = document.getElementById('base-id');
+  if (baseIdInput) baseIdInput.readOnly = false;
+  await carregarTabelaBases();
+  irParaAbaOS('bases');
+  avisoRapidoOS('Base salva.');
   try {
     await renderizarMapaBasesGerenciamento();
   } catch (error) {
     console.error('Erro ao atualizar mapa após cadastro da base:', error);
-    alert('Base cadastrada com sucesso, mas houve falha ao atualizar o mapa.');
-    return;
   }
-  alert('Base cadastrada com sucesso. O mapa foi atualizado.');
 }
 
 function limparCadastroBases() {
   materiaisBasesAdicionados = [];
+  const baseIdInput = document.getElementById('base-id');
+  if (baseIdInput) baseIdInput.readOnly = false;
 
   const formBases = document.getElementById('form-bases');
   if (formBases) formBases.reset();
@@ -2510,6 +2514,8 @@ async function abrirOrdem(e) {
       document.getElementById('form-os').reset();
       document.getElementById('os-pontos-container').innerHTML = '';
       carregarDashboard();
+      irParaAbaOS('busca');
+      avisoRapidoOS(`Ordem ${data.numero_os} aberta${extra}.`);
     } else {
       mostrarFeedback(`❌ ${data.mensagem || 'Erro ao salvar.'}`, 'erro');
     }
@@ -3371,18 +3377,13 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (tabId === 'gerenciamento') carregarDashboard();
       if (tabId === 'busca') buscarOrdens();
       if (tabId === 'cronograma') carregarCronograma();
+      if (tabId === 'bases') carregarTabelaBases();
     });
   });
 
   // ---- Botão Abrir Nova O.S. (gerenciamento) ----
-  document.getElementById('btn-abrir-os-rapido')?.addEventListener('click', () => {
-    tabs.forEach(t => t.classList.remove('active'));
-    tabContents.forEach(c => c.classList.remove('active'));
-    const tabAbertura = document.querySelector('[data-tab="abertura"]');
-    if (tabAbertura) tabAbertura.classList.add('active');
-    const conteudoAbertura = document.getElementById('abertura');
-    if (conteudoAbertura) conteudoAbertura.classList.add('active');
-  });
+  document.getElementById('btn-abrir-os-rapido')?.addEventListener('click', () => abrirCadastroOS('os-sub-nova'));
+  inicializarCadastrosOS();
 
   // ---- Formulário nova O.S. ----
   document.getElementById('form-os')?.addEventListener('submit', abrirOrdem);
@@ -3619,6 +3620,181 @@ document.addEventListener('DOMContentLoaded', async function () {
   // ---- Carga inicial ----
   carregarDashboard();
 });
+
+// ============================================================
+//  CADASTROS x ABAS DE SERVIÇO
+//  Cadastros só tem formulários (Nova O.S., Base, Agendamento). As
+//  tabelas ficam nas abas do serviço; Editar abre o cadastro preenchido
+//  e, ao salvar, a tela volta para a tabela.
+// ============================================================
+let basesTabelaCache = [];
+
+function irParaAbaOS(tabId) {
+  document.querySelector('.tab-btn[data-tab="' + tabId + '"]')?.click();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function abrirSubabaOS(subId) {
+  document.querySelectorAll('#cadastros .os-subabas .top-tab2').forEach(b => b.classList.toggle('active', b.dataset.subaba === subId));
+  document.querySelectorAll('#cadastros .os-subaba').forEach(p => p.classList.toggle('ativa', p.id === subId));
+}
+
+function abrirCadastroOS(subId, focoId) {
+  fecharDetalheOS();
+  irParaAbaOS('cadastros');
+  abrirSubabaOS(subId);
+  if (focoId) setTimeout(() => document.getElementById(focoId)?.focus(), 150);
+}
+
+function avisoRapidoOS(mensagem, tipo) {
+  let el = document.getElementById('os-aviso-rapido');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'os-aviso-rapido';
+    el.setAttribute('role', 'status');
+    document.body.appendChild(el);
+  }
+  el.textContent = mensagem;
+  el.className = 'os-aviso-rapido visivel' + (tipo === 'erro' ? ' erro' : '');
+  clearTimeout(avisoRapidoOS._t);
+  avisoRapidoOS._t = setTimeout(() => el.classList.remove('visivel'), 3200);
+}
+
+function abrirDetalheOS(titulo, html) {
+  const modal = document.getElementById('os-detalhe');
+  if (!modal) return;
+  document.getElementById('os-detalhe-titulo').textContent = titulo;
+  document.getElementById('os-detalhe-corpo').innerHTML = html;
+  modal.classList.add('ativo');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function fecharDetalheOS() {
+  const modal = document.getElementById('os-detalhe');
+  if (!modal) return;
+  modal.classList.remove('ativo');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function linhaDetalheOS(rotulo, valor) {
+  const texto = valor == null || valor === '' ? '-' : valor;
+  return `<div class="os-detalhe-linha"><span>${escapeHtml(rotulo)}</span><strong>${texto}</strong></div>`;
+}
+
+async function carregarTabelaBases() {
+  const tbody = document.querySelector('#tabela-bases tbody');
+  if (tbody && window.htmlCarregandoLogo) tbody.innerHTML = `<tr><td colspan="5">${window.htmlCarregandoLogo('Carregando bases...')}</td></tr>`;
+  basesTabelaCache = await listarBases();
+  renderTabelaBases();
+}
+
+function renderTabelaBases() {
+  const tbody = document.querySelector('#tabela-bases tbody');
+  if (!tbody) return;
+  const busca = (document.getElementById('bases-busca')?.value || '').trim().toLowerCase();
+  const lista = basesTabelaCache.filter(b => !busca || [b.id, b.endereco, b.complemento, (b.contratos || []).join(' ')]
+    .some(c => String(c || '').toLowerCase().includes(busca)));
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="5" class="cronograma-vazio">${basesTabelaCache.length ? 'Nenhuma base com essa busca.' : 'Nenhuma base cadastrada. Use "Cadastrar base".'}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = lista.map(b => `
+    <tr class="os-linha-clicavel" data-base-id="${escapeHtml(b.id)}" tabindex="0" title="Ver detalhes da base">
+      <td><strong>${escapeHtml(b.id)}</strong></td>
+      <td>${escapeHtml([b.endereco, b.complemento].filter(Boolean).join(' · '))}</td>
+      <td>${(b.contratos || []).length ? (b.contratos || []).map(c => `<span class="os-tag">${escapeHtml(c)}</span>`).join(' ') : '<span class="os-texto-suave">Geral</span>'}</td>
+      <td>${(b.materiais || []).length}</td>
+      <td>${b.link_localizacao ? `<a href="${escapeHtml(b.link_localizacao)}" target="_blank" rel="noopener">Abrir mapa</a>` : '-'}</td>
+    </tr>`).join('');
+}
+
+function abrirDetalheBase(id) {
+  const b = basesTabelaCache.find(x => String(x.id) === String(id));
+  if (!b) return;
+  const materiais = (b.materiais || []).length
+    ? '<ul class="os-detalhe-lista">' + b.materiais.map(m => `<li>${escapeHtml(m.nome)} · ${escapeHtml(m.quantidade)} ${escapeHtml(m.unidade || '')}</li>`).join('') + '</ul>'
+    : '';
+  abrirDetalheOS(`Base ${b.id}`, `
+    <div class="os-detalhe-grade">
+      ${linhaDetalheOS('Endereço', escapeHtml(b.endereco))}
+      ${linhaDetalheOS('Complemento', escapeHtml(b.complemento))}
+      ${linhaDetalheOS('Contratos', escapeHtml((b.contratos || []).join(', ') || 'Geral (todos os contratos)'))}
+      ${linhaDetalheOS('Localização', b.link_localizacao ? `<a href="${escapeHtml(b.link_localizacao)}" target="_blank" rel="noopener">Abrir mapa</a>` : '')}
+      ${linhaDetalheOS('Observações', escapeHtml(b.obs))}
+    </div>
+    <h4 class="os-detalhe-subtitulo">Materiais instalados</h4>
+    ${materiais || '<p class="os-texto-suave">Nenhum material registrado.</p>'}
+    <div class="os-detalhe-acoes" data-base-id="${escapeHtml(b.id)}">
+      <button type="button" class="btn-secundario" data-base-acao="editar">Editar</button>
+      <button type="button" class="btn-secundario" data-base-acao="excluir">Excluir</button>
+    </div>`);
+}
+
+function preencherFormularioBase(b) {
+  const definir = (id, v) => { const el = document.getElementById(id); if (el) el.value = v ?? ''; };
+  limparCadastroBases();
+  definir('base-id', b.id);
+  const baseIdInput = document.getElementById('base-id');
+  if (baseIdInput) baseIdInput.readOnly = true;
+  definir('base-link-localizacao', b.link_localizacao);
+  definir('base-endereco', b.endereco);
+  definir('base-complemento', b.complemento);
+  definir('base-obs', b.obs);
+  window.popularChecklistContratos(document.getElementById('base-contratos-lista'), b.contratos || []);
+  materiaisBasesAdicionados = (b.materiais || []).map(m => ({ ...m }));
+  renderizarBaseMateriaisLista();
+}
+
+function inicializarCadastrosOS() {
+  document.querySelectorAll('#cadastros .os-subabas .top-tab2').forEach(b => {
+    b.addEventListener('click', () => abrirSubabaOS(b.dataset.subaba));
+  });
+  document.querySelectorAll('#os-detalhe [data-fechar-detalhe]').forEach(el => el.addEventListener('click', fecharDetalheOS));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharDetalheOS(); });
+
+  document.getElementById('btn-nova-os')?.addEventListener('click', () => abrirCadastroOS('os-sub-nova'));
+  document.getElementById('btn-nova-base')?.addEventListener('click', () => {
+    limparCadastroBases();
+    abrirCadastroOS('os-sub-base', 'base-id');
+  });
+  document.getElementById('bases-busca')?.addEventListener('input', renderTabelaBases);
+
+  const tbody = document.querySelector('#tabela-bases tbody');
+  const abrir = e => {
+    const linha = e.target.closest('tr[data-base-id]');
+    if (linha && !e.target.closest('a') && (e.type === 'click' || e.key === 'Enter')) abrirDetalheBase(linha.dataset.baseId);
+  };
+  tbody?.addEventListener('click', abrir);
+  tbody?.addEventListener('keydown', abrir);
+
+  document.getElementById('os-detalhe-corpo')?.addEventListener('click', async e => {
+    const botao = e.target.closest('[data-base-acao]');
+    if (!botao) return;
+    const id = botao.closest('[data-base-id]').dataset.baseId;
+    const base = basesTabelaCache.find(x => String(x.id) === String(id));
+    if (botao.dataset.baseAcao === 'editar' && base) {
+      preencherFormularioBase(base);
+      abrirCadastroOS('os-sub-base', 'base-endereco');
+      return;
+    }
+    if (botao.dataset.baseAcao === 'excluir') {
+      if (!confirm(`Excluir a base ${id}?`)) return;
+      try {
+        const resp = await fetch(osApiUrl(`bases/${encodeURIComponent(id)}`), { method: 'DELETE', headers: authHeaders() });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok || data.status !== 'ok') throw new Error(data.mensagem || 'Falha ao excluir base.');
+        fecharDetalheOS();
+        await carregarTabelaBases();
+        avisoRapidoOS('Base excluída.');
+        renderizarMapaBasesGerenciamento().catch(() => {});
+      } catch (err) {
+        avisoRapidoOS(err.message, 'erro');
+      }
+    }
+  });
+
+  carregarTabelaBases();
+}
 
 // (o fechamento do bloco principal fica no fim do arquivo: os trechos
 //  abaixo usam funções internas, como sairDaEdicaoComAutosave e badgeStatus)

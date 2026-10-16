@@ -2570,3 +2570,92 @@ button.ponto-foto-modal-tags {
     width: 100%;
   }
 }
+
+/* ===== Aba Cadastros: sub-abas Nova O.S., Base e Agendamento ===== */
+.os-subaba { display: none; }
+.os-subaba.ativa { display: block; }
+.os-subaba-titulo { margin: 0 0 12px; font-size: 16px; color: #1F2D3D; }
+
+/* ===== Listas das abas de serviço ===== */
+.os-lista-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 0 0 14px;
+}
+.os-lista-filtros input {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 9px 11px;
+  border: 1px solid #d9dde1;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.os-lista-filtros-direita { justify-content: flex-end; }
+.os-linha-clicavel { cursor: pointer; }
+.os-linha-clicavel:hover td { background: #faf7f1; }
+.os-linha-clicavel:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: -2px; }
+.os-tag {
+  display: inline-block;
+  margin: 1px 2px;
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: #F5F0E7;
+  color: #7a6136;
+  font-size: 12px;
+  font-weight: 600;
+}
+.os-texto-suave { color: #7A8794; }
+
+/* ===== Janela de detalhes ===== */
+.os-detalhe { position: fixed; inset: 0; z-index: 1500; display: none; align-items: center; justify-content: center; padding: 16px; }
+.os-detalhe.ativo { display: flex; }
+.os-detalhe-fundo { position: absolute; inset: 0; background: rgba(20, 20, 20, 0.45); }
+.os-detalhe-cartao {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 20px 24px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+}
+.os-detalhe-cartao h3 { margin: 0 44px 14px 0; font-size: 18px; color: #1F2D3D; }
+.os-detalhe-fechar { position: absolute; top: 14px; right: 14px; }
+.os-detalhe-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; }
+.os-detalhe-linha { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.os-detalhe-linha span { font-size: 12px; color: #7A8794; }
+.os-detalhe-linha strong { font-size: 14px; font-weight: 600; color: #1F2D3D; overflow-wrap: anywhere; }
+.os-detalhe-subtitulo { margin: 20px 0 8px; font-size: 15px; color: #1F2D3D; }
+.os-detalhe-lista { margin: 0; padding-left: 18px; font-size: 14px; }
+.os-detalhe-acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+
+/* ===== Aviso rápido depois de salvar ===== */
+.os-aviso-rapido {
+  position: fixed;
+  left: 50%;
+  bottom: 90px;
+  transform: translate(-50%, 20px);
+  z-index: 2000;
+  max-width: calc(100% - 32px);
+  padding: 11px 18px;
+  border-radius: 10px;
+  background: #262626;
+  color: #fff;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.os-aviso-rapido.visivel { opacity: 1; transform: translate(-50%, 0); }
+.os-aviso-rapido.erro { background: #9B3B32; }
+
+@media (max-width: 600px) {
+  .os-detalhe { align-items: flex-end; padding: 0; }
+  .os-detalhe-cartao { max-width: none; border-radius: 16px 16px 0 0; max-height: 90dvh; }
+  .os-detalhe-grade { grid-template-columns: minmax(0, 1fr); }
+  .os-lista-filtros button { width: 100%; }
+}

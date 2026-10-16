@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=37" />
-  <link rel="stylesheet" href="../CSS/ordens.css?v=34" />
+  <link rel="stylesheet" href="../CSS/ordens.css?v=35" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
@@ -17,8 +17,8 @@
     <button class="tab-btn active" data-tab="gerenciamento" data-nav-label="Painel" data-nav-icone="painel">Painel Geral</button>
     <button class="tab-btn" data-tab="bases" data-nav-label="Bases" data-nav-icone="mapa">Bases</button>
     <button class="tab-btn" data-tab="cronograma" data-nav-label="Cronograma" data-nav-icone="agenda">Cronograma</button>
-    <button class="tab-btn" data-tab="abertura" data-nav-label="Nova O.S." data-nav-icone="cadastros">Nova O.S.</button>
-    <button class="tab-btn" data-tab="busca">Busca</button>
+    <button class="tab-btn" data-tab="busca" data-nav-label="Busca" data-nav-icone="busca">Busca</button>
+    <button class="tab-btn" data-tab="cadastros" data-nav-icone="cadastros">Cadastros</button>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
         <img src="../IMG/configuracoes.png" alt="Configurações">
@@ -159,91 +159,27 @@
 
     <!-- ===== ABA: BASES ===== -->
     <div id="bases" class="tab-content">
-      <h2 class="aba-legenda">Cadastro de Bases</h2>
+      <h2 class="aba-legenda">Bases</h2>
       <hr class="aba-linha">
 
-      <form id="form-bases" autocomplete="off">
-        <div class="os-form-grid bases-form-grid">
-          <div class="os-form-item">
-            <label for="base-id">ID da base <span class="obrigatorio">*</span></label>
-            <input type="text" id="base-id" placeholder="Ex.: BASE-001" required>
-          </div>
-
-          <div class="os-form-item">
-            <label for="base-link-localizacao">Link de localização</label>
-            <input type="text" id="base-link-localizacao" placeholder="https://maps.google.com/...">
-          </div>
-
-          <div class="os-form-item">
-            <label for="base-endereco">Endereço <span class="obrigatorio">*</span></label>
-            <input type="text" id="base-endereco" placeholder="Rua, número, bairro" required>
-          </div>
-
-          <div class="os-form-item">
-            <label for="base-complemento">Complemento</label>
-            <input type="text" id="base-complemento" placeholder="Apto, bloco, ponto de referência">
-          </div>
-
-          <div class="os-form-item os-form-full">
-            <label>Contratos com acesso a esta base</label>
-            <small class="os-campo-ajuda">Sem nenhum marcado, a base fica visível para todos os usuários com acesso a Ordens de Serviço.</small>
-            <div id="base-contratos-lista" class="checklist-contratos"></div>
-          </div>
-
-          <div class="os-form-item os-form-full">
-            <label for="base-obs">Observações</label>
-            <textarea id="base-obs" rows="3" placeholder="Observações adicionais sobre a base..."></textarea>
-          </div>
-
-          <div class="os-form-item os-form-full">
-            <label for="base-material-nome">Materiais instalados no local</label>
-            <div class="bases-material-input-row">
-              <input type="text" id="base-material-nome" list="base-material-sugestoes" placeholder="Selecione material..." autocomplete="off">
-              <input type="number" id="base-material-qtd" min="1" placeholder="Qtd">
-              <input type="text" id="base-material-unidade" placeholder="Unidade">
-              <button type="button" id="btn-adicionar-base-material" class="btn-primario btn-sm">Adicionar</button>
-            </div>
-            <datalist id="base-material-sugestoes"></datalist>
-            <div id="base-materiais-lista" class="base-materiais-lista"></div>
-          </div>
-
-          <div class="os-form-item os-form-full bases-upload-box">
-            <div class="bases-preview-grid">
-              <div class="bases-preview-panel">
-                <div class="bases-preview-header">
-                  <div>
-                    <h4>Visualização de fotos</h4>
-                    <small>Selecione uma ou mais fotos da base.</small>
-                  </div>
-                  <div class="bases-photo-selector">
-                    <input type="file" id="base-fotos" multiple accept="image/*">
-                  </div>
-                </div>
-                <div id="base-fotos-preview" class="base-files-preview">Nenhuma foto adicionada.</div>
-              </div>
-              <div class="bases-preview-panel">
-                <div class="bases-preview-header">
-                  <div>
-                    <h4>Visualização de documentos</h4>
-                    <small>Selecione um ou mais documentos.</small>
-                  </div>
-                  <div class="bases-photo-selector bases-doc-selector">
-                    <input type="file" id="base-documentos" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg">
-                  </div>
-                </div>
-                <div id="base-docs-preview" class="base-files-preview">Nenhum documento adicionado.</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="os-form-item os-form-full">
-            <div class="bases-actions">
-              <button type="submit" class="btn-primario">Salvar Base</button>
-              <button type="button" class="btn-secundario" id="btn-limpar-bases">Limpar</button>
-            </div>
-          </div>
-        </div>
-      </form>
+      <div class="os-lista-filtros">
+        <input type="search" id="bases-busca" placeholder="Buscar por ID, endereço ou contrato">
+        <button type="button" class="btn-primario" id="btn-nova-base">Cadastrar base</button>
+      </div>
+      <div class="tabela-responsiva">
+        <table id="tabela-bases" class="estilo-tabela">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Endereço</th>
+              <th>Contratos</th>
+              <th>Materiais</th>
+              <th>Localização</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- ===== ABA: CRONOGRAMA DE SERVIÇO ===== -->
@@ -266,14 +202,182 @@
       <div id="cronograma-lista" class="cronograma-lista">
         <div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div>
       </div>
+    </div>
 
-      <!-- Painel: Novo/Editar Agendamento -->
-      <div id="painel-agendamento" class="cronograma-painel" style="display:none;">
-        <div class="cronograma-painel-header">
-          <h3 id="cronograma-painel-titulo">Novo Agendamento Operacional</h3>
-          <button type="button" class="btn-secundario" id="btn-fechar-agendamento">Fechar</button>
-        </div>
+    <!-- ===== ABA: NOVA O.S. ===== -->
+    <div id="cadastros" class="tab-content" data-secao="Cadastros">
+      <h2 class="aba-legenda">Cadastros</h2>
+      <hr class="aba-linha">
+      <div class="opcoes-abas os-subabas" role="tablist">
+        <button type="button" class="top-tab2 active" data-subaba="os-sub-nova">Nova O.S.</button>
+        <button type="button" class="top-tab2" data-subaba="os-sub-base">Base</button>
+        <button type="button" class="top-tab2" data-subaba="os-sub-agendamento">Agendamento</button>
+      </div>
 
+      <div id="os-sub-nova" class="os-subaba ativa">
+        <form id="form-os" autocomplete="off">
+          <div class="os-form-grid">
+
+            <!-- Solicitante -->
+            <div class="os-form-item">
+              <label for="os-solicitante">Solicitante <span class="obrigatorio">*</span></label>
+              <input type="text" id="os-solicitante" placeholder="Nome do solicitante" required />
+            </div>
+
+            <!-- Tipo de serviço -->
+            <div class="os-form-item">
+              <label for="os-tipo">Tipo de Serviço <span class="obrigatorio">*</span></label>
+              <select id="os-tipo" required>
+                <option value="">Selecione...</option>
+                <option value="Elétrica">Elétrica</option>
+                <option value="Hidráulica">Hidráulica</option>
+                <option value="TI">TI</option>
+                <option value="Civil">Civil</option>
+                <option value="Mecânica">Mecânica</option>
+                <option value="Limpeza">Limpeza</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+
+            <!-- Contrato -->
+            <div class="os-form-item">
+              <label for="os-contrato">Contrato</label>
+              <input type="text" id="os-contrato" placeholder="Nome do contrato/empresa" />
+            </div>
+
+            <!-- Prioridade -->
+            <div class="os-form-item">
+              <label for="os-prioridade">Prioridade</label>
+              <select id="os-prioridade">
+                <option value="Baixa">Baixa</option>
+                <option value="Média" selected>Média</option>
+                <option value="Alta">Alta</option>
+                <option value="Urgente">Urgente</option>
+              </select>
+            </div>
+
+            <!-- Descrição (full width) -->
+            <div class="os-form-item os-form-full">
+              <label for="os-descricao">Descrição do Serviço <span class="obrigatorio">*</span></label>
+              <textarea id="os-descricao" rows="4" placeholder="Descreva o serviço a ser realizado..." required></textarea>
+            </div>
+          </div>
+
+          <div id="os-pontos-mapa-container" class="pontos-mapa-unico" style="display:none;">
+            <iframe id="os-pontos-mapa" class="ponto-mapa-preview" frameborder="0" scrolling="no" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <div id="os-pontos-mapa-legenda" class="pontos-mapa-legenda"></div>
+          </div>
+
+          <!-- Pontos de atendimento -->
+          <div class="os-pontos-secao">
+            <div class="os-pontos-header">
+              <span>Pontos de Atendimento</span>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <button type="button" id="btn-adicionar-ponto-form" class="btn-secundario btn-sm">+ Adicionar Ponto</button>
+              </div>
+            </div>
+            <div id="os-pontos-container">
+              <!-- Linhas de ponto inseridas dinamicamente -->
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:20px;">
+            <button type="submit" class="btn-primario">Abrir Ordem</button>
+            <button type="button" id="btn-limpar-os" class="btn-secundario">Limpar</button>
+          </div>
+        </form>
+
+        <!-- Feedback -->
+        <div id="os-feedback" style="display:none; margin-top:16px;"></div>
+      </div>
+
+      <div id="os-sub-base" class="os-subaba">
+        <form id="form-bases" autocomplete="off">
+          <div class="os-form-grid bases-form-grid">
+            <div class="os-form-item">
+              <label for="base-id">ID da base <span class="obrigatorio">*</span></label>
+              <input type="text" id="base-id" placeholder="Ex.: BASE-001" required>
+            </div>
+
+            <div class="os-form-item">
+              <label for="base-link-localizacao">Link de localização</label>
+              <input type="text" id="base-link-localizacao" placeholder="https://maps.google.com/...">
+            </div>
+
+            <div class="os-form-item">
+              <label for="base-endereco">Endereço <span class="obrigatorio">*</span></label>
+              <input type="text" id="base-endereco" placeholder="Rua, número, bairro" required>
+            </div>
+
+            <div class="os-form-item">
+              <label for="base-complemento">Complemento</label>
+              <input type="text" id="base-complemento" placeholder="Apto, bloco, ponto de referência">
+            </div>
+
+            <div class="os-form-item os-form-full">
+              <label>Contratos com acesso a esta base</label>
+              <small class="os-campo-ajuda">Sem nenhum marcado, a base fica visível para todos os usuários com acesso a Ordens de Serviço.</small>
+              <div id="base-contratos-lista" class="checklist-contratos"></div>
+            </div>
+
+            <div class="os-form-item os-form-full">
+              <label for="base-obs">Observações</label>
+              <textarea id="base-obs" rows="3" placeholder="Observações adicionais sobre a base..."></textarea>
+            </div>
+
+            <div class="os-form-item os-form-full">
+              <label for="base-material-nome">Materiais instalados no local</label>
+              <div class="bases-material-input-row">
+                <input type="text" id="base-material-nome" list="base-material-sugestoes" placeholder="Selecione material..." autocomplete="off">
+                <input type="number" id="base-material-qtd" min="1" placeholder="Qtd">
+                <input type="text" id="base-material-unidade" placeholder="Unidade">
+                <button type="button" id="btn-adicionar-base-material" class="btn-primario btn-sm">Adicionar</button>
+              </div>
+              <datalist id="base-material-sugestoes"></datalist>
+              <div id="base-materiais-lista" class="base-materiais-lista"></div>
+            </div>
+
+            <div class="os-form-item os-form-full bases-upload-box">
+              <div class="bases-preview-grid">
+                <div class="bases-preview-panel">
+                  <div class="bases-preview-header">
+                    <div>
+                      <h4>Visualização de fotos</h4>
+                      <small>Selecione uma ou mais fotos da base.</small>
+                    </div>
+                    <div class="bases-photo-selector">
+                      <input type="file" id="base-fotos" multiple accept="image/*">
+                    </div>
+                  </div>
+                  <div id="base-fotos-preview" class="base-files-preview">Nenhuma foto adicionada.</div>
+                </div>
+                <div class="bases-preview-panel">
+                  <div class="bases-preview-header">
+                    <div>
+                      <h4>Visualização de documentos</h4>
+                      <small>Selecione um ou mais documentos.</small>
+                    </div>
+                    <div class="bases-photo-selector bases-doc-selector">
+                      <input type="file" id="base-documentos" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg">
+                    </div>
+                  </div>
+                  <div id="base-docs-preview" class="base-files-preview">Nenhum documento adicionado.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="os-form-item os-form-full">
+              <div class="bases-actions">
+                <button type="submit" class="btn-primario">Salvar Base</button>
+                <button type="button" class="btn-secundario" id="btn-limpar-bases">Limpar</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div id="os-sub-agendamento" class="os-subaba">
+        <h3 id="cronograma-painel-titulo" class="os-subaba-titulo">Novo agendamento operacional</h3>
         <form id="form-agendamento" autocomplete="off">
           <input type="hidden" id="agendamento-id">
 
@@ -353,91 +457,13 @@
       </div>
     </div>
 
-    <!-- ===== ABA: NOVA O.S. ===== -->
-    <div id="abertura" class="tab-content">
-      <h2 class="aba-legenda">Nova Ordem de Serviço</h2>
-      <hr class="aba-linha">
-
-      <form id="form-os" autocomplete="off">
-        <div class="os-form-grid">
-
-          <!-- Solicitante -->
-          <div class="os-form-item">
-            <label for="os-solicitante">Solicitante <span class="obrigatorio">*</span></label>
-            <input type="text" id="os-solicitante" placeholder="Nome do solicitante" required />
-          </div>
-
-          <!-- Tipo de serviço -->
-          <div class="os-form-item">
-            <label for="os-tipo">Tipo de Serviço <span class="obrigatorio">*</span></label>
-            <select id="os-tipo" required>
-              <option value="">Selecione...</option>
-              <option value="Elétrica">Elétrica</option>
-              <option value="Hidráulica">Hidráulica</option>
-              <option value="TI">TI</option>
-              <option value="Civil">Civil</option>
-              <option value="Mecânica">Mecânica</option>
-              <option value="Limpeza">Limpeza</option>
-              <option value="Outro">Outro</option>
-            </select>
-          </div>
-
-          <!-- Contrato -->
-          <div class="os-form-item">
-            <label for="os-contrato">Contrato</label>
-            <input type="text" id="os-contrato" placeholder="Nome do contrato/empresa" />
-          </div>
-
-          <!-- Prioridade -->
-          <div class="os-form-item">
-            <label for="os-prioridade">Prioridade</label>
-            <select id="os-prioridade">
-              <option value="Baixa">Baixa</option>
-              <option value="Média" selected>Média</option>
-              <option value="Alta">Alta</option>
-              <option value="Urgente">Urgente</option>
-            </select>
-          </div>
-
-          <!-- Descrição (full width) -->
-          <div class="os-form-item os-form-full">
-            <label for="os-descricao">Descrição do Serviço <span class="obrigatorio">*</span></label>
-            <textarea id="os-descricao" rows="4" placeholder="Descreva o serviço a ser realizado..." required></textarea>
-          </div>
-        </div>
-
-        <div id="os-pontos-mapa-container" class="pontos-mapa-unico" style="display:none;">
-          <iframe id="os-pontos-mapa" class="ponto-mapa-preview" frameborder="0" scrolling="no" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
-          <div id="os-pontos-mapa-legenda" class="pontos-mapa-legenda"></div>
-        </div>
-
-        <!-- Pontos de atendimento -->
-        <div class="os-pontos-secao">
-          <div class="os-pontos-header">
-            <span>Pontos de Atendimento</span>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <button type="button" id="btn-adicionar-ponto-form" class="btn-secundario btn-sm">+ Adicionar Ponto</button>
-            </div>
-          </div>
-          <div id="os-pontos-container">
-            <!-- Linhas de ponto inseridas dinamicamente -->
-          </div>
-        </div>
-
-        <div style="display:flex; gap:12px; margin-top:20px;">
-          <button type="submit" class="btn-primario">Abrir Ordem</button>
-          <button type="button" id="btn-limpar-os" class="btn-secundario">Limpar</button>
-        </div>
-      </form>
-
-      <!-- Feedback -->
-      <div id="os-feedback" style="display:none; margin-top:16px;"></div>
-    </div>
-
     <!-- ===== ABA: BUSCA ===== -->
     <div id="busca" class="tab-content">
       <h2 class="aba-legenda">Busca de Ordens</h2>
       <hr class="aba-linha">
+      <div class="os-lista-filtros os-lista-filtros-direita">
+        <button type="button" class="btn-primario" id="btn-nova-os">Nova O.S.</button>
+      </div>
 
       <!-- Controles de busca -->
       <div class="busca-controles">
@@ -545,7 +571,7 @@
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=9"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="../SCRIPT/ordens.js?v=24"></script>
+  <script src="../SCRIPT/ordens.js?v=25"></script>
   <script src="../SCRIPT/relatorios/alertas-dashboard.js?v=5"></script>
   <script src="../SCRIPT/relatorios/analise-os.js?v=2"></script>
   <script src="../SCRIPT/operacional/equipe.js?v=5"></script>
@@ -557,6 +583,16 @@
     <div class="modal-content">
       <p>Versão de desenvolvimento: v2 24.06</p>
       <button id="modal-ok-btn">OK</button>
+    </div>
+  </div>
+
+  <!-- Detalhes de base -->
+  <div id="os-detalhe" class="os-detalhe" aria-hidden="true">
+    <div class="os-detalhe-fundo" data-fechar-detalhe></div>
+    <div class="os-detalhe-cartao" role="dialog" aria-modal="true" aria-labelledby="os-detalhe-titulo">
+      <button type="button" class="os-detalhe-fechar" data-fechar-detalhe data-fechar-flutuante aria-label="Fechar">×</button>
+      <h3 id="os-detalhe-titulo"></h3>
+      <div id="os-detalhe-corpo"></div>
     </div>
   </div>
 
