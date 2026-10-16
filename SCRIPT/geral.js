@@ -1881,3 +1881,52 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
     irPara(alvo);
   });
 })();
+
+// Botão de fechar padrão das janelas flutuantes: o mesmo X redondo da
+// edição de O.S. em todas as telas. Pega os botões fixos no HTML e os que
+// são criados depois (modais montados por script).
+(function () {
+  const SELETOR_FECHAR = [
+    '.modal-os-fechar', '.rel-filtros-fechar', '.preview-close', '.gestao-modal-fechar',
+    '.frota-checklist-modal-fechar', '.ponto-foto-modal-fechar', '.ajuda-fechar',
+    '#close-profile-modal', '[data-fechar-flutuante]',
+  ].join(',');
+  const ICONE_X = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" '
+    + 'stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+  function ehFecharSolto(botao) {
+    const texto = (botao.textContent || '').trim();
+    if (!['×', '✕', '✖'].includes(texto)) return false;
+    const pistas = [botao.id, botao.className, botao.getAttribute('aria-label'), botao.title]
+      .join(' ').toLowerCase();
+    return /fech|close/.test(pistas) || !/remov|exclu/.test(pistas);
+  }
+
+  function padronizar(botao) {
+    if (botao.dataset.fecharPadrao) return;
+    botao.dataset.fecharPadrao = '1';
+    botao.classList.add('btn-fechar-padrao');
+    botao.innerHTML = ICONE_X;
+    if (!botao.getAttribute('aria-label')) botao.setAttribute('aria-label', 'Fechar');
+    if (!botao.title) botao.title = 'Fechar';
+  }
+
+  function varrer(raiz) {
+    if (!raiz || !raiz.querySelectorAll) return;
+    if (raiz.matches && raiz.matches('button') && (raiz.matches(SELETOR_FECHAR) || ehFecharSolto(raiz))) {
+      padronizar(raiz);
+    }
+    raiz.querySelectorAll(SELETOR_FECHAR).forEach(padronizar);
+    raiz.querySelectorAll('button').forEach(b => { if (ehFecharSolto(b)) padronizar(b); });
+  }
+
+  function iniciar() {
+    varrer(document.body);
+    new MutationObserver(mudancas => {
+      mudancas.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) varrer(n); }));
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();

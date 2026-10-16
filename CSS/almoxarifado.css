@@ -1053,3 +1053,10 @@
 .agenda-dados dt { color: #8a8a8a; }
 .agenda-dados dd { margin: 0; text-align: right; color: #262626; word-break: break-word; }
 @media (max-width: 480px) { .agenda-form { grid-template-columns: 1fr; } }
+
+/* Resumo Rápido fica só na versão de computador */
+@media (max-width: 768px) {
+  .almox-resumo {
+    display: none !important;
+  }
+}

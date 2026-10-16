@@ -3620,7 +3620,8 @@ document.addEventListener('DOMContentLoaded', async function () {
   carregarDashboard();
 });
 
-})(); // fim IIFE
+// (o fechamento do bloco principal fica no fim do arquivo: os trechos
+//  abaixo usam funções internas, como sairDaEdicaoComAutosave e badgeStatus)
 
 
 
@@ -3828,3 +3829,5 @@ window.definirResponsavelEquipeOS = function (nome) {
   try { renderizarListaItens('edit-despacho-responsavel-list', despachoResponsaveis); } catch (e) { /* lista antiga oculta */ }
   atualizarResumoDadosOSModal();
 };
+
+})(); // fim IIFE

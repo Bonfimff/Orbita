@@ -2988,3 +2988,31 @@ button[type="submit"]:hover, .btn-primario:hover {
     text-align: center;
   }
 }
+
+/* Botão de fechar padrão das janelas flutuantes (ver geral.js) */
+button.btn-fechar-padrao {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1.5px solid #1a1a1a !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  color: #1a1a1a !important;
+  font-size: 0 !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+button.btn-fechar-padrao:hover {
+  background: #f3f1ec !important;
+}
+button.btn-fechar-padrao svg {
+  width: 16px;
+  height: 16px;
+}
