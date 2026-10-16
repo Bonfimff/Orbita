@@ -1006,3 +1006,10 @@ body.frota-checklist-modal-aberto {
 /* Veículo alocado em O.S. ativa */
 .frota-status-operacao { background: #EAF0F8; color: #2F5C99; }
 td .frota-status-badge + small { display: block; margin-top: 3px; }
+
+/* Troca rápida de status nos detalhes do veículo */
+.frota-status-rapido { display: flex; gap: 0; border: 1px solid #d5dbe3; border-radius: 8px; overflow: hidden; }
+.frota-status-rapido button { flex: 1 1 0; padding: 10px 6px; border: none; border-right: 1px solid #d5dbe3; background: #fff; color: #334155; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.frota-status-rapido button:last-child { border-right: none; }
+.frota-status-rapido button.ativo { background: #1F2D3D; color: #fff; cursor: default; }
+.frota-status-rapido button:disabled:not(.ativo) { opacity: .6; cursor: wait; }

@@ -2333,6 +2333,10 @@
         ${linhaDetalhe('Manutenção aberta', manut ? escapeHtml(`${manut.tipo} · ${manut.status}`) : 'Nenhuma')}
         ${linhaDetalhe('Obs', escapeHtml(v.obs || ''))}
       </div>
+      <h4 class="frota-detalhe-subtitulo">Status do veículo</h4>
+      <div class="frota-status-rapido" role="group" aria-label="Status do veículo">
+        ${['Ativo', 'Em manutenção', 'Inativo'].map(st => `<button type="button" data-status-rapido="${st}" class="${normalizarStatus(v.status) === st ? 'ativo' : ''}">${st}</button>`).join('')}
+      </div>
       <div class="frota-detalhe-acoes">
         <button type="button" class="btn-secundario" data-detalhe-acao="editar-veiculo">Editar cadastro</button>
         <button type="button" class="btn-primario" data-detalhe-acao="agendar-manutencao">${manut ? 'Ver manutenção aberta' : 'Agendar manutenção'}</button>
@@ -2358,6 +2362,26 @@
 
     corpo.addEventListener('click', async e => {
       const placa = corpo.dataset.placa;
+      const botaoStatus = e.target.closest('[data-status-rapido]');
+      if (botaoStatus) {
+        if (botaoStatus.classList.contains('ativo')) return;
+        const v = buscarVeiculoPorPlaca(placa);
+        if (!v) return;
+        const { operacao, id, ...dados } = v;
+        const grupo = botaoStatus.parentElement;
+        grupo.querySelectorAll('button').forEach(b => { b.disabled = true; });
+        try {
+          await chamarApi('frota/veiculos', 'POST', { ...dados, status: botaoStatus.dataset.statusRapido });
+          await listarVeiculos();
+          renderGestaoVeiculos();
+          abrirDetalheVeiculo(placa);
+          avisoRapido('Status alterado para ' + botaoStatus.dataset.statusRapido + '.');
+        } catch (err) {
+          grupo.querySelectorAll('button').forEach(b => { b.disabled = false; });
+          avisoRapido(err.message || 'Não foi possível alterar o status.', 'erro');
+        }
+        return;
+      }
       const acao = e.target.closest('[data-detalhe-acao]')?.dataset.detalheAcao;
       if (acao === 'editar-veiculo') {
         const v = buscarVeiculoPorPlaca(placa);
