@@ -201,24 +201,7 @@
     resumo.innerHTML = itens.join('');
   }
 
-  let frotaBasesMapa = [];
-  async function carregarBasesMapa() {
-    try {
-      const resp = await fetch(frotaApiUrl('bases'), { headers: authHeaders() });
-      const dados = await resp.json();
-      frotaBasesMapa = (dados.status === 'ok' && Array.isArray(dados.bases)) ? dados.bases : [];
-    } catch (e) {
-      frotaBasesMapa = [];
-    }
-    return frotaBasesMapa;
-  }
-
   function renderMapaFrota(lista) {
-    if (!renderMapaFrota._basesPedidas) {
-      renderMapaFrota._basesPedidas = true;
-      carregarBasesMapa().then(() => renderMapaFrota(renderMapaFrota._ultima || []));
-    }
-    renderMapaFrota._ultima = lista;
     const mapaEl = document.getElementById('frota-mapa-regiao');
     const aviso = document.getElementById('frota-mapa-sem-biblioteca');
     if (!mapaEl) return;
@@ -253,21 +236,6 @@
     }
 
     const bounds = [];
-    // Bases: marcador quadrado escuro, para diferenciar dos veículos.
-    (frotaBasesMapa || []).forEach(base => {
-      const lat = Number(base.latitude);
-      const lng = Number(base.longitude);
-      if (base.latitude == null || !Number.isFinite(lat) || !Number.isFinite(lng)) return;
-      bounds.push([lat, lng]);
-      L.marker([lat, lng], {
-        icon: L.divIcon({ className: 'frota-mapa-base', iconSize: [16, 16] }),
-        zIndexOffset: -100,
-      }).addTo(frotaMapaCamada).bindPopup(`
-        <strong>${escapeHtml(base.id)}</strong><br>
-        ${escapeHtml(base.endereco || '')}
-      `);
-    });
-
     lista.forEach((veiculo, indice) => {
       const coords = obterCoordenadasVeiculo(veiculo, indice);
       bounds.push(coords);

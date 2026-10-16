@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=38" />
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
-  <link rel="stylesheet" href="../CSS/gestao.css?v=7" />
+  <link rel="stylesheet" href="../CSS/gestao.css?v=8" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=3" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Gestão de Usuários</title>
 </head>
@@ -80,6 +81,24 @@
           <div class="rel-grafico" id="pg-gr-situacao"></div>
         </section>
       </div>
+
+      <section class="rel-bloco pg-mapa-bloco">
+        <div class="rel-bloco-cabecalho pg-mapa-cabecalho">
+          <h3>Mapa da operação</h3>
+          <div class="pg-mapa-camadas" role="group" aria-label="Camadas do mapa">
+            <button type="button" class="ativo" data-camada="bases" aria-pressed="true"><span class="pg-mapa-simbolo base"></span>Bases</button>
+            <button type="button" class="ativo" data-camada="veiculos" aria-pressed="true"><span class="pg-mapa-simbolo veiculo"></span>Veículos</button>
+          </div>
+        </div>
+        <div id="pg-mapa" class="pg-mapa"></div>
+        <div class="pg-mapa-legenda">
+          <span><i class="pg-mapa-quadrado"></i>Base</span>
+          <span><i style="background:#3E6FB0"></i>Em operação</span>
+          <span><i style="background:#1a9e55"></i>Disponível</span>
+          <span><i style="background:#f39c12"></i>Em manutenção</span>
+          <span><i style="background:#8d99ae"></i>Inativo</span>
+        </div>
+      </section>
 
       <section class="rel-bloco" id="pg-alertas-bloco" hidden>
         <div class="rel-bloco-cabecalho"><h3>Alertas e informações importantes</h3></div>
@@ -396,6 +415,8 @@
   <script src="../SCRIPT/relatorios/graficos.js?v=1"></script>
   <script src="../SCRIPT/contexto/painel.js?v=2"></script>
   <script src="../SCRIPT/gestao-painel.js?v=2"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../SCRIPT/gestao-mapa.js?v=1"></script>
   <script src="../SCRIPT/contexto/gestao.js?v=2"></script>
 
   <!-- Painel notificação -->
