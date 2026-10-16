@@ -2882,17 +2882,85 @@ button[type="submit"]:hover, .btn-primario:hover {
   background: rgba(255, 255, 255, 0.04);
 }
 
-/* Cards com várias métricas (Estoque): duas colunas no celular */
+/* Todos os itens do painel sempre na mesma linha, em qualquer tela.
+   No celular a fonte e os ícones diminuem para caber. */
+.painel-resumo .painel-cards,
+.painel-resumo .painel-cards-largos {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+
 @media (max-width: 768px) {
-  .painel-resumo .painel-cards-largos {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .painel-resumo .painel-card {
+    padding: 2px 3px;
+    gap: 5px;
+    min-width: 0;
   }
-  .painel-resumo .painel-cards-largos .painel-card:nth-child(odd) {
-    border-left: none;
+  .painel-resumo .painel-card-icone {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+  .painel-resumo .painel-card-icone svg {
+    width: 15px;
+    height: 15px;
+  }
+  .painel-resumo .painel-card-label {
+    font-size: 10px;
+    line-height: 1.2;
+    min-height: 2.4em;
+    overflow-wrap: anywhere;
+  }
+  .painel-resumo .painel-card-valor {
+    font-size: 18px;
+  }
+  .painel-resumo .painel-card > .painel-card-valor::after {
+    width: 20px;
+    height: 2px;
+    margin-top: 6px;
+  }
+
+  /* Estoque: título, métricas e textos compactos */
+  .painel-resumo .painel-cards-largos .painel-card-topo {
+    flex-direction: column;
+    gap: 5px;
+  }
+  .painel-resumo .painel-cards-largos .painel-card-titulo {
+    font-size: 10.5px;
+    line-height: 1.2;
+    text-align: center;
+  }
+  .painel-resumo .painel-cards-largos .painel-card-corpo,
+  .painel-resumo .painel-cards-largos .painel-card-corpo p {
+    font-size: 9.5px;
+    line-height: 1.25;
+    text-align: center;
+    margin: 0;
+  }
+  .painel-resumo .painel-cards-largos .painel-card-corpo p + p {
+    margin-top: 4px;
+  }
+  .painel-resumo .painel-cards-largos .painel-card-label {
+    min-height: 0;
+    font-size: 9.5px;
+  }
+  .painel-resumo .painel-cards-largos .painel-card-valor-compacto {
+    font-size: 15px;
   }
 }
-@media (min-width: 769px) {
-  .painel-resumo .painel-cards-largos {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+@media (max-width: 400px) {
+  .painel-resumo {
+    padding: 12px 4px 12px;
+  }
+  .painel-resumo-cabecalho {
+    padding: 0 6px 10px;
+  }
+  .painel-resumo .painel-card-label {
+    font-size: 9px;
+  }
+  .painel-resumo .painel-card-valor {
+    font-size: 16px;
   }
 }
