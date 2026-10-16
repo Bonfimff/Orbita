@@ -67,3 +67,21 @@
   border-color: var(--cor-primaria);
   color: #fff;
 }
+
+/* Celular: abas da página atual aninhadas sob o item dela em Gestão */
+.menu-gestao-internas {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 6px 18px;
+  border-left: 1px solid #4a4a4a;
+}
+.menu .menu-gestao-internas .tab-btn {
+  padding: 9px 14px !important;
+  font-size: 14px !important;
+  border-left: 0 !important;
+  color: #bdbdbd;
+}
+.menu .menu-gestao-internas .tab-btn.active {
+  color: var(--cor-primaria);
+  background: rgba(168, 134, 79, .08);
+}

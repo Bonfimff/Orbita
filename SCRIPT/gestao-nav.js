@@ -129,6 +129,17 @@
     // Celular: as opções de Gestão ficam dentro do submenu do módulo Gestão
     // (como em Estoque), em vez de num bloco separado no topo do menu.
     const telaPequena = window.matchMedia('(max-width: 768px)');
+    // Abas internas da página atual (Relatórios: Análise, Ranking...). No
+    // celular ficam aninhadas logo abaixo do item da página na lista de
+    // Gestão; na tela grande voltam ao lugar original.
+    const paginaPropria = disponiveis.find((s) => s.pagina === atual && s.tab === null);
+    const internas = paginaPropria
+      ? internosDoMenu(menu).filter((b) => !b.classList.contains('menu-gestao-item'))
+      : [];
+    const origemInternas = internas.map((b) => ({ b: b, pai: b.parentNode, marca: document.createComment('aba-interna') }));
+    origemInternas.forEach((o) => o.pai.insertBefore(o.marca, o.b));
+    const aninhadas = document.createElement('div');
+    aninhadas.className = 'menu-gestao-internas';
     function encaixarNoSubmenu() {
       const submenu = menu.querySelector('.menu-modulos .menu-submodulos');
       if (!submenu) return;
@@ -138,9 +149,16 @@
         submenu.querySelectorAll(':scope > .tab-btn:not(.menu-gestao-item)').forEach((b) => { b.hidden = true; });
         itens.forEach((b) => submenu.appendChild(b));
         secao.hidden = true;
+        const itemPagina = paginaPropria && submenu.querySelector('[data-subarea="' + paginaPropria.id + '"]');
+        if (itemPagina && internas.length) {
+          internas.forEach((b) => { b.hidden = false; aninhadas.appendChild(b); });
+          itemPagina.after(aninhadas);
+        }
       } else {
         itens.forEach((b) => secao.appendChild(b));
         secao.hidden = false;
+        origemInternas.forEach((o) => { o.b.hidden = false; o.pai.insertBefore(o.b, o.marca); });
+        aninhadas.remove();
       }
     }
     encaixarNoSubmenu();
