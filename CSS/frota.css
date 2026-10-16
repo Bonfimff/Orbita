@@ -886,3 +886,119 @@ body.frota-checklist-modal-aberto {
 @media (max-width: 768px) {
   .frota-gestao-filtros button { width: 100%; }
 }
+
+/* ===== Linhas de tabela que abrem detalhes ===== */
+.frota-linha-clicavel { cursor: pointer; }
+.frota-linha-clicavel:hover td { background: #faf7f1; }
+.frota-linha-clicavel:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: -2px; }
+
+.frota-secao-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 28px 0 10px;
+}
+.frota-secao-topo h3 { margin: 0; font-size: 16px; color: #1F2D3D; }
+
+/* ===== Janela de detalhes (veículo, manutenção, oficina, cartão) ===== */
+.frota-detalhe {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.frota-detalhe.ativo { display: flex; }
+.frota-detalhe-fundo { position: absolute; inset: 0; background: rgba(20, 20, 20, 0.45); }
+.frota-detalhe-cartao {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 20px 24px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+}
+.frota-detalhe-cartao h3 { margin: 0 44px 14px 0; font-size: 18px; color: #1F2D3D; }
+.frota-detalhe-fechar { position: absolute; top: 14px; right: 14px; }
+.frota-detalhe-grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 18px;
+}
+.frota-detalhe-linha { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.frota-detalhe-linha span { font-size: 12px; color: #7A8794; }
+.frota-detalhe-linha strong { font-size: 14px; font-weight: 600; color: #1F2D3D; overflow-wrap: anywhere; }
+.frota-detalhe-acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.frota-detalhe-subtitulo { margin: 22px 0 10px; font-size: 15px; color: #1F2D3D; }
+
+/* ===== Alertas por veículo ===== */
+.frota-alertas-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.frota-alerta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #edf1f3;
+  border-left: 3px solid #9CC77A;
+  border-radius: 10px;
+}
+.frota-alerta-item.perto { border-left-color: #E3A857; }
+.frota-alerta-item.vencido { border-left-color: #C9584A; }
+.frota-alerta-item.sem-base { border-left-color: #B9BDC2; }
+.frota-alerta-item small { display: block; color: #7A8794; font-size: 12px; margin-top: 2px; }
+.frota-alerta-acoes { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+.frota-alerta-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #EFF1E8;
+  color: #5E6B3F;
+}
+.frota-alerta-tag.perto { background: #F6EEE2; color: #9A6A2E; }
+.frota-alerta-tag.vencido { background: #F6ECEA; color: #9B3B32; }
+.frota-alerta-tag.sem-base { background: #F0EFEC; color: #5C5C5C; }
+
+.frota-alerta-form { margin-top: 16px; padding: 14px; border: 1px dashed #d9dde1; border-radius: 12px; background: #fafafa; }
+.frota-alerta-form h4 { margin: 0 0 10px; font-size: 14px; }
+.frota-alerta-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.frota-alerta-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5E6B78; }
+.frota-alerta-form input { padding: 8px 10px; border: 1px solid #d9dde1; border-radius: 8px; font-size: 14px; min-width: 0; }
+
+/* ===== Aviso rápido depois de salvar ===== */
+.frota-aviso-rapido {
+  position: fixed;
+  left: 50%;
+  bottom: 90px;
+  transform: translate(-50%, 20px);
+  z-index: 2000;
+  max-width: calc(100% - 32px);
+  padding: 11px 18px;
+  border-radius: 10px;
+  background: #262626;
+  color: #fff;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.frota-aviso-rapido.visivel { opacity: 1; transform: translate(-50%, 0); }
+.frota-aviso-rapido.erro { background: #9B3B32; }
+
+@media (max-width: 600px) {
+  .frota-detalhe { align-items: flex-end; padding: 0; }
+  .frota-detalhe-cartao { max-width: none; border-radius: 16px 16px 0 0; max-height: 90dvh; }
+  .frota-detalhe-grade { grid-template-columns: minmax(0, 1fr); }
+  .frota-alerta-item { flex-direction: column; align-items: stretch; }
+  .frota-alerta-acoes { flex-direction: row; }
+  .frota-secao-topo { flex-wrap: wrap; }
+}

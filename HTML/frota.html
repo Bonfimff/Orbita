@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=37" />
-  <link rel="stylesheet" href="../CSS/frota.css?v=3" />
+  <link rel="stylesheet" href="../CSS/frota.css?v=4" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link
     rel="stylesheet"
@@ -177,9 +177,9 @@
               <th>Status</th>
               <th>Quilometragem</th>
               <th>Próxima revisão</th>
+              <th>Alertas</th>
               <th>Manutenção</th>
               <th>Último checklist</th>
-              <th>Ações</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -187,91 +187,6 @@
       </div>
     </div>
     <div id="manutencao" class="tab-content">
-      <form id="frota-manutencao-form" autocomplete="off" class="frota-form">
-        <input type="hidden" id="frota-manut-id">
-        <div class="frota-form-grid">
-          <div class="frota-form-item">
-            <label for="frota-manut-placa">Veículo <span class="obrigatorio">*</span></label>
-            <select id="frota-manut-placa" required>
-              <option value="">Selecione o veículo</option>
-            </select>
-          </div>
-          <div class="frota-form-item">
-            <label for="frota-manut-tipo">Tipo <span class="obrigatorio">*</span></label>
-            <select id="frota-manut-tipo" required>
-              <option value="Preventiva">Preventiva</option>
-              <option value="Corretiva">Corretiva</option>
-              <option value="Revisão">Revisão</option>
-              <option value="Pneus">Pneus</option>
-              <option value="Elétrica">Elétrica</option>
-              <option value="Funilaria">Funilaria</option>
-              <option value="Outro">Outro</option>
-            </select>
-          </div>
-          <div class="frota-form-item">
-            <label for="frota-manut-status">Status <span class="obrigatorio">*</span></label>
-            <select id="frota-manut-status" required>
-              <option value="Agendada">Agendada</option>
-              <option value="Em andamento">Em andamento</option>
-              <option value="Concluída">Concluída</option>
-              <option value="Cancelada">Cancelada</option>
-            </select>
-          </div>
-          <div class="frota-form-item">
-            <label for="frota-manut-oficina">Oficina</label>
-            <select id="frota-manut-oficina">
-              <option value="">Sem oficina definida</option>
-            </select>
-          </div>
-          <div class="frota-form-item">
-            <label for="frota-manut-entrada">Data de entrada</label>
-            <input type="date" id="frota-manut-entrada">
-          </div>
-          <div class="frota-form-item">
-            <label for="frota-manut-previsao">Previsão de saída</label>
-            <input type="date" id="frota-manut-previsao">
-          </div>
-          <div class="frota-form-item">
-            <label for="frota-manut-saida">Data de saída</label>
-            <input type="date" id="frota-manut-saida">
-          </div>
-          <div class="frota-form-item">
-            <label for="frota-manut-km">Km na entrada</label>
-            <input type="number" id="frota-manut-km" min="0" inputmode="numeric" placeholder="Ex.: 48200">
-          </div>
-          <div class="frota-form-item">
-            <label for="frota-manut-custo">Custo (R$)</label>
-            <input type="number" id="frota-manut-custo" min="0" step="0.01" inputmode="decimal" placeholder="0,00">
-          </div>
-          <div class="frota-form-item">
-            <label for="frota-manut-responsavel">Responsável</label>
-            <input type="text" id="frota-manut-responsavel" placeholder="Quem acompanha a manutenção">
-          </div>
-          <div class="frota-form-item frota-form-full">
-            <label for="frota-manut-descricao">Problema ou serviço solicitado <span class="obrigatorio">*</span></label>
-            <textarea id="frota-manut-descricao" rows="2" required placeholder="Ex.: Ruído na suspensão dianteira; troca de óleo e filtros"></textarea>
-          </div>
-          <div class="frota-form-item frota-form-full">
-            <label for="frota-manut-servicos">Serviços realizados</label>
-            <textarea id="frota-manut-servicos" rows="2" placeholder="O que a oficina executou"></textarea>
-          </div>
-          <div class="frota-form-item frota-form-full">
-            <label for="frota-manut-pecas">Peças trocadas</label>
-            <textarea id="frota-manut-pecas" rows="2" placeholder="Ex.: Pastilhas de freio dianteiras, filtro de óleo"></textarea>
-          </div>
-          <div class="frota-form-item frota-form-full">
-            <label for="frota-manut-obs">Obs</label>
-            <textarea id="frota-manut-obs" rows="2" placeholder="Observações da manutenção"></textarea>
-          </div>
-        </div>
-        <div class="frota-form-actions">
-          <button type="submit" class="btn-primario" id="frota-manut-salvar">Registrar manutenção</button>
-          <button type="button" class="btn-secundario" id="frota-manut-limpar">Limpar</button>
-        </div>
-      </form>
-
-      <div id="frota-manut-feedback" style="display:none; margin-top:16px;"></div>
-
       <div class="frota-gestao-filtros">
         <select id="frota-manut-filtro-status" aria-label="Filtrar manutenções por status">
           <option value="">Todas as manutenções</option>
@@ -281,6 +196,7 @@
           <option value="Concluída">Concluídas</option>
           <option value="Cancelada">Canceladas</option>
         </select>
+        <button type="button" class="btn-primario" id="frota-manut-agendar">Agendar manutenção</button>
       </div>
       <div class="frota-tabela-wrap">
         <table class="estilo-tabela" id="frota-tabela-manutencoes">
@@ -294,7 +210,30 @@
               <th>Saída</th>
               <th>Problema / serviço</th>
               <th>Custo</th>
-              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="frota-secao-topo">
+        <h3>Oficinas</h3>
+        <button type="button" class="btn-secundario" id="frota-oficina-nova">Cadastrar oficina</button>
+      </div>
+      <div class="frota-tabela-wrap">
+        <table class="estilo-tabela" id="frota-tabela-oficinas">
+          <thead>
+            <tr>
+              <th>Oficina</th>
+              <th>Endereço</th>
+              <th>Localização</th>
+              <th>Serviços</th>
+              <th>Área de atendimento</th>
+              <th>Horário</th>
+              <th>Responsável técnico</th>
+              <th>CNPJ</th>
+              <th>Contato</th>
+              <th>Obs</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -348,6 +287,26 @@
       </form>
 
       <div id="frota-abast-feedback" style="display:none; margin-top:16px;"></div>
+
+      <div class="frota-secao-topo">
+        <h3>Cartões de abastecimento</h3>
+        <button type="button" class="btn-secundario" id="frota-cartao-novo">Cadastrar cartão</button>
+      </div>
+      <div class="frota-tabela-wrap">
+        <table class="estilo-tabela" id="frota-tabela-cartoes-abastecimento">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Número</th>
+              <th>Placa</th>
+              <th>Bandeira</th>
+              <th>Status</th>
+              <th>Observações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
     <div id="checklist" class="tab-content">
       <form id="frota-checklist-form" autocomplete="off" class="frota-form">
@@ -492,6 +451,7 @@
         <button type="button" class="top-tab2 active" data-subaba="frota-sub-veiculos">Veículos</button>
         <button type="button" class="top-tab2" data-subaba="frota-sub-oficinas">Oficinas</button>
         <button type="button" class="top-tab2" data-subaba="frota-sub-cartoes">Cartões de abastecimento</button>
+        <button type="button" class="top-tab2" data-subaba="frota-sub-manutencao">Manutenção</button>
       </div>
 
       <div id="frota-sub-veiculos" class="frota-subaba ativa">
@@ -612,33 +572,12 @@
 
         <div id="frota-feedback" style="display:none; margin-top:16px;"></div>
 
-        <div class="frota-tabela-wrap">
-          <table class="estilo-tabela" id="frota-tabela-veiculos">
-            <thead>
-              <tr>
-                <th>Modelo</th>
-                <th>Marca</th>
-                <th>Placa</th>
-                <th>Status</th>
-                <th>Ano</th>
-                <th>Quilometragem</th>
-                <th>Tipo</th>
-                <th>Km revisões</th>
-                <th>Combustível</th>
-                <th>Km/L</th>
-                <th>Itens checklist</th>
-                <th>Equipamentos/Ferramentas</th>
-                <th>Obs</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
     
       </div>
 
       <div id="frota-sub-oficinas" class="frota-subaba">
         <form id="frota-oficina-form" autocomplete="off" class="frota-form">
+          <input type="hidden" id="frota-oficina-id">
           <div class="frota-form-grid frota-oficina-grid">
             <div class="frota-form-item">
               <label for="frota-oficina-nome">Oficina <span class="obrigatorio">*</span></label>
@@ -699,30 +638,12 @@
 
         <div id="frota-oficina-feedback" style="display:none; margin-top:16px;"></div>
 
-        <div class="frota-tabela-wrap">
-          <table class="estilo-tabela" id="frota-tabela-oficinas">
-            <thead>
-              <tr>
-                <th>Oficina</th>
-                <th>Endereço</th>
-                <th>Localização</th>
-                <th>Serviços</th>
-                <th>Área de atendimento</th>
-                <th>Horário</th>
-                <th>Responsável técnico</th>
-                <th>CNPJ</th>
-                <th>Contato</th>
-                <th>Obs</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
     
       </div>
 
       <div id="frota-sub-cartoes" class="frota-subaba">
         <form id="frota-cartoes-abastecimento-form" autocomplete="off" class="frota-form">
+          <input type="hidden" id="frota-cartao-abastecimento-id">
           <div class="frota-form-grid frota-abastecimento-grid">
             <div class="frota-form-item">
               <label for="frota-cartao-abastecimento-nome">Nome do cartão <span class="obrigatorio">*</span></label>
@@ -768,22 +689,94 @@
 
         <div id="frota-cartoes-abastecimento-feedback" style="display:none; margin-top:16px;"></div>
 
-        <div class="frota-tabela-wrap">
-          <table class="estilo-tabela" id="frota-tabela-cartoes-abastecimento">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Número</th>
-                <th>Placa</th>
-                <th>Bandeira</th>
-                <th>Status</th>
-                <th>Observações</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
     
+      </div>
+
+      <div id="frota-sub-manutencao" class="frota-subaba">
+        <form id="frota-manutencao-form" autocomplete="off" class="frota-form">
+          <input type="hidden" id="frota-manut-id">
+          <div class="frota-form-grid">
+            <div class="frota-form-item">
+              <label for="frota-manut-placa">Veículo <span class="obrigatorio">*</span></label>
+              <select id="frota-manut-placa" required>
+                <option value="">Selecione o veículo</option>
+              </select>
+            </div>
+            <div class="frota-form-item">
+              <label for="frota-manut-tipo">Tipo <span class="obrigatorio">*</span></label>
+              <select id="frota-manut-tipo" required>
+                <option value="Preventiva">Preventiva</option>
+                <option value="Corretiva">Corretiva</option>
+                <option value="Revisão">Revisão</option>
+                <option value="Pneus">Pneus</option>
+                <option value="Elétrica">Elétrica</option>
+                <option value="Funilaria">Funilaria</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+            <div class="frota-form-item">
+              <label for="frota-manut-status">Status <span class="obrigatorio">*</span></label>
+              <select id="frota-manut-status" required>
+                <option value="Agendada">Agendada</option>
+                <option value="Em andamento">Em andamento</option>
+                <option value="Concluída">Concluída</option>
+                <option value="Cancelada">Cancelada</option>
+              </select>
+            </div>
+            <div class="frota-form-item">
+              <label for="frota-manut-oficina">Oficina</label>
+              <select id="frota-manut-oficina">
+                <option value="">Sem oficina definida</option>
+              </select>
+            </div>
+            <div class="frota-form-item">
+              <label for="frota-manut-entrada">Data de entrada</label>
+              <input type="date" id="frota-manut-entrada">
+            </div>
+            <div class="frota-form-item">
+              <label for="frota-manut-previsao">Previsão de saída</label>
+              <input type="date" id="frota-manut-previsao">
+            </div>
+            <div class="frota-form-item">
+              <label for="frota-manut-saida">Data de saída</label>
+              <input type="date" id="frota-manut-saida">
+            </div>
+            <div class="frota-form-item">
+              <label for="frota-manut-km">Km na entrada</label>
+              <input type="number" id="frota-manut-km" min="0" inputmode="numeric" placeholder="Ex.: 48200">
+            </div>
+            <div class="frota-form-item">
+              <label for="frota-manut-custo">Custo (R$)</label>
+              <input type="number" id="frota-manut-custo" min="0" step="0.01" inputmode="decimal" placeholder="0,00">
+            </div>
+            <div class="frota-form-item">
+              <label for="frota-manut-responsavel">Responsável</label>
+              <input type="text" id="frota-manut-responsavel" placeholder="Quem acompanha a manutenção">
+            </div>
+            <div class="frota-form-item frota-form-full">
+              <label for="frota-manut-descricao">Problema ou serviço solicitado <span class="obrigatorio">*</span></label>
+              <textarea id="frota-manut-descricao" rows="2" required placeholder="Ex.: Ruído na suspensão dianteira; troca de óleo e filtros"></textarea>
+            </div>
+            <div class="frota-form-item frota-form-full">
+              <label for="frota-manut-servicos">Serviços realizados</label>
+              <textarea id="frota-manut-servicos" rows="2" placeholder="O que a oficina executou"></textarea>
+            </div>
+            <div class="frota-form-item frota-form-full">
+              <label for="frota-manut-pecas">Peças trocadas</label>
+              <textarea id="frota-manut-pecas" rows="2" placeholder="Ex.: Pastilhas de freio dianteiras, filtro de óleo"></textarea>
+            </div>
+            <div class="frota-form-item frota-form-full">
+              <label for="frota-manut-obs">Obs</label>
+              <textarea id="frota-manut-obs" rows="2" placeholder="Observações da manutenção"></textarea>
+            </div>
+          </div>
+          <div class="frota-form-actions">
+            <button type="submit" class="btn-primario" id="frota-manut-salvar">Registrar manutenção</button>
+            <button type="button" class="btn-secundario" id="frota-manut-limpar">Limpar</button>
+          </div>
+        </form>
+
+        <div id="frota-manut-feedback" style="display:none; margin-top:16px;"></div>
       </div>
     </div>
   </div>
@@ -802,13 +795,22 @@
     crossorigin=""
   ></script>
     <script src="../SCRIPT/config.js?v=2"></script>
-    <script src="../SCRIPT/frota.js?v=5"></script>
+    <script src="../SCRIPT/frota.js?v=6"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
   <script src="../SCRIPT/geral.js?v=27"></script>
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=9"></script>
 
     <!-- Painel notificação -->
+<div id="frota-detalhe" class="frota-detalhe" aria-hidden="true">
+  <div class="frota-detalhe-fundo" data-fechar-detalhe></div>
+  <div class="frota-detalhe-cartao" role="dialog" aria-modal="true" aria-labelledby="frota-detalhe-titulo">
+    <button type="button" class="frota-detalhe-fechar" data-fechar-detalhe data-fechar-flutuante aria-label="Fechar">×</button>
+    <h3 id="frota-detalhe-titulo"></h3>
+    <div id="frota-detalhe-corpo"></div>
+  </div>
+</div>
+
 <div id="info-modal" class="modal" style="display: none;">
   <div class="modal-content">
     <p>Versão de desenvolvimento: 1.0.0</p>

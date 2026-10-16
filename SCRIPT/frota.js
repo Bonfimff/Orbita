@@ -296,7 +296,13 @@
 
   function renderTabela(lista) {
     const tbody = document.querySelector('#frota-tabela-veiculos tbody');
-    if (!tbody) return;
+    if (!tbody) {
+      // A tabela de veículos mora na aba Veículos (gestão); aqui só os resumos.
+      atualizarCards(lista || []);
+      renderMapaFrota(lista || []);
+      renderGestaoVeiculos();
+      return;
+    }
 
     if (!lista.length) {
       tbody.innerHTML = `<tr><td class="frota-vazio" colspan="13">Nenhum veículo cadastrado.</td></tr>`;
@@ -859,6 +865,8 @@
   }
 
   async function salvarOficina(payload) {
+    const idEdicao = document.getElementById('frota-oficina-id')?.value;
+    if (idEdicao) return chamarApi(`frota/oficinas/${idEdicao}`, 'PUT', payload);
     try {
       const resp = await fetch(frotaApiUrl('frota/oficinas'), {
         method: 'POST',
@@ -916,6 +924,10 @@
   function limparFormularioOficina() {
     const form = document.getElementById('frota-oficina-form');
     if (form) form.reset();
+    const id = document.getElementById('frota-oficina-id');
+    if (id) id.value = '';
+    const botao = document.querySelector('#frota-oficina-form button[type="submit"]');
+    if (botao) botao.textContent = 'Cadastrar oficina';
   }
 
   function carregarAbastecimentosLocal() {
@@ -1068,6 +1080,8 @@
   }
 
   async function salvarCartaoAbastecimento(payload) {
+    const idEdicao = document.getElementById('frota-cartao-abastecimento-id')?.value;
+    if (idEdicao) return chamarApi(`frota/cartoes/${idEdicao}`, 'PUT', payload);
     try {
       const resp = await fetch(frotaApiUrl('frota/cartoes'), {
         method: 'POST',
@@ -1133,6 +1147,10 @@
   function limparFormularioCartaoAbastecimento() {
     const form = document.getElementById('frota-cartoes-abastecimento-form');
     if (form) form.reset();
+    const id = document.getElementById('frota-cartao-abastecimento-id');
+    if (id) id.value = '';
+    const botao = document.querySelector('#frota-cartoes-abastecimento-form button[type="submit"]');
+    if (botao) botao.textContent = 'Salvar cartão';
   }
 
   async function coletarFormularioAbastecimento() {
@@ -1725,15 +1743,13 @@
             mapa[payload.placa] = dataUrl;
             salvarImagensVeiculosLocal(mapa);
           }
+          const editando = Boolean(veiculoEditandoPlaca);
           const lista = await listarVeiculos();
           renderTabela(lista);
           limparFormulario();
-
-          if (result.local) {
-            mostrarFeedback('Veículo cadastrado no modo local (sem API).', 'ok', 'frota-feedback');
-          } else {
-            mostrarFeedback('Veículo cadastrado com sucesso.', 'ok', 'frota-feedback');
-          }
+          voltarParaTabela('frota-sub-veiculos', result.local
+            ? 'Veículo salvo só neste aparelho (servidor indisponível).'
+            : (editando ? 'Veículo atualizado.' : 'Veículo cadastrado.'));
         } catch (err) {
           mostrarFeedback(err.message || 'Falha ao cadastrar veículo.', 'erro', 'frota-feedback');
         }
@@ -1751,17 +1767,13 @@
         e.preventDefault();
         try {
           const payload = coletarFormularioOficina();
+          const editando = Boolean(document.getElementById('frota-oficina-id')?.value);
           const result = await salvarOficina(payload);
-          const listaOficinas = await listarOficinas();
-          renderTabelaOficinas(listaOficinas);
-          preencherSelectOficinasManutencao(listaOficinas);
+          await atualizarOficinas();
           limparFormularioOficina();
-
-          if (result.local) {
-            mostrarFeedback('Oficina cadastrada no modo local (sem API).', 'ok', 'frota-oficina-feedback');
-          } else {
-            mostrarFeedback('Oficina cadastrada com sucesso.', 'ok', 'frota-oficina-feedback');
-          }
+          voltarParaTabela('frota-sub-oficinas', result.local
+            ? 'Oficina salva só neste aparelho (servidor indisponível).'
+            : (editando ? 'Oficina atualizada.' : 'Oficina cadastrada.'));
         } catch (err) {
           mostrarFeedback(err.message || 'Falha ao cadastrar oficina.', 'erro', 'frota-oficina-feedback');
         }
@@ -1837,15 +1849,13 @@
         e.preventDefault();
         try {
           const payload = coletarFormularioCartaoAbastecimento();
+          const editando = Boolean(document.getElementById('frota-cartao-abastecimento-id')?.value);
           const result = await salvarCartaoAbastecimento(payload);
-          renderTabelaCartoesAbastecimento(await listarCartoesAbastecimento());
+          await atualizarCartoes();
           limparFormularioCartaoAbastecimento();
-
-          if (result.local) {
-            mostrarFeedback('Cartão de abastecimento salvo localmente.', 'ok', 'frota-cartoes-abastecimento-feedback');
-          } else {
-            mostrarFeedback('Cartão de abastecimento salvo.', 'ok', 'frota-cartoes-abastecimento-feedback');
-          }
+          voltarParaTabela('frota-sub-cartoes', result.local
+            ? 'Cartão salvo só neste aparelho (servidor indisponível).'
+            : (editando ? 'Cartão atualizado.' : 'Cartão cadastrado.'));
         } catch (err) {
           mostrarFeedback(err.message || 'Falha ao salvar cartão de abastecimento.', 'erro', 'frota-cartoes-abastecimento-feedback');
         }
@@ -1959,13 +1969,10 @@
     preencherDataHoraAbastecimento();
     const listaAbastecimentos = await listarAbastecimentos();
     renderTabelaAbastecimentos(listaAbastecimentos);
-    const listaCartoes = await listarCartoesAbastecimento();
-    renderTabelaCartoesAbastecimento(listaCartoes);
+
     const listaChecklist = await listarChecklists();
     renderTabelaChecklist(listaChecklist);
     preencherKmChecklistPorPlaca(document.getElementById('frota-checklist-placa')?.value);
-    const listaOficinas = await listarOficinas();
-    renderTabelaOficinas(listaOficinas);
     await inicializarFrotaGestao();
   }
 
@@ -1973,6 +1980,9 @@
   // CARTÕES DE ABASTECIMENTO no servidor (antes ficavam só no navegador)
   //======================================================================================================
   let frotaCartoesCache = null;
+  let frotaOficinasCache = [];
+  let frotaManutencoesCache = [];
+  let frotaAlertasCache = [];
 
   async function listarCartoesAbastecimento() {
     try {
@@ -1991,8 +2001,82 @@
   }
 
   //======================================================================================================
-  // SUB-ABAS DA ABA CADASTROS (Veículos, Oficinas, Cartões)
+  // UTILITÁRIOS: datas, chamadas à API, aviso rápido e janela de detalhes
   //======================================================================================================
+  // Data de hoje no fuso do aparelho (toISOString usaria UTC e viraria o dia às 21h)
+  function hojeLocalISO() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  function formatarDataBR(valor) {
+    if (!valor) return '-';
+    const texto = String(valor).slice(0, 10);
+    const partes = texto.split('-');
+    return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : texto;
+  }
+
+  function formatarKm(valor) {
+    return valor != null && valor !== '' ? Number(valor).toLocaleString('pt-BR') + ' km' : '-';
+  }
+
+  async function chamarApi(caminho, metodo, corpo) {
+    const resp = await fetch(frotaApiUrl(caminho), {
+      method: metodo || 'GET',
+      headers: authHeaders(Boolean(corpo)),
+      body: corpo ? JSON.stringify(corpo) : undefined,
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok || data.status !== 'ok') throw new Error(data.mensagem || 'Falha na comunicação com o servidor.');
+    return data;
+  }
+
+  function avisoRapido(mensagem, tipo) {
+    let el = document.getElementById('frota-aviso-rapido');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'frota-aviso-rapido';
+      el.setAttribute('role', 'status');
+      document.body.appendChild(el);
+    }
+    el.textContent = mensagem;
+    el.className = 'frota-aviso-rapido visivel' + (tipo === 'erro' ? ' erro' : '');
+    clearTimeout(avisoRapido._timer);
+    avisoRapido._timer = setTimeout(() => el.classList.remove('visivel'), 3200);
+  }
+
+  function linhaDetalhe(rotulo, valor) {
+    const texto = valor == null || valor === '' ? '-' : valor;
+    return `<div class="frota-detalhe-linha"><span>${escapeHtml(rotulo)}</span><strong>${texto}</strong></div>`;
+  }
+
+  function abrirDetalhe(titulo, html) {
+    const modal = document.getElementById('frota-detalhe');
+    if (!modal) return;
+    document.getElementById('frota-detalhe-titulo').textContent = titulo;
+    document.getElementById('frota-detalhe-corpo').innerHTML = html;
+    modal.classList.add('ativo');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function fecharDetalhe() {
+    const modal = document.getElementById('frota-detalhe');
+    if (!modal) return;
+    modal.classList.remove('ativo');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  //======================================================================================================
+  // NAVEGAÇÃO: abas, sub-abas do Cadastros e volta para a tabela depois de salvar
+  //======================================================================================================
+  // Cada cadastro, depois de salvo, volta para a aba onde a tabela dele mora.
+  const ABA_DA_TABELA = {
+    'frota-sub-veiculos': 'veiculos',
+    'frota-sub-oficinas': 'manutencao',
+    'frota-sub-cartoes': 'abastecimento',
+    'frota-sub-manutencao': 'manutencao',
+  };
+
   function abrirSubabaCadastro(subId) {
     document.querySelectorAll('#cadastros .frota-subabas .top-tab2').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.subaba === subId);
@@ -2008,30 +2092,151 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  function abrirCadastro(subId, focoId) {
+    fecharDetalhe();
+    irParaAba('cadastros');
+    abrirSubabaCadastro(subId);
+    if (focoId) setTimeout(() => document.getElementById(focoId)?.focus(), 150);
+  }
+
+  function voltarParaTabela(subId, mensagem) {
+    irParaAba(ABA_DA_TABELA[subId] || 'gerenciamento');
+    if (mensagem) avisoRapido(mensagem);
+  }
+
   function inicializarSubabasCadastro() {
     document.querySelectorAll('#cadastros .frota-subabas .top-tab2').forEach(btn => {
       btn.addEventListener('click', () => abrirSubabaCadastro(btn.dataset.subaba));
     });
+    document.querySelectorAll('#frota-detalhe [data-fechar-detalhe]').forEach(el => el.addEventListener('click', fecharDetalhe));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharDetalhe(); });
   }
 
   //======================================================================================================
-  // GESTÃO DOS VEÍCULOS (aba Veículos)
+  // ALERTAS POR VEÍCULO (troca de óleo, filtro, revisões...)
   //======================================================================================================
-  let frotaManutencoesCache = [];
-
-  // Data de hoje no fuso do aparelho (toISOString usaria UTC e viraria o dia às 21h)
-  function hojeLocalISO() {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  async function listarAlertas() {
+    try {
+      frotaAlertasCache = (await chamarApi('frota/alertas')).alertas || [];
+    } catch (err) {
+      console.warn('Falha ao listar alertas:', err.message);
+      frotaAlertasCache = [];
+    }
+    return frotaAlertasCache;
   }
 
-  function formatarDataBR(valor) {
-    if (!valor) return '-';
-    const texto = String(valor).slice(0, 10);
-    const partes = texto.split('-');
-    return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : texto;
+  function diasEntre(dataIso) {
+    const alvo = new Date(String(dataIso).slice(0, 10) + 'T00:00:00');
+    const hoje = new Date(hojeLocalISO() + 'T00:00:00');
+    return Math.round((alvo - hoje) / 86400000);
   }
 
+  // Situação do alerta pelo km atual do veículo e pela data: vale o que vencer primeiro.
+  function situacaoAlerta(alerta, veiculo) {
+    const kmAtual = veiculo && veiculo.quilometragem != null ? Number(veiculo.quilometragem) : null;
+    let proximaKm = null;
+    let faltamKm = null;
+    let proximaData = null;
+    let faltamDias = null;
+    if (alerta.intervalo_km) {
+      proximaKm = Number(alerta.ultima_km || 0) + Number(alerta.intervalo_km);
+      if (kmAtual != null) faltamKm = proximaKm - kmAtual;
+    }
+    if (alerta.intervalo_dias && alerta.ultima_data) {
+      const d = new Date(String(alerta.ultima_data).slice(0, 10) + 'T00:00:00');
+      d.setDate(d.getDate() + Number(alerta.intervalo_dias));
+      proximaData = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      faltamDias = diasEntre(proximaData);
+    }
+    let nivel = 'ok';
+    if ((faltamKm != null && faltamKm <= 0) || (faltamDias != null && faltamDias <= 0)) nivel = 'vencido';
+    else if ((faltamKm != null && faltamKm <= Number(alerta.antecedencia_km || 500))
+      || (faltamDias != null && faltamDias <= Number(alerta.antecedencia_dias || 15))) nivel = 'perto';
+    if (!alerta.ultima_km && !alerta.ultima_data) nivel = 'sem-base';
+    return { nivel, proximaKm, faltamKm, proximaData, faltamDias };
+  }
+
+  function rotuloSituacao(nivel) {
+    return { vencido: 'Vencido', perto: 'Próximo', ok: 'Em dia', 'sem-base': 'Sem referência' }[nivel] || nivel;
+  }
+
+  function alertasDaPlaca(placa) {
+    return frotaAlertasCache.filter(a => formatPlaca(a.placa) === placa && Number(a.ativo) !== 0);
+  }
+
+  function resumoAlertasPlaca(placa) {
+    const veiculo = buscarVeiculoPorPlaca(placa);
+    const contagem = { vencido: 0, perto: 0 };
+    alertasDaPlaca(placa).forEach(a => {
+      const n = situacaoAlerta(a, veiculo).nivel;
+      if (contagem[n] != null) contagem[n] += 1;
+    });
+    if (contagem.vencido) return `<span class="frota-alerta-tag vencido">${contagem.vencido} vencido${contagem.vencido > 1 ? 's' : ''}</span>`;
+    if (contagem.perto) return `<span class="frota-alerta-tag perto">${contagem.perto} próximo${contagem.perto > 1 ? 's' : ''}</span>`;
+    const total = alertasDaPlaca(placa).length;
+    return total ? `<span class="frota-texto-suave">${total} em dia</span>` : '<span class="frota-texto-suave">Nenhum</span>';
+  }
+
+  function htmlListaAlertas(placa) {
+    const veiculo = buscarVeiculoPorPlaca(placa);
+    const lista = alertasDaPlaca(placa);
+    if (!lista.length) return '<p class="frota-texto-suave">Nenhum alerta cadastrado para este veículo.</p>';
+    return '<ul class="frota-alertas-lista">' + lista.map(a => {
+      const s = situacaoAlerta(a, veiculo);
+      const partes = [];
+      if (s.proximaKm != null) partes.push(`${formatarKm(s.proximaKm)}${s.faltamKm != null ? ` (faltam ${formatarKm(Math.max(0, s.faltamKm))})` : ''}`);
+      if (s.proximaData) partes.push(`${formatarDataBR(s.proximaData)} (${s.faltamDias >= 0 ? `faltam ${s.faltamDias} dias` : `${-s.faltamDias} dias atrasado`})`);
+      const intervalo = [a.intervalo_km ? `a cada ${formatarKm(a.intervalo_km)}` : '', a.intervalo_dias ? `a cada ${a.intervalo_dias} dias` : ''].filter(Boolean).join(' ou ');
+      return `
+        <li class="frota-alerta-item ${s.nivel}" data-alerta-id="${a.id}">
+          <div>
+            <strong>${escapeHtml(a.tipo)}</strong>
+            <span class="frota-alerta-tag ${s.nivel}">${rotuloSituacao(s.nivel)}</span>
+            <small>${escapeHtml(intervalo)}${partes.length ? ' · próximo: ' + escapeHtml(partes.join(' ou ')) : ''}</small>
+            <small>Último: ${a.ultima_km != null ? formatarKm(a.ultima_km) : '-'} em ${formatarDataBR(a.ultima_data)}</small>
+          </div>
+          <div class="frota-alerta-acoes">
+            <button type="button" class="btn-secundario btn-sm" data-alerta-acao="feito">Marcar como feito</button>
+            <button type="button" class="btn-secundario btn-sm" data-alerta-acao="excluir">Excluir</button>
+          </div>
+        </li>`;
+    }).join('') + '</ul>';
+  }
+
+  function htmlFormAlerta(veiculo) {
+    return `
+      <form class="frota-alerta-form" id="frota-alerta-form">
+        <h4>Novo alerta</h4>
+        <div class="frota-alerta-form-grid">
+          <label>Tipo
+            <input type="text" id="frota-alerta-tipo" list="frota-alerta-tipos" placeholder="Ex.: Troca de óleo" required>
+            <datalist id="frota-alerta-tipos">
+              <option value="Troca de óleo"><option value="Troca de filtro de óleo"><option value="Troca de filtro de ar">
+              <option value="Troca de filtro de combustível"><option value="Revisão geral"><option value="Revisão de freios">
+              <option value="Rodízio e calibragem de pneus"><option value="Alinhamento e balanceamento"><option value="Troca de correia dentada">
+              <option value="Licenciamento"><option value="Seguro">
+            </datalist>
+          </label>
+          <label>A cada (km)
+            <input type="number" id="frota-alerta-km" min="0" inputmode="numeric" placeholder="Ex.: 10000">
+          </label>
+          <label>A cada (dias)
+            <input type="number" id="frota-alerta-dias" min="0" inputmode="numeric" placeholder="Ex.: 180">
+          </label>
+          <label>Último feito em (km)
+            <input type="number" id="frota-alerta-ultima-km" min="0" inputmode="numeric" value="${veiculo && veiculo.quilometragem != null ? veiculo.quilometragem : ''}">
+          </label>
+          <label>Último feito em (data)
+            <input type="date" id="frota-alerta-ultima-data" value="${hojeLocalISO()}">
+          </label>
+        </div>
+        <button type="submit" class="btn-primario">Adicionar alerta</button>
+      </form>`;
+  }
+
+  //======================================================================================================
+  // ABA VEÍCULOS: tabela da frota e detalhes do veículo com alertas
+  //======================================================================================================
   function proximaRevisaoTexto(v) {
     const intervalo = Number(v.km_revisoes);
     const km = Number(v.quilometragem);
@@ -2065,7 +2270,7 @@
     });
 
     if (!lista.length) {
-      tbody.innerHTML = `<tr><td class="frota-vazio" colspan="8">${frotaVeiculosCache.length ? 'Nenhum veículo encontrado com esse filtro.' : 'Nenhum veículo cadastrado. Cadastre na aba Cadastros.'}</td></tr>`;
+      tbody.innerHTML = `<tr><td class="frota-vazio" colspan="8">${frotaVeiculosCache.length ? 'Nenhum veículo encontrado com esse filtro.' : 'Nenhum veículo cadastrado. Use "Cadastrar veículo".'}</td></tr>`;
       return;
     }
 
@@ -2080,20 +2285,114 @@
         ? `${escapeHtml(formatDataHoraChecklist(check.created_at))}<small class="frota-texto-suave"> ${check.km ?? ''} km</small>`
         : '<span class="frota-texto-suave">Sem checklist</span>';
       return `
-        <tr data-placa="${escapeHtml(placa)}">
+        <tr class="frota-linha-clicavel" data-placa="${escapeHtml(placa)}" tabindex="0" title="Ver detalhes do veículo">
           <td><strong>${escapeHtml(v.modelo || '-')}</strong><small class="frota-texto-suave"> ${escapeHtml(v.marca || '')}</small></td>
           <td>${escapeHtml(placa)}</td>
           <td>${statusBadge(v.status)}</td>
-          <td>${v.quilometragem != null ? Number(v.quilometragem).toLocaleString('pt-BR') + ' km' : '-'}</td>
+          <td>${formatarKm(v.quilometragem)}</td>
           <td>${proximaRevisaoTexto(v)}</td>
+          <td>${resumoAlertasPlaca(placa)}</td>
           <td>${manutTexto}</td>
           <td>${checkTexto}</td>
-          <td class="frota-acoes">
-            <button type="button" class="btn-secundario btn-sm" data-acao="manutencao">Manutenção</button>
-            <button type="button" class="btn-secundario btn-sm" data-acao="editar">Editar cadastro</button>
-          </td>
         </tr>`;
     }).join('');
+  }
+
+  function abrirDetalheVeiculo(placa) {
+    const v = buscarVeiculoPorPlaca(placa);
+    if (!v) return;
+    const manut = manutencaoAbertaDaPlaca(placa);
+    const html = `
+      <div class="frota-detalhe-grade">
+        ${linhaDetalhe('Placa', escapeHtml(placa))}
+        ${linhaDetalhe('Status', statusBadge(v.status))}
+        ${linhaDetalhe('Marca / modelo', escapeHtml([v.marca, v.modelo].filter(Boolean).join(' ')))}
+        ${linhaDetalhe('Ano', escapeHtml(v.ano ?? ''))}
+        ${linhaDetalhe('Quilometragem', formatarKm(v.quilometragem))}
+        ${linhaDetalhe('Próxima revisão', proximaRevisaoTexto(v))}
+        ${linhaDetalhe('Tipo', escapeHtml(v.tipo_veiculo || ''))}
+        ${linhaDetalhe('Combustível', escapeHtml([v.tipo_combustivel, v.km_por_litro ? v.km_por_litro + ' km/L' : ''].filter(Boolean).join(' · ')))}
+        ${linhaDetalhe('Manutenção aberta', manut ? escapeHtml(`${manut.tipo} · ${manut.status}`) : 'Nenhuma')}
+        ${linhaDetalhe('Obs', escapeHtml(v.obs || ''))}
+      </div>
+      <div class="frota-detalhe-acoes">
+        <button type="button" class="btn-secundario" data-detalhe-acao="editar-veiculo">Editar cadastro</button>
+        <button type="button" class="btn-primario" data-detalhe-acao="agendar-manutencao">${manut ? 'Ver manutenção aberta' : 'Agendar manutenção'}</button>
+      </div>
+      <h4 class="frota-detalhe-subtitulo">Alertas de manutenção</h4>
+      <div id="frota-detalhe-alertas">${htmlListaAlertas(placa)}</div>
+      ${htmlFormAlerta(v)}`;
+    abrirDetalhe(`${v.modelo || 'Veículo'} · ${placa}`, html);
+    const corpo = document.getElementById('frota-detalhe-corpo');
+    corpo.dataset.placa = placa;
+  }
+
+  async function aposMudarAlertas(placa) {
+    await listarAlertas();
+    const lista = document.getElementById('frota-detalhe-alertas');
+    if (lista) lista.innerHTML = htmlListaAlertas(placa);
+    renderGestaoVeiculos();
+  }
+
+  function inicializarDetalheVeiculo() {
+    const corpo = document.getElementById('frota-detalhe-corpo');
+    if (!corpo) return;
+
+    corpo.addEventListener('click', async e => {
+      const placa = corpo.dataset.placa;
+      const acao = e.target.closest('[data-detalhe-acao]')?.dataset.detalheAcao;
+      if (acao === 'editar-veiculo') {
+        const v = buscarVeiculoPorPlaca(placa);
+        abrirCadastro('frota-sub-veiculos', 'frota-modelo');
+        preencherFormularioVeiculo(v);
+        return;
+      }
+      if (acao === 'agendar-manutencao') {
+        const aberta = manutencaoAbertaDaPlaca(placa);
+        if (aberta) { abrirDetalheManutencao(aberta.id); return; }
+        novaManutencaoPara(placa);
+        return;
+      }
+      const botaoAlerta = e.target.closest('[data-alerta-acao]');
+      if (!botaoAlerta) return;
+      const id = botaoAlerta.closest('[data-alerta-id]')?.dataset.alertaId;
+      try {
+        if (botaoAlerta.dataset.alertaAcao === 'feito') {
+          await chamarApi(`frota/alertas/${id}/realizado`, 'POST', {});
+          avisoRapido('Serviço marcado como feito.');
+        } else if (botaoAlerta.dataset.alertaAcao === 'excluir') {
+          if (!confirm('Excluir este alerta?')) return;
+          await chamarApi(`frota/alertas/${id}`, 'DELETE');
+          avisoRapido('Alerta excluído.');
+        }
+        await aposMudarAlertas(placa);
+      } catch (err) {
+        avisoRapido(err.message, 'erro');
+      }
+    });
+
+    corpo.addEventListener('submit', async e => {
+      if (e.target.id !== 'frota-alerta-form') return;
+      e.preventDefault();
+      const placa = corpo.dataset.placa;
+      const valor = id => document.getElementById(id)?.value || '';
+      try {
+        await chamarApi('frota/alertas', 'POST', {
+          placa,
+          tipo: valor('frota-alerta-tipo').trim(),
+          intervalo_km: toIntOrNull(valor('frota-alerta-km')),
+          intervalo_dias: toIntOrNull(valor('frota-alerta-dias')),
+          ultima_km: toIntOrNull(valor('frota-alerta-ultima-km')),
+          ultima_data: valor('frota-alerta-ultima-data') || null,
+        });
+        e.target.reset();
+        document.getElementById('frota-alerta-ultima-data').value = hojeLocalISO();
+        avisoRapido('Alerta cadastrado.');
+        await aposMudarAlertas(placa);
+      } catch (err) {
+        avisoRapido(err.message, 'erro');
+      }
+    });
   }
 
   function inicializarGestaoVeiculos() {
@@ -2101,39 +2400,20 @@
     document.getElementById('frota-gestao-status')?.addEventListener('change', renderGestaoVeiculos);
     document.getElementById('frota-gestao-novo')?.addEventListener('click', () => {
       limparFormulario();
-      irParaAba('cadastros');
-      abrirSubabaCadastro('frota-sub-veiculos');
-      document.getElementById('frota-modelo')?.focus();
+      abrirCadastro('frota-sub-veiculos', 'frota-modelo');
     });
-    document.querySelector('#frota-gestao-veiculos tbody')?.addEventListener('click', e => {
-      const botao = e.target.closest('button[data-acao]');
-      if (!botao) return;
-      const placa = botao.closest('tr')?.dataset.placa;
-      const veiculo = buscarVeiculoPorPlaca(placa);
-      if (botao.dataset.acao === 'editar' && veiculo) {
-        irParaAba('cadastros');
-        abrirSubabaCadastro('frota-sub-veiculos');
-        preencherFormularioVeiculo(veiculo);
-        document.getElementById('frota-placa')?.focus();
-      }
-      if (botao.dataset.acao === 'manutencao') {
-        const aberta = manutencaoAbertaDaPlaca(placa);
-        irParaAba('manutencao');
-        if (aberta) {
-          preencherFormularioManutencao(aberta);
-        } else {
-          limparFormularioManutencao();
-          const select = document.getElementById('frota-manut-placa');
-          if (select) select.value = placa;
-          const km = document.getElementById('frota-manut-km');
-          if (km && veiculo && veiculo.quilometragem != null) km.value = veiculo.quilometragem;
-        }
-      }
-    });
+    const tbody = document.querySelector('#frota-gestao-veiculos tbody');
+    const abrir = e => {
+      const linha = e.target.closest('tr[data-placa]');
+      if (linha && (e.type === 'click' || e.key === 'Enter')) abrirDetalheVeiculo(linha.dataset.placa);
+    };
+    tbody?.addEventListener('click', abrir);
+    tbody?.addEventListener('keydown', abrir);
+    inicializarDetalheVeiculo();
   }
 
   //======================================================================================================
-  // MANUTENÇÕES (aba Manutenção)
+  // ABA MANUTENÇÃO: tabela de manutenções e de oficinas
   //======================================================================================================
   function preencherSelectPlacasManutencao(veiculos) {
     const select = document.getElementById('frota-manut-placa');
@@ -2154,7 +2434,7 @@
     if (!select) return;
     const valorAtual = select.value;
     const opcoes = (oficinas || [])
-      .filter(o => o.id != null && Number.isFinite(Number(o.id)) && Number(o.id) < 1e12)
+      .filter(o => o.id != null && Number(o.id) < 1e12)
       .map(o => `<option value="${o.id}">${escapeHtml(o.nome_oficina || 'Oficina')}</option>`)
       .join('');
     select.innerHTML = `<option value="">Sem oficina definida</option>${opcoes}`;
@@ -2163,10 +2443,7 @@
 
   async function listarManutencoes() {
     try {
-      const resp = await fetch(frotaApiUrl('frota/manutencoes'), { headers: authHeaders() });
-      const data = await resp.json();
-      if (!resp.ok || data.status !== 'ok') throw new Error(data.mensagem || 'Falha ao listar manutenções.');
-      frotaManutencoesCache = Array.isArray(data.manutencoes) ? data.manutencoes : [];
+      frotaManutencoesCache = (await chamarApi('frota/manutencoes')).manutencoes || [];
     } catch (err) {
       console.warn('Falha ao listar manutenções:', err.message);
       frotaManutencoesCache = [];
@@ -2183,6 +2460,10 @@
     }[status] || '';
   }
 
+  function custoBR(valor) {
+    return valor != null && valor !== '' ? Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-';
+  }
+
   function renderTabelaManutencoes() {
     const tbody = document.querySelector('#frota-tabela-manutencoes tbody');
     if (!tbody) return;
@@ -2194,30 +2475,49 @@
     });
 
     if (!lista.length) {
-      tbody.innerHTML = `<tr><td class="frota-vazio" colspan="9">${frotaManutencoesCache.length ? 'Nenhuma manutenção com esse filtro.' : 'Nenhuma manutenção registrada.'}</td></tr>`;
+      tbody.innerHTML = `<tr><td class="frota-vazio" colspan="8">${frotaManutencoesCache.length ? 'Nenhuma manutenção com esse filtro.' : 'Nenhuma manutenção registrada. Use "Agendar manutenção".'}</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = lista.map(m => {
-      const aberta = m.status === 'Agendada' || m.status === 'Em andamento';
-      const custo = m.custo != null ? Number(m.custo).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-';
-      return `
-        <tr data-id="${m.id}">
-          <td><strong>${escapeHtml(m.placa)}</strong><small class="frota-texto-suave"> ${escapeHtml([m.marca, m.modelo].filter(Boolean).join(' '))}</small></td>
-          <td>${escapeHtml(m.tipo || '-')}</td>
-          <td><span class="frota-manut-status ${classeStatusManutencao(m.status)}">${escapeHtml(m.status)}</span></td>
-          <td>${escapeHtml(m.nome_oficina || '-')}</td>
-          <td>${formatarDataBR(m.data_entrada)}</td>
-          <td>${formatarDataBR(m.data_saida || m.previsao_saida)}${!m.data_saida && m.previsao_saida ? '<small class="frota-texto-suave"> previsão</small>' : ''}</td>
-          <td>${escapeHtml(m.descricao || '-')}</td>
-          <td>${custo}</td>
-          <td class="frota-acoes">
-            <button type="button" class="btn-secundario btn-sm" data-acao="editar">Editar</button>
-            ${aberta ? '<button type="button" class="btn-primario btn-sm" data-acao="concluir">Concluir</button>' : ''}
-            <button type="button" class="btn-secundario btn-sm" data-acao="excluir">Excluir</button>
-          </td>
-        </tr>`;
-    }).join('');
+    tbody.innerHTML = lista.map(m => `
+      <tr class="frota-linha-clicavel" data-id="${m.id}" tabindex="0" title="Ver detalhes da manutenção">
+        <td><strong>${escapeHtml(m.placa)}</strong><small class="frota-texto-suave"> ${escapeHtml([m.marca, m.modelo].filter(Boolean).join(' '))}</small></td>
+        <td>${escapeHtml(m.tipo || '-')}</td>
+        <td><span class="frota-manut-status ${classeStatusManutencao(m.status)}">${escapeHtml(m.status)}</span></td>
+        <td>${escapeHtml(m.nome_oficina || '-')}</td>
+        <td>${formatarDataBR(m.data_entrada)}</td>
+        <td>${formatarDataBR(m.data_saida || m.previsao_saida)}${!m.data_saida && m.previsao_saida ? '<small class="frota-texto-suave"> previsão</small>' : ''}</td>
+        <td>${escapeHtml(m.descricao || '-')}</td>
+        <td>${custoBR(m.custo)}</td>
+      </tr>`).join('');
+  }
+
+  function abrirDetalheManutencao(id) {
+    const m = frotaManutencoesCache.find(x => x.id === Number(id));
+    if (!m) return;
+    const aberta = m.status === 'Agendada' || m.status === 'Em andamento';
+    abrirDetalhe(`Manutenção · ${m.placa}`, `
+      <div class="frota-detalhe-grade">
+        ${linhaDetalhe('Veículo', escapeHtml([m.placa, m.marca, m.modelo].filter(Boolean).join(' · ')))}
+        ${linhaDetalhe('Tipo', escapeHtml(m.tipo))}
+        ${linhaDetalhe('Status', `<span class="frota-manut-status ${classeStatusManutencao(m.status)}">${escapeHtml(m.status)}</span>`)}
+        ${linhaDetalhe('Oficina', escapeHtml(m.nome_oficina || ''))}
+        ${linhaDetalhe('Entrada', formatarDataBR(m.data_entrada))}
+        ${linhaDetalhe('Previsão de saída', formatarDataBR(m.previsao_saida))}
+        ${linhaDetalhe('Saída', formatarDataBR(m.data_saida))}
+        ${linhaDetalhe('Km na entrada', formatarKm(m.km_entrada))}
+        ${linhaDetalhe('Custo', custoBR(m.custo))}
+        ${linhaDetalhe('Responsável', escapeHtml(m.responsavel || ''))}
+        ${linhaDetalhe('Problema / serviço', escapeHtml(m.descricao || ''))}
+        ${linhaDetalhe('Serviços realizados', escapeHtml(m.servicos_realizados || ''))}
+        ${linhaDetalhe('Peças trocadas', escapeHtml(m.pecas_trocadas || ''))}
+        ${linhaDetalhe('Obs', escapeHtml(m.obs || ''))}
+      </div>
+      <div class="frota-detalhe-acoes" data-manut-id="${m.id}">
+        <button type="button" class="btn-secundario" data-manut-acao="editar">Editar</button>
+        ${aberta ? '<button type="button" class="btn-primario" data-manut-acao="concluir">Concluir</button>' : ''}
+        <button type="button" class="btn-secundario" data-manut-acao="excluir">Excluir</button>
+      </div>`);
   }
 
   function coletarFormularioManutencao() {
@@ -2262,7 +2562,6 @@
     definir('frota-manut-obs', m.obs);
     const botao = document.getElementById('frota-manut-salvar');
     if (botao) botao.textContent = 'Atualizar manutenção';
-    document.getElementById('frota-manutencao-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function limparFormularioManutencao() {
@@ -2275,15 +2574,16 @@
     if (botao) botao.textContent = 'Registrar manutenção';
   }
 
-  async function enviarManutencao(payload, id) {
-    const resp = await fetch(frotaApiUrl(id ? `frota/manutencoes/${id}` : 'frota/manutencoes'), {
-      method: id ? 'PUT' : 'POST',
-      headers: authHeaders(true),
-      body: JSON.stringify(payload),
-    });
-    const data = await resp.json().catch(() => ({}));
-    if (!resp.ok || data.status !== 'ok') throw new Error(data.mensagem || 'Falha ao salvar manutenção.');
-    return data;
+  function novaManutencaoPara(placa) {
+    limparFormularioManutencao();
+    if (placa) {
+      const select = document.getElementById('frota-manut-placa');
+      if (select) select.value = placa;
+      const v = buscarVeiculoPorPlaca(placa);
+      const km = document.getElementById('frota-manut-km');
+      if (km && v && v.quilometragem != null) km.value = v.quilometragem;
+    }
+    abrirCadastro('frota-sub-manutencao', placa ? 'frota-manut-descricao' : 'frota-manut-placa');
   }
 
   async function recarregarManutencoesEVeiculos() {
@@ -2303,6 +2603,7 @@
     limparFormularioManutencao();
     document.getElementById('frota-manut-limpar')?.addEventListener('click', limparFormularioManutencao);
     document.getElementById('frota-manut-filtro-status')?.addEventListener('change', renderTabelaManutencoes);
+    document.getElementById('frota-manut-agendar')?.addEventListener('click', () => novaManutencaoPara(null));
 
     document.getElementById('frota-manut-status')?.addEventListener('change', e => {
       const saida = document.getElementById('frota-manut-saida');
@@ -2314,58 +2615,230 @@
       try {
         const payload = coletarFormularioManutencao();
         const id = document.getElementById('frota-manut-id')?.value;
-        await enviarManutencao(payload, id);
+        await chamarApi(id ? `frota/manutencoes/${id}` : 'frota/manutencoes', id ? 'PUT' : 'POST', payload);
         limparFormularioManutencao();
         await recarregarManutencoesEVeiculos();
-        mostrarFeedback(id ? 'Manutenção atualizada.' : 'Manutenção registrada.', 'ok', 'frota-manut-feedback');
+        voltarParaTabela('frota-sub-manutencao', id ? 'Manutenção atualizada.' : 'Manutenção registrada.');
       } catch (err) {
         mostrarFeedback(err.message || 'Falha ao salvar manutenção.', 'erro', 'frota-manut-feedback');
       }
     });
 
-    document.querySelector('#frota-tabela-manutencoes tbody')?.addEventListener('click', async e => {
-      const botao = e.target.closest('button[data-acao]');
+    const tbody = document.querySelector('#frota-tabela-manutencoes tbody');
+    const abrir = e => {
+      const linha = e.target.closest('tr[data-id]');
+      if (linha && (e.type === 'click' || e.key === 'Enter')) abrirDetalheManutencao(linha.dataset.id);
+    };
+    tbody?.addEventListener('click', abrir);
+    tbody?.addEventListener('keydown', abrir);
+
+    document.getElementById('frota-detalhe-corpo')?.addEventListener('click', async e => {
+      const botao = e.target.closest('[data-manut-acao]');
       if (!botao) return;
-      const id = Number(botao.closest('tr')?.dataset.id);
+      const id = Number(botao.closest('[data-manut-id]')?.dataset.manutId);
       const manut = frotaManutencoesCache.find(m => m.id === id);
       if (!manut) return;
       try {
-        if (botao.dataset.acao === 'editar') {
+        if (botao.dataset.manutAcao === 'editar') {
           preencherFormularioManutencao(manut);
+          abrirCadastro('frota-sub-manutencao', 'frota-manut-status');
           return;
         }
-        if (botao.dataset.acao === 'concluir') {
+        if (botao.dataset.manutAcao === 'concluir') {
           if (!confirm(`Concluir a manutenção do veículo ${manut.placa}? Ele volta a ficar Ativo se não houver outra aberta.`)) return;
-          await enviarManutencao({ ...manut, status: 'Concluída', data_saida: manut.data_saida || hojeLocalISO() }, id);
+          await chamarApi(`frota/manutencoes/${id}`, 'PUT', { ...manut, status: 'Concluída', data_saida: manut.data_saida || hojeLocalISO() });
+          fecharDetalhe();
           await recarregarManutencoesEVeiculos();
-          mostrarFeedback('Manutenção concluída.', 'ok', 'frota-manut-feedback');
+          avisoRapido('Manutenção concluída.');
           return;
         }
-        if (botao.dataset.acao === 'excluir') {
+        if (botao.dataset.manutAcao === 'excluir') {
           if (!confirm(`Excluir a manutenção do veículo ${manut.placa}? Essa ação não pode ser desfeita.`)) return;
-          const resp = await fetch(frotaApiUrl(`frota/manutencoes/${id}`), { method: 'DELETE', headers: authHeaders() });
-          const data = await resp.json().catch(() => ({}));
-          if (!resp.ok || data.status !== 'ok') throw new Error(data.mensagem || 'Falha ao excluir manutenção.');
+          await chamarApi(`frota/manutencoes/${id}`, 'DELETE');
+          fecharDetalhe();
           await recarregarManutencoesEVeiculos();
-          mostrarFeedback('Manutenção excluída.', 'ok', 'frota-manut-feedback');
+          avisoRapido('Manutenção excluída.');
         }
       } catch (err) {
-        mostrarFeedback(err.message || 'Falha na ação.', 'erro', 'frota-manut-feedback');
+        avisoRapido(err.message || 'Falha na ação.', 'erro');
       }
     });
+  }
+
+  //======================================================================================================
+  // OFICINAS (tabela na aba Manutenção) e CARTÕES (tabela na aba Abastecimento)
+  //======================================================================================================
+  function abrirDetalheOficina(id) {
+    const o = frotaOficinasCache.find(x => String(x.id) === String(id));
+    if (!o) return;
+    const link = o.url_localizacao
+      ? `<a class="frota-link-localizacao" href="${escapeHtml(o.url_localizacao)}" target="_blank" rel="noopener">Abrir mapa</a>` : '';
+    const servicosFeitos = frotaManutencoesCache.filter(m => String(m.oficina_id) === String(o.id)).length;
+    abrirDetalhe(o.nome_oficina || 'Oficina', `
+      <div class="frota-detalhe-grade">
+        ${linhaDetalhe('Endereço', escapeHtml(o.endereco || ''))}
+        ${linhaDetalhe('Localização', link)}
+        ${linhaDetalhe('Serviços', escapeHtml(o.servicos || ''))}
+        ${linhaDetalhe('Área de atendimento', escapeHtml(o.area_atendimento || ''))}
+        ${linhaDetalhe('Horário', escapeHtml(o.horario_funcionamento || ''))}
+        ${linhaDetalhe('Responsável técnico', escapeHtml(o.responsavel_tecnico || ''))}
+        ${linhaDetalhe('CNPJ', escapeHtml(o.cnpj || ''))}
+        ${linhaDetalhe('Contato', escapeHtml(o.numero_contato || ''))}
+        ${linhaDetalhe('Manutenções registradas', String(servicosFeitos))}
+        ${linhaDetalhe('Obs', escapeHtml(o.obs || ''))}
+      </div>
+      <div class="frota-detalhe-acoes" data-oficina-id="${o.id}">
+        <button type="button" class="btn-secundario" data-oficina-acao="editar">Editar</button>
+        <button type="button" class="btn-secundario" data-oficina-acao="excluir">Excluir</button>
+      </div>`);
+  }
+
+  function preencherFormularioOficina(o) {
+    const definir = (id, v) => { const el = document.getElementById(id); if (el) el.value = v ?? ''; };
+    definir('frota-oficina-id', o.id);
+    definir('frota-oficina-nome', o.nome_oficina);
+    definir('frota-oficina-endereco', o.endereco);
+    definir('frota-oficina-url', o.url_localizacao);
+    definir('frota-oficina-servicos', o.servicos);
+    definir('frota-oficina-area', o.area_atendimento);
+    definir('frota-oficina-horario', o.horario_funcionamento);
+    definir('frota-oficina-responsavel', o.responsavel_tecnico);
+    definir('frota-oficina-cnpj', o.cnpj);
+    definir('frota-oficina-contato', o.numero_contato);
+    definir('frota-oficina-obs', o.obs);
+    const botao = document.querySelector('#frota-oficina-form button[type="submit"]');
+    if (botao) botao.textContent = 'Atualizar oficina';
+  }
+
+  function abrirDetalheCartao(id) {
+    const lista = frotaCartoesCache || [];
+    const c = lista.find(x => String(x.id) === String(id));
+    if (!c) return;
+    abrirDetalhe(c.nome || 'Cartão', `
+      <div class="frota-detalhe-grade">
+        ${linhaDetalhe('Número', escapeHtml(c.numero || ''))}
+        ${linhaDetalhe('Veículo', escapeHtml(c.placa || 'Sem vínculo'))}
+        ${linhaDetalhe('Bandeira', escapeHtml(c.bandeira || ''))}
+        ${linhaDetalhe('Status', escapeHtml(c.status || ''))}
+        ${linhaDetalhe('Obs', escapeHtml(c.obs || ''))}
+      </div>
+      <div class="frota-detalhe-acoes" data-cartao-id="${c.id}">
+        <button type="button" class="btn-secundario" data-cartao-acao="editar">Editar</button>
+        <button type="button" class="btn-secundario" data-cartao-acao="excluir">Excluir</button>
+      </div>`);
+  }
+
+  function preencherFormularioCartao(c) {
+    const definir = (id, v) => { const el = document.getElementById(id); if (el) el.value = v ?? ''; };
+    definir('frota-cartao-abastecimento-id', c.id);
+    definir('frota-cartao-abastecimento-nome', c.nome);
+    definir('frota-cartao-abastecimento-numero', c.numero);
+    definir('frota-cartao-abastecimento-placa', c.placa || '');
+    definir('frota-cartao-abastecimento-bandeira', c.bandeira);
+    definir('frota-cartao-abastecimento-status', c.status || 'Ativo');
+    definir('frota-cartao-abastecimento-obs', c.obs);
+    const botao = document.querySelector('#frota-cartoes-abastecimento-form button[type="submit"]');
+    if (botao) botao.textContent = 'Atualizar cartão';
+  }
+
+  function marcarLinhasClicaveis(tbodySeletor, atributo, lista) {
+    const tbody = document.querySelector(tbodySeletor);
+    if (!tbody) return;
+    const linhas = tbody.querySelectorAll('tr');
+    (lista || []).forEach((item, i) => {
+      const tr = linhas[i];
+      if (!tr || item.id == null) return;
+      tr.dataset[atributo] = item.id;
+      tr.classList.add('frota-linha-clicavel');
+      tr.tabIndex = 0;
+      tr.title = 'Ver detalhes';
+    });
+  }
+
+  function inicializarOficinasECartoes() {
+    document.getElementById('frota-oficina-nova')?.addEventListener('click', () => {
+      limparFormularioOficina();
+      abrirCadastro('frota-sub-oficinas', 'frota-oficina-nome');
+    });
+    document.getElementById('frota-cartao-novo')?.addEventListener('click', () => {
+      limparFormularioCartaoAbastecimento();
+      abrirCadastro('frota-sub-cartoes', 'frota-cartao-abastecimento-nome');
+    });
+
+    const ligar = (seletor, atributo, abrirFn) => {
+      const tbody = document.querySelector(seletor);
+      const abrir = e => {
+        const linha = e.target.closest('tr');
+        const id = linha && linha.dataset[atributo];
+        if (id && !e.target.closest('a') && (e.type === 'click' || e.key === 'Enter')) abrirFn(id);
+      };
+      tbody?.addEventListener('click', abrir);
+      tbody?.addEventListener('keydown', abrir);
+    };
+    ligar('#frota-tabela-oficinas tbody', 'oficinaId', abrirDetalheOficina);
+    ligar('#frota-tabela-cartoes-abastecimento tbody', 'cartaoId', abrirDetalheCartao);
+
+    document.getElementById('frota-detalhe-corpo')?.addEventListener('click', async e => {
+      const botaoOficina = e.target.closest('[data-oficina-acao]');
+      const botaoCartao = e.target.closest('[data-cartao-acao]');
+      try {
+        if (botaoOficina) {
+          const id = botaoOficina.closest('[data-oficina-id]').dataset.oficinaId;
+          const o = frotaOficinasCache.find(x => String(x.id) === String(id));
+          if (botaoOficina.dataset.oficinaAcao === 'editar' && o) {
+            preencherFormularioOficina(o);
+            abrirCadastro('frota-sub-oficinas', 'frota-oficina-nome');
+          } else if (botaoOficina.dataset.oficinaAcao === 'excluir') {
+            if (!confirm('Excluir esta oficina? As manutenções já registradas continuam no histórico.')) return;
+            await chamarApi(`frota/oficinas/${id}`, 'DELETE');
+            fecharDetalhe();
+            await atualizarOficinas();
+            avisoRapido('Oficina excluída.');
+          }
+        }
+        if (botaoCartao) {
+          const id = botaoCartao.closest('[data-cartao-id]').dataset.cartaoId;
+          const c = (frotaCartoesCache || []).find(x => String(x.id) === String(id));
+          if (botaoCartao.dataset.cartaoAcao === 'editar' && c) {
+            preencherFormularioCartao(c);
+            abrirCadastro('frota-sub-cartoes', 'frota-cartao-abastecimento-nome');
+          } else if (botaoCartao.dataset.cartaoAcao === 'excluir') {
+            if (!confirm('Excluir este cartão de abastecimento?')) return;
+            await chamarApi(`frota/cartoes/${id}`, 'DELETE');
+            fecharDetalhe();
+            await atualizarCartoes();
+            avisoRapido('Cartão excluído.');
+          }
+        }
+      } catch (err) {
+        avisoRapido(err.message || 'Falha na ação.', 'erro');
+      }
+    });
+  }
+
+  async function atualizarOficinas() {
+    frotaOficinasCache = await listarOficinas();
+    renderTabelaOficinas(frotaOficinasCache);
+    marcarLinhasClicaveis('#frota-tabela-oficinas tbody', 'oficinaId', frotaOficinasCache);
+    preencherSelectOficinasManutencao(frotaOficinasCache);
+  }
+
+  async function atualizarCartoes() {
+    const lista = await listarCartoesAbastecimento();
+    renderTabelaCartoesAbastecimento(lista);
+    marcarLinhasClicaveis('#frota-tabela-cartoes-abastecimento tbody', 'cartaoId', lista);
   }
 
   async function inicializarFrotaGestao() {
     inicializarSubabasCadastro();
     inicializarGestaoVeiculos();
     inicializarManutencoes();
+    inicializarOficinasECartoes();
     preencherSelectPlacasManutencao(frotaVeiculosCache);
-    preencherSelectOficinasManutencao(await listarOficinas());
-    await listarManutencoes();
+    await Promise.all([atualizarOficinas(), atualizarCartoes(), listarManutencoes(), listarAlertas()]);
     renderTabelaManutencoes();
     renderGestaoVeiculos();
   }
-
 
   document.addEventListener('DOMContentLoaded', inicializarFrota);
 })();
