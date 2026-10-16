@@ -3044,3 +3044,77 @@ button.btn-fechar-padrao svg {
 }
 .painel-resumo .carregando-inline { color: var(--resumo-suave); }
 .painel-resumo .carregando-inline-logo { background: #4a4743; }
+
+/* ===================================================================
+   CAMPOS DE STATUS E PERÍODO DA BUSCA (mesmo visual dos filtros)
+   =================================================================== */
+.busca-controle-item label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+
+.busca-controle-item input,
+.busca-controle-item select {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  color: inherit;
+  transition: border-color 0.2s;
+}
+
+.busca-controle-item input:focus,
+.busca-controle-item select:focus {
+  outline: none;
+  border-color: var(--cor-destaque);
+  box-shadow: 0 0 0 2px rgba(71, 85, 105, 0.2);
+}
+
+@media (max-width: 768px) {
+  .busca-controle-item input,
+  .busca-controle-item select { height: 42px; font-size: 16px; border-radius: 8px; }
+}
+
+/* ===================================================================
+   CHECKBOXES: sempre à direita do texto, alinhados na mesma coluna
+   (vale para todo label que envolve um checkbox)
+   =================================================================== */
+label:has(> input[type="checkbox"]) {
+  display: flex !important;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left !important;
+  cursor: pointer;
+}
+
+label > input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 18px !important;
+  height: 18px;
+  min-width: 18px;
+  margin: 0 !important;
+  padding: 0;
+  accent-color: var(--cor-destaque);
+  cursor: pointer;
+}
+
+.checklist-contratos {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0;
+  padding: 4px 12px;
+}
+
+.checklist-contratos label {
+  padding: 10px 0;
+  border-bottom: 1px solid #eef1f4;
+}
+
+.checklist-contratos label:last-child { border-bottom: none; }
