@@ -1002,3 +1002,7 @@ body.frota-checklist-modal-aberto {
   .frota-alerta-acoes { flex-direction: row; }
   .frota-secao-topo { flex-wrap: wrap; }
 }
+
+/* Veículo alocado em O.S. ativa */
+.frota-status-operacao { background: #EAF0F8; color: #2F5C99; }
+td .frota-status-badge + small { display: block; margin-top: 3px; }

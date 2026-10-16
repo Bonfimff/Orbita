@@ -65,6 +65,29 @@
     return 'Ativo';
   }
 
+  // Situação real do veículo: manutenção e inativo vêm do cadastro; em
+  // operação vem da O.S. ativa em que ele está alocado (campo operacao da API).
+  function situacaoOperacional(v) {
+    const st = normalizarStatus(v && v.status);
+    if (st === 'Em manutenção' || st === 'Inativo') return st;
+    if (v && v.operacao && !v.operacao.reservado) return 'Em operação';
+    return 'Disponível';
+  }
+
+  function situacaoBadge(v) {
+    const sit = situacaoOperacional(v);
+    const classe = {
+      'Em operação': 'frota-status-operacao',
+      'Em manutenção': 'frota-status-manutencao',
+      'Inativo': 'frota-status-inativo',
+    }[sit] || 'frota-status-ativo';
+    const os = v && v.operacao;
+    const extra = os
+      ? `<small class="frota-texto-suave">${os.reservado ? 'Reservado para ' : ''}${escapeHtml(os.numero_os || 'O.S. #' + os.ordem_id)}</small>`
+      : '';
+    return `<span class="frota-status-badge ${classe}">${sit}</span>${extra}`;
+  }
+
   function statusBadge(status) {
     const st = normalizarStatus(status);
     let classe = 'frota-status-ativo';
@@ -145,10 +168,10 @@
     return coordenadaEstimativa(veiculo?.placa, indice);
   }
 
-  function corMarcador(status) {
-    const st = normalizarStatus(status);
-    if (st === 'Em manutenção') return '#f39c12';
-    if (st === 'Inativo') return '#8d99ae';
+  function corMarcador(situacao) {
+    if (situacao === 'Em manutenção') return '#f39c12';
+    if (situacao === 'Inativo') return '#8d99ae';
+    if (situacao === 'Em operação') return '#3E6FB0';
     return '#1a9e55';
   }
 
@@ -163,7 +186,7 @@
 
     const itens = lista.slice(0, 8).map((veiculo, indice) => {
       const coords = obterCoordenadasVeiculo(veiculo, indice);
-      const status = normalizarStatus(veiculo.status);
+      const status = situacaoOperacional(veiculo);
       const localizacaoReal = Number.isFinite(Number(veiculo?.latitude ?? veiculo?.lat)) && Number.isFinite(Number(veiculo?.longitude ?? veiculo?.lng));
 
       return `
@@ -216,7 +239,7 @@
     lista.forEach((veiculo, indice) => {
       const coords = obterCoordenadasVeiculo(veiculo, indice);
       bounds.push(coords);
-      const status = normalizarStatus(veiculo.status);
+      const status = situacaoOperacional(veiculo);
       const marker = L.circleMarker(coords, {
         radius: 8,
         color: '#ffffff',
@@ -273,15 +296,10 @@
 
   function atualizarCards(lista) {
     const total = lista.length;
-    const operacao = lista.filter(v => {
-      const st = String(v.status || '').toLowerCase();
-      return st.includes('opera');
-    }).length;
-    const disponivel = lista.filter(v => {
-      const st = String(v.status || '').toLowerCase();
-      return st.includes('dispon') || st.includes('ativo');
-    }).length;
-    const manutencao = lista.filter(v => normalizarStatus(v.status) === 'Em manutenção').length;
+    const contar = sit => lista.filter(v => situacaoOperacional(v) === sit).length;
+    const operacao = contar('Em operação');
+    const disponivel = contar('Disponível');
+    const manutencao = contar('Em manutenção');
 
     const elTotal = document.getElementById('frota-total-veiculos');
     const elOperacao = document.getElementById('frota-total-operacao');
@@ -2264,7 +2282,7 @@
     const filtroStatus = document.getElementById('frota-gestao-status')?.value || '';
 
     const lista = (frotaVeiculosCache || []).filter(v => {
-      if (filtroStatus && normalizarStatus(v.status) !== filtroStatus) return false;
+      if (filtroStatus && situacaoOperacional(v) !== filtroStatus) return false;
       if (!busca) return true;
       return [v.placa, v.modelo, v.marca].some(c => String(c || '').toLowerCase().includes(busca));
     });
@@ -2288,7 +2306,7 @@
         <tr class="frota-linha-clicavel" data-placa="${escapeHtml(placa)}" tabindex="0" title="Ver detalhes do veículo">
           <td><strong>${escapeHtml(v.modelo || '-')}</strong><small class="frota-texto-suave"> ${escapeHtml(v.marca || '')}</small></td>
           <td>${escapeHtml(placa)}</td>
-          <td>${statusBadge(v.status)}</td>
+          <td>${situacaoBadge(v)}</td>
           <td>${formatarKm(v.quilometragem)}</td>
           <td>${proximaRevisaoTexto(v)}</td>
           <td>${resumoAlertasPlaca(placa)}</td>
@@ -2305,7 +2323,7 @@
     const html = `
       <div class="frota-detalhe-grade">
         ${linhaDetalhe('Placa', escapeHtml(placa))}
-        ${linhaDetalhe('Status', statusBadge(v.status))}
+        ${linhaDetalhe('Situação', situacaoBadge(v))}
         ${linhaDetalhe('Marca / modelo', escapeHtml([v.marca, v.modelo].filter(Boolean).join(' ')))}
         ${linhaDetalhe('Ano', escapeHtml(v.ano ?? ''))}
         ${linhaDetalhe('Quilometragem', formatarKm(v.quilometragem))}
