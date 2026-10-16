@@ -2964,3 +2964,11 @@ button[type="submit"]:hover, .btn-primario:hover {
     font-size: 16px;
   }
 }
+
+/* Ícones do painel escuro: brancos, sem fundo colorido */
+.painel-resumo .painel-card-icone,
+.painel-resumo .painel-card-icone[class*="painel-icone-"],
+.painel-resumo .painel-card-icone[class*="rel-kpi-"] {
+  background: transparent;
+  color: #FFFFFF;
+}
