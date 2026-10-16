@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=38" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=39" />
   <link rel="stylesheet" href="../CSS/frota.css?v=8" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link
@@ -449,10 +449,10 @@
     </div>
     <div id="cadastros" class="tab-content">
       <div class="opcoes-abas frota-subabas" role="tablist">
-        <button type="button" class="top-tab2 active" data-subaba="frota-sub-veiculos">Veículos</button>
-        <button type="button" class="top-tab2" data-subaba="frota-sub-oficinas">Oficinas</button>
-        <button type="button" class="top-tab2" data-subaba="frota-sub-cartoes">Cartões de abastecimento</button>
-        <button type="button" class="top-tab2" data-subaba="frota-sub-manutencao">Manutenção</button>
+        <button type="button" class="top-tab2 active" data-subaba="frota-sub-veiculos" data-permissao="frota_veiculos:editar frota_veiculos:excluir">Veículos</button>
+        <button type="button" class="top-tab2" data-subaba="frota-sub-oficinas" data-permissao="frota_oficinas:editar frota_oficinas:excluir">Oficinas</button>
+        <button type="button" class="top-tab2" data-subaba="frota-sub-cartoes" data-permissao="frota_abastecimentos:editar frota_abastecimentos:excluir">Cartões de abastecimento</button>
+        <button type="button" class="top-tab2" data-subaba="frota-sub-manutencao" data-permissao="frota_manutencoes:editar frota_manutencoes:excluir">Manutenção</button>
       </div>
 
       <div id="frota-sub-veiculos" class="frota-subaba ativa">
@@ -796,9 +796,9 @@
     crossorigin=""
   ></script>
     <script src="../SCRIPT/config.js?v=2"></script>
-    <script src="../SCRIPT/frota.js?v=10"></script>
+    <script src="../SCRIPT/frota.js?v=11"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=27"></script>
+  <script src="../SCRIPT/geral.js?v=28"></script>
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=10"></script>
 

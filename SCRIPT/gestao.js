@@ -1,31 +1,22 @@
 (function () {
-  const MODULOS = [
-    { chave: 'painel_geral', label: 'Início (Dashboard Geral)' },
-    { chave: 'frotas', label: 'Frotas (Veículos, Checklists e Abastecimentos)' },
-    { chave: 'almoxarifado', label: 'Estoque (Itens e Movimentações)' },
-    { chave: 'os_campo', label: 'O.S. Campo (Operações e Bases)' },
-    { chave: 'gestao', label: 'Gestão (Usuários e Permissões)' },
-    // Cadastros de Análise Operacional têm 4 ações em vez de ver/executar:
-    // quem consulta relatório não necessariamente pode mexer no catálogo, e
-    // alterar um catálogo reescreve o significado do histórico inteiro.
-    { chave: 'analise_cadastros',
-      label: 'Cadastros (Problemas, Causas, Soluções, Equipamentos)',
-      acoes: ['ver', 'criar', 'editar', 'ativar'] },
+  // Lista de permissões: vem da API (services/permissoes.py), que é a mesma
+  // tabela usada para bloquear as rotas. Colunas: Visualizar, Editar e
+  // Criar/Excluir; a linha só mostra caixa nas colunas que fazem sentido.
+  const COLUNAS = [
+    { acao: 'ver', rotulo: 'Visualizar' },
+    { acao: 'editar', rotulo: 'Editar' },
+    { acao: 'excluir', rotulo: 'Criar/Excluir' },
   ];
+  let catalogoPermissoes = null;
 
-  // Ações padrão de um módulo, quando ele não declara as próprias.
-  const ACOES_PADRAO = ['ver', 'executar'];
-  const ROTULO_ACAO = {
-    ver: 'Visualizar', executar: 'Modificar dados',
-    criar: 'Criar', editar: 'Editar', ativar: 'Ativar/desativar',
-  };
-
-  const RESTRICOES = [
-    { chave: 'bloquear_cadastro_veiculo', label: 'Bloquear cadastro de veículos' },
-    { chave: 'bloquear_nova_os', label: 'Bloquear nova O.S. (abertura)' },
-    { chave: 'finalizar_os_apenas', label: 'Restrição: só finalizar O.S. atribuída' },
-    { chave: 'bloquear_atividade_contrato', label: 'Bloquear atividades de contrato/bases' },
-  ];
+  async function carregarCatalogoPermissoes() {
+    if (catalogoPermissoes) return catalogoPermissoes;
+    const resp = await fetch(window.apiUrl('/permissoes/catalogo'), { headers: authHeaders() });
+    const dados = await resp.json();
+    if (dados.status !== 'ok') throw new Error(dados.mensagem || 'Não foi possível carregar a lista de permissões.');
+    catalogoPermissoes = dados.catalogo;
+    return catalogoPermissoes;
+  }
 
   let perfisCache = [];
   let usuarioLogadoId = null;
@@ -59,94 +50,94 @@
   }
 
   // ===== Matriz de permissões (usada no form de usuário e de perfil) =====
-  function renderMatrizPermissoes(containerId, valoresAtuais) {
+  async function renderMatrizPermissoes(containerId, valoresAtuais) {
     const container = document.getElementById(containerId);
     if (!container) return;
     const v = valoresAtuais || {};
-    // Módulos com o conjunto padrão de ações continuam na matriz de 2 colunas;
-    // os que declaram `acoes` viram uma linha própria com um rótulo por ação,
-    // para não alargar a tabela inteira por causa de um único módulo.
-    const padrao = MODULOS.filter(m => !m.acoes);
-    const especiais = MODULOS.filter(m => m.acoes);
-
+    container.innerHTML = '<div class="gestao-matriz-linha"><span>Carregando permissões...</span></div>';
+    let catalogo;
+    try {
+      catalogo = await carregarCatalogoPermissoes();
+    } catch (e) {
+      container.innerHTML = `<div class="gestao-matriz-linha"><span>${e.message}</span></div>`;
+      return;
+    }
     container.innerHTML = `
       <div class="gestao-matriz-linha gestao-matriz-cabecalho">
-        <span>Módulo</span>
-        <span>Visualizar</span>
-        <span>Modificar dados</span>
+        <span>Permissão</span>
+        ${COLUNAS.map(c => `<span>${c.rotulo}</span>`).join('')}
       </div>
-      ${padrao.map(m => {
-        const atual = v[m.chave] || {};
-        return `
-          <div class="gestao-matriz-linha" data-modulo="${m.chave}">
-            <span>${m.label}</span>
-            <input type="checkbox" class="gestao-perm-ver" ${atual.ver ? 'checked' : ''}>
-            <input type="checkbox" class="gestao-perm-executar" ${atual.executar ? 'checked' : ''}>
-          </div>
-        `;
-      }).join('')}
-      ${especiais.map(m => {
-        const atual = v[m.chave] || {};
-        return `
-          <div class="gestao-matriz-detalhada" data-modulo="${m.chave}"
-               data-acoes="${m.acoes.join(',')}">
-            <span class="gestao-matriz-detalhada-titulo">${m.label}</span>
-            <div class="gestao-matriz-detalhada-acoes">
-              ${m.acoes.map(acao => `
-                <label class="gestao-matriz-acao">
-                  <input type="checkbox" class="gestao-perm-acao" data-acao="${acao}"
-                         ${atual[acao] ? 'checked' : ''}>
-                  <span>${ROTULO_ACAO[acao] || acao}</span>
-                </label>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }).join('')}
+      ${catalogo.map(g => `
+        <div class="gestao-matriz-grupo" data-grupo="${g.grupo}">
+          <span>${g.grupo}</span>
+          ${COLUNAS.map(c => g.itens.some(i => i.acoes.includes(c.acao))
+            ? `<button type="button" class="gestao-matriz-todos" data-acao="${c.acao}" title="Marcar ou desmarcar a coluna inteira deste grupo">todos</button>`
+            : '<span></span>').join('')}
+        </div>
+        ${g.itens.map(item => {
+          const atual = v[item.chave] || {};
+          return `
+            <div class="gestao-matriz-linha" data-modulo="${item.chave}" data-grupo="${g.grupo}">
+              <span>${item.rotulo}</span>
+              ${COLUNAS.map(c => item.acoes.includes(c.acao)
+                ? `<input type="checkbox" class="gestao-perm" data-acao="${c.acao}" aria-label="${c.rotulo}: ${item.rotulo}" ${atual[c.acao] ? 'checked' : ''}>`
+                : '<span class="gestao-matriz-vazio" aria-hidden="true"></span>').join('')}
+            </div>`;
+        }).join('')}
+      `).join('')}
     `;
   }
+
+  // Editar ou criar sem poder ver não faz sentido: marca "Visualizar" junto.
+  // O botão "todos" do grupo marca/desmarca a coluna inteira.
+  document.addEventListener('change', e => {
+    const caixa = e.target.closest('.gestao-perm');
+    if (!caixa || !caixa.checked || caixa.dataset.acao === 'ver') return;
+    const ver = caixa.closest('.gestao-matriz-linha').querySelector('.gestao-perm[data-acao="ver"]');
+    if (ver) ver.checked = true;
+  });
+  document.addEventListener('click', e => {
+    const botao = e.target.closest('.gestao-matriz-todos');
+    if (!botao) return;
+    const matriz = botao.closest('.gestao-matriz-permissoes');
+    const grupo = botao.closest('.gestao-matriz-grupo').dataset.grupo;
+    const caixas = Array.from(matriz.querySelectorAll(`.gestao-matriz-linha[data-grupo="${grupo}"] .gestao-perm[data-acao="${botao.dataset.acao}"]`));
+    const marcar = caixas.some(c => !c.checked);
+    caixas.forEach(c => {
+      c.checked = marcar;
+      if (marcar && c.dataset.acao !== 'ver') {
+        const ver = c.closest('.gestao-matriz-linha').querySelector('.gestao-perm[data-acao="ver"]');
+        if (ver) ver.checked = true;
+      }
+    });
+  });
 
   function coletarMatrizPermissoes(containerId) {
     const container = document.getElementById(containerId);
     const resultado = {};
     if (!container) return resultado;
     container.querySelectorAll('.gestao-matriz-linha[data-modulo]').forEach(linha => {
-      const modulo = linha.dataset.modulo;
-      resultado[modulo] = {
-        ver: linha.querySelector('.gestao-perm-ver')?.checked ? 1 : 0,
-        executar: linha.querySelector('.gestao-perm-executar')?.checked ? 1 : 0,
-      };
-    });
-    container.querySelectorAll('.gestao-matriz-detalhada[data-modulo]').forEach(bloco => {
       const permissoes = {};
-      bloco.querySelectorAll('.gestao-perm-acao').forEach(campo => {
+      linha.querySelectorAll('.gestao-perm').forEach(campo => {
         permissoes[campo.dataset.acao] = campo.checked ? 1 : 0;
       });
-      resultado[bloco.dataset.modulo] = permissoes;
+      resultado[linha.dataset.modulo] = permissoes;
     });
     return resultado;
   }
 
-  function renderRestricoes(containerId, valoresAtuais) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const v = valoresAtuais || {};
-    container.innerHTML = RESTRICOES.map(r => `
-      <label class="gestao-restricao-item">
-        <input type="checkbox" class="gestao-restricao-check" data-restricao="${r.chave}" ${v[r.chave] ? 'checked' : ''}>
-        ${r.label}
-      </label>
-    `).join('');
-  }
-
-  function coletarRestricoes(containerId) {
-    const container = document.getElementById(containerId);
-    const resultado = {};
-    if (!container) return resultado;
-    container.querySelectorAll('.gestao-restricao-check').forEach(chk => {
-      resultado[chk.dataset.restricao] = chk.checked ? 1 : 0;
-    });
-    return resultado;
+  function resumoPermissoesPerfil(permissoes) {
+    if (!catalogoPermissoes) return '';
+    return catalogoPermissoes.map(g => {
+      let total = 0;
+      let liberadas = 0;
+      g.itens.forEach(item => item.acoes.forEach(acao => {
+        total += 1;
+        if ((permissoes[item.chave] || {})[acao]) liberadas += 1;
+      }));
+      const texto = liberadas === 0 ? 'Sem acesso' : (liberadas === total ? 'Completo' : `${liberadas} de ${total}`);
+      return `<div class="gestao-perfil-modulo-linha"><span>${g.grupo}</span><span>${texto}</span></div>`;
+    }).join('');
   }
 
   // ===== Aba Usuários =====
@@ -287,7 +278,6 @@
     document.getElementById('usuario-senha').value = '';
 
     renderMatrizPermissoes('matriz-permissoes-usuario', usuario ? usuario.permissoes : {});
-    renderRestricoes('restricoes-usuario', usuario ? usuario.restricoes : {});
     document.getElementById('bloco-permissoes-usuario').style.display = document.getElementById('usuario-usa-customizadas').checked ? '' : 'none';
 
     const feedback = document.getElementById('usuario-form-feedback');
@@ -320,7 +310,6 @@
 
     if (usaCustomizadas) {
       payload.permissoes = coletarMatrizPermissoes('matriz-permissoes-usuario');
-      payload.restricoes = coletarRestricoes('restricoes-usuario');
     }
 
     let url, method;
@@ -373,6 +362,7 @@
         return;
       }
       perfisCache = dados.perfis;
+      try { await carregarCatalogoPermissoes(); } catch (e) { /* resumo fica vazio */ }
       popularSelectPerfis();
 
       if (!perfisCache.length) {
@@ -381,7 +371,6 @@
       }
 
       grid.innerHTML = perfisCache.map(p => {
-        const restricoesAtivas = RESTRICOES.filter(r => p.restricoes[r.chave]);
         return `
           <div class="gestao-perfil-card" data-perfil-id="${p.id}">
             <div class="gestao-perfil-card-header">
@@ -390,13 +379,8 @@
             </div>
             <div class="gestao-perfil-usuarios">${p.total_usuarios} usuário(s) vinculado(s)</div>
             <div class="gestao-perfil-modulos">
-              ${MODULOS.map(m => {
-                const perm = p.permissoes[m.chave] || {};
-                const texto = perm.ver && perm.executar ? 'Ver e modificar' : (perm.ver ? 'Somente ver' : 'Sem acesso');
-                return `<div class="gestao-perfil-modulo-linha"><span>${m.label.split(' (')[0]}</span><span>${texto}</span></div>`;
-              }).join('')}
+              ${resumoPermissoesPerfil(p.permissoes || {})}
             </div>
-            ${restricoesAtivas.length ? `<div class="gestao-perfil-restricoes">${restricoesAtivas.map(r => `<span class="gestao-restricao-pill">${r.label}</span>`).join('')}</div>` : ''}
             <div class="gestao-perfil-card-acoes">
               <button type="button" class="gestao-btn-icone gestao-editar-perfil" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
               <button type="button" class="gestao-btn-icone gestao-excluir-perfil" title="${p.fabrica ? 'Perfis de fábrica não podem ser excluídos' : 'Excluir'}" ${p.fabrica ? 'disabled' : ''}><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
@@ -448,7 +432,6 @@
     document.getElementById('perfil-contratos-leitura').value = perfil ? stringDeLista(perfil.contratos_somente_leitura) : '';
 
     renderMatrizPermissoes('matriz-permissoes-perfil', perfil ? perfil.permissoes : {});
-    renderRestricoes('restricoes-perfil', perfil ? perfil.restricoes : {});
 
     const feedback = document.getElementById('perfil-form-feedback');
     feedback.style.display = 'none';
@@ -470,7 +453,6 @@
     const payload = {
       nome: document.getElementById('perfil-nome').value,
       permissoes: coletarMatrizPermissoes('matriz-permissoes-perfil'),
-      restricoes: coletarRestricoes('restricoes-perfil'),
       contratos_autorizados: listaDeString(document.getElementById('perfil-contratos-autorizados').value),
       contratos_somente_leitura: listaDeString(document.getElementById('perfil-contratos-leitura').value),
     };

@@ -2334,11 +2334,11 @@
         ${linhaDetalhe('Obs', escapeHtml(v.obs || ''))}
       </div>
       <h4 class="frota-detalhe-subtitulo">Status do veículo</h4>
-      <div class="frota-status-rapido" role="group" aria-label="Status do veículo">
+      <div class="frota-status-rapido" role="group" aria-label="Status do veículo" data-permissao="frota_status:editar frota_veiculos:editar">
         ${['Ativo', 'Em manutenção', 'Inativo'].map(st => `<button type="button" data-status-rapido="${st}" class="${normalizarStatus(v.status) === st ? 'ativo' : ''}">${st}</button>`).join('')}
       </div>
       <div class="frota-detalhe-acoes">
-        <button type="button" class="btn-secundario" data-detalhe-acao="editar-veiculo">Editar cadastro</button>
+        <button type="button" class="btn-secundario" data-detalhe-acao="editar-veiculo" data-permissao="frota_veiculos:editar">Editar cadastro</button>
         <button type="button" class="btn-primario" data-detalhe-acao="agendar-manutencao">${manut ? 'Ver manutenção aberta' : 'Agendar manutenção'}</button>
       </div>
       <h4 class="frota-detalhe-subtitulo">Alertas de manutenção</h4>

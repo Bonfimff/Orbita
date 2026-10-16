@@ -36,6 +36,43 @@ window.obterModulos = function obterModulos() {
 };
 
 //======================================================================================================
+// PERMISSÕES NA TELA
+// Elemento com data-permissao="chave:acao" (ex.: "frota_veiculos:excluir")
+// some quando o usuário não tem aquela permissão. Vários pares separados por
+// espaço = basta um. O bloqueio real é feito pela API; aqui é só para não
+// mostrar botão que vai dar "sem permissão".
+//======================================================================================================
+let _matrizPermissoes = null; // null = conta sem perfil (acesso liberado)
+window.temPermissao = function temPermissao(chave, acao) {
+  if (!_matrizPermissoes) return true;
+  return Boolean((_matrizPermissoes[chave] || {})[acao || 'ver']);
+};
+function aplicarPermissoesNaTela(raiz) {
+  if (!_matrizPermissoes) return;
+  (raiz || document).querySelectorAll('[data-permissao]').forEach(el => {
+    const pode = el.dataset.permissao.split(/\s+/).filter(Boolean)
+      .some(par => { const [c, a] = par.split(':'); return window.temPermissao(c, a); });
+    el.classList.toggle('sem-permissao', !pode);
+  });
+}
+window.aplicarPermissoesNaTela = aplicarPermissoesNaTela;
+document.addEventListener('DOMContentLoaded', () => {
+  if (!localStorage.getItem('token')) return;
+  window.obterModulos().then(info => {
+    _matrizPermissoes = (info && info.modulos && info.modulos.permissoes) || null;
+    aplicarPermissoesNaTela();
+    // Conteúdo montado depois (tabelas, detalhes) também é filtrado.
+    new MutationObserver(muts => {
+      muts.forEach(m => m.addedNodes.forEach(n => {
+        if (n.nodeType !== 1) return;
+        if (n.matches && n.matches('[data-permissao]')) aplicarPermissoesNaTela(n.parentNode);
+        else if (n.querySelector && n.querySelector('[data-permissao]')) aplicarPermissoesNaTela(n);
+      }));
+    }).observe(document.body, { childList: true, subtree: true });
+  }).catch(() => {});
+});
+
+//======================================================================================================
 // FUNÇÃO PRINCIPAL: Inicialização do Sistema
 // Inicializa o sistema ao carregar a página, configurando módulos, autenticação, eventos de interface e responsividade.
 //======================================================================================================

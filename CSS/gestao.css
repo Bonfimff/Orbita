@@ -530,3 +530,41 @@
 .pg-mapa-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
 .pg-mapa-legenda i.pg-mapa-quadrado { background: #1F2D3D; border-radius: 2px; }
 @media (max-width: 768px) { .pg-mapa { height: 300px; } }
+
+/* ===== Matriz de permissões: 3 colunas e grupos ===== */
+.gestao-matriz-linha { grid-template-columns: minmax(0, 1fr) 76px 76px 92px; }
+.gestao-matriz-grupo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 76px 76px 92px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px 6px;
+  background: #1F2D3D;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.gestao-matriz-todos {
+  justify-self: center;
+  padding: 2px 8px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 999px;
+  background: none;
+  color: #fff;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: lowercase;
+  cursor: pointer;
+}
+.gestao-matriz-todos:hover { background: rgba(255,255,255,.12); }
+.gestao-matriz-vazio { justify-self: center; width: 10px; height: 2px; background: #d5dbe3; }
+.gestao-matriz-linha > input.gestao-perm { justify-self: center; width: 18px; height: 18px; margin: 0; accent-color: var(--cor-destaque); cursor: pointer; }
+@media (max-width: 768px) {
+  .gestao-matriz-linha,
+  .gestao-matriz-grupo { grid-template-columns: minmax(0, 1fr) 46px 46px 56px; gap: 6px; padding-left: 10px; padding-right: 10px; }
+  .gestao-matriz-cabecalho { font-size: 9.5px; }
+  .gestao-matriz-todos { padding: 2px 5px; }
+}

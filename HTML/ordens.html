@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=38" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=39" />
   <link rel="stylesheet" href="../CSS/ordens.css?v=35" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
@@ -164,7 +164,7 @@
 
       <div class="os-lista-filtros">
         <input type="search" id="bases-busca" placeholder="Buscar por ID, endereço ou contrato">
-        <button type="button" class="btn-primario" id="btn-nova-base">Cadastrar base</button>
+        <button type="button" class="btn-primario" id="btn-nova-base" data-permissao="os_bases:excluir">Cadastrar base</button>
       </div>
       <div class="tabela-responsiva">
         <table id="tabela-bases" class="estilo-tabela">
@@ -189,7 +189,7 @@
           <h2 class="aba-legenda">Cronograma de Serviço</h2>
           <p class="cronograma-subtitulo">Atividades e despacho diário de equipes</p>
         </div>
-        <button type="button" class="btn-primario" id="btn-agendar">+ Agendar</button>
+        <button type="button" class="btn-primario" id="btn-agendar" data-permissao="os_agendamentos:excluir">+ Agendar</button>
       </div>
       <hr class="aba-linha">
 
@@ -209,9 +209,9 @@
       <h2 class="aba-legenda">Cadastros</h2>
       <hr class="aba-linha">
       <div class="opcoes-abas os-subabas" role="tablist">
-        <button type="button" class="top-tab2 active" data-subaba="os-sub-nova">Nova O.S.</button>
-        <button type="button" class="top-tab2" data-subaba="os-sub-base">Base</button>
-        <button type="button" class="top-tab2" data-subaba="os-sub-agendamento">Agendamento</button>
+        <button type="button" class="top-tab2 active" data-subaba="os-sub-nova" data-permissao="os_ordens:excluir">Nova O.S.</button>
+        <button type="button" class="top-tab2" data-subaba="os-sub-base" data-permissao="os_bases:editar os_bases:excluir">Base</button>
+        <button type="button" class="top-tab2" data-subaba="os-sub-agendamento" data-permissao="os_agendamentos:editar os_agendamentos:excluir">Agendamento</button>
       </div>
 
       <div id="os-sub-nova" class="os-subaba ativa">
@@ -462,7 +462,7 @@
       <h2 class="aba-legenda">Busca de Ordens</h2>
       <hr class="aba-linha">
       <div class="os-lista-filtros os-lista-filtros-direita">
-        <button type="button" class="btn-primario" id="btn-nova-os">Nova O.S.</button>
+        <button type="button" class="btn-primario" id="btn-nova-os" data-permissao="os_ordens:excluir">Nova O.S.</button>
       </div>
 
       <!-- Controles de busca -->
@@ -567,7 +567,7 @@
 
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=27"></script>
+  <script src="../SCRIPT/geral.js?v=28"></script>
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=10"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>

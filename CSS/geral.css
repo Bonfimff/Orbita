@@ -3118,3 +3118,6 @@ label > input[type="checkbox"] {
 }
 
 .checklist-contratos label:last-child { border-bottom: none; }
+
+/* Botão ou área sem permissão do usuário (ver geral.js: data-permissao) */
+.sem-permissao { display: none !important; }
