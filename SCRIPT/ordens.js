@@ -1542,7 +1542,7 @@ async function carregarCronograma() {
         </div>
         <div class="cronograma-item-titulo">${escapeHtml(a.titulo)}</div>
         <div class="cronograma-item-meta">
-          <span>${ICONES.hora}${a.hora_inicio} – ${a.hora_fim}</span>
+          <span>${ICONES.hora}${a.hora_inicio} às ${a.hora_fim}</span>
           ${a.veiculo_placa ? `<span>${ICONES.veiculo}<strong>${escapeHtml(a.veiculo_placa)}</strong></span>` : ''}
           ${a.local_endereco ? `<span>${ICONES.local}${escapeHtml(a.local_endereco)}</span>` : ''}
           <span>${ICONES.pessoa}${escapeHtml(a.responsavel_tecnico)}</span>
