@@ -828,3 +828,61 @@ body.frota-checklist-modal-aberto {
 	font-size: 12px;
 	margin-bottom: 6px;
 }
+
+/* ===== Aba Cadastros: sub-abas Veículos, Oficinas e Cartões ===== */
+.frota-subaba { display: none; }
+.frota-subaba.ativa { display: block; }
+
+/* ===== Filtros das listas (gestão de veículos e manutenções) ===== */
+.frota-gestao-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 18px 0 12px;
+}
+.frota-gestao-filtros input,
+.frota-gestao-filtros select {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 9px 11px;
+  border: 1px solid #d9dde1;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+}
+.frota-gestao-filtros button { flex: 0 0 auto; }
+
+.frota-texto-suave { color: #7A8794; font-weight: 400; }
+.frota-acoes { white-space: nowrap; }
+.frota-acoes .btn-sm { padding: 5px 10px; font-size: 12px; margin: 2px; }
+
+.frota-revisao small { display: block; color: #7A8794; font-size: 11px; }
+.frota-revisao-perto { color: #9A6A2E; font-weight: 600; }
+
+.frota-manut-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #F6EEE2;
+  color: #9A6A2E;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.frota-manut-status {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.frota-manut-agendada  { background: #EEF0F3; color: #3E4C5E; }
+.frota-manut-andamento { background: #F6EEE2; color: #9A6A2E; }
+.frota-manut-concluida { background: #EFF1E8; color: #5E6B3F; }
+.frota-manut-cancelada { background: #F0EFEC; color: #5C5C5C; }
+
+@media (max-width: 768px) {
+  .frota-gestao-filtros button { width: 100%; }
+}
