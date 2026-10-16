@@ -1,0 +1,24 @@
+# Somente o frontend é publicado neste repositório.
+# Nunca versionar credenciais, chaves, backend, backups ou dados.
+.env
+.env.*
+*.env
+*.key
+*.pem
+*.ppk
+id_rsa*
+credencial*
+Python/
+api-nuvem/
+backup/
+PerfilWhatsApp/
+documentação/
+*.sql
+*.sql.gz
+*.dump
+*.jsonl
+contatos_whatsapp.json
+.claude/
+node_modules/
+__pycache__/
+venv/

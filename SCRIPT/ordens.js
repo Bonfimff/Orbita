@@ -2054,7 +2054,7 @@ function adicionarPontoForm() {
     </div>
     <div class="ponto-item-campos">
       <div class="ponto-busca-id-row">
-        <input type="text" class="ponto-id-local" placeholder="ID do local cadastrado" />
+        <input type="text" class="ponto-id-local" placeholder="ID da base (ex.: BASE-CENTRO)" />
         <button type="button" class="btn-buscar-local btn-secundario btn-sm">Buscar</button>
       </div>
       <div class="ponto-endereco-row">
