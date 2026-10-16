@@ -598,6 +598,7 @@ button[type="submit"]:hover, .btn-primario:hover {
     width: 80%;
     max-width: 280px;
     height: calc(100vh - 60px);
+    height: calc(100dvh - 60px);
     position: fixed;
     top: 60px;
     left: 0;
@@ -2707,18 +2708,24 @@ button[type="submit"]:hover, .btn-primario:hover {
 }
 
 /* ===================================================================
-   Painel de resumo em bloco único (ex.: Resumo das Ordens).
-   Os cards viram colunas de um mesmo bloco, separadas por divisórias,
-   sempre lado a lado e na mesma altura, inclusive no celular.
-   Mantém os ícones e as cores de .painel-icone-*.
+   Painel de resumo em bloco único e escuro (Resumo das Ordens, Frota,
+   Gestão, Relatórios, Estoque). Os cards viram colunas de um mesmo
+   bloco, separadas por divisórias, lado a lado também no celular.
+   Ícones e matizes de .painel-icone-* mantidos, em tons claros para
+   contrastar com o fundo escuro.
    =================================================================== */
 .painel-resumo {
-  background: #fff;
-  border: 1px solid #edf1f3;
+  --resumo-fundo: #262626;
+  --resumo-borda: rgba(255, 255, 255, 0.08);
+  --resumo-texto: #F4F4F2;
+  --resumo-suave: #A3A8AE;
+  background: var(--resumo-fundo);
+  border: 1px solid #1c1c1c;
   border-radius: 14px;
-  box-shadow: 0 1px 6px rgba(16, 24, 40, 0.05);
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.18);
   padding: 14px 16px 16px;
   margin-bottom: 18px;
+  color: var(--resumo-texto);
 }
 
 .painel-resumo-cabecalho {
@@ -2728,87 +2735,164 @@ button[type="submit"]:hover, .btn-primario:hover {
   gap: 10px;
   padding-bottom: 12px;
   margin-bottom: 12px;
-  border-bottom: 1px solid #edf1f3;
+  border-bottom: 1px solid var(--resumo-borda);
 }
 
 .painel-resumo-titulo {
   font-size: 15px;
   font-weight: 700;
-  color: #1F2D3D;
+  color: var(--resumo-texto);
 }
 
 .painel-resumo-total {
   font-size: 13px;
-  color: #7A8794;
+  color: var(--resumo-suave);
 }
 
 .painel-resumo-total strong {
-  color: var(--cor-primaria);
+  color: #D9B77A;
   font-size: 15px;
 }
 
-.painel-cards.painel-cards-unico {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0;
+.painel-resumo .painel-cards {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px 0;
   margin-bottom: 0;
 }
 
-.painel-cards-unico .painel-card {
+.painel-resumo .painel-card {
   background: transparent;
   border: none;
+  border-left: 1px solid var(--resumo-borda);
   border-radius: 0;
   box-shadow: none;
   padding: 4px 14px;
+  color: var(--resumo-texto);
+}
+
+.painel-resumo .painel-card:first-child {
+  border-left: none;
+}
+
+.painel-resumo .painel-card[data-ir-aba],
+.painel-resumo .painel-card.rel-kpi-clicavel {
   cursor: pointer;
 }
 
-.painel-cards-unico .painel-card + .painel-card {
-  border-left: 1px solid #edf1f3;
+.painel-resumo .painel-card-titulo,
+.painel-resumo .painel-card-valor,
+.painel-resumo .painel-card-corpo,
+.painel-resumo .painel-card-corpo b,
+.painel-resumo .painel-card-corpo strong {
+  color: var(--resumo-texto);
 }
 
-/* Barrinha colorida sob o número, na cor do ícone do card */
-.painel-cards-unico .painel-card-valor::after {
+.painel-resumo .painel-card-label,
+.painel-resumo .painel-card-corpo p,
+.painel-resumo .painel-card small {
+  color: var(--resumo-suave);
+}
+
+/* Ícones: mesmo matiz de antes, versão clara sobre fundo translúcido */
+.painel-resumo .painel-card-icone { --icone: #C9CED4; background: rgba(255, 255, 255, 0.07); color: var(--icone); }
+.painel-resumo .painel-icone-teal     { --icone: #D9B77A; background: rgba(217, 183, 122, 0.14); }
+.painel-resumo .painel-icone-laranja,
+.painel-resumo .painel-icone-ambar    { --icone: #E3A857; background: rgba(227, 168, 87, 0.14); }
+.painel-resumo .painel-icone-azul     { --icone: #7FAEE0; background: rgba(127, 174, 224, 0.14); }
+.painel-resumo .painel-icone-verde    { --icone: #9CC77A; background: rgba(156, 199, 122, 0.14); }
+.painel-resumo .painel-icone-vermelho { --icone: #E5867A; background: rgba(229, 134, 122, 0.14); }
+.painel-resumo .painel-icone-cinza    { --icone: #B9BDC2; background: rgba(185, 189, 194, 0.12); }
+.painel-resumo .painel-icone-roxo     { --icone: #B4A6D6; background: rgba(180, 166, 214, 0.14); }
+.painel-resumo .painel-card-icone { color: var(--icone); }
+
+/* Barrinha sob o número, na cor do ícone do card */
+.painel-resumo .painel-card { --icone-card: #C9CED4; }
+.painel-resumo .painel-card:has(.painel-icone-teal)     { --icone-card: #D9B77A; }
+.painel-resumo .painel-card:has(.painel-icone-laranja),
+.painel-resumo .painel-card:has(.painel-icone-ambar)    { --icone-card: #E3A857; }
+.painel-resumo .painel-card:has(.painel-icone-azul)     { --icone-card: #7FAEE0; }
+.painel-resumo .painel-card:has(.painel-icone-verde)    { --icone-card: #9CC77A; }
+.painel-resumo .painel-card:has(.painel-icone-vermelho) { --icone-card: #E5867A; }
+.painel-resumo .painel-card:has(.painel-icone-roxo)     { --icone-card: #B4A6D6; }
+
+.painel-resumo .painel-card > .painel-card-valor::after {
   content: "";
   display: block;
   width: 36px;
   height: 3px;
   margin-top: 8px;
   border-radius: 2px;
-  background: currentColor;
-  opacity: 0.55;
+  background: var(--icone-card);
+  opacity: 0.85;
 }
-
-.painel-cards-unico .painel-card:has(.painel-icone-laranja) .painel-card-valor::after { background: #9A6A2E; }
-.painel-cards-unico .painel-card:has(.painel-icone-azul)    .painel-card-valor::after { background: #3E4C5E; }
-.painel-cards-unico .painel-card:has(.painel-icone-verde)   .painel-card-valor::after { background: #5E6B3F; }
-.painel-cards-unico .painel-card:has(.painel-icone-cinza)   .painel-card-valor::after { background: #5C5C5C; }
 
 @media (max-width: 768px) {
   .painel-resumo {
-    padding: 12px 10px 14px;
+    padding: 12px 8px 14px;
   }
 
-  .painel-cards.painel-cards-unico {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .painel-resumo .painel-cards {
+    grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
+    gap: 14px 0;
   }
 
-  .painel-cards-unico .painel-card {
+  .painel-resumo .painel-card {
     align-items: center;
     text-align: center;
     padding: 2px 4px;
     gap: 6px;
   }
 
-  .painel-cards-unico .painel-card-label {
+  .painel-resumo .painel-card-label {
     font-size: 11px;
     min-height: 2.6em;
     display: flex;
     align-items: center;
+    justify-content: center;
   }
 
-  .painel-cards-unico .painel-card-valor::after {
+  .painel-resumo .painel-card > .painel-card-valor::after {
     width: 24px;
     margin-left: auto;
     margin-right: auto;
+  }
+}
+
+/* Indicadores dos Relatórios dentro do painel escuro */
+.painel-resumo .rel-kpi-primario { --icone: #D9B77A; background: rgba(217, 183, 122, 0.14); }
+.painel-resumo .rel-kpi-neutro   { --icone: #B9BDC2; background: rgba(185, 189, 194, 0.12); }
+.painel-resumo .rel-kpi-sucesso  { --icone: #9CC77A; background: rgba(156, 199, 122, 0.14); }
+.painel-resumo .rel-kpi-aviso    { --icone: #E3A857; background: rgba(227, 168, 87, 0.14); }
+.painel-resumo .rel-kpi-erro     { --icone: #E5867A; background: rgba(229, 134, 122, 0.14); }
+.painel-resumo .painel-card:has(.rel-kpi-primario) { --icone-card: #D9B77A; }
+.painel-resumo .painel-card:has(.rel-kpi-sucesso)  { --icone-card: #9CC77A; }
+.painel-resumo .painel-card:has(.rel-kpi-aviso)    { --icone-card: #E3A857; }
+.painel-resumo .painel-card:has(.rel-kpi-erro)     { --icone-card: #E5867A; }
+.painel-resumo .rel-kpi-erro-texto    { color: #E5867A; }
+.painel-resumo .rel-kpi-aviso-texto   { color: #E3A857; }
+.painel-resumo .rel-kpi-sucesso-texto { color: #9CC77A; }
+.painel-resumo .rel-kpi-neutro-texto  { color: var(--resumo-texto); }
+.painel-resumo .rel-kpi-detalhe       { color: var(--resumo-suave); }
+.painel-resumo .rel-kpi-clicavel:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.04);
+}
+.painel-resumo .painel-card[data-ir-aba]:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Cards com várias métricas (Estoque): duas colunas no celular */
+@media (max-width: 768px) {
+  .painel-resumo .painel-cards-largos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .painel-resumo .painel-cards-largos .painel-card:nth-child(odd) {
+    border-left: none;
+  }
+}
+@media (min-width: 769px) {
+  .painel-resumo .painel-cards-largos {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
 }

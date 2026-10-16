@@ -2532,3 +2532,41 @@ button.ponto-foto-modal-tags {
   #form-bases .os-form-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   #form-bases button[type="submit"] { width: 100%; }
 }
+
+/* Bases no celular: nada pode passar da largura da tela */
+@media (max-width: 768px) {
+  #form-bases,
+  #form-bases .os-form-grid,
+  #form-bases .bases-upload-grid {
+    min-width: 0;
+    max-width: 100%;
+  }
+  #form-bases .os-form-grid,
+  #form-bases .bases-form-grid,
+  #form-bases .bases-upload-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #form-bases .os-form-item,
+  #form-bases input,
+  #form-bases select,
+  #form-bases textarea {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  /* Material: nome na linha toda; quantidade, unidade e botão abaixo */
+  #form-bases .bases-material-input-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  #form-bases .bases-material-input-row > :first-child {
+    grid-column: 1 / -1;
+  }
+  #form-bases .gestao-modal-acoes,
+  #form-bases .os-form-acoes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #form-bases .gestao-modal-acoes button,
+  #form-bases .os-form-acoes button {
+    width: 100%;
+  }
+}

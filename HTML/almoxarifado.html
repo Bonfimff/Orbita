@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=29" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=32" />
   <link rel="stylesheet" href="../CSS/almoxarifado.css?v=5" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
@@ -77,6 +77,10 @@
     <div id="gerenciamento" class="tab-content active">
       <h2 class="aba-legenda">Painel Geral</h2>
       <hr class="aba-linha">
+      <div class="painel-resumo">
+        <div class="painel-resumo-cabecalho">
+          <span class="painel-resumo-titulo">Resumo do Estoque</span>
+        </div>
       <div class="painel-cards painel-cards-largos">
         <!-- Estoque Principal -->
         <div class="painel-card" data-ir-aba="busca" title="Ver itens em estoque">
@@ -140,6 +144,7 @@
             </ul>
           </div>
         </div>
+      </div>
       </div>
 
       <!-- Agendamento de Entradas no Estoque -->
@@ -1434,7 +1439,7 @@ document.addEventListener('DOMContentLoaded', function() {
   mostrarCamposProdutos();
 });
 </script>
-  <script src="../SCRIPT/geral.js?v=22"></script>
+  <script src="../SCRIPT/geral.js?v=23"></script>
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=9"></script>
   <script src="../SCRIPT/outos.js"></script>

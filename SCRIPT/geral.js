@@ -985,14 +985,22 @@ document.addEventListener('DOMContentLoaded', function () {
     function ajustarTopoDrawer() {
       const barra = document.querySelector('.top-bar');
       const topo = barra ? Math.max(0, Math.round(barra.getBoundingClientRect().bottom)) : 0;
+      // Ancorado em top/bottom (e não em 100vh) para acompanhar a altura
+      // real visível no celular, que muda com a barra do navegador.
       menu.style.top = topo + 'px';
-      menu.style.height = `calc(100vh - ${topo}px)`;
+      menu.style.bottom = '0';
+      menu.style.height = 'auto';
+      menu.style.maxHeight = 'none';
+      overlay.style.top = topo + 'px';
     }
 
     // Limpa o ajuste quando o drawer termina de fechar, para não afetar o
     // menu no layout de desktop.
     menu.addEventListener('transitionend', () => {
-      if (!estaAberto()) { menu.style.top = ''; menu.style.height = ''; }
+      if (!estaAberto()) {
+        menu.style.top = ''; menu.style.bottom = ''; menu.style.height = ''; menu.style.maxHeight = '';
+        overlay.style.top = '';
+      }
     });
 
     function abrir() {
