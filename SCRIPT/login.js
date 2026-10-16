@@ -8,6 +8,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const togglePwd = document.getElementById('toggle-password');
   const pwdInput = document.getElementById('password');
 
+  // Logo do login enchendo de petróleo: enche ao abrir a página e volta a
+  // encher enquanto espera a resposta do servidor ao entrar.
+  const logoEl = document.getElementById('logo-login');
+  let logo = null;
+  if (logoEl && window.LogoLiquido) {
+    const largura = Math.round(logoEl.getBoundingClientRect().width) || 320;
+    logo = window.LogoLiquido.montar(logoEl, { largura, altura: Math.round(largura * 581 / 800) });
+    logo.encherUmaVez();
+  }
+
   //======================================================================================================
   // FUNÇÃO PRINCIPAL: Alternar Visibilidade da Senha
   // Alterna o tipo do campo de senha entre texto e senha, permitindo ao usuário visualizar ou ocultar a senha digitada.
@@ -33,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const username = form.username.value.trim();
     const password = form.password.value;
 
+    const fimEspera = logo ? logo.aguardar() : () => {};
     try {
       const res = await fetch(apiUrl('/login'), {
         method: 'POST',
@@ -58,6 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Erro ao conectar:', err);
       errorEl.textContent = 'Erro ao conectar ao servidor.';
       errorEl.style.display = 'block';
+    } finally {
+      fimEspera();
     }
   });
 });

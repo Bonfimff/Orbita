@@ -1197,7 +1197,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Traços dos ícones (24x24, herdam a cor via currentColor)
   const ICONES = {
     inicio: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>',
-    painel: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>',
+    painel: '<rect x="3" y="3" width="7.5" height="9" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="5.5" rx="1.5"/><rect x="13.5" y="11.5" width="7.5" height="9.5" rx="1.5"/><rect x="3" y="15" width="7.5" height="6" rx="1.5"/>',
     busca: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
     movimentacoes: '<path d="M4 8h13l-3-3"/><path d="M20 16H7l3 3"/>',
     cadastros: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
