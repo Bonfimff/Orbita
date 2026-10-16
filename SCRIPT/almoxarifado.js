@@ -955,9 +955,8 @@ async function editarProdutoComBusca(produtoId) {
 //======================================================================================================
 function preencherFormularioEdicao(produto) {
   try {
-    // Limpa o formulário primeiro
-    const formRetirada = document.getElementById('form-retirada');
-    if (formRetirada) formRetirada.reset();
+    // Limpa o formulário de cadastro antes de preencher
+    const form = document.getElementById('form-cadastro-produto');
     if (form) {
       form.reset();
     }
@@ -1077,6 +1076,8 @@ if (!isNaN(dataObj3.getTime())) {
     console.log('✅ Formulário preenchido com sucesso!');
 
   } catch (error) {
+    console.error('Erro ao preencher o formulário de edição:', error);
+    alert('Não foi possível carregar os dados do produto no formulário.');
   }
 }
 
