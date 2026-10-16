@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=36" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=37" />
   <link rel="stylesheet" href="../CSS/almoxarifado.css?v=6" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
@@ -170,7 +170,7 @@
           </div>
           <p class="agenda-erro agenda-form-largo" id="agenda-erro" hidden></p>
         </form>
-        <div id="agendamento-entradas-info" class="agenda-lista"><p class="utilizacao-vazio">Carregando...</p></div>
+        <div id="agendamento-entradas-info" class="agenda-lista"><div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div></div>
       </div>
 
       <!-- Utilização e devolução de itens -->
@@ -185,7 +185,7 @@
             Confirmação de Utilização de Itens
           </h3>
         </div>
-        <div id="confirmacao-utilizacao-info" class="utilizacao-lista"><p class="utilizacao-vazio">Carregando...</p></div>
+        <div id="confirmacao-utilizacao-info" class="utilizacao-lista"><div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div></div>
       </div>
 
       <!-- Resumo Rápido -->
@@ -1419,7 +1419,7 @@
 
  <script src="../SCRIPT/config.js?v=2"></script>
  <script src="../SCRIPT/xlsx.full.min.js"></script>
- <script src="../SCRIPT/almoxarifado.js?v=3"></script>
+ <script src="../SCRIPT/almoxarifado.js?v=4"></script>
 <script>
 // Exibe campos extras de produtos apenas quando "produtos" está selecionado
 document.addEventListener('DOMContentLoaded', function() {
@@ -1437,10 +1437,11 @@ document.addEventListener('DOMContentLoaded', function() {
   mostrarCamposProdutos();
 });
 </script>
-  <script src="../SCRIPT/geral.js?v=25"></script>
+  <script src="../SCRIPT/logo-liquido.js?v=2"></script>
+  <script src="../SCRIPT/geral.js?v=26"></script>
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>
   <script src="../SCRIPT/gestao-nav.js?v=9"></script>
-  <script src="../SCRIPT/outos.js"></script>
+  <script src="../SCRIPT/outos.js?v=2"></script>
   <script src="../SCRIPT/estoque-contratos.js?v=3"></script>
   <script src="../SCRIPT/pre-tranferencia.js"></script>
 

@@ -153,7 +153,7 @@
   async function carregarUsuarios() {
     const tbody = document.querySelector('#tabela-usuarios tbody');
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="4" style="padding:0.75rem;">Carregando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4"><div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div></td></tr>';
     try {
       const resp = await fetch(window.apiUrl('/usuarios'), { headers: authHeaders() });
       const dados = await resp.json();
@@ -364,7 +364,7 @@
   async function carregarPerfis() {
     const grid = document.getElementById('grid-perfis');
     if (!grid) return;
-    grid.innerHTML = '<p style="padding:0.75rem;">Carregando...</p>';
+    grid.innerHTML = '<div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div>';
     try {
       const resp = await fetch(window.apiUrl('/perfis'), { headers: authHeaders() });
       const dados = await resp.json();
@@ -572,7 +572,7 @@
   async function carregarContratos() {
     const tbody = document.querySelector('#tabela-contratos tbody');
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="5" style="padding:0.75rem;">Carregando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5"><div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div></td></tr>';
     try {
       const resp = await fetch(window.apiUrl('/contratos'), { headers: authHeaders() });
       const dados = await resp.json();

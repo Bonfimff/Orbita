@@ -3016,3 +3016,31 @@ button.btn-fechar-padrao svg {
   width: 16px;
   height: 16px;
 }
+
+/* Carregamento dentro de seções: logo pequeno enchendo de petróleo */
+.carregando-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 12px;
+  color: #7A8794;
+  font-size: 13px;
+}
+.carregando-inline-logo {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  background: #e4e1db;
+  -webkit-mask: url(../IMG/Icone.png) center / contain no-repeat;
+          mask: url(../IMG/Icone.png) center / contain no-repeat;
+  overflow: hidden;
+}
+.carregando-inline-logo canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.painel-resumo .carregando-inline { color: var(--resumo-suave); }
+.painel-resumo .carregando-inline-logo { background: #4a4743; }

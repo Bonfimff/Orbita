@@ -1108,62 +1108,11 @@ function mudarParaAbaCadastro() {
 // Cria e exibe um modal de carregamento com mensagem personalizada.
 //======================================================================================================
 function criarModalLoading(mensagem) {
-  const modalExistente = document.getElementById('modal-loading');
-  if (modalExistente) {
-    modalExistente.remove();
+  // Mesma animação do logo usada ao abrir uma O.S. (geral.js)
+  removerModalLoading();
+  if (typeof window.mostrarCarregandoLogo === 'function') {
+    window.__fimModalLoading = window.mostrarCarregandoLogo();
   }
-
-  const modal = document.createElement('div');
-  modal.id = 'modal-loading';
-  modal.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    font-family: Arial, sans-serif;
-  `;
-
-  modal.innerHTML = `
-    <div style="
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    ">
-      <div style="
-        width: 40px;
-        height: 40px;
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #007bff;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 20px;
-      "></div>
-      <p style="margin: 0; color: #333; font-size: 16px;">${mensagem}</p>
-    </div>
-  `;
-
-  // Adiciona CSS da animação
-  if (!document.getElementById('loading-animation-css')) {
-    const style = document.createElement('style');
-    style.id = 'loading-animation-css';
-    style.textContent = `
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  document.body.appendChild(modal);
 }
 
 //======================================================================================================
@@ -1171,9 +1120,9 @@ function criarModalLoading(mensagem) {
 // Remove o modal de carregamento da tela.
 //======================================================================================================
 function removerModalLoading() {
-  const modal = document.getElementById('modal-loading');
-  if (modal) {
-    modal.remove();
+  if (typeof window.__fimModalLoading === 'function') {
+    window.__fimModalLoading();
+    window.__fimModalLoading = null;
   }
 }
 

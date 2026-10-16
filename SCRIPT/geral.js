@@ -1930,3 +1930,39 @@ window.inicializarAbasPadrao = function inicializarAbasPadrao() {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
   else iniciar();
 })();
+
+// Carregamento dentro de seções: o mesmo logo enchendo de petróleo, em
+// tamanho pequeno. Qualquer elemento .carregando-inline-logo que aparecer na
+// página ganha a animação (precisa de SCRIPT/logo-liquido.js).
+window.htmlCarregandoLogo = function (mensagem) {
+  const div = document.createElement('div');
+  div.textContent = mensagem || 'Carregando...';
+  return '<div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span>'
+    + '<span class="carregando-inline-texto">' + div.innerHTML + '</span></div>';
+};
+
+(function () {
+  const TAMANHO = 34;
+
+  function montar(el) {
+    if (el.dataset.logoMontado || !window.LogoLiquido) return;
+    el.dataset.logoMontado = '1';
+    window.LogoLiquido.montar(el, { largura: TAMANHO, altura: TAMANHO }).aguardar();
+  }
+
+  function varrer(raiz) {
+    if (!raiz || !raiz.querySelectorAll) return;
+    if (raiz.classList && raiz.classList.contains('carregando-inline-logo')) montar(raiz);
+    raiz.querySelectorAll('.carregando-inline-logo').forEach(montar);
+  }
+
+  function iniciar() {
+    varrer(document.body);
+    new MutationObserver(mudancas => {
+      mudancas.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) varrer(n); }));
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();

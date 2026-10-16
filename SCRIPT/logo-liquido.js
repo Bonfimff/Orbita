@@ -126,6 +126,8 @@
     }
 
     function animar(agora) {
+      // elemento saiu da tela (conteúdo carregado substituiu o aviso): para o laço
+      if (!canvas.isConnected) { quadro = 0; return; }
       const dt = Math.min(2.5, (agora - (ultimo || agora)) / 16.67) || 1;
       ultimo = agora;
       let decorrido = agora - inicioCiclo;

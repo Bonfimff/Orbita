@@ -1048,7 +1048,7 @@ function validarCamposObrigatoriosRetirada() {
                 color: #060606;
             `;
             document.body.appendChild(div);
-            div.innerHTML = '<span style="color:#292929;font-weight:bold;">Carregando itens do kit...</span>';
+            div.innerHTML = window.htmlCarregandoLogo ? window.htmlCarregandoLogo('Carregando itens do kit...') : '<span style="color:#292929;font-weight:bold;">Carregando itens do kit...</span>';
             try {
                 const token = localStorage.getItem('token');
                 const resp = await fetch(apiUrl('/kits/itens'), {

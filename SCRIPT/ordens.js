@@ -1503,7 +1503,7 @@ function dataBRParaISO(br) {
 async function carregarCronograma() {
   const lista = document.getElementById('cronograma-lista');
   if (!lista) return;
-  lista.innerHTML = '<p class="cronograma-vazio">Carregando...</p>';
+  lista.innerHTML = '<div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div>';
 
   const dataFiltro = document.getElementById('cronograma-filtro-data')?.value;
   const url = dataFiltro ? osApiUrl(`agendamentos?data=${dataFiltro}`) : osApiUrl('agendamentos');

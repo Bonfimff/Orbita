@@ -113,10 +113,11 @@
   //------------------------------------------------------------------ estados
   function estadoCarregando(elemento, mensagem) {
     if (!elemento) return;
-    elemento.innerHTML =
-      '<div class="rel-estado rel-estado-carregando">'
-      + '<span class="rel-spinner" aria-hidden="true"></span>'
-      + '<span>' + escaparHtml(mensagem || 'Carregando...') + '</span></div>';
+    elemento.innerHTML = window.htmlCarregandoLogo
+      ? window.htmlCarregandoLogo(mensagem || 'Carregando...')
+      : '<div class="rel-estado rel-estado-carregando">'
+        + '<span class="rel-spinner" aria-hidden="true"></span>'
+        + '<span>' + escaparHtml(mensagem || 'Carregando...') + '</span></div>';
   }
 
   function estadoVazio(elemento, titulo, detalhe) {

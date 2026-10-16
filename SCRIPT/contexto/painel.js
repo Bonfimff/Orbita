@@ -118,7 +118,7 @@
     const raiz = alvo();
     if (!raiz) return;
     raiz.innerHTML = '<h4>' + escapar(titulo || 'Contexto Operacional') + '</h4>'
-      + '<ul><li class="ctx-texto">Carregando...</li></ul>';
+      + '<div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div>';
   }
 
   function erro(titulo, mensagem) {
