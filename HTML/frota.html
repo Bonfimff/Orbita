@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=39" />
-  <link rel="stylesheet" href="../CSS/frota.css?v=8" />
+  <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
+  <link rel="stylesheet" href="../CSS/frota.css?v=10" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=1" />
   <link
     rel="stylesheet"
@@ -42,7 +43,7 @@
     <button class="tab-btn" data-tab="manutencao" data-nav-label="Manutenção" data-nav-icone="manutencao">Manutenção</button>
     <button class="tab-btn" data-tab="abastecimento" data-nav-label="Abastecer" data-nav-icone="movimentacoes">Abastecimento</button>
     <button class="tab-btn" data-tab="checklist">Checklist</button>
-    <button class="tab-btn" data-tab="relatorios">Relatórios</button>
+    <button class="tab-btn" data-tab="relatorios" data-permissao="frota_relatorios:ver">Relatórios</button>
     <button class="tab-btn" data-tab="cadastros" data-nav-icone="cadastros">Cadastros</button>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
@@ -445,7 +446,112 @@
 
     </div>
     <div id="relatorios" class="tab-content">
-      <!-- Conteúdo específico da aba Relatórios -->
+      <form class="frota-rel-filtros" id="frota-rel-filtros" autocomplete="off">
+        <div class="frota-rel-campo frota-rel-campo-largo">
+          <label>Período</label>
+          <div class="rel-periodo-chips" id="frota-rel-periodos">
+            <button type="button" class="rel-chip" data-periodo="7d">7 dias</button>
+            <button type="button" class="rel-chip rel-chip-ativo" data-periodo="30d">30 dias</button>
+            <button type="button" class="rel-chip" data-periodo="90d">90 dias</button>
+            <button type="button" class="rel-chip" data-periodo="12m">12 meses</button>
+            <button type="button" class="rel-chip" data-periodo="custom">Personalizado</button>
+          </div>
+        </div>
+        <div class="frota-rel-campo" data-custom hidden>
+          <label for="frota-rel-inicio">De</label>
+          <input type="date" id="frota-rel-inicio">
+        </div>
+        <div class="frota-rel-campo" data-custom hidden>
+          <label for="frota-rel-fim">Até</label>
+          <input type="date" id="frota-rel-fim">
+        </div>
+        <div class="frota-rel-campo">
+          <label for="frota-rel-placa">Veículo</label>
+          <select id="frota-rel-placa"><option value="">Todos</option></select>
+        </div>
+        <div class="frota-rel-campo">
+          <label for="frota-rel-contrato">Contrato</label>
+          <select id="frota-rel-contrato"><option value="">Todos</option></select>
+        </div>
+        <div class="frota-rel-campo">
+          <label for="frota-rel-tipo">Tipo de manutenção</label>
+          <select id="frota-rel-tipo"><option value="">Todos</option></select>
+        </div>
+        <div class="frota-rel-acoes">
+          <button type="button" class="btn-secundario" id="frota-rel-limpar">Limpar</button>
+          <button type="button" class="btn-primario" id="frota-rel-baixar">Baixar tabela</button>
+        </div>
+      </form>
+
+      <div class="painel-resumo">
+        <div class="painel-resumo-cabecalho">
+          <span class="painel-resumo-titulo">Indicadores do período</span>
+          <span class="frota-rel-periodo" id="frota-rel-periodo"></span>
+        </div>
+        <div class="painel-cards" id="frota-rel-kpis"></div>
+      </div>
+
+      <div class="painel-resumo">
+        <div class="painel-resumo-cabecalho">
+          <span class="painel-resumo-titulo">Uso da frota</span>
+        </div>
+        <div class="painel-cards" id="frota-rel-kpis-uso"></div>
+      </div>
+
+      <section class="rel-bloco">
+        <div class="rel-bloco-cabecalho">
+          <h3>Evolução</h3>
+          <small class="rel-ajuda" id="frota-rel-agrupamento"></small>
+        </div>
+        <div class="rel-grafico" id="frota-rel-evolucao"></div>
+      </section>
+
+      <div class="rel-duas-colunas">
+        <section class="rel-bloco">
+          <div class="rel-bloco-cabecalho"><h3>Custo de manutenção por veículo</h3></div>
+          <div class="rel-grafico" id="frota-rel-custo"></div>
+        </section>
+        <section class="rel-bloco">
+          <div class="rel-bloco-cabecalho"><h3>Km rodado em O.S. por veículo</h3></div>
+          <div class="rel-grafico" id="frota-rel-km"></div>
+        </section>
+      </div>
+
+      <div class="rel-duas-colunas">
+        <section class="rel-bloco">
+          <div class="rel-bloco-cabecalho"><h3>Manutenções por tipo</h3></div>
+          <div class="rel-grafico" id="frota-rel-tipos"></div>
+        </section>
+        <section class="rel-bloco">
+          <div class="rel-bloco-cabecalho"><h3>Manutenções por oficina</h3></div>
+          <div class="rel-grafico" id="frota-rel-oficinas"></div>
+        </section>
+      </div>
+
+      <section class="rel-bloco">
+        <div class="rel-bloco-cabecalho"><h3>Resumo por veículo</h3></div>
+        <div class="tabela-responsiva">
+          <table class="estilo-tabela" id="frota-rel-tabela">
+            <thead>
+              <tr>
+                <th>Placa</th>
+                <th>Veículo</th>
+                <th>Status</th>
+                <th>Km atual</th>
+                <th>O.S.</th>
+                <th>Km em O.S.</th>
+                <th>Manutenções</th>
+                <th>Custo</th>
+                <th>Dias parado</th>
+                <th>Abastecimentos</th>
+                <th>Checklists</th>
+                <th>Alertas vencidos</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
     </div>
     <div id="cadastros" class="tab-content">
       <div class="opcoes-abas frota-subabas" role="tablist">
@@ -797,6 +903,9 @@
   ></script>
     <script src="../SCRIPT/config.js?v=2"></script>
     <script src="../SCRIPT/frota.js?v=11"></script>
+    <script src="../SCRIPT/relatorios/api.js?v=2"></script>
+    <script src="../SCRIPT/relatorios/graficos.js?v=1"></script>
+    <script src="../SCRIPT/frota-relatorio.js?v=2"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
   <script src="../SCRIPT/geral.js?v=28"></script>
   <script src="../SCRIPT/ajuda/central.js?v=1"></script>

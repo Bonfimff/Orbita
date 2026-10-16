@@ -1013,3 +1013,25 @@ td .frota-status-badge + small { display: block; margin-top: 3px; }
 .frota-status-rapido button:last-child { border-right: none; }
 .frota-status-rapido button.ativo { background: #1F2D3D; color: #fff; cursor: default; }
 .frota-status-rapido button:disabled:not(.ativo) { opacity: .6; cursor: wait; }
+
+/* ===== Relatório da frota ===== */
+.frota-rel-filtros { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; margin: 4px 0 18px; }
+.frota-rel-campo { display: flex; flex-direction: column; gap: 4px; min-width: 170px; flex: 1 1 170px; max-width: 260px; }
+.frota-rel-campo-largo { max-width: none; flex: 1 1 100%; }
+.frota-rel-campo label { font-size: 13px; font-weight: 600; color: #444; }
+.frota-rel-campo input, .frota-rel-campo select { padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font: inherit; font-size: 14px; background: #fff; }
+.frota-rel-campo input:focus, .frota-rel-campo select:focus { outline: none; border-color: var(--cor-destaque); box-shadow: 0 0 0 2px rgba(71,85,105,.2); }
+.frota-rel-acoes { display: flex; gap: 8px; margin-left: auto; }
+.frota-rel-periodo { font-size: 12px; color: rgba(255,255,255,.7); margin-left: auto; }
+#frota-rel-tabela td.num { text-align: right; white-space: nowrap; }
+#frota-rel-tabela .alerta { color: #c62828; font-weight: 700; }
+@media (max-width: 768px) {
+  .frota-rel-campo { max-width: none; flex: 1 1 100%; }
+  .frota-rel-campo input, .frota-rel-campo select { height: 42px; font-size: 16px; border-radius: 8px; }
+  .frota-rel-acoes { width: 100%; margin-left: 0; }
+  .frota-rel-acoes button { flex: 1; }
+}
+
+@media (max-width: 768px) {
+  #relatorios .painel-resumo .rel-kpi-detalhe { display: none; }
+}
