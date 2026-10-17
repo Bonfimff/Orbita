@@ -46,15 +46,21 @@
     // Pré-carrega os ícones para a troca não piscar.
     TESTE.forEach((d) => { const img = new Image(); img.src = '../IMG/clima/' + d.icone + '.svg'; });
 
-    function mostrarLogo() {
-      cartao.classList.remove('ativa');
-      logo.classList.add('ativa');
-      setTimeout(mostrarClima, TEMPO_LOGO);
-    }
+    // Carrossel: 0 = logo, 1 = previsão. Troca sozinho, e as bolinhas
+    // (ou arrastar para o lado) passam na hora; mexer reinicia o tempo.
+    const faces = [logo, cartao];
+    const TEMPOS = [TEMPO_LOGO, TEMPO_CLIMA];
+    const pontos = document.createElement('div');
+    pontos.className = 'clima-pontos';
+    pontos.setAttribute('role', 'tablist');
+    pontos.innerHTML = ['Logo', 'Previsão do tempo'].map((nome, i) =>
+      `<button type="button" role="tab" aria-label="${nome}" data-face="${i}"></button>`).join('');
+    palco.after(pontos);
 
-    async function mostrarClima() {
-      // Painel escondido (celular) ou aba em segundo plano: não troca.
-      if (!painel.getClientRects().length || getComputedStyle(painel).display === "none" || document.hidden) return setTimeout(mostrarClima, TEMPO_LOGO);
+    let atual = 0;
+    let timer = null;
+
+    async function preencherClima() {
       const p = await previsao();
       cartao.innerHTML = `
         <img class="clima-icone" src="../IMG/clima/${p.icone}.svg" alt="">
@@ -63,12 +69,47 @@
           <span class="clima-condicao">${p.condicao}</span>
           <span class="clima-extra">${p.cidade} · mín ${p.minima}° máx ${p.maxima}°</span>
         </div>`;
-      logo.classList.remove('ativa');
-      cartao.classList.add('ativa');
-      setTimeout(mostrarLogo, TEMPO_CLIMA);
     }
 
-    setTimeout(mostrarClima, 4000);
+    async function irPara(i) {
+      i = (i + faces.length) % faces.length;
+      if (i === 1) await preencherClima();
+      atual = i;
+      faces.forEach((f, k) => f.classList.toggle('ativa', k === i));
+      pontos.querySelectorAll('button').forEach((b, k) => {
+        b.classList.toggle('ativo', k === i);
+        b.setAttribute('aria-selected', String(k === i));
+      });
+      agendar();
+    }
+
+    function agendar() {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        // Painel escondido (celular) ou aba em segundo plano: não troca.
+        const visivel = painel.getClientRects().length && getComputedStyle(painel).display !== 'none' && !document.hidden;
+        if (visivel) irPara(atual + 1); else agendar();
+      }, atual === 0 && !agendar.iniciou ? 4000 : TEMPOS[atual]);
+      agendar.iniciou = true;
+    }
+
+    pontos.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-face]');
+      if (b) irPara(Number(b.dataset.face));
+    });
+
+    // Arrastar (mouse ou dedo) para o lado também passa.
+    let inicioX = null;
+    palco.addEventListener('pointerdown', (e) => { inicioX = e.clientX; });
+    palco.addEventListener('pointerup', (e) => {
+      if (inicioX === null) return;
+      const dx = e.clientX - inicioX;
+      inicioX = null;
+      if (Math.abs(dx) > 30) irPara(atual + (dx < 0 ? 1 : -1));
+    });
+    palco.addEventListener('dragstart', (e) => e.preventDefault());
+
+    irPara(0);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', montar);

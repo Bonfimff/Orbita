@@ -3134,3 +3134,8 @@ label > input[type="checkbox"] {
 .clima-condicao { font-size: 12px; font-weight: 600; color: #334155; }
 .clima-extra { font-size: 10.5px; color: #64748b; margin-top: 2px; }
 @media (prefers-reduced-motion: reduce) { .clima-palco .clima-face { transition: none; } }
+.clima-palco { cursor: grab; touch-action: pan-y; user-select: none; }
+.clima-pontos { display: flex; justify-content: center; gap: 8px; margin: -8px auto 6px; }
+.clima-pontos button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: #cbd5e1; cursor: pointer; transition: width .25s ease, background .25s ease; }
+.clima-pontos button.ativo { width: 20px; border-radius: 4px; background: #1F2D3D; }
+.clima-pontos button:focus-visible { outline: 2px solid var(--cor-destaque); outline-offset: 2px; }
