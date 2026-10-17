@@ -63,21 +63,20 @@
           const pend = (c.pendencias || []).map((p) => `<div class="pendencia">${esc(p.motivo)}</div>`).join('');
           const caps = (c.capacitacoes || []).map((k) => `<li><strong>${esc(k.nome)}</strong><span class="selo ${esc(k.situacao)}">${esc(k.rotulo)}</span>` +
             `<small>${k.certificado ? 'Certificado ' + esc(k.certificado) + ' · ' : ''}${k.validade ? 'válida até ' + k.validade.split('-').reverse().join('/') : 'sem validade informada'}</small></li>`).join('');
-          const situacao = pend || ((c.capacitacoes || []).length ? '<div class="ok">Capacitações exigidas em dia</div>' : '');
+          const situacao = pend || ((c.capacitacoes || []).length ? '<div class="ok">Certificados exigidos em dia</div>' : '');
           aviso.outerHTML = `
             <div class="identidade">
               <img class="foto" src="${esc(c.foto_url || '../IMG/user-icon.png')}" alt="" onerror="this.onerror=null;this.src='../IMG/user-icon.png'">
               <h1>${esc(c.nome)}</h1>
-              ${c.cargo ? `<span class="cargo">${esc(c.cargo)}</span>` : ''}
             </div>
             <dl class="ficha">
-              <div><dt>Matrícula</dt><dd>${esc(c.matricula)}</dd></div>
+              <div><dt>Cargo</dt><dd>${esc(c.cargo || '-')}</dd></div>
               <div><dt>Tipo sanguíneo</dt><dd><span class="sangue ${c.tipo_sanguineo ? '' : 'vazio'}">${esc(c.tipo_sanguineo || '-')}</span></dd></div>
             </dl>
             <section class="caps">
-              <h2>Capacitações</h2>
+              <h2>Certificados</h2>
               ${situacao}
-              ${caps ? `<ul>${caps}</ul>` : '<p style="margin:0;color:#94a3b8;font-size:13px">Nenhuma capacitação cadastrada.</p>'}
+              ${caps ? `<ul>${caps}</ul>` : '<p style="margin:0;color:#94a3b8;font-size:13px">Nenhum certificado cadastrado.</p>'}
             </section>
             <div class="rodape">Consultado em ${esc(c.consultado_em)}</div>`;
         })

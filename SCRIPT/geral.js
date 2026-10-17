@@ -465,19 +465,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         <img id="profile-photo" class="cracha-foto" src="${imagemUsuario || SEM_FOTO}" alt="Foto"
              onerror="this.onerror=null;this.src='${SEM_FOTO}'" title="Clique para ampliar a foto">
         <h3 class="cracha-nome" id="cracha-nome">${nomeInicial}</h3>
-        <span class="cracha-cargo" id="cracha-cargo"></span>
       </div>
       <dl class="cracha-ficha">
-        <div><dt>Usuário</dt><dd id="cracha-usuario">${username || '-'}</dd></div>
-        <div><dt>Matrícula</dt><dd>${userId ? String(userId).padStart(5, '0') : '-'}</dd></div>
-        <div class="cracha-largo"><dt>E-mail</dt><dd id="cracha-email">${usuarioCompleto.email || '-'}</dd></div>
-        <div><dt>Perfil</dt><dd id="cracha-perfil">-</dd></div>
+        <div><dt>Cargo</dt><dd id="cracha-cargo">-</dd></div>
         <div><dt>Tipo sanguíneo</dt><dd><span class="cracha-sangue" id="cracha-sangue">-</span></dd></div>
       </dl>
       <div class="cracha-caps" id="cracha-caps"></div>
       <div class="cracha-qr-linha">
         <div class="cracha-qr" id="cracha-qr" aria-label="QR code do crachá"></div>
-        <span>Aponte a câmera para conferir os dados e as capacitações deste crachá.</span>
       </div>
       <div class="cracha-sessao">
         <span><i class="cracha-online"></i>Online</span>
@@ -511,14 +506,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         const c = dados.conta;
         const preencher = (id, valor) => { const el = modalContent.querySelector('#' + id); if (el) el.textContent = valor || '-'; };
         preencher('cracha-nome', c.nome || c.usuario);
-        preencher('cracha-usuario', c.usuario);
-        preencher('cracha-email', c.email);
-        preencher('cracha-perfil', c.perfil);
+        preencher('cracha-cargo', c.cargo);
         preencher('cracha-sangue', c.tipo_sanguineo);
         modalContent.querySelector('#cracha-sangue').classList.toggle('vazio', !c.tipo_sanguineo);
-        const cargo = modalContent.querySelector('#cracha-cargo');
-        cargo.textContent = c.cargo || '';
-        cargo.hidden = !c.cargo;
         if (c.foto_url && !imagemUsuario) modalContent.querySelector('#profile-photo').src = c.foto_url;
 
         // Capacitações (NR-10, NR-35...) com a situação de cada uma.
@@ -528,7 +518,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const caps = (c.capacitacoes || []).map((k) => `
           <li><strong>${esc(k.nome)}</strong><span class="cracha-cap ${k.situacao}">${esc(k.rotulo)}</span>
           ${k.validade ? `<small>até ${k.validade.split('-').reverse().join('/')}</small>` : ''}</li>`).join('');
-        caixa.innerHTML = (pend || caps) ? `<h4>Capacitações</h4>${pend}${caps ? `<ul>${caps}</ul>` : ''}` : '';
+        caixa.innerHTML = `<h4>Certificados</h4>${pend}${caps ? `<ul>${caps}</ul>` : '<p class="cracha-vazio">Nenhum certificado cadastrado.</p>'}`;
 
         // QR: abre a página pública de verificação deste crachá.
         if (c.cracha_codigo) {
