@@ -492,7 +492,7 @@
     }
 
     const LEGENDAS = {
-      'painel-geral': 'Painel Geral', usuarios: 'Usuários', contratos: 'Contratos',
+      'painel-geral': 'Painel Geral', usuarios: 'Usuários', contratos: 'Contratos', funcionarios: 'Funcionários',
     };
 
     tabs.forEach(tab => {
