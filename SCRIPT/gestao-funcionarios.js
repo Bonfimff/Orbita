@@ -129,6 +129,13 @@
     el('func-usuario').value = selecionado ? String(selecionado) : '';
   }
 
+  // Escalas de revezamento (12x36, 24x48...) precisam de um dia de referência.
+  function mostrarInicioEscala() {
+    const tipo = el('func-escala').value;
+    el('func-escala-inicio-item').hidden = !/^(12x36|24x48|24x72)$/.test(tipo);
+  }
+  document.addEventListener('change', (e) => { if (e.target && e.target.id === 'func-escala') mostrarInicioEscala(); });
+
   function preencher(f) {
     el('func-id').value = f ? f.id : '';
     el('titulo-cadastro-funcionario').textContent = f ? 'Editar funcionário ' + f.nome : 'Novo funcionário';
@@ -141,6 +148,9 @@
     el('func-observacao').value = f ? (f.observacao || '') : '';
     el('func-ativo').checked = f ? !!f.ativo : true;
     el('func-sangue').value = f ? (f.tipo_sanguineo || '') : '';
+    el('func-escala').value = f ? (f.escala_tipo || '') : '';
+    el('func-escala-inicio').value = f ? (f.escala_inicio || '') : '';
+    mostrarInicioEscala();
     const m = (f && f.medicas) || {};
     el('func-med-alergias').value = m.alergias || '';
     el('func-med-condicoes').value = m.condicoes || '';
@@ -209,6 +219,8 @@
       ativo: el('func-ativo').checked,
       observacao: el('func-observacao').value,
       tipo_sanguineo: el('func-sangue').value,
+      escala_tipo: el('func-escala').value,
+      escala_inicio: el('func-escala-inicio').value,
       medicas: {
         alergias: el('func-med-alergias').value,
         condicoes: el('func-med-condicoes').value,

@@ -73,7 +73,7 @@
 
   function pararCronometro() {
     if (cronometroId) { clearInterval(cronometroId); cronometroId = null; }
-    el('jor-status-tempo').textContent = '';
+    el('jor-status-tempo').textContent = '--:--:--';
   }
 
   function iniciarCronometro(desde) {
@@ -110,20 +110,20 @@
 
     if (situacao === 'em_jornada') {
       card.classList.add('jor-status-aberta');
-      texto.textContent = 'EM JORNADA';
+      texto.textContent = 'Em jornada';
       detalhe.textContent = `Início: ${formatarDataHora(jornada.iniciado_em)}`;
       btnPausar.style.display = '';
       btnFinalizar.style.display = '';
       iniciarCronometro(jornada.iniciado_em);
     } else if (situacao === 'em_pausa') {
       card.classList.add('jor-status-pausada');
-      texto.textContent = 'EM PAUSA';
+      texto.textContent = 'Em pausa';
       detalhe.textContent = `Jornada iniciada em ${formatarDataHora(jornada.iniciado_em)}`;
       btnRetomar.style.display = '';
       btnFinalizar.style.display = '';
     } else {
       card.classList.add('jor-status-fora');
-      texto.textContent = 'FORA DE JORNADA';
+      texto.textContent = 'Fora de jornada';
       detalhe.textContent = 'Nenhuma jornada em andamento.';
       btnIniciar.style.display = '';
     }
@@ -276,6 +276,148 @@
     });
   }
 
+  // ---------------------------------------------------------- CALENDÁRIO
+  // Escala da pessoa (do cadastro de funcionário) e feriados nacionais e
+  // municipais deste ano e do próximo.
+  const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho',
+    'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  const cal = { escala: null, feriados: {}, ano: 0, mes: 0, selecionado: null };
+
+  const iso = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const dataLocal = (texto) => { const [a, m, d] = texto.split('-').map(Number); return new Date(a, m - 1, d); };
+
+  function trabalhaNo(d) {
+    const e = cal.escala;
+    if (!e) return false;
+    const dia = d.getDay();
+    if (e.tipo === '5x2') return dia >= 1 && dia <= 5;
+    if (e.tipo === '6x1') return dia >= 1 && dia <= 6;
+    if (!e.ciclo || !e.inicio) return false;
+    const diff = Math.round((d - dataLocal(e.inicio)) / 86400000);
+    return ((diff % e.ciclo) + e.ciclo) % e.ciclo === 0;
+  }
+
+  function limitesNavegacao() {
+    const hoje = new Date();
+    return { min: hoje.getFullYear() * 12, max: (hoje.getFullYear() + 1) * 12 + 11 };
+  }
+
+  function desenharCalendario() {
+    const { ano, mes } = cal;
+    el('jor-cal-mes').textContent = MESES[mes] + ' de ' + ano;
+    const lim = limitesNavegacao();
+    el('jor-cal-ant').disabled = ano * 12 + mes <= lim.min;
+    el('jor-cal-prox').disabled = ano * 12 + mes >= lim.max;
+
+    const primeiro = new Date(ano, mes, 1);
+    const total = new Date(ano, mes + 1, 0).getDate();
+    const hojeIso = iso(new Date());
+    let html = '';
+    for (let i = 0; i < primeiro.getDay(); i++) html += '<span class="jor-cal-dia fora"></span>';
+    for (let d = 1; d <= total; d++) {
+      const data = new Date(ano, mes, d);
+      const chave = iso(data);
+      const fer = cal.feriados[chave];
+      const classes = ['jor-cal-dia'];
+      if (data.getDay() === 0 || data.getDay() === 6) classes.push('fds');
+      if (trabalhaNo(data)) classes.push('escala');
+      if (fer) classes.push('feriado', fer.tipo);
+      if (chave === hojeIso) classes.push('hoje');
+      if (chave === cal.selecionado) classes.push('selecionado');
+      const titulo = fer ? fer.nome + (fer.tipo === 'municipal' ? ' (municipal)' : ' (nacional)') : '';
+      html += '<button type="button" class="' + classes.join(' ') + '" data-dia="' + chave + '"' +
+        (titulo ? ' title="' + escapar(titulo) + '"' : ' tabindex="-1"') + '>' + d + '</button>';
+    }
+    el('jor-cal-dias').innerHTML = html;
+
+    const prefixo = ano + '-' + String(mes + 1).padStart(2, '0');
+    el('jor-cal-lista').innerHTML = Object.keys(cal.feriados).filter((k) => k.startsWith(prefixo)).sort()
+      .map((k) => '<li' + (k === cal.selecionado ? ' class="ativo"' : '') + '><b>' + k.slice(8) + '</b>' + escapar(cal.feriados[k].nome) +
+        '<small>' + (cal.feriados[k].tipo === 'municipal' ? 'Municipal' : 'Nacional') + '</small></li>').join('');
+
+    el('jor-cal-info').textContent = cal.escala
+      ? 'Escala ' + cal.escala.rotulo + '.'
+      : 'Sua escala ainda não foi cadastrada. Peça para incluírem no seu cadastro de funcionário.';
+  }
+
+  function abrirCalendario() {
+    const hoje = new Date();
+    cal.ano = hoje.getFullYear(); cal.mes = hoje.getMonth(); cal.selecionado = null;
+    desenharCalendario();
+    el('jor-cal').hidden = false;
+    if (window.travarRolagemFundo) window.travarRolagemFundo(true);
+  }
+
+  function fecharCalendario() {
+    if (el('jor-cal').hidden) return;
+    el('jor-cal').hidden = true;
+    if (window.travarRolagemFundo) window.travarRolagemFundo(false);
+  }
+
+  function mudarMes(passo) {
+    const alvo = cal.ano * 12 + cal.mes + passo;
+    const lim = limitesNavegacao();
+    if (alvo < lim.min || alvo > lim.max) return;
+    cal.ano = Math.floor(alvo / 12); cal.mes = alvo % 12; cal.selecionado = null;
+    desenharCalendario();
+  }
+
+  function ligarCalendario() {
+    el('jor-btn-calendario').addEventListener('click', abrirCalendario);
+    el('jor-cal-fechar').addEventListener('click', fecharCalendario);
+    el('jor-cal-ant').addEventListener('click', () => mudarMes(-1));
+    el('jor-cal-prox').addEventListener('click', () => mudarMes(1));
+    el('jor-cal').addEventListener('click', (e) => { if (e.target === el('jor-cal')) fecharCalendario(); });
+    el('jor-cal-dias').addEventListener('click', (e) => {
+      const dia = e.target.closest('.feriado');
+      if (!dia) return;
+      cal.selecionado = cal.selecionado === dia.dataset.dia ? null : dia.dataset.dia;
+      desenharCalendario();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (el('jor-cal').hidden) return;
+      if (e.key === 'Escape') fecharCalendario();
+      else if (e.key === 'ArrowLeft') mudarMes(-1);
+      else if (e.key === 'ArrowRight') mudarMes(1);
+    });
+    // Arrastar para o lado troca o mês (celular).
+    let x0 = null;
+    el('jor-cal-dias').addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+    el('jor-cal-dias').addEventListener('touchend', (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0; x0 = null;
+      if (Math.abs(dx) > 50) mudarMes(dx < 0 ? 1 : -1);
+    });
+  }
+
+  function preencherHoje() {
+    const hoje = new Date();
+    const hojeIso = iso(hoje);
+    el('jor-hoje-data').textContent = hoje.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    el('jor-hoje-escala').innerHTML = cal.escala
+      ? (trabalhaNo(hoje) ? '<i class="lg-escala"></i>Dia de trabalho na sua escala (' + escapar(cal.escala.tipo) + ')'
+        : '<i style="background:#e2e8f0"></i>Folga na sua escala (' + escapar(cal.escala.tipo) + ')')
+      : '<i style="background:#e2e8f0"></i>Escala não cadastrada';
+    const fer = cal.feriados[hojeIso];
+    el('jor-hoje-feriado').innerHTML = fer ? '<i class="lg-' + fer.tipo + '" style="border-radius:50%"></i>Feriado: ' + escapar(fer.nome) : '';
+    const proximo = Object.keys(cal.feriados).sort().find((k) => k > hojeIso);
+    el('jor-proximo-feriado').textContent = proximo
+      ? 'Próximo feriado: ' + cal.feriados[proximo].nome + ', ' + dataLocal(proximo).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })
+      : '';
+  }
+
+  async function carregarCalendario() {
+    try {
+      const resp = await chamar('GET', '/jornada/calendario');
+      cal.escala = resp.dados.escala || null;
+      cal.feriados = {};
+      (resp.dados.feriados || []).forEach((f) => { cal.feriados[f.data] = f; });
+    } catch (e) {
+      console.error('[jornada] calendario', e);
+    }
+    preencherHoje();
+  }
+
   function inicializar() {
     if (typeof window.inicializarAbasPadrao === 'function') window.inicializarAbasPadrao();
     if (!localStorage.getItem('token')) return;
@@ -283,11 +425,20 @@
     ligarAcoesAdmin();
     carregarEstadoAtual();
     carregarMeuHistorico();
-    carregarPainelAdmin();
+    ligarCalendario();
+    carregarCalendario();
 
-    document.querySelectorAll('.tab-btn[data-tab="administracao"]').forEach((botao) => {
-      botao.addEventListener('click', () => { buscarHistoricoAdmin(); });
-    });
+    // Administração: só para quem tem a permissão (a API também bloqueia).
+    const iniciarAdmin = (info) => {
+      const matriz = info && info.modulos && info.modulos.permissoes;
+      if (matriz && !(matriz.jornada_admin || {}).ver) return;
+      carregarPainelAdmin();
+      document.querySelectorAll('.tab-btn[data-tab="administracao"]').forEach((botao) => {
+        botao.addEventListener('click', () => { buscarHistoricoAdmin(); });
+      });
+    };
+    if (typeof window.obterModulos === 'function') window.obterModulos().then(iniciarAdmin, () => iniciarAdmin(null));
+    else iniciarAdmin();
   }
 
   // 'DOMContentLoaded' pode ja ter disparado quando este script roda

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=58" />
-  <link rel="stylesheet" href="../CSS/jornada.css?v=1" />
+  <link rel="stylesheet" href="../CSS/jornada.css?v=2" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
@@ -15,7 +15,7 @@
   <!-- Menu lateral -->
   <div class="menu">
     <button class="tab-btn active" data-tab="meu-painel" data-nav-label="Meu Painel" data-nav-icone="painel">Meu Painel</button>
-    <button class="tab-btn" data-tab="administracao" data-nav-label="Administração" data-nav-icone="usuarios">Administração</button>
+    <button class="tab-btn" data-tab="administracao" data-permissao="jornada_admin:ver" data-nav-label="Administração" data-nav-icone="usuarios">Administração</button>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
         <img src="../IMG/configuracoes.png" alt="Configurações">
@@ -55,26 +55,39 @@
       <h2 class="aba-legenda">Minha Jornada</h2>
       <hr class="aba-linha">
 
-      <div id="jor-status-card" class="jor-status-card jor-status-fora">
-        <div class="jor-status-titulo">
-          <span id="jor-status-icone">●</span>
-          <span id="jor-status-texto">FORA DE JORNADA</span>
-        </div>
-        <div class="jor-status-detalhe" id="jor-status-detalhe">Nenhuma jornada em andamento.</div>
-        <div class="jor-status-tempo" id="jor-status-tempo"></div>
+      <div class="jor-grade">
+        <section id="jor-status-card" class="jor-cartao jor-status-card jor-status-fora">
+          <div class="jor-status-topo">
+            <span class="jor-estado"><span class="jor-estado-ponto"></span><span id="jor-status-texto">Fora de jornada</span></span>
+            <button type="button" id="jor-btn-calendario" class="jor-btn-contorno">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+              Ver calendário
+            </button>
+          </div>
+          <div class="jor-status-tempo" id="jor-status-tempo">--:--:--</div>
+          <div class="jor-status-detalhe" id="jor-status-detalhe">Nenhuma jornada em andamento.</div>
 
-        <div class="jor-acoes">
-          <button id="jor-btn-iniciar" class="jor-btn jor-btn-iniciar">Iniciar Jornada</button>
-          <button id="jor-btn-pausar" class="jor-btn jor-btn-pausar" style="display:none">Pausar</button>
-          <button id="jor-btn-retomar" class="jor-btn jor-btn-retomar" style="display:none">Retomar</button>
-          <button id="jor-btn-finalizar" class="jor-btn jor-btn-finalizar" style="display:none">Finalizar Jornada</button>
-        </div>
-        <div id="jor-mensagem" class="jor-mensagem"></div>
+          <div class="jor-acoes">
+            <button id="jor-btn-iniciar" class="jor-btn jor-btn-principal">Iniciar jornada</button>
+            <button id="jor-btn-pausar" class="jor-btn jor-btn-secundario" style="display:none">Pausar</button>
+            <button id="jor-btn-retomar" class="jor-btn jor-btn-principal" style="display:none">Retomar</button>
+            <button id="jor-btn-finalizar" class="jor-btn jor-btn-perigo" style="display:none">Finalizar jornada</button>
+          </div>
+          <div id="jor-mensagem" class="jor-mensagem"></div>
+        </section>
+
+        <section class="jor-cartao jor-hoje">
+          <h3 class="jor-cartao-titulo">Hoje</h3>
+          <div id="jor-hoje-data" class="jor-hoje-data"></div>
+          <div id="jor-hoje-escala" class="jor-hoje-linha"></div>
+          <div id="jor-hoje-feriado" class="jor-hoje-linha"></div>
+          <div id="jor-proximo-feriado" class="jor-hoje-linha jor-suave"></div>
+        </section>
       </div>
 
       <h3 class="jor-subtitulo">Meu histórico recente</h3>
-      <div class="jor-tabela-wrap">
-        <table class="jor-tabela" id="jor-tabela-historico">
+      <div class="tabela-responsiva">
+        <table class="estilo-tabela jor-tabela" id="jor-tabela-historico">
           <thead>
             <tr>
               <th>Início</th>
@@ -90,13 +103,13 @@
     </div>
 
     <!-- ===== ABA: ADMINISTRAÇÃO ===== -->
-    <div id="administracao" class="tab-content">
+    <div id="administracao" class="tab-content" data-permissao="jornada_admin:ver">
       <h2 class="aba-legenda">Administração de Jornadas</h2>
       <hr class="aba-linha">
 
       <h3 class="jor-subtitulo">Funcionários em jornada agora</h3>
-      <div class="jor-tabela-wrap">
-        <table class="jor-tabela" id="jor-tabela-painel">
+      <div class="tabela-responsiva">
+        <table class="estilo-tabela jor-tabela" id="jor-tabela-painel">
           <thead>
             <tr>
               <th>Funcionário</th>
@@ -111,7 +124,7 @@
       </div>
 
       <h3 class="jor-subtitulo">Histórico / busca</h3>
-      <div class="jor-filtros">
+      <div class="jor-cartao jor-filtros">
         <input type="text" id="jor-filtro-usuario" placeholder="ID do funcionário">
         <select id="jor-filtro-status">
           <option value="">Todos os status</option>
@@ -122,10 +135,10 @@
         </select>
         <input type="date" id="jor-filtro-inicio">
         <input type="date" id="jor-filtro-fim">
-        <button id="jor-btn-buscar" class="jor-btn jor-btn-iniciar">Buscar</button>
+        <button id="jor-btn-buscar" class="jor-btn jor-btn-principal">Buscar</button>
       </div>
-      <div class="jor-tabela-wrap">
-        <table class="jor-tabela" id="jor-tabela-busca">
+      <div class="tabela-responsiva">
+        <table class="estilo-tabela jor-tabela" id="jor-tabela-busca">
           <thead>
             <tr>
               <th>Funcionário</th>
@@ -154,7 +167,29 @@
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
   <script src="../SCRIPT/ajuda/central.js?v=11"></script>
   <script src="../SCRIPT/gestao-nav.js?v=10"></script>
-  <script src="../SCRIPT/jornada.js"></script>
+  <script src="../SCRIPT/jornada.js?v=2"></script>
+
+  <!-- Calendário: escala e feriados -->
+  <div id="jor-cal" class="jor-cal-fundo" hidden>
+    <div class="jor-cal" role="dialog" aria-modal="true" aria-labelledby="jor-cal-mes">
+      <div class="jor-cal-topo">
+        <button type="button" class="jor-cal-nav" id="jor-cal-ant" aria-label="Mês anterior">&#8249;</button>
+        <h3 id="jor-cal-mes"></h3>
+        <button type="button" class="jor-cal-nav" id="jor-cal-prox" aria-label="Próximo mês">&#8250;</button>
+        <button type="button" class="jor-cal-fechar" id="jor-cal-fechar" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="jor-cal-semana"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
+      <div class="jor-cal-dias" id="jor-cal-dias"></div>
+      <div class="jor-cal-legenda">
+        <span><i class="lg-escala"></i>Dia de escala</span>
+        <span><i class="lg-nacional"></i>Feriado nacional</span>
+        <span><i class="lg-municipal"></i>Feriado municipal</span>
+        <span><i class="lg-hoje"></i>Hoje</span>
+      </div>
+      <div class="jor-cal-info" id="jor-cal-info"></div>
+      <ul class="jor-cal-lista" id="jor-cal-lista"></ul>
+    </div>
+  </div>
 
   <!-- Painel notificação -->
   <div id="info-modal" class="modal" style="display: none;">

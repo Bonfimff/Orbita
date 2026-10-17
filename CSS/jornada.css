@@ -1,126 +1,176 @@
-/* Painel de Jornada Operacional (Fase 10) - so o que e especifico deste
-   modulo; layout de pagina (menu/top-bar/content) vem de geral.css. */
+/* Jornada Operacional: só o que é deste módulo. Layout (menu, barra, tabelas
+   .estilo-tabela) vem de geral.css, para manter a mesma cara das outras telas. */
 
-.jor-status-card {
-  border: 1px solid var(--cor-borda);
-  border-radius: 10px;
-  padding: 24px;
-  max-width: 520px;
-  margin-bottom: 28px;
-  background-color: var(--cor-fundo-alt);
+.jor-grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-bottom: 8px;
 }
 
-.jor-status-fora { border-left: 6px solid var(--cor-destaque); }
-.jor-status-aberta { border-left: 6px solid var(--cor-sucesso); }
-.jor-status-pausada { border-left: 6px solid var(--cor-aviso); }
+.jor-cartao {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+}
 
-.jor-status-titulo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.3rem;
+.jor-cartao-titulo {
+  margin: 0 0 10px;
+  font-size: 12px;
   font-weight: 700;
-  color: var(--cor-texto);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #64748b;
 }
 
-.jor-status-fora #jor-status-icone { color: var(--cor-destaque); }
-.jor-status-aberta #jor-status-icone { color: var(--cor-sucesso); }
-.jor-status-pausada #jor-status-icone { color: var(--cor-aviso); }
-
-.jor-status-detalhe {
-  margin-top: 6px;
-  color: var(--cor-destaque);
-  font-size: 0.95rem;
+/* ---- Estado da jornada ---- */
+.jor-status-card { position: relative; overflow: hidden; }
+.jor-status-card::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #cbd5e1;
 }
+.jor-status-aberta::before { background: var(--cor-sucesso); }
+.jor-status-pausada::before { background: var(--cor-aviso); }
+
+.jor-status-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+.jor-estado {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 12px; border-radius: 999px; background: #f1f5f9;
+  font-size: 13px; font-weight: 700; color: #334155;
+}
+.jor-estado-ponto { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+.jor-status-aberta .jor-estado { background: rgba(46, 125, 50, .1); color: var(--cor-sucesso); }
+.jor-status-aberta .jor-estado-ponto { background: var(--cor-sucesso); animation: jor-pulso 1.6s ease-in-out infinite; }
+.jor-status-pausada .jor-estado { background: rgba(237, 108, 2, .1); color: var(--cor-aviso); }
+.jor-status-pausada .jor-estado-ponto { background: var(--cor-aviso); }
+@keyframes jor-pulso { 50% { opacity: .35; } }
 
 .jor-status-tempo {
-  margin-top: 10px;
-  font-size: 1.6rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-.jor-acoes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
   margin-top: 18px;
+  font-size: 44px; line-height: 1; font-weight: 700; letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums; color: var(--cor-destaque);
 }
+.jor-status-fora .jor-status-tempo { color: #cbd5e1; }
+.jor-status-detalhe { margin-top: 8px; color: #64748b; font-size: 14px; }
+
+.jor-acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
 
 .jor-btn {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  color: #fff;
+  padding: 10px 18px; border: 1px solid transparent; border-radius: 8px;
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s;
 }
-
-.jor-btn-iniciar { background-color: var(--cor-sucesso); }
-.jor-btn-pausar { background-color: var(--cor-aviso); }
-.jor-btn-retomar { background-color: var(--cor-primaria); }
-.jor-btn-finalizar { background-color: var(--cor-erro); }
-.jor-btn-admin { background-color: var(--cor-destaque); padding: 6px 12px; font-size: 0.85rem; }
-.jor-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.jor-mensagem {
-  margin-top: 12px;
-  font-size: 0.9rem;
+.jor-btn-principal { background: var(--cor-destaque); color: #fff; }
+.jor-btn-principal:hover { background: var(--cor-destaque-escura); }
+.jor-btn-secundario { background: #fff; color: var(--cor-destaque); border-color: #d5dbe3; }
+.jor-btn-secundario:hover { border-color: var(--cor-destaque); }
+.jor-btn-perigo { background: #fff; color: var(--cor-erro); border-color: #f3c9c9; }
+.jor-btn-perigo:hover { background: #fff5f5; }
+.jor-btn-admin {
+  padding: 5px 10px; font-size: 12px; background: #fff; color: var(--cor-destaque); border-color: #d5dbe3;
 }
+.jor-btn-admin:hover { border-color: var(--cor-primaria); color: var(--cor-primaria-escura); }
+.jor-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.jor-btn-contorno {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 12px; border: 1px solid #d5dbe3; border-radius: 8px; background: #fff;
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--cor-destaque); cursor: pointer;
+}
+.jor-btn-contorno:hover { border-color: var(--cor-primaria); color: var(--cor-primaria-escura); }
+
+.jor-mensagem { margin-top: 12px; font-size: 13px; min-height: 1em; }
 .jor-mensagem.erro { color: var(--cor-erro); }
 .jor-mensagem.sucesso { color: var(--cor-sucesso); }
 
-.jor-subtitulo {
-  margin: 22px 0 10px;
-  color: var(--cor-texto);
-}
+/* ---- Hoje ---- */
+.jor-hoje-data { font-size: 20px; font-weight: 700; color: var(--cor-destaque); margin-bottom: 12px; }
+.jor-hoje-data::first-letter { text-transform: uppercase; }
+.jor-hoje-linha { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #334155; margin-top: 8px; }
+.jor-hoje-linha:empty { display: none; }
+.jor-hoje-linha i { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+.jor-suave { color: #64748b; font-size: 13px; }
 
-.jor-tabela-wrap {
-  overflow-x: auto;
-  border: 1px solid var(--cor-borda);
-  border-radius: 8px;
-}
+.jor-subtitulo { margin: 26px 0 10px; font-size: 15px; font-weight: 700; color: var(--cor-destaque); }
 
-.jor-tabela {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
-.jor-tabela th, .jor-tabela td {
-  text-align: left;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--cor-borda);
-  white-space: nowrap;
-}
-
-.jor-tabela th {
-  background-color: var(--cor-fundo-alt);
-  font-weight: 600;
-}
+.jor-tabela td { white-space: nowrap; }
 
 .jor-badge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #fff;
+  display: inline-block; padding: 2px 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; background: #f1f5f9; color: #475569;
 }
-.jor-badge-aberta { background-color: var(--cor-sucesso); }
-.jor-badge-pausada { background-color: var(--cor-aviso); }
-.jor-badge-encerrada { background-color: var(--cor-destaque); }
-.jor-badge-cancelada { background-color: var(--cor-erro); }
+.jor-badge-aberta { background: rgba(46, 125, 50, .1); color: var(--cor-sucesso); }
+.jor-badge-pausada { background: rgba(237, 108, 2, .1); color: var(--cor-aviso); }
+.jor-badge-cancelada { background: rgba(198, 40, 40, .08); color: var(--cor-erro); }
 
-.jor-filtros {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
+.jor-filtros { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; padding: 14px; }
 .jor-filtros input, .jor-filtros select {
-  padding: 8px 10px;
-  border: 1px solid var(--cor-borda);
-  border-radius: 6px;
+  padding: 9px 10px; border: 1px solid #d5dbe3; border-radius: 8px; font: inherit; font-size: 14px; background: #fff;
+}
+
+/* ---- Calendário ---- */
+.jor-cal-fundo {
+  position: fixed; inset: 0; z-index: var(--z-modal);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: rgba(15, 23, 42, .45); backdrop-filter: blur(4px);
+}
+.jor-cal-fundo[hidden] { display: none; }
+.jor-cal {
+  width: 100%; max-width: 400px; max-height: 92vh; overflow-y: auto;
+  background: #fff; border-radius: 16px; padding: 18px; box-shadow: 0 20px 50px rgba(15, 23, 42, .25);
+}
+.jor-cal-topo { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+.jor-cal-topo h3 { flex: 1; text-align: center; margin: 0; font-size: 16px; font-weight: 700; color: var(--cor-destaque); }
+.jor-cal-topo h3::first-letter { text-transform: uppercase; }
+.jor-cal-nav, .jor-cal-fechar {
+  width: 34px; height: 34px; border: 0; border-radius: 8px; background: transparent;
+  font-size: 22px; line-height: 1; color: #475569; cursor: pointer;
+}
+.jor-cal-nav:hover, .jor-cal-fechar:hover { background: #f1f5f9; }
+.jor-cal-nav:disabled { opacity: .3; cursor: default; background: transparent; }
+.jor-cal-fechar { margin-left: 4px; }
+
+.jor-cal-semana, .jor-cal-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.jor-cal-semana span { text-align: center; font-size: 11px; font-weight: 700; color: #94a3b8; padding: 4px 0; }
+
+.jor-cal-dia {
+  position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 10px; background: transparent; font: inherit; font-size: 14px; color: #334155; cursor: default;
+}
+.jor-cal-dia.fora { visibility: hidden; }
+.jor-cal-dia.fds { color: #94a3b8; }
+.jor-cal-dia.escala { background: rgba(168, 134, 79, .14); color: var(--cor-primaria-escura); font-weight: 700; }
+.jor-cal-dia.feriado { cursor: pointer; }
+.jor-cal-dia.feriado::after {
+  content: ""; position: absolute; bottom: 5px; left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%;
+}
+.jor-cal-dia.nacional::after { background: var(--cor-erro); }
+.jor-cal-dia.municipal::after { background: #2563eb; }
+.jor-cal-dia.hoje { box-shadow: inset 0 0 0 2px var(--cor-destaque); }
+.jor-cal-dia.selecionado { background: var(--cor-destaque); color: #fff; }
+
+.jor-cal-legenda { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 14px; font-size: 12px; color: #64748b; }
+.jor-cal-legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.jor-cal-legenda i { width: 10px; height: 10px; border-radius: 3px; }
+.lg-escala { background: rgba(168, 134, 79, .35); }
+.lg-nacional { background: var(--cor-erro); border-radius: 50% !important; }
+.lg-municipal { background: #2563eb; border-radius: 50% !important; }
+.lg-hoje { box-shadow: inset 0 0 0 2px var(--cor-destaque); }
+
+.jor-cal-info { margin-top: 12px; font-size: 13px; color: #64748b; }
+.jor-cal-info:empty { display: none; }
+.jor-cal-lista { list-style: none; margin: 12px 0 0; padding: 12px 0 0; border-top: 1px solid #eef1f4; }
+.jor-cal-lista:empty { display: none; }
+.jor-cal-lista li { display: flex; gap: 10px; align-items: baseline; font-size: 13px; color: #334155; padding: 4px 0; }
+.jor-cal-lista b { min-width: 22px; font-variant-numeric: tabular-nums; color: var(--cor-destaque); }
+.jor-cal-lista small { margin-left: auto; color: #94a3b8; font-size: 11px; }
+.jor-cal-lista li.ativo { color: var(--cor-destaque); font-weight: 700; }
+
+@media (max-width: 768px) {
+  .jor-grade { grid-template-columns: 1fr; }
+  .jor-status-tempo { font-size: 38px; }
+  .jor-acoes .jor-btn { flex: 1 1 auto; }
+  .jor-cal-fundo { align-items: flex-end; padding: 0; }
+  .jor-cal { max-width: none; border-radius: 16px 16px 0 0; padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
 }
