@@ -54,7 +54,7 @@
   </main>
 
   <script src="../SCRIPT/config.js?v=2"></script>
-  <script src="../SCRIPT/protecao-print.js?v=1"></script>
+  <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script>
     (function () {
       const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -108,6 +108,8 @@
             validade.textContent = 'válido por ' + String(Math.floor(resta / 60)).padStart(2, '0') + ':' + String(resta % 60).padStart(2, '0');
             if (resta > 0) return;
             clearInterval(relogio);
+            // Link destruído: some da barra de endereço e do histórico.
+            try { history.replaceState(null, '', location.pathname); } catch (err) { /* sem histórico */ }
             const cartao = document.getElementById('cartao');
             cartao.querySelectorAll(':scope > :not(.topo)').forEach((n) => n.remove());
             cartao.insertAdjacentHTML('beforeend', '<div class="aviso">Este QR expirou. Peça para abrir o crachá de novo e ler o QR atualizado.</div>');
@@ -115,7 +117,7 @@
           const relogio = setInterval(tique, 1000);
           tique();
         })
-        .catch((e) => { const a = document.getElementById('aviso'); if (a) a.textContent = e.message || 'Não foi possível consultar o crachá.'; });
+        .catch((e) => { try { history.replaceState(null, '', location.pathname); } catch (err) { /* sem histórico */ } const a = document.getElementById('aviso'); if (a) a.textContent = e.message || 'Não foi possível consultar o crachá.'; });
     })();
   </script>
 </body>

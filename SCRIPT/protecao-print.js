@@ -33,15 +33,27 @@
     const mostrar = () => alvo.classList.remove('protegido-oculto');
     const visibilidade = () => (document.hidden ? esconder() : mostrar());
     const tecla = (e) => {
+      // Copiar, imprimir, salvar e selecionar tudo ficam bloqueados.
+      const k = String(e.key || '').toLowerCase();
+      if ((e.ctrlKey || e.metaKey) && ['c', 'p', 's', 'a', 'x', 'u'].includes(k) && !(campo(e.target) && k !== 'p' && k !== 's')) {
+        e.preventDefault();
+        return;
+      }
       if (e.key === 'PrintScreen' || e.keyCode === 44) {
         esconder();
         try { navigator.clipboard && navigator.clipboard.writeText(''); } catch (err) { /* sem permissão */ }
         setTimeout(mostrar, 1500);
       }
     };
-    const bloquear = (e) => { if (alvo.contains(e.target)) e.preventDefault(); };
+    const campo = (el) => el && el.closest && el.closest('input, textarea, select');
+    const bloquear = (e) => { if (alvo.contains(e.target) && !campo(e.target)) e.preventDefault(); };
 
+    // Só mostra com a página em primeiro plano e com foco (ferramentas de
+    // recorte tiram o foco antes de capturar).
+    if (!document.hasFocus()) esconder();
+    const vigia = setInterval(() => { if (!document.hasFocus() || document.hidden) esconder(); }, 300);
     window.addEventListener('blur', esconder);
+    window.addEventListener('pagehide', esconder);
     window.addEventListener('focus', mostrar);
     document.addEventListener('visibilitychange', visibilidade);
     document.addEventListener('keyup', tecla);
@@ -49,8 +61,12 @@
     document.addEventListener('contextmenu', bloquear);
     document.addEventListener('copy', bloquear);
     document.addEventListener('dragstart', bloquear);
+    document.addEventListener('cut', bloquear);
+    document.addEventListener('selectstart', bloquear);
 
     return function desligar() {
+      clearInterval(vigia);
+      window.removeEventListener('pagehide', esconder);
       window.removeEventListener('blur', esconder);
       window.removeEventListener('focus', mostrar);
       document.removeEventListener('visibilitychange', visibilidade);
@@ -59,6 +75,8 @@
       document.removeEventListener('contextmenu', bloquear);
       document.removeEventListener('copy', bloquear);
       document.removeEventListener('dragstart', bloquear);
+      document.removeEventListener('cut', bloquear);
+      document.removeEventListener('selectstart', bloquear);
     };
   }
 
@@ -68,6 +86,7 @@
     estilo.id = 'protecao-print-estilo';
     estilo.textContent = `
       .protegido-print { position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+      .protegido-print input, .protegido-print textarea, .protegido-print select { -webkit-user-select: text; user-select: text; }
       .protegido-print img { -webkit-user-drag: none; pointer-events: auto; }
       .protegido-marca { position: absolute; inset: 0; z-index: 5; pointer-events: none; overflow: hidden;
         display: flex; flex-wrap: wrap; align-content: flex-start; gap: 34px 26px; padding: 18px; transform: rotate(-24deg) scale(1.4);
