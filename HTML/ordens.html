@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=61" />
-  <link rel="stylesheet" href="../CSS/ordens.css?v=40" />
+  <link rel="stylesheet" href="../CSS/ordens.css?v=41" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
   <link rel="stylesheet" href="../CSS/cadastros.css?v=2" />
+  <link rel="stylesheet" href="../CSS/explorador.css?v=1" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Ordens de Serviço</title>
 </head>
@@ -679,14 +680,7 @@
       </section>
 
       <section data-eqi-painel="arquivos" hidden>
-        <div class="eqi-pastas" id="eqi-pastas"></div>
-        <label class="eqi-soltar" id="eqi-soltar" hidden>
-          <input type="file" id="eqi-arquivos" class="sem-botao-upload" multiple hidden>
-          <span><strong>Enviar arquivos</strong> para <span id="eqi-pasta-nome"></span> (ou arraste aqui)</span>
-          <small>PDF, imagem, Word, Excel, TXT ou ZIP, até 10 MB cada.</small>
-        </label>
-        <div class="eqi-progresso" id="eqi-progresso"></div>
-        <ul class="eqi-lista-arquivos" id="eqi-lista-arquivos"></ul>
+        <div id="eqi-explorador"></div>
       </section>
 
       <section data-eqi-painel="os" hidden>
@@ -710,7 +704,7 @@
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=21"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=22"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="../SCRIPT/operacional/base-equipamentos.js?v=1"></script>
@@ -723,7 +717,8 @@
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
   <script src="../SCRIPT/cadastros/equipamentos.js?v=5"></script>
-  <script src="../SCRIPT/operacional/equipamentos-info.js?v=3"></script>
+  <script src="../SCRIPT/operacional/explorador.js?v=1"></script>
+  <script src="../SCRIPT/operacional/equipamentos-info.js?v=4"></script>
 
   <!-- Modal de informações -->
   <div id="info-modal" class="modal" style="display: none;">

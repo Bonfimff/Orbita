@@ -1,0 +1,102 @@
+/* Explorador de arquivos (SCRIPT/operacional/explorador.js), inspirado no
+   Explorador do Windows 11: barra de endereço, ícones grandes ou detalhes,
+   seleção azul clara e menu de contexto arredondado. */
+.exp {
+  display: flex; flex-direction: column; border: 1px solid #e3e6ea; border-radius: 10px; overflow: hidden;
+  background: #fff; font-family: "Segoe UI", Inter, system-ui, sans-serif; user-select: none;
+}
+.exp-barra { display: flex; align-items: center; gap: 6px; padding: 6px; background: #f6f7f9; border-bottom: 1px solid #e3e6ea; flex-wrap: wrap; }
+.exp-nav, .exp-acoes { display: flex; gap: 2px; }
+.exp-acoes { margin-left: auto; }
+.exp-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; min-width: 30px; padding: 0 7px;
+  border: 0; border-radius: 6px; background: transparent; color: #1f2937; font: inherit; font-size: 13px; cursor: pointer;
+}
+.exp-btn:hover:not(:disabled) { background: #e8ebef; }
+.exp-btn:disabled { color: #b6bcc5; cursor: default; }
+.exp-btn .exp-svg { width: 18px; height: 15px; }
+.exp-caminho {
+  flex: 1 1 220px; min-width: 0; display: flex; align-items: center; gap: 0; height: 30px; padding: 0 6px;
+  border: 1px solid #dfe3e8; border-radius: 6px; background: #fff; overflow-x: auto; scrollbar-width: none; white-space: nowrap;
+}
+.exp-caminho::-webkit-scrollbar { display: none; }
+.exp-seg {
+  display: inline-flex; align-items: center; gap: 5px; padding: 2px 6px; border: 0; border-radius: 4px; background: transparent;
+  font: inherit; font-size: 13px; color: #1f2937; cursor: pointer;
+}
+.exp-seg .exp-svg { width: 16px; height: 14px; }
+.exp-seg:hover, .exp-seg.alvo { background: #e5f1fb; }
+.exp-sep { color: #8a94a3; padding: 0 1px; }
+
+.exp-area {
+  position: relative; min-height: 220px; max-height: 420px; overflow: auto; padding: 8px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); align-content: start; gap: 4px; outline: none;
+}
+.exp-area.alvo { background: #f3f9ff; box-shadow: inset 0 0 0 2px #99c9ef; }
+.exp-item {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px 6px;
+  border: 1px solid transparent; border-radius: 6px; cursor: default; min-width: 0;
+}
+.exp-item:hover { background: #f0f6fd; border-color: #e1effa; }
+.exp-item.sel { background: #cce8ff; border-color: #99d1ff; }
+.exp-item.sel:hover { background: #c2e2fc; }
+.exp-item.alvo { background: #cce8ff; border-color: #0078d4; }
+.exp-item.recortado .exp-icone { opacity: .45; }
+.exp-item.bloqueada { opacity: .75; }
+.exp-icone { display: flex; align-items: flex-end; justify-content: center; height: 52px; }
+.exp-nome {
+  max-width: 100%; font-size: 12.5px; line-height: 1.3; color: #1f2937; text-align: center; word-break: break-word;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.exp-item.sel .exp-nome { -webkit-line-clamp: 4; }
+.exp-col { display: none; }
+.exp-renomear {
+  width: 100%; resize: none; padding: 1px 3px; border: 1px solid #0078d4; border-radius: 2px; outline: none;
+  font: inherit; font-size: 12.5px; line-height: 1.3; text-align: center; color: #111; background: #fff; user-select: text; overflow: hidden;
+}
+.exp-vazio { grid-column: 1 / -1; padding: 50px 10px; text-align: center; color: #8a94a3; font-size: 13px; }
+.exp-vazio small { color: #a3abb7; }
+
+/* Detalhes */
+.exp-area.exp-detalhes { display: block; padding: 0 0 6px; }
+.exp-cab, .exp-detalhes .exp-item {
+  display: grid; grid-template-columns: minmax(0, 1fr) 140px 150px 80px; align-items: center; column-gap: 10px;
+}
+.exp-cab {
+  position: sticky; top: 0; z-index: 1; padding: 6px 10px; background: #fff; border-bottom: 1px solid #eceff2;
+  font-size: 12px; color: #5f6b7a;
+}
+.exp-detalhes .exp-item { flex-direction: row; padding: 3px 10px; margin: 0 4px; border-radius: 4px; }
+.exp-detalhes .exp-item > .exp-icone { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); height: auto; }
+.exp-detalhes .exp-nome { padding-left: 26px; text-align: left; white-space: nowrap; text-overflow: ellipsis; display: block; -webkit-line-clamp: unset; }
+.exp-detalhes .exp-item.sel .exp-nome { -webkit-line-clamp: unset; }
+.exp-detalhes .exp-col { display: block; font-size: 12px; color: #5f6b7a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.exp-detalhes .exp-tam { text-align: right; }
+.exp-detalhes .exp-renomear { text-align: left; margin-left: 26px; width: calc(100% - 26px); white-space: nowrap; }
+
+.exp-status { display: flex; justify-content: space-between; gap: 10px; padding: 4px 10px; border-top: 1px solid #eceff2; font-size: 12px; color: #5f6b7a; background: #fafbfc; }
+.exp-status-msg { text-align: right; color: #2e7d32; }
+.exp-status-msg.erro { color: #c62828; }
+
+/* Menu do botão direito */
+.exp-menu {
+  position: fixed; z-index: 3000; min-width: 220px; padding: 4px; background: #f9f9f9; border: 1px solid #dcdfe4;
+  border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .14); font-family: "Segoe UI", Inter, system-ui, sans-serif;
+}
+.exp-menu button {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 7px 12px;
+  border: 0; border-radius: 4px; background: transparent; font: inherit; font-size: 13px; color: #1f2937; text-align: left; cursor: default;
+}
+.exp-menu button:hover, .exp-menu button:focus { background: #e6eaf0; outline: none; }
+.exp-menu button.forte span { font-weight: 700; }
+.exp-menu kbd { font: inherit; font-size: 11.5px; color: #7b8594; }
+.exp-menu-sep { height: 1px; margin: 4px 6px; background: #e2e5ea; }
+
+@media (max-width: 768px) {
+  .exp-acoes { margin-left: 0; }
+  .exp-btn-texto span { display: none; }
+  .exp-area { max-height: 360px; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); }
+  .exp-cab, .exp-detalhes .exp-item { grid-template-columns: minmax(0, 1fr) 70px; }
+  .exp-detalhes .exp-data, .exp-detalhes .exp-tipo, .exp-cab span:nth-child(2), .exp-cab span:nth-child(3) { display: none; }
+  .exp-menu button { padding: 11px 14px; font-size: 15px; }
+}

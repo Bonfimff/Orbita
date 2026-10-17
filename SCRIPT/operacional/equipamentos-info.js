@@ -2,7 +2,7 @@
 // O.S. › BASES E EQUIPAMENTOS › Equipamentos (consulta e ficha)
 // Lista os equipamentos com busca e filtros por tipo e base. Um clique abre a
 // ficha: base, dados, Composição (materiais que formam o equipamento),
-// Arquivos (pastas: ficha técnica, manuais, credenciais...) e Histórico.
+// Arquivos (explorador com pastas livres), O.S. da base e Histórico.
 // Materiais e arquivos são mantidos direto na ficha; "Editar" leva só às
 // características, em O.S. › Cadastros › Equipamentos.
 //======================================================================================================
@@ -28,7 +28,6 @@
   let bases = {};
   let carregado = false;
   let atual = null;
-  let pasta = 'ficha_tecnica';
 
   async function pedir(metodo, caminho, corpo) {
     const resp = await fetch(url(caminho), {
@@ -135,12 +134,11 @@
       item('Ponto de atendimento', esc(e.ponto_codigo || '')) +
       item('Observação', esc(e.observacao || ''));
     el('eqi-mat-form').hidden = !e.pode_alterar;
-    el('eqi-soltar').hidden = !e.pode_alterar;
     // Sugestões: materiais registrados na base do equipamento.
     el('eqi-mat-sugestoes').innerHTML = ((b && b.materiais) || [])
       .map((m) => `<option value="${esc(m.nome)}">${esc(m.quantidade || '')} ${esc(m.unidade || '')} na base</option>`).join('');
     desenharMateriais();
-    desenharArquivos();
+    montarExplorador();
     desenharOS();
     el('eqi-historico').innerHTML = (e.alocacoes || []).map((a) => `
       <li${a.fim || a.data_fim ? '' : ' class="atual"'}>
@@ -219,83 +217,28 @@
     } catch (e) { msg(e.message, 'erro'); }
   }
 
-  // ---- arquivos
-  function desenharArquivos() {
-    const arqs = atual.arquivos || [];
-    el('eqi-n-arq').textContent = arqs.length || '';
-    el('eqi-pastas').innerHTML = (atual.pastas || []).map((p) => {
-      const n = arqs.filter((a) => a.pasta === p.id).length;
-      return `<button type="button" class="eqi-pasta${p.id === pasta ? ' ativo' : ''}" data-eqi-pasta="${p.id}">
-        ${p.id === 'credenciais' ? ICONE.cadeado : ''}${esc(p.nome)}${n ? ` <em>${n}</em>` : ''}</button>`;
-    }).join('');
-    const atualPasta = (atual.pastas || []).find((p) => p.id === pasta) || {};
-    el('eqi-pasta-nome').textContent = (atualPasta.nome || '').toLowerCase();
-    const lista = arqs.filter((a) => a.pasta === pasta);
-    el('eqi-lista-arquivos').innerHTML = lista.map((a) => `
-      <li>
-        <span class="eqi-icone ${a.mime === 'application/pdf' ? 'pdf' : (a.mime.startsWith('image/') ? 'img' : 'doc')}">${a.mime === 'application/pdf' ? 'PDF' : (a.mime.startsWith('image/') ? 'IMG' : 'ARQ')}</span>
-        <button type="button" class="eqi-arq-nome" data-arq-ver="${a.id}" title="Abrir">
-          <strong>${esc(a.titulo || a.arquivo_nome)}</strong>
-          <small>${a.titulo ? esc(a.arquivo_nome) + ' · ' : ''}${tamanho(a.tamanho)} · ${esc(dataBr(a.enviado_em))}${a.enviado_por ? ' por ' + esc(a.enviado_por) : ''}</small>
-        </button>
-        <button type="button" class="eqi-acao" data-arq-baixar="${a.id}" title="Baixar" aria-label="Baixar">${ICONE.baixar}</button>
-        ${atual.pode_alterar ? `<button type="button" class="eqi-acao perigo" data-arq-excluir="${a.id}" title="Excluir" aria-label="Excluir">${ICONE.excluir}</button>` : ''}
-      </li>`).join('') || `<li class="eqi-vazio">Nenhum arquivo em ${esc((atualPasta.nome || '').toLowerCase())}.</li>`;
-  }
-
-  async function abrirArquivo(id, baixar) {
-    const a = (atual.arquivos || []).find((x) => String(x.id) === String(id));
-    const aba = baixar ? null : window.open('about:blank', '_blank');
-    try {
-      const resp = await fetch(url(`/equipamentos/${atual.id}/arquivos/${id}`), { headers: auth() });
-      if (!resp.ok) {
-        const d = await resp.json().catch(() => ({}));
-        throw new Error(d.mensagem || 'Não foi possível abrir o arquivo.');
-      }
-      const link = URL.createObjectURL(await resp.blob());
-      if (baixar || (a && !/^(application\/pdf|image\/|text\/)/.test(a.mime))) {
-        if (aba) aba.close();
-        const tag = document.createElement('a');
-        tag.href = link; tag.download = a ? a.arquivo_nome : 'arquivo';
-        document.body.appendChild(tag); tag.click(); tag.remove();
-      } else if (aba) {
-        aba.location.href = link;
-      }
-      setTimeout(() => URL.revokeObjectURL(link), 60000);
-    } catch (e) {
-      if (aba) aba.close();
-      msg(e.message, 'erro');
-    }
-  }
-
-  // Um arquivo por envio (o servidor aceita até 20 MB por requisição).
-  async function enviar(lista) {
-    if (!atual || !lista.length) return;
-    const erros = [];
-    let ok = 0;
-    for (let i = 0; i < lista.length; i++) {
-      el('eqi-progresso').textContent = `Enviando ${i + 1} de ${lista.length}: ${lista[i].name}`;
-      const form = new FormData();
-      form.append('pasta', pasta);
-      form.append('arquivos', lista[i]);
-      try {
-        const r = await pedir('POST', `/equipamentos/${atual.id}/arquivos`, form);
-        atual.arquivos = r.arquivos;
-        ok += 1;
-      } catch (e) { erros.push(lista[i].name + ': ' + e.message); }
-    }
-    el('eqi-progresso').innerHTML = (ok ? `${ok} arquivo(s) enviado(s).` : '') +
-      (erros.length ? `<span class="erro">${erros.map(esc).join('<br>')}</span>` : '');
-    el('eqi-arquivos').value = '';
-    desenharArquivos();
-    tocarLista();
+  // ---- arquivos: explorador no estilo Windows (SCRIPT/operacional/explorador.js)
+  function montarExplorador() {
+    const dados = atual.explorador || { pastas: [], arquivos: [] };
+    el('eqi-n-arq').textContent = dados.arquivos.length || '';
+    window.Explorador.montar(el('eqi-explorador'), {
+      base: '/equipamentos/' + atual.id,
+      podeAlterar: atual.pode_alterar,
+      dados,
+      raizNome: atual.codigo,
+      aoMudar: (novos) => {
+        atual.explorador = novos;
+        el('eqi-n-arq').textContent = novos.arquivos.length || '';
+        tocarLista();
+      },
+    });
   }
 
   function tocarLista() {
     const i = itens.find((x) => x.id === atual.id);
     if (i) {
       i.total_materiais = (atual.materiais || []).length;
-      i.total_arquivos = (atual.arquivos || []).length;
+      i.total_arquivos = ((atual.explorador || {}).arquivos || []).length;
       desenhar();
     }
   }
@@ -303,7 +246,6 @@
   function fechar() {
     if (el('eqi-detalhe').hidden) return;
     el('eqi-detalhe').hidden = true;
-    el('eqi-progresso').textContent = '';
     if (window.travarRolagemFundo) window.travarRolagemFundo(false);
   }
 
@@ -371,32 +313,6 @@
         } catch (err) { msg(err.message, 'erro'); }
       }
     });
-    el('eqi-pastas').addEventListener('click', (e) => {
-      const b = e.target.closest('[data-eqi-pasta]');
-      if (!b) return;
-      pasta = b.dataset.eqiPasta;
-      desenharArquivos();
-    });
-    el('eqi-lista-arquivos').addEventListener('click', async (e) => {
-      const ver = e.target.closest('[data-arq-ver]');
-      if (ver) { abrirArquivo(ver.dataset.arqVer, false); return; }
-      const baixar = e.target.closest('[data-arq-baixar]');
-      if (baixar) { abrirArquivo(baixar.dataset.arqBaixar, true); return; }
-      const ex = e.target.closest('[data-arq-excluir]');
-      if (ex && confirm('Excluir este arquivo? Não dá para desfazer.')) {
-        try {
-          const r = await pedir('DELETE', `/equipamentos/${atual.id}/arquivos/${ex.dataset.arqExcluir}`);
-          atual.arquivos = r.arquivos;
-          desenharArquivos();
-          tocarLista();
-        } catch (err) { msg(err.message, 'erro'); }
-      }
-    });
-    el('eqi-arquivos').addEventListener('change', () => enviar(Array.from(el('eqi-arquivos').files)));
-    const zona = el('eqi-soltar');
-    ['dragenter', 'dragover'].forEach((ev) => zona.addEventListener(ev, (e) => { e.preventDefault(); zona.classList.add('arrastando'); }));
-    ['dragleave', 'drop'].forEach((ev) => zona.addEventListener(ev, () => zona.classList.remove('arrastando')));
-    zona.addEventListener('drop', (e) => { e.preventDefault(); enviar(Array.from(e.dataTransfer.files || [])); });
     el('eqi-editar').addEventListener('click', () => { const r = atual; irParaCadastro((c) => c.editar(r)); });
     el('eqi-os-lista').addEventListener('click', (e) => {
       const b = e.target.closest('[data-os-abrir]');
