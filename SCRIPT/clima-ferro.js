@@ -109,6 +109,10 @@
       ps.forEach((p) => {
         p.no = el('use', { href: `#${id}k` });
         ferro.appendChild(p.no);
+        if (p.t >= 9) {
+          p.espicula = el('path', { d: '' });
+          oleo.appendChild(p.espicula);
+        }
       });
 
       // Pontes possíveis entre vizinhas: hexágonos mais próximos de cada par.
@@ -163,19 +167,36 @@
         if (parado) return;
         quadro = requestAnimationFrame(passo);
         if (!visivel || document.hidden || !svg.isConnected) return;
-        const t = (agora - inicio) / 1000;
+        atualizar((agora - inicio) / 1000);
+      }
+
+      // Para testes: simula `segundos` de animação na hora (60 quadros/s).
+      instancia.avancar = (segundos) => {
+        const base = (performance.now() - inicio) / 1000;
+        for (let k = 0; k < segundos * 60; k++) atualizar(base + k / 60);
+      };
+
+      function atualizar(t) {
 
         // Caminho do ímã quando ninguém está com o mouse em cima.
         const destino = ima.alvo || [W / 2 + W * 0.36 * Math.sin(t * 0.23), H / 2 + H * 0.3 * Math.sin(t * 0.37 + 1)];
         ima.x += (destino[0] - ima.x) * 0.06;
         ima.y += (destino[1] - ima.y) * 0.06;
+        // Intensidade do campo: o ímã se aproxima e se afasta em ciclos (com o
+        // mouse em cima, fica sempre forte). Suavizada para subir e descer devagar.
+        const pulso = 0.5 + 0.5 * Math.sin(t * 0.45);
+        const campoAlvo = ima.alvo ? 1 : pulso * pulso * (3 - 2 * pulso);
+        ima.campo = (ima.campo || 0) + (campoAlvo - (ima.campo || 0)) * 0.03;
+        const F = ima.campo;
 
         // Partículas: puxadas para o ímã, presas ao lugar por mola.
         ps.forEach((p) => {
           const dx = ima.x - p.rx;
           const dy = ima.y - p.ry;
           const dist = Math.hypot(dx, dy) || 1;
-          const puxa = 3.2 * Math.exp(-(dist * dist) / (2 * RAIO_IMA * RAIO_IMA)) * (10 / (p.t + 4));
+          const gauss = Math.exp(-(dist * dist) / (2 * RAIO_IMA * RAIO_IMA));
+          // Aglomera na direção do ímã (as menores andam mais), sem soltar da mola.
+          const puxa = (1.2 + 5.5 * F) * gauss * (12 / (p.t + 6));
           const ax = p.rx + dx / dist * puxa;
           const ay = p.ry + dy / dist * puxa;
           p.vx = (p.vx + (ax - p.x) * 0.07) * 0.8;
@@ -183,6 +204,34 @@
           p.x += p.vx;
           p.y += p.vy;
           p.no.setAttribute('transform', `translate(${p.x.toFixed(2)} ${p.y.toFixed(2)}) scale(${p.t})`);
+
+          // Espícula (instabilidade de Rosensweig): ponta afiada que nasce da
+          // logo e aponta para o ímã, crescendo com o campo.
+          if (p.espicula) {
+            const altura = p.t * 0.75 * F * gauss;
+            if (altura < 0.6) {
+              p.espicula.setAttribute('d', '');
+            } else {
+              const ux = (ima.x - p.x) / (Math.hypot(ima.x - p.x, ima.y - p.y) || 1);
+              const uy = (ima.y - p.y) / (Math.hypot(ima.x - p.x, ima.y - p.y) || 1);
+              const r0 = p.t * 0.32;                 // nasce da borda da logo
+              const base = p.t * 0.16;               // meia largura da base
+              const bx = p.x + ux * r0;
+              const by = p.y + uy * r0;
+              const tx = bx + ux * altura;
+              const ty = by + uy * altura;
+              const nx = -uy * base;
+              const ny = ux * base;
+              // Lados côncavos, como a ponta de um líquido puxado.
+              const c1x = bx + ux * altura * 0.35 + nx * 0.25;
+              const c1y = by + uy * altura * 0.35 + ny * 0.25;
+              const c2x = bx + ux * altura * 0.35 - nx * 0.25;
+              const c2y = by + uy * altura * 0.35 - ny * 0.25;
+              p.espicula.setAttribute('d',
+                `M${(bx + nx).toFixed(2)} ${(by + ny).toFixed(2)}Q${c1x.toFixed(2)} ${c1y.toFixed(2)} ${tx.toFixed(2)} ${ty.toFixed(2)}` +
+                `Q${c2x.toFixed(2)} ${c2y.toFixed(2)} ${(bx - nx).toFixed(2)} ${(by - ny).toFixed(2)}Z`);
+            }
+          }
         });
 
         // Óleo: cada ponte estica, funde e rompe conforme o ímã e um ritmo próprio.
@@ -193,7 +242,7 @@
           const my = (A[1] + B[1]) / 2;
           const dIma = Math.hypot(ima.x - mx, ima.y - my);
           const perto = Math.exp(-(dIma * dIma) / (2 * RAIO_IMA * RAIO_IMA));
-          const alvoE = Math.max(0, Math.min(1, perto * 1.4 + 0.55 * Math.sin(t * b.ritmo + b.fase) + 0.1));
+          const alvoE = Math.max(0, Math.min(1, perto * (0.4 + 1.6 * F) + 0.45 * Math.sin(t * b.ritmo + b.fase) * (1 - 0.5 * F) + 0.05));
           // Viscosidade: segue o alvo devagar; afinar é mais lento que esticar.
           b.e += (alvoE - b.e) * (alvoE > b.e ? 0.045 : 0.025);
           const e = b.e;
@@ -253,9 +302,8 @@
           }
         });
 
-        if (REDUZIR) { cancelAnimationFrame(quadro); }
       }
-      quadro = requestAnimationFrame(passo);
+      if (REDUZIR) atualizar(4); else quadro = requestAnimationFrame(passo);
     }
 
     return instancia;
