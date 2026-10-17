@@ -3,8 +3,8 @@
 // #funcionario-<id>). Um clique na linha abre a edição; ao salvar, volta à lista.
 // Mesma pessoa = mesmo cadastro: ao digitar o CPF ou o nome, o sistema avisa
 // se já existe funcionário ou usuário do sistema com esse nome.
-// Funcionário com login usa o tipo sanguíneo, a emergência e as capacitações
-// do usuário dele (o servidor resolve isso).
+// Tipo sanguíneo, emergência e certificados são do funcionário (o crachá do
+// usuário com login lê do funcionário ligado a ele).
 (function () {
   'use strict';
   const el = (id) => document.getElementById(id);
@@ -154,7 +154,6 @@
     feedback('');
     // Capacitações só existem para funcionário já salvo.
     el('func-bloco-capacitacoes').hidden = !f;
-    el('func-caps-aviso').hidden = !(f && f.usuario_id);
     caps.limpar();
     if (f) caps.carregar('/funcionarios/' + f.id);
   }

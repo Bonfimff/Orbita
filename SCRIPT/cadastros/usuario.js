@@ -49,14 +49,6 @@
     el('usuario-email').value = u ? (u.email || '') : '';
     el('usuario-cargo').value = u ? (u.credencial_acesso || '') : '';
     el('usuario-foto').value = u ? (u.foto_url || '') : '';
-    el('usuario-sangue').value = u ? (u.tipo_sanguineo || '') : '';
-    const m = (u && u.medicas) || {};
-    el('usuario-med-alergias').value = m.alergias || '';
-    el('usuario-med-condicoes').value = m.condicoes || '';
-    el('usuario-med-medicamentos').value = m.medicamentos || '';
-    el('usuario-med-contato').value = m.emergencia_nome || '';
-    el('usuario-med-telefone').value = m.emergencia_telefone || '';
-    el('usuario-med-publico').checked = m.publico !== false;
     el('usuario-perfil').value = u ? (u.perfil_id || '') : '';
     el('usuario-usa-customizadas').checked = u ? !!u.usa_permissoes_customizadas : false;
     window.popularChecklistContratos(el('usuario-contratos-lista'), u ? (u.contratos_autorizados || []) : []);
@@ -73,9 +65,14 @@
     el('bloco-permissoes-usuario').style.display = el('usuario-usa-customizadas').checked ? '' : 'none';
     el('usuario-form-feedback').style.display = 'none';
 
-    el('bloco-capacitacoes').style.display = u ? '' : 'none';
-    caps.limpar();
-    if (u) caps.carregar('/usuarios/' + u.id);
+    // Dados de crachá ficam no funcionário ligado ao usuário.
+    el('bloco-pessoa-usuario').hidden = !u;
+    if (u) {
+      fetch(window.apiUrl('/funcionarios'), { headers: auth() }).then((r) => r.json()).then((d) => {
+        const f = (d.funcionarios || []).find((x) => String(x.usuario_id) === String(u.id));
+        el('usuario-abrir-funcionario').href = f ? 'cadastros.html#funcionario-' + f.id : 'cadastros.html#funcionario';
+      }).catch(() => {});
+    }
   }
 
   async function abrirPeloEndereco() {
@@ -111,15 +108,6 @@
       email: el('usuario-email').value,
       foto_url: el('usuario-foto').value,
       credencial_acesso: el('usuario-cargo').value,
-      tipo_sanguineo: el('usuario-sangue').value,
-      medicas: {
-        alergias: el('usuario-med-alergias').value,
-        condicoes: el('usuario-med-condicoes').value,
-        medicamentos: el('usuario-med-medicamentos').value,
-        emergencia_nome: el('usuario-med-contato').value,
-        emergencia_telefone: el('usuario-med-telefone').value,
-        publico: el('usuario-med-publico').checked,
-      },
       perfil_id: el('usuario-perfil').value || null,
       usa_permissoes_customizadas: custom,
       contratos_autorizados: window.coletarContratosSelecionados(el('usuario-contratos-lista')),
@@ -144,9 +132,6 @@
       mostrarErro('Erro de conexão ao salvar o usuário.');
     }
   }
-
-  // Capacitações: componente compartilhado (capacitacoes-ui.js).
-  const caps = window.CapacitacoesUI.montar(el('usuario-caps'));
 
   // ---------------------------------------------------- ligações
   el('form-usuario').addEventListener('submit', salvar);

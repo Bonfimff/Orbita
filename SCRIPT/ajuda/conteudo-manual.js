@@ -64,7 +64,7 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'paragrafo', texto: 'O QR do crachá abre uma página de verificação com a identificação e as capacitações, sem precisar de login. Ela não mostra e-mail nem permissões.' },
         { tipo: 'paragrafo', texto: 'Certificados com PDF anexado mostram o botão Ver certificado. As informações de emergência (alergias, contraindicações, medicamentos e contato) ficam recolhidas e abrem ao tocar; a pessoa escolhe se aparecem no QR.' },
         { tipo: 'paragrafo', texto: 'Para mudar tipo sanguíneo e informações de emergência, use o lápis no alto do crachá. Clicar no QR abre a página do crachá numa nova aba.' },
-        { tipo: 'paragrafo', texto: 'O administrador também edita esses dados, além das capacitações e dos PDFs, no cadastro do usuário (Gestão › Cadastros › Usuário).' },
+        { tipo: 'paragrafo', texto: 'Esses dados são do funcionário: o administrador edita tipo sanguíneo, emergência, certificados e PDFs em Cadastros › Funcionário. O crachá de quem tem login mostra os dados do funcionário ligado a ele.' },
       ],
       relacionados: ['configuracoes', 'gestao-usuarios'],
     },
@@ -235,7 +235,7 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'paragrafo', texto: 'A aba **Usuários** lista as contas. **+ Novo Usuário** e o lápis de editar abrem o formulário em **Cadastros › Usuário**; ao salvar, você volta para a lista. Cada conta usa um perfil de acesso ou permissões próprias.' },
         { tipo: 'paragrafo', texto: 'Um perfil é um conjunto de permissões reaproveitável. A tela mostra uma lista por área (Minha conta, Início, Frota, Estoque, O.S., Análise, Jornada e Gestão), e cada linha tem as colunas Ver, Editar e Criar/Excluir. O botão "todos" marca a coluna inteira do grupo.' },
         { tipo: 'paragrafo', texto: 'Marcar Editar ou Criar/Excluir marca Ver junto. O servidor confere a permissão em toda ação, então esconder um botão não é a única proteção.' },
-        { tipo: 'paragrafo', texto: 'No formulário de um usuário já salvo, a seção **Capacitações** registra NR-10, NR-35 e outras, com certificado, validade e o PDF. Ali também ficam tipo sanguíneo e informações de emergência.' },
+        { tipo: 'paragrafo', texto: 'Tipo sanguíneo, informações de emergência e certificados (NR-10, NR-35 e outros, com PDF) ficam no cadastro do funcionário. O formulário do usuário tem um atalho para abrir o funcionário ligado a ele.' },
       ],
       relacionados: ['acesso', 'gestao-contratos'],
     },
@@ -248,7 +248,7 @@ window.OrbitaAjuda.registrarSecao({
       corpo: [
         { tipo: 'paragrafo', texto: 'O contrato separa os dados entre clientes. Para limitar uma pessoa, edite o usuário e marque os contratos que ela pode ver. Sem nenhum marcado, vale o que o perfil dela define; sem perfil, ela vê tudo.' },
         { tipo: 'paragrafo', texto: 'Arquivos do contrato só podem ser anexados depois que ele for salvo.' },
-        { tipo: 'paragrafo', texto: 'A aba **Funcionários** lista quem trabalha em campo. **+ Novo funcionário** e um clique na linha abrem o formulário em **Cadastros › Funcionário**, com tipo sanguíneo, informações de emergência e capacitações. Se o funcionário tem login, esses dados são os mesmos do usuário dele.' },
+        { tipo: 'paragrafo', texto: 'A aba **Funcionários** lista quem trabalha em campo. **+ Novo funcionário** e um clique na linha abrem o formulário em **Cadastros › Funcionário**, com tipo sanguíneo, informações de emergência e capacitações. O crachá do usuário ligado a ele mostra esses mesmos dados.' },
       ],
     },
 

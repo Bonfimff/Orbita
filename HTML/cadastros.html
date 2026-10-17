@@ -173,14 +173,6 @@
               <label for="usuario-cargo">Cargo / nível operacional</label>
               <input type="text" id="usuario-cargo" placeholder="Ex.: Administrador Geral">
             </div>
-            <div class="gestao-form-item">
-              <label for="usuario-sangue">Tipo sanguíneo</label>
-              <select id="usuario-sangue">
-                <option value="">Não informado</option>
-                <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
-                <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
-              </select>
-            </div>
             <div class="gestao-form-item gestao-form-full">
               <label for="usuario-foto">Link/URL para foto de perfil</label>
               <input type="url" id="usuario-foto" placeholder="https://...">
@@ -188,20 +180,6 @@
           </div>
         </div>
 
-        <div class="gestao-secao">
-          <details class="config-emergencia">
-            <summary>Informações de emergência</summary>
-            <div class="gestao-form-grid">
-              <div class="gestao-form-item"><label for="usuario-med-alergias">Alergias</label><input type="text" id="usuario-med-alergias" maxlength="255"></div>
-              <div class="gestao-form-item"><label for="usuario-med-condicoes">Contraindicações e condições de saúde</label><input type="text" id="usuario-med-condicoes" maxlength="255"></div>
-              <div class="gestao-form-item"><label for="usuario-med-medicamentos">Medicamentos de uso contínuo</label><input type="text" id="usuario-med-medicamentos" maxlength="255"></div>
-              <div class="gestao-form-item"><label for="usuario-med-contato">Contato de emergência (nome)</label><input type="text" id="usuario-med-contato" maxlength="120"></div>
-              <div class="gestao-form-item"><label for="usuario-med-telefone">Telefone do contato</label><input type="tel" id="usuario-med-telefone" maxlength="40"></div>
-              <div class="gestao-form-item gestao-checkbox-item"><label><input type="checkbox" id="usuario-med-publico"> Mostrar na leitura do QR do crachá</label></div>
-            </div>
-          </details>
-          </div>
-        </div>
 
         <div class="gestao-secao gestao-secao-customizada" id="bloco-permissoes-usuario" style="display:none;">
           <h4>Painel de direitos e permissões do sistema</h4>
@@ -218,9 +196,10 @@
           </div>
         </div>
 
-        <div class="gestao-secao" id="bloco-capacitacoes" style="display:none;">
-          <h4>Capacitações</h4>
-          <div id="usuario-caps"></div>
+        <div class="gestao-secao" id="bloco-pessoa-usuario" hidden>
+          <h4>Crachá, emergência e certificados</h4>
+          <p class="gestao-ajuda-texto">Tipo sanguíneo, informações de emergência e certificados ficam no cadastro do funcionário ligado a este usuário.</p>
+          <a class="btn-secundario" id="usuario-abrir-funcionario" href="#">Abrir cadastro de funcionário</a>
         </div>
 
         <div id="usuario-form-feedback" class="gestao-feedback" style="display:none;"></div>
@@ -302,7 +281,6 @@
 
         <div class="gestao-secao" id="func-bloco-capacitacoes" hidden>
           <h4>Capacitações</h4>
-          <p class="gestao-ajuda-texto" id="func-caps-aviso" hidden>Este funcionário tem login: as capacitações são as mesmas do usuário dele.</p>
           <div id="func-caps"></div>
         </div>
         <div id="func-feedback" class="gestao-feedback" style="display:none;"></div>
@@ -366,7 +344,7 @@
   <script src="../SCRIPT/configuracoes.js?v=6"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=10"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=11"></script>
   <script src="../SCRIPT/gestao-nav.js?v=10"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
@@ -375,8 +353,8 @@
   <script src="../SCRIPT/cadastros/locais.js?v=3"></script>
   <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
   <script src="../SCRIPT/cadastros/capacitacoes-ui.js?v=1"></script>
-  <script src="../SCRIPT/cadastros/usuario.js?v=2"></script>
-  <script src="../SCRIPT/gestao-funcionarios.js?v=2"></script>
+  <script src="../SCRIPT/cadastros/usuario.js?v=3"></script>
+  <script src="../SCRIPT/gestao-funcionarios.js?v=3"></script>
   <script src="../SCRIPT/contexto/painel.js?v=2"></script>
   <script src="../SCRIPT/contexto/cadastros.js?v=3"></script>
 
