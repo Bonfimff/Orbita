@@ -6,7 +6,8 @@
   <link rel="stylesheet" href="../CSS/gestao.css?v=12" />
   <link rel="stylesheet" href="../CSS/geral.css?v=61" />
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
-  <link rel="stylesheet" href="../CSS/ficha.css?v=1" />
+  <link rel="stylesheet" href="../CSS/ficha.css?v=2" />
+  <link rel="stylesheet" href="../CSS/explorador.css?v=1" />
   <link rel="stylesheet" href="../CSS/cadastros.css?v=2" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
@@ -304,29 +305,13 @@
             </div>
           </div>
           <p class="ficha-dica">Contrato assinado, documentos pessoais, ASO e demais papéis da admissão ficam em
-            <button type="button" class="ficha-link" data-ir-fsec="documentos" data-pasta="admissional">Documentos › Documentos admissionais</button>.</p>
+            <button type="button" class="ficha-link" data-ir-fsec="documentos">Documentos</button>.</p>
         </div>
 
-        <!-- Documentos -->
+        <!-- Documentos: explorador de arquivos (pastas livres) -->
         <div data-fsec-painel="documentos" hidden>
-          <div class="ficha-docs">
-            <ul class="ficha-pastas" id="ficha-pastas"></ul>
-            <div class="ficha-docs-corpo">
-              <div class="ficha-envio" id="ficha-envio">
-                <div class="ficha-envio-campos">
-                  <label class="ficha-campo" id="ficha-campo-competencia"><span>Mês de referência</span><input type="month" id="ficha-competencia"></label>
-                  <label class="ficha-campo ficha-campo-largo"><span>Descrição (opcional)</span><input type="text" id="ficha-titulo" maxlength="160" placeholder="Ex.: Contrato de trabalho"></label>
-                </div>
-                <label class="ficha-soltar" id="ficha-soltar">
-                  <input type="file" id="ficha-arquivos" class="sem-botao-upload" accept="application/pdf,image/jpeg,image/png" multiple hidden>
-                  <strong>Escolher arquivos</strong> ou arraste aqui
-                  <small>PDF, JPG ou PNG, até 10 MB cada. Pode enviar vários de uma vez.</small>
-                </label>
-                <div class="ficha-progresso" id="ficha-progresso"></div>
-              </div>
-              <div class="ficha-lista" id="ficha-lista"></div>
-            </div>
-          </div>
+          <p class="ficha-dica ficha-dica-docs">Organize em pastas como preferir (ex.: Admissão, Folhas de ponto, Contracheques). Botão direito para criar pastas, renomear, copiar e excluir.</p>
+          <div id="ficha-explorador"></div>
         </div>
 
         <!-- Férias -->
@@ -431,7 +416,7 @@
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=23"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=24"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
@@ -441,7 +426,8 @@
   <script src="../SCRIPT/cadastros/capacitacoes-ui.js?v=1"></script>
   <script src="../SCRIPT/cadastros/usuario.js?v=4"></script>
   <script src="../SCRIPT/gestao-funcionarios.js?v=6"></script>
-  <script src="../SCRIPT/cadastros/funcionario-ficha.js?v=1"></script>
+  <script src="../SCRIPT/operacional/explorador.js?v=3"></script>
+  <script src="../SCRIPT/cadastros/funcionario-ficha.js?v=2"></script>
   <script src="../SCRIPT/contexto/painel.js?v=2"></script>
   <script src="../SCRIPT/contexto/cadastros.js?v=3"></script>
 

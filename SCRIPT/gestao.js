@@ -286,50 +286,33 @@
     return String(texto ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
-  function renderizarArquivosContrato(arquivos) {
-    const lista = document.getElementById('contrato-arquivos-lista');
-    if (!lista) return;
-    arquivos = arquivos || [];
-    if (!arquivos.length) {
-      lista.innerHTML = '<p style="color:#999;font-size:13px;">Nenhum arquivo anexado.</p>';
+  // Arquivos do contrato: explorador com pastas livres (SCRIPT/operacional/explorador.js),
+  // o mesmo dos equipamentos. Só existe para contrato já salvo.
+  async function renderizarArquivosContrato() {
+    const alvo = document.getElementById('contrato-arquivos-lista');
+    if (!alvo) return;
+    if (!contratoEditandoId || !window.Explorador) {
+      alvo.className = '';
+      alvo.innerHTML = '<p class="gestao-dica-arquivos">Salve o contrato para organizar os arquivos em pastas.</p>';
       return;
     }
-    lista.innerHTML = `
-      <table>
-        <thead><tr><th>Arquivo</th><th>Enviado em</th><th></th></tr></thead>
-        <tbody>
-          ${arquivos.map(a => `
-            <tr>
-              <td><a href="${a.arquivo_base64}" download="${escapeHtml(a.nome_arquivo || 'arquivo')}">${escapeHtml(a.nome_arquivo || 'arquivo')}</a></td>
-              <td>${a.criado_em || ''}</td>
-              <td><button type="button" class="gestao-btn-icone" data-remove-contrato-arquivo="${a.id}" title="Remover"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>`;
-  }
-
-  function lerArquivoComoBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  async function enviarArquivosPendentesContrato(contratoId) {
-    const input = document.getElementById('contrato-arquivo-input');
-    const arquivos = input?.files ? Array.from(input.files) : [];
-    for (const arquivo of arquivos) {
-      const base64 = await lerArquivoComoBase64(arquivo);
-      await fetch(window.apiUrl(`/contratos/${contratoId}/arquivos`), {
-        method: 'POST',
-        headers: authHeaders(true),
-        body: JSON.stringify({ nome_arquivo: arquivo.name, mime_type: arquivo.type, arquivo_base64: base64 }),
+    const id = contratoEditandoId;
+    alvo.innerHTML = '<p class="gestao-dica-arquivos">Carregando arquivos...</p>';
+    try {
+      const resp = await fetch(window.apiUrl(`/explorador/contratos/${id}/arquivos`), { headers: authHeaders() });
+      const dados = await resp.json();
+      if (dados.status !== 'ok') throw new Error(dados.mensagem || 'Não foi possível carregar os arquivos.');
+      if (id !== contratoEditandoId) return;
+      const nome = document.getElementById('contrato-nome').value || 'Contrato';
+      window.Explorador.montar(alvo, {
+        base: '/explorador/contratos/' + id,
+        podeAlterar: typeof window.temPermissao !== 'function' || window.temPermissao('gestao_contratos', 'editar'),
+        dados: dados.dados,
+        raizNome: nome,
       });
+    } catch (erro) {
+      alvo.innerHTML = '<p class="gestao-dica-arquivos">' + escapeHtml(erro.message) + '</p>';
     }
-    if (input) input.value = '';
   }
 
   async function excluirArquivoContrato(arquivoId) {
@@ -343,7 +326,7 @@
     contratoEditandoId = null;
     document.dispatchEvent(new CustomEvent('orbita:contrato-selecionado', { detail: { id: null } }));
     document.getElementById('btn-salvar-contrato').textContent = 'Salvar Contrato';
-    renderizarArquivosContrato([]);
+    renderizarArquivosContrato();
     const feedback = document.getElementById('contrato-form-feedback');
     feedback.style.display = 'none';
     feedback.textContent = '';
@@ -408,7 +391,7 @@
       document.getElementById('contrato-cnpj').value = c.cnpj || '';
       document.getElementById('contrato-especificacoes').value = c.especificacoes || '';
       document.getElementById('btn-salvar-contrato').textContent = 'Atualizar Contrato';
-      renderizarArquivosContrato(c.arquivos || []);
+      renderizarArquivosContrato();
     } catch (error) {
       console.error('Erro ao carregar contrato:', error);
     }
@@ -462,8 +445,6 @@
         feedback.style.display = 'block';
         return;
       }
-      const contratoId = dados.contrato?.id || contratoEditandoId;
-      await enviarArquivosPendentesContrato(contratoId);
       limparFormularioContrato();
       carregarContratos();
     } catch (error) {
@@ -540,7 +521,7 @@
     inicializarSubabaUsuarios();
     carregarUsuarios();
     carregarPerfis();
-    renderizarArquivosContrato([]);
+    renderizarArquivosContrato();
 
 
     // Cadastro de usuário fica em Gestão › Cadastros (lista aqui, formulário lá).

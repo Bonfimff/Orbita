@@ -139,7 +139,7 @@
       const r = await resp.json().catch(() => ({}));
       if (!resp.ok || r.status !== 'ok') throw new Error(r.mensagem || (resp.status === 413 ? 'Arquivo grande demais.' : 'Não foi possível concluir.'));
       if (r.dados && r.dados.pastas) {
-        dados = { pastas: r.dados.pastas, arquivos: r.dados.arquivos };
+        dados = { pastas: r.dados.pastas, arquivos: r.dados.arquivos, nivel_protegido: r.dados.nivel_protegido };
         if (atual !== null && !pastaPor(atual)) atual = null;
         if (typeof opcoes.aoMudar === 'function') opcoes.aoMudar(dados);
       }
@@ -181,7 +181,7 @@
     function ir(pasta, historico) {
       const destino = pasta === 'raiz' || pasta === undefined ? null : pasta;
       const p = destino !== null ? pastaPor(destino) : null;
-      if (p && p.bloqueada) { mensagem('Pasta protegida: só quem pode alterar o equipamento abre.', true); return; }
+      if (p && p.bloqueada) { mensagem('Pasta protegida: seu perfil não tem acesso ao conteúdo.', true); return; }
       if (historico !== false && destino !== atual) { voltar.push(atual); avancar = []; }
       atual = destino;
       selecao.clear();
@@ -342,7 +342,7 @@
     async function alternarProtecao(item) {
       try {
         await pedir('PUT', '/pastas/' + item.id, { protegida: !item.obj.protegida });
-        mensagem(item.obj.protegida ? 'Proteção removida.' : 'Pasta protegida: só quem pode alterar o equipamento abre o conteúdo.');
+        mensagem(item.obj.protegida ? 'Proteção removida.' : 'Pasta protegida: só perfis com acesso às pastas protegidas abrem o conteúdo.');
         desenhar();
       } catch (e) { mensagem(e.message, true); }
     }
@@ -387,7 +387,7 @@
           op.push('-');
           if (um) op.push(['renomear', 'Renomear', false, 'F2']);
           op.push(['excluir', 'Excluir', false, 'Delete']);
-          if (um && um.tipo === 'pasta') op.push('-', ['proteger', um.obj.protegida ? 'Remover proteção' : 'Proteger pasta']);
+          if (um && um.tipo === 'pasta' && (dados.nivel_protegido || 0) >= 2) op.push('-', ['proteger', um.obj.protegida ? 'Remover proteção' : 'Proteger pasta']);
         }
         if (um) op.push('-', ['propriedades', 'Propriedades']);
       } else {

@@ -1,7 +1,7 @@
 //======================================================================================================
 // FICHA DO FUNCIONÁRIO (Gestão › Cadastros › Funcionários)
 // Subabas do formulário: Dados (cadastro, emergência, capacitações), Admissão,
-// Documentos (pastas com PDFs e imagens, envio de vários arquivos) e Férias
+// Documentos (explorador de arquivos com pastas livres) e Férias
 // (períodos aquisitivos calculados pela admissão, saldo, prazo e programação).
 // Documentos e Férias só existem para funcionário já salvo.
 //
@@ -35,7 +35,7 @@
     return dados;
   }
 
-  const estado = { id: null, pastas: [], docs: [], pasta: 'admissional', ferias: null };
+  const estado = { id: null, ferias: null };
 
   // ---------------------------------------------------------- subabas
   function mostrar(secao) {
@@ -49,7 +49,6 @@
 
   function definir(f) {
     estado.id = f ? f.id : null;
-    estado.docs = [];
     estado.ferias = null;
     document.querySelectorAll('#func-abas [data-so-salvo]').forEach((b) => { b.hidden = !f; });
     el('func-admissao').value = (f && f.data_admissao) || '';
@@ -74,112 +73,25 @@
   }
 
   // ---------------------------------------------------------- documentos
+  // Explorador de arquivos com pastas livres (SCRIPT/operacional/explorador.js),
+  // o mesmo dos equipamentos e contratos.
   async function carregarDocumentos() {
     if (!estado.id) return;
-    el('ficha-lista').innerHTML = '<p class="ficha-vazio">Carregando...</p>';
+    const alvo = el('ficha-explorador');
+    const id = estado.id;
+    alvo.innerHTML = '<p class="ficha-vazio">Carregando...</p>';
     try {
-      const r = await chamar('GET', `/funcionarios/${estado.id}/documentos`);
-      estado.pastas = r.pastas || [];
-      estado.docs = r.documentos || [];
+      const r = await chamar('GET', `/explorador/funcionarios/${id}/arquivos`);
+      if (id !== estado.id) return;
+      window.Explorador.montar(alvo, {
+        base: '/explorador/funcionarios/' + id,
+        podeAlterar: typeof window.temPermissao !== 'function' || window.temPermissao('gestao_funcionarios', 'editar'),
+        dados: r.dados,
+        raizNome: (el('func-nome').value || 'Funcionário'),
+      });
     } catch (e) {
-      el('ficha-lista').innerHTML = `<p class="ficha-vazio">${esc(e.message)}</p>`;
-      return;
+      alvo.innerHTML = `<p class="ficha-vazio">${esc(e.message)}</p>`;
     }
-    desenharDocumentos();
-  }
-
-  function pastaAtual() { return estado.pastas.find((p) => p.id === estado.pasta) || { id: estado.pasta, nome: '', mensal: false }; }
-
-  function desenharDocumentos() {
-    el('ficha-pastas').innerHTML = estado.pastas.map((p) => {
-      const n = estado.docs.filter((d) => d.pasta === p.id).length;
-      return `<li><button type="button" class="ficha-pasta${p.id === estado.pasta ? ' ativo' : ''}" data-pasta="${p.id}">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H10l2 2.5h6.5A2.5 2.5 0 0 1 21 10v7.5A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5z"/></svg>
-        <span>${esc(p.nome)}</span><em>${n}</em></button></li>`;
-    }).join('');
-    const pasta = pastaAtual();
-    el('ficha-campo-competencia').hidden = !pasta.mensal;
-    if (pasta.mensal && !el('ficha-competencia').value) {
-      const d = new Date(); d.setMonth(d.getMonth() - 1);
-      el('ficha-competencia').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-    }
-    const docs = estado.docs.filter((d) => d.pasta === estado.pasta);
-    if (!docs.length) {
-      el('ficha-lista').innerHTML = `<p class="ficha-vazio">Nenhum arquivo em ${esc(pasta.nome.toLowerCase())}.</p>`;
-      return;
-    }
-    // Pastas mensais: agrupadas por mês de referência.
-    const grupos = {};
-    docs.forEach((d) => { (grupos[pasta.mensal ? d.competencia || '' : ''] = grupos[pasta.mensal ? d.competencia || '' : ''] || []).push(d); });
-    el('ficha-lista').innerHTML = Object.keys(grupos).sort().reverse().map((g) => `
-      ${pasta.mensal ? `<h5 class="ficha-grupo">${esc(competenciaBr(g) || 'Sem mês')}</h5>` : ''}
-      <ul class="ficha-arquivos">${grupos[g].map((d) => `
-        <li>
-          <span class="ficha-icone ${d.mime === 'application/pdf' ? 'pdf' : 'img'}">${d.mime === 'application/pdf' ? 'PDF' : 'IMG'}</span>
-          <button type="button" class="ficha-arquivo-nome" data-ver="${d.id}" title="Abrir">
-            <strong>${esc(d.titulo || d.arquivo_nome)}</strong>
-            <small>${d.titulo ? esc(d.arquivo_nome) + ' · ' : ''}${tamanho(d.tamanho)} · ${esc(dataBr(d.enviado_em))}${d.enviado_por ? ' por ' + esc(d.enviado_por) : ''}</small>
-          </button>
-          <button type="button" class="ficha-acao" data-baixar="${d.id}" title="Baixar" aria-label="Baixar">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-          </button>
-          <button type="button" class="ficha-acao perigo" data-excluir="${d.id}" title="Excluir" aria-label="Excluir" data-permissao="gestao_funcionarios:editar">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M10 11v6M14 11v6M7 7l1 12h8l1-12M9 7V4h6v3"/></svg>
-          </button>
-        </li>`).join('')}</ul>`).join('');
-  }
-
-  async function abrirArquivo(id, baixar) {
-    const aba = baixar ? null : window.open('about:blank', '_blank');
-    try {
-      const resp = await fetch(url(`/funcionarios/${estado.id}/documentos/${id}`), { headers: auth() });
-      if (!resp.ok) throw new Error('Não foi possível abrir o arquivo.');
-      const blob = await resp.blob();
-      const link = URL.createObjectURL(blob);
-      if (baixar) {
-        const d = estado.docs.find((x) => String(x.id) === String(id));
-        const a = document.createElement('a');
-        a.href = link; a.download = d ? d.arquivo_nome : 'documento';
-        document.body.appendChild(a); a.click(); a.remove();
-      } else if (aba) {
-        aba.location.href = link;
-      }
-      setTimeout(() => URL.revokeObjectURL(link), 60000);
-    } catch (e) {
-      if (aba) aba.close();
-      alert(e.message);
-    }
-  }
-
-  // Um arquivo por envio (o servidor aceita até 20 MB por requisição).
-  async function enviar(arquivos) {
-    if (!estado.id || !arquivos.length) return;
-    const pasta = pastaAtual();
-    if (pasta.mensal && !el('ficha-competencia').value) { alert('Informe o mês de referência.'); return; }
-    const progresso = el('ficha-progresso');
-    const erros = [];
-    let enviados = 0;
-    for (let i = 0; i < arquivos.length; i++) {
-      progresso.textContent = `Enviando ${i + 1} de ${arquivos.length}: ${arquivos[i].name}`;
-      const form = new FormData();
-      form.append('pasta', pasta.id);
-      if (pasta.mensal) form.append('competencia', el('ficha-competencia').value);
-      if (el('ficha-titulo').value.trim()) form.append('titulo', el('ficha-titulo').value.trim());
-      form.append('arquivos', arquivos[i]);
-      try {
-        const resp = await fetch(url(`/funcionarios/${estado.id}/documentos`), { method: 'POST', headers: auth(), body: form });
-        const dados = await resp.json().catch(() => ({}));
-        if (!resp.ok || dados.status !== 'ok') throw new Error(dados.mensagem || (resp.status === 413 ? 'Arquivo grande demais.' : 'Falha no envio.'));
-        enviados += 1;
-      } catch (e) {
-        erros.push(arquivos[i].name + ': ' + e.message);
-      }
-    }
-    progresso.innerHTML = (enviados ? `${enviados} arquivo(s) enviado(s).` : '') +
-      (erros.length ? `<span class="erro">${erros.map(esc).join('<br>')}</span>` : '');
-    el('ficha-arquivos').value = '';
-    el('ficha-titulo').value = '';
-    await carregarDocumentos();
   }
 
   // ---------------------------------------------------------- férias
@@ -263,31 +175,9 @@
     document.addEventListener('click', (e) => {
       const ir = e.target.closest('[data-ir-fsec]');
       if (!ir) return;
-      if (ir.dataset.pasta) estado.pasta = ir.dataset.pasta;
       mostrar(ir.dataset.irFsec);
     });
     ['func-admissao', 'func-desligamento'].forEach((id) => el(id).addEventListener('change', atualizarTempoCasa));
-    el('ficha-pastas').addEventListener('click', (e) => {
-      const b = e.target.closest('[data-pasta]');
-      if (!b) return;
-      estado.pasta = b.dataset.pasta;
-      desenharDocumentos();
-    });
-    el('ficha-lista').addEventListener('click', async (e) => {
-      const ver = e.target.closest('[data-ver]');
-      if (ver) { abrirArquivo(ver.dataset.ver, false); return; }
-      const baixar = e.target.closest('[data-baixar]');
-      if (baixar) { abrirArquivo(baixar.dataset.baixar, true); return; }
-      const excluir = e.target.closest('[data-excluir]');
-      if (excluir && confirm('Excluir este arquivo? Não dá para desfazer.')) {
-        try { await chamar('DELETE', `/funcionarios/${estado.id}/documentos/${excluir.dataset.excluir}`); await carregarDocumentos(); } catch (err) { alert(err.message); }
-      }
-    });
-    el('ficha-arquivos').addEventListener('change', () => enviar(Array.from(el('ficha-arquivos').files)));
-    const zona = el('ficha-soltar');
-    ['dragenter', 'dragover'].forEach((ev) => zona.addEventListener(ev, (e) => { e.preventDefault(); zona.classList.add('arrastando'); }));
-    ['dragleave', 'drop'].forEach((ev) => zona.addEventListener(ev, () => zona.classList.remove('arrastando')));
-    zona.addEventListener('drop', (e) => { e.preventDefault(); enviar(Array.from(e.dataTransfer.files || [])); });
     ['ferias-inicio', 'ferias-fim'].forEach((id) => el(id).addEventListener('change', contarDias));
     el('ferias-salvar').addEventListener('click', programar);
     el('ferias-lista').addEventListener('click', async (e) => {
