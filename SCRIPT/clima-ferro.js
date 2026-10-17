@@ -28,7 +28,7 @@
   let dadosPromessa = null;
   function dados(base) {
     if (!dadosPromessa) {
-      dadosPromessa = fetch(base + 'particulas.json').then((r) => {
+      dadosPromessa = fetch(base + 'particulas.json?v=2').then((r) => {
         if (!r.ok) throw new Error('particulas.json');
         return r.json();
       });
@@ -116,13 +116,13 @@
       const grau = new Array(ps.length).fill(0);
       const cand = [];
       ps.forEach((a, i) => ps.forEach((b, j) => {
-        if (j <= i || Math.min(a.t, b.t) < 6) return;
+        if (j <= i || Math.min(a.t, b.t) < 5) return;
         const dist = Math.hypot(a.x - b.x, a.y - b.y);
         if (dist < (a.t + b.t) * 0.95) cand.push([dist, i, j]);
       }));
       cand.sort((m, n) => m[0] - n[0]);
       cand.forEach(([, i, j]) => {
-        if (grau[i] >= 3 || grau[j] >= 3) return;
+        if (grau[i] >= 4 || grau[j] >= 4) return;
         let melhor = null;
         for (let ha = 0; ha < 7; ha++) {
           for (let hb = 0; hb < 7; hb++) {
