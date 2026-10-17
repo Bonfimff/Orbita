@@ -23,7 +23,7 @@ window.OrbitaAjuda.registrarSecao({
       corpo: [
         { tipo: 'paragrafo', texto: 'Entre com o usuário e a senha que o administrador criou para você. Não existe cadastro próprio: contas novas são feitas em Gestão, na aba Usuários.' },
         { tipo: 'paragrafo', texto: 'Os módulos ficam na barra de cima: Estoque, Frota, Ordens de Serviço e Gestão. O menu da esquerda mostra as abas do módulo aberto. No celular, esse menu abre pelo botão de três traços.' },
-        { tipo: 'paragrafo', texto: 'No rodapé do menu ficam a engrenagem (configurações, ainda sem tela), o **(i)**, que abre esta ajuda, e o botão de sair.' },
+        { tipo: 'paragrafo', texto: 'No rodapé do menu ficam a engrenagem (Configurações), o **(i)**, que abre esta ajuda, e o botão de sair.' },
         { tipo: 'paragrafo', texto: 'A sessão expira depois de um tempo sem uso. O sistema avisa e volta para o login; é só entrar de novo.' },
       ],
       relacionados: ['acesso'],
@@ -44,7 +44,7 @@ window.OrbitaAjuda.registrarSecao({
       grupo: 'Geral',
       titulo: 'Configurações e troca de senha',
       corpo: [
-        { tipo: 'paragrafo', texto: 'Abra pela engrenagem, no rodapé do menu. Em **Minha conta** você corrige seu nome e e-mail.' },
+        { tipo: 'paragrafo', texto: 'Abra pela engrenagem, no rodapé do menu. Em **Minha conta** você corrige nome, e-mail e tipo sanguíneo.' },
         { tipo: 'passos', itens: [
           'Em **Trocar senha**, digite a senha atual.',
           'Digite a nova senha duas vezes. Ela precisa ter pelo menos 6 caracteres e ser diferente da atual.',
@@ -53,6 +53,18 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'paragrafo', texto: 'Em **Sessão** você vê quanto tempo falta para a sessão expirar. Para renovar, digite só a senha: não precisa sair nem recarregar a página.' },
         { tipo: 'paragrafo', texto: 'Em **Aparência** você aumenta o texto ou reduz as animações. Em **Previsão do tempo** escolhe se ela aparece no painel lateral. Essas escolhas valem só neste navegador.' },
       ],
+    },
+    {
+      id: 'cracha',
+      grupo: 'Geral',
+      titulo: 'Crachá digital e capacitações',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'Clique na sua foto, no topo (no celular, no alto do menu), para abrir o crachá. Ele mostra nome, cargo, matrícula, perfil, tipo sanguíneo e as capacitações.' },
+        { tipo: 'paragrafo', texto: 'Cada capacitação aparece como válida, vencendo (até 30 dias) ou vencida. Quem tem cargo de eletricista precisa de NR-10 válida; sem ela, o crachá mostra um alerta.' },
+        { tipo: 'paragrafo', texto: 'O QR do crachá abre uma página de verificação com a identificação e as capacitações, sem precisar de login. Ela não mostra e-mail nem permissões.' },
+        { tipo: 'paragrafo', texto: 'O tipo sanguíneo é preenchido pela própria pessoa em Configurações. As capacitações são cadastradas em Gestão, na edição do usuário.' },
+      ],
+      relacionados: ['configuracoes', 'gestao-usuarios'],
     },
     {
       id: 'painel-lateral',
@@ -98,8 +110,8 @@ window.OrbitaAjuda.registrarSecao({
       pagina: 'almoxarifado',
       titulo: 'Produtos, kits e fornecedores',
       corpo: [
-        { tipo: 'paragrafo', texto: 'Em **Cadastros** ficam os produtos, os kits (grupos de produtos retirados juntos), os fornecedores e os requisitantes.' },
-        { tipo: 'paragrafo', texto: 'Para editar um produto, encontre-o na Busca e use o botão de editar. Os campos já vêm preenchidos; altere o que precisar e salve.' },
+        { tipo: 'paragrafo', texto: 'Em **Cadastros** ficam os requisitantes, os fornecedores, os produtos, os parâmetros e os kits (grupos de produtos retirados juntos).' },
+        { tipo: 'paragrafo', texto: 'Para editar ou excluir um produto, encontre-o na **Busca** e clique na linha. Em Editar produto, os campos já vêm preenchidos; altere o que precisar e salve.' },
       ],
     },
 
@@ -170,7 +182,7 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'passos', itens: [
           'Vá em **Cadastros › Nova O.S.** (ou use o botão Nova O.S. na Busca).',
           'Preencha solicitante, tipo de serviço, prioridade, descrição e contrato.',
-          'Adicione os pontos de atendimento. Pelo ID da base, o endereço é preenchido sozinho.',
+          'Adicione os pontos de atendimento. Digite o ID da base e clique em Buscar para o endereço ser preenchido.',
           'Salve. A O.S. nasce como Aberta e aparece na Busca.',
         ] },
       ],
@@ -219,8 +231,9 @@ window.OrbitaAjuda.registrarSecao({
       titulo: 'Usuários e perfis de acesso',
       corpo: [
         { tipo: 'paragrafo', texto: 'Em **Usuários** você cria, edita e exclui contas. Cada conta usa um perfil de acesso ou permissões próprias.' },
-        { tipo: 'paragrafo', texto: 'Um perfil é um conjunto de permissões reaproveitável. A tela mostra uma lista por área (Frota, Estoque, O.S., Análise, Jornada, Gestão), e cada linha tem as colunas Ver, Editar e Criar/Excluir. O botão "todos" marca a coluna inteira do grupo.' },
+        { tipo: 'paragrafo', texto: 'Um perfil é um conjunto de permissões reaproveitável. A tela mostra uma lista por área (Minha conta, Início, Frota, Estoque, O.S., Análise, Jornada e Gestão), e cada linha tem as colunas Ver, Editar e Criar/Excluir. O botão "todos" marca a coluna inteira do grupo.' },
         { tipo: 'paragrafo', texto: 'Marcar Editar ou Criar/Excluir marca Ver junto. O servidor confere a permissão em toda ação, então esconder um botão não é a única proteção.' },
+        { tipo: 'paragrafo', texto: 'Ao editar um usuário existente, a seção **Capacitações** registra NR-10, NR-35 e outras, com certificado e validade.' },
       ],
       relacionados: ['acesso', 'gestao-contratos'],
     },
@@ -231,9 +244,9 @@ window.OrbitaAjuda.registrarSecao({
       aba: 'contratos',
       titulo: 'Contratos e funcionários',
       corpo: [
-        { tipo: 'paragrafo', texto: 'O contrato separa os dados entre clientes. Para limitar uma pessoa, edite o usuário e marque os contratos que ela pode ver. Sem nenhum marcado, ela vê tudo.' },
+        { tipo: 'paragrafo', texto: 'O contrato separa os dados entre clientes. Para limitar uma pessoa, edite o usuário e marque os contratos que ela pode ver. Sem nenhum marcado, vale o que o perfil dela define; sem perfil, ela vê tudo.' },
         { tipo: 'paragrafo', texto: 'Arquivos do contrato só podem ser anexados depois que ele for salvo.' },
-        { tipo: 'paragrafo', texto: 'Em **Funcionários** fica o cadastro de quem trabalha em campo, usado para montar as equipes das O.S.' },
+        { tipo: 'paragrafo', texto: 'Em **Funcionários** fica o cadastro de quem trabalha em campo.' },
       ],
     },
 
