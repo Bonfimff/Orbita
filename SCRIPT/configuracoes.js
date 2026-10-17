@@ -51,6 +51,17 @@
           <button type="button" class="config-fechar" data-fechar-flutuante aria-label="Fechar">&times;</button>
         </header>
         <div class="config-corpo">
+          <form class="config-sessao" id="config-sessao" autocomplete="off">
+            <div class="config-sessao-linha">
+              <span>Sessão expira em <strong id="config-sessao-tempo">-</strong></span>
+              <button type="button" class="btn-primario" id="config-sessao-abrir">Renovar sessão</button>
+            </div>
+            <div class="config-sessao-senha" id="config-sessao-campos" hidden>
+              <input type="password" id="config-sessao-senha" autocomplete="current-password" placeholder="Digite sua senha" aria-label="Senha">
+              <button type="submit" class="btn-primario">Confirmar</button>
+            </div>
+            <p class="config-retorno" id="config-sessao-retorno" role="status"></p>
+          </form>
           <section class="config-bloco">
             <h3>Minha conta</h3>
             <form id="config-conta" autocomplete="off">
@@ -71,16 +82,6 @@
               <label class="config-check"><input type="checkbox" id="config-senha-ver"> Mostrar senhas</label>
               <button type="submit" class="btn-primario">Trocar senha</button>
               <p class="config-retorno" id="config-senha-retorno" role="status"></p>
-            </form>
-          </section>
-
-          <section class="config-bloco">
-            <h3>Sessão</h3>
-            <form id="config-sessao" autocomplete="off">
-              <div class="config-linha-info">Sua sessão expira em <strong id="config-sessao-tempo">-</strong>.</div>
-              <label>Senha <input type="password" id="config-sessao-senha" autocomplete="current-password" required></label>
-              <button type="submit" class="btn-primario">Renovar sessão</button>
-              <p class="config-retorno" id="config-sessao-retorno" role="status"></p>
             </form>
           </section>
 
@@ -128,6 +129,14 @@
       }, retorno);
     });
 
+    // Renovar: o campo de senha só aparece depois de clicar no botão.
+    janela.querySelector('#config-sessao-abrir').addEventListener('click', () => {
+      const campos = janela.querySelector('#config-sessao-campos');
+      campos.hidden = !campos.hidden;
+      janela.querySelector('#config-sessao-abrir').hidden = !campos.hidden;
+      if (!campos.hidden) janela.querySelector('#config-sessao-senha').focus();
+    });
+
     janela.querySelector('#config-sessao').addEventListener('submit', async (e) => {
       e.preventDefault();
       const retorno = janela.querySelector('#config-sessao-retorno');
@@ -142,6 +151,8 @@
         localStorage.setItem('token', dados.token);
         window.dispatchEvent(new CustomEvent('kernel:token-renovado', { detail: dados.token }));
         e.target.reset();
+        janela.querySelector('#config-sessao-campos').hidden = true;
+        janela.querySelector('#config-sessao-abrir').hidden = false;
         atualizarTempoSessao();
         mostrarRetorno(retorno, 'Sessão renovada.', false);
       } catch (erro) {
@@ -225,6 +236,9 @@
   function abrir() {
     if (!janela) construir();
     atualizarTempoSessao();
+    janela.querySelector('#config-sessao-campos').hidden = true;
+    janela.querySelector('#config-sessao-abrir').hidden = false;
+    janela.querySelector('#config-sessao-senha').value = '';
     clearInterval(relogio);
     relogio = setInterval(atualizarTempoSessao, 15000);
     janela.querySelector('#config-texto-grande').checked = lerPref(PREF.texto, 'normal') === 'grande';

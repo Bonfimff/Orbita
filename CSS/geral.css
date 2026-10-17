@@ -3271,3 +3271,15 @@ html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after 
 /* Linhas que abrem com um clique/toque */
 .linha-clicavel, #Lista-dos-produtos tbody tr, tr[data-os-id] { cursor: pointer; }
 .linha-clicavel:hover td, #Lista-dos-produtos tbody tr:hover td, tr[data-os-id]:hover td { background: rgba(168, 134, 79, .06); }
+
+/* Configurações: sessão em destaque no topo */
+.config-sessao { margin: 14px 0 4px; padding: 12px 14px; border-radius: 12px; background: #1F2D3D; color: #fff; display: flex; flex-direction: column; gap: 10px; }
+.config-sessao-linha { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; }
+.config-sessao-linha strong { color: var(--cor-primaria, #A8864F); }
+.config-sessao-senha { display: flex; gap: 8px; }
+.config-sessao-senha[hidden] { display: none; }
+.config-sessao-senha input { flex: 1; min-width: 0; padding: 9px 10px; border: 0; border-radius: 8px; font: inherit; font-size: 15px; }
+.config-sessao .config-retorno { color: #9fe3b8; }
+.config-sessao .config-retorno.erro { color: #ffb4b4; }
+.config-sessao .config-retorno:empty { display: none; }
+@media (max-width: 768px) { .config-sessao-senha input { font-size: 16px; } }
