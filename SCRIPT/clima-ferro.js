@@ -262,10 +262,22 @@
       svg.style.overflow = 'visible';
       const defs = el('defs');
       defs.appendChild(grupoLogo(id + 'k'));
+      // Profundidade: sombra suave na camada da frente e leve desfoque na de
+      // trás (como foco de câmera). Um filtro por camada, não por logo.
+      const sombra = el('filter', { id: id + 'sombra', x: '-20%', y: '-20%', width: '140%', height: '150%' });
+      sombra.appendChild(el('feDropShadow', { dx: 0.5, dy: 1.6, stdDeviation: 1.1, 'flood-color': '#000', 'flood-opacity': 0.35 }));
+      defs.appendChild(sombra);
+      const foco = el('filter', { id: id + 'foco', x: '-10%', y: '-10%', width: '120%', height: '120%' });
+      foco.appendChild(el('feGaussianBlur', { stdDeviation: 0.35 }));
+      defs.appendChild(foco);
       svg.appendChild(defs);
 
       const oleo = el('g', { fill: 'currentColor' });
       const ferro = el('g');
+      const fundo = el('g', { filter: `url(#${id}foco)` });
+      const frente = el('g', { filter: `url(#${id}sombra)` });
+      ferro.appendChild(fundo);
+      ferro.appendChild(frente);
       svg.appendChild(oleo);
       svg.appendChild(ferro);
       alvo.innerHTML = '';
@@ -276,7 +288,7 @@
       const mover = movimentoDoIcone(nome, ps);
       ps.forEach((p) => {
         p.no = el('use', { href: `#${id}k` });
-        ferro.appendChild(p.no);
+        frente.appendChild(p.no);
         if (p.t >= 9) {
           p.espicula = el('path', { d: '' });
           oleo.appendChild(p.espicula);
@@ -388,7 +400,7 @@
         quadroN = (quadroN + 1) % 12;
         if (quadroN === 0) {
           // De trás para a frente, para as logos da frente cobrirem as de trás.
-          ps.slice().sort((m, n) => m.z - n.z).forEach((p) => ferro.appendChild(p.no));
+          ps.slice().sort((m, n) => m.z - n.z).forEach((p) => (p.z < 0 ? fundo : frente).appendChild(p.no));
         }
 
         // Partículas: puxadas para o ímã, presas ao lugar por mola.
