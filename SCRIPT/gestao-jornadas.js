@@ -781,6 +781,7 @@
         if (carregado) return;
         carregado = true;
         carregarPessoas();
+        carregarAgora();
       };
       if (el('jornadas').classList.contains('active')) carregar();
       new MutationObserver(() => { if (el('jornadas').classList.contains('active')) carregar(); })

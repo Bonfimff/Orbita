@@ -33,6 +33,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   //======================================================================================================
+  // PÁGINA INICIAL
+  // Abre o módulo escolhido no cadastro do usuário (se ele tiver acesso);
+  // senão, o primeiro que ele pode ver, na mesma ordem do menu do topo.
+  //======================================================================================================
+  const PAGINAS = {
+    ordens: 'HTML/ordens.html',
+    almoxarifado: 'HTML/almoxarifado.html',
+    frota: 'HTML/frota.html',
+    jornada: 'HTML/jornada.html',
+  };
+  const ORDEM = ['ordens', 'almoxarifado', 'frota', 'jornada', 'gestao'];
+
+  function paginaDe(modulo, m) {
+    if (modulo === 'gestao') {
+      if (m.gestao) return 'HTML/gestao.html';
+      if (m.relatorios) return 'HTML/relatorios.html';
+      if (m.cadastros) return 'HTML/cadastros.html';
+      const p = m.permissoes;
+      if (m.jornada && (!p || (p.jornada_admin || {}).ver)) return 'HTML/gestao.html#jornadas';
+      return null;
+    }
+    return m[modulo] ? PAGINAS[modulo] : null;
+  }
+
+  async function destinoInicial(token) {
+    try {
+      const res = await fetch(apiUrl('/modulos'), { headers: { Authorization: 'Bearer ' + token } });
+      const info = await res.json();
+      const m = info.modulos || {};
+      const preferida = info.pagina_inicial && paginaDe(info.pagina_inicial, m);
+      if (preferida) return preferida;
+      for (const modulo of ORDEM) {
+        const pagina = paginaDe(modulo, m);
+        if (pagina) return pagina;
+      }
+    } catch (e) { /* sem resposta: segue o padrão */ }
+    return 'HTML/ordens.html';
+  }
+
+  //======================================================================================================
   // FUNÇÃO PRINCIPAL: Enviar Formulário de Login
   // Realiza a autenticação do usuário, envia os dados para o servidor e trata o retorno do login.
   //======================================================================================================
@@ -60,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Salva dados no navegador
         localStorage.setItem('usuario', JSON.stringify(result.usuario));
         localStorage.setItem('token', result.token);
-        window.location.href = 'HTML/almoxarifado.html'; // Redireciona após login
+        window.location.href = await destinoInicial(result.token);
       } else {
         errorEl.textContent = result.mensagem || 'Usuário ou senha inválidos.';
         errorEl.style.display = 'block';

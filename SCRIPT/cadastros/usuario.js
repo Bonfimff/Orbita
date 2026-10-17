@@ -48,6 +48,7 @@
     el('usuario-nome').value = u ? (u.nome || '') : '';
     el('usuario-email').value = u ? (u.email || '') : '';
     el('usuario-cargo').value = u ? (u.credencial_acesso || '') : '';
+    el('usuario-pagina-inicial').value = u ? (u.pagina_inicial || '') : '';
     el('usuario-foto').value = u ? (u.foto_url || '') : '';
     el('usuario-perfil').value = u ? (u.perfil_id || '') : '';
     el('usuario-usa-customizadas').checked = u ? !!u.usa_permissoes_customizadas : false;
@@ -108,6 +109,7 @@
       email: el('usuario-email').value,
       foto_url: el('usuario-foto').value,
       credencial_acesso: el('usuario-cargo').value,
+      pagina_inicial: el('usuario-pagina-inicial').value,
       perfil_id: el('usuario-perfil').value || null,
       usa_permissoes_customizadas: custom,
       contratos_autorizados: window.coletarContratosSelecionados(el('usuario-contratos-lista')),
