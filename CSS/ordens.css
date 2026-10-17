@@ -2664,3 +2664,12 @@ button.ponto-foto-modal-tags {
 .os-op-cracha { margin-left: auto; padding: 5px 10px; border: 1px solid #d5dbe3; border-radius: 999px; background: #fff; color: #1F2D3D; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .os-op-cracha:hover { border-color: var(--cor-primaria, #A8864F); color: var(--cor-primaria, #A8864F); }
 .os-op-cracha + .os-op-remover { margin-left: 6px; }
+/* Botão "Crachá" compacto também no celular (vence as regras gerais de botão) */
+#os-op-equipe-lista .os-op-cracha {
+  width: auto !important; min-width: 0 !important; height: auto !important; min-height: 0 !important;
+  flex: 0 0 auto !important; margin: 0 0 0 auto !important; padding: 5px 12px !important;
+  border: 1px solid #d5dbe3 !important; border-radius: 999px !important;
+  background: #fff !important; color: #1F2D3D !important; font-size: 12px !important; font-weight: 700 !important;
+  box-shadow: none !important;
+}
+#os-op-equipe-lista .os-op-card { flex-wrap: nowrap; }

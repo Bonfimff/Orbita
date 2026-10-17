@@ -130,7 +130,10 @@
       botao.addEventListener('click', async () => {
         const aba = window.open('about:blank', '_blank');   // abre já, para o navegador não bloquear
         try {
-          const dados = await chamar('GET', '/ordens/alocacoes/' + botao.dataset.cracha + '/cracha');
+          // Esta rota devolve o token direto (não dentro de "dados").
+          const resposta = await fetch(urlApi('/ordens/alocacoes/' + botao.dataset.cracha + '/cracha'), { headers: cabecalhos() });
+          const dados = await resposta.json().catch(() => ({}));
+          if (!resposta.ok || dados.status !== 'ok' || !dados.token) throw new Error(dados.mensagem || 'Não foi possível abrir o crachá.');
           const endereco = new URL('cracha.html?c=' + encodeURIComponent(dados.token), location.href).href;
           if (aba) aba.location.href = endereco; else window.open(endereco, '_blank');
         } catch (erro) {
