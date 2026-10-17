@@ -3147,3 +3147,29 @@ label > input[type="checkbox"] {
 /* Gavetas abertas: rolam por dentro sem "vazar" a rolagem para a página */
 .menu, .sino-painel { overscroll-behavior: contain; }
 @media (max-width: 768px) { .sino-painel { overflow-y: auto; -webkit-overflow-scrolling: touch; } }
+
+/* ===== Configurações (engrenagem) ===== */
+.config-overlay { position: fixed; inset: 0; z-index: 2500; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(15, 23, 42, .45); }
+.config-overlay.aberta { display: flex; }
+.config-painel { width: 100%; max-width: 520px; max-height: calc(100dvh - 32px); display: flex; flex-direction: column; overflow: hidden; border-radius: 14px; background: #fff; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+.config-cabecalho { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #1F2D3D; color: #fff; font-size: 17px; font-weight: 700; }
+.config-fechar { width: 34px; height: 34px; border: 0; border-radius: 50%; background: #fff; color: #1F2D3D; font-size: 22px; line-height: 1; cursor: pointer; }
+.config-corpo { overflow-y: auto; overscroll-behavior: contain; padding: 4px 18px 18px; }
+.config-bloco { padding: 16px 0; border-bottom: 1px solid #eef1f4; }
+.config-bloco:last-child { border-bottom: 0; }
+.config-bloco h3 { margin: 0 0 12px; font-size: 15px; color: #1F2D3D; }
+.config-bloco form { display: flex; flex-direction: column; gap: 10px; }
+.config-bloco label:not(.config-check) { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: #444; }
+.config-bloco input[type="text"], .config-bloco input[type="email"], .config-bloco input[type="password"] { padding: 9px 10px; border: 1px solid #ccc; border-radius: 8px; font: inherit; font-size: 15px; font-weight: 400; }
+.config-bloco input:focus { outline: none; border-color: var(--cor-destaque); box-shadow: 0 0 0 2px rgba(71,85,105,.2); }
+.config-bloco .btn-primario { align-self: flex-start; }
+.config-check { padding: 8px 0; font-size: 14px; color: #334155; }
+.config-linha-info { font-size: 13px; color: #64748b; }
+.config-retorno { margin: 0; min-height: 1em; font-size: 13px; color: #1a7f45; }
+.config-retorno.erro { color: #c62828; }
+.config-nota { margin: 4px 0 0; font-size: 12px; color: #94a3b8; }
+@media (max-width: 768px) { .config-bloco input[type="text"], .config-bloco input[type="email"], .config-bloco input[type="password"] { font-size: 16px; } .config-bloco .btn-primario { align-self: stretch; } }
+
+/* Preferências de tela */
+html.texto-grande body { zoom: 1.1; }
+html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after { animation: none !important; transition: none !important; }

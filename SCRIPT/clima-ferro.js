@@ -23,7 +23,8 @@
   const LIGACOES = [[0, 1], [2, 3], [3, 5], [4, 6]];
   const CENTRO = [251.5, 246];
   const UNIDADE = 400;
-  const REDUZIR = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const REDUZIR = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+    (window.KernelPreferencias && !window.KernelPreferencias.animacoes());
 
   let dadosPromessa = null;
   function dados(base) {

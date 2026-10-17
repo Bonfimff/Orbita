@@ -35,9 +35,7 @@
 
   const ARQUIVOS_CONTEUDO = [
     'conteudo-manual.js',
-    'conteudo-guia.js',
     'conteudo-faq.js',
-    'conteudo-sobre.js',
   ];
 
   const secoes = [];
@@ -60,7 +58,7 @@
     if (carregamento) return carregamento;
     carregamento = Promise.all(ARQUIVOS_CONTEUDO.map((arquivo) => new Promise((resolve) => {
       const script = document.createElement('script');
-      script.src = BASE + arquivo;
+      script.src = BASE + arquivo + '?v=3';
       // Um arquivo de conteudo que falhe nao pode derrubar a Central inteira:
       // resolve mesmo em erro, e a secao correspondente simplesmente nao aparece.
       script.onload = resolve;
@@ -150,7 +148,6 @@
       .filter(Boolean);
 
     return '<article class="ajuda-topico" id="ajuda-topico-' + escapar(topico.id) + '">' +
-      (topico.modulo ? '<span class="ajuda-modulo-tag">' + escapar(topico.modulo) + '</span>' : '') +
       '<h3 class="ajuda-topico-titulo">' + escapar(topico.titulo) + '</h3>' +
       (topico.corpo || []).map(renderBloco).join('') +
       (relacionados.length
@@ -174,32 +171,85 @@
   }
 
   //---------------------------------------------------------------- pesquisa
+  // Palavras que as pessoas usam no lugar das do manual.
+  const SINONIMOS = {
+    carro: ['veiculo'], caminhao: ['veiculo'], viatura: ['veiculo'], placa: ['veiculo'],
+    apagar: ['excluir', 'remover'], deletar: ['excluir', 'remover'], remover: ['excluir'],
+    criar: ['cadastr', 'abrir', 'nova'], novo: ['cadastr', 'nova'], adicionar: ['cadastr'],
+    mudar: ['editar', 'trocar', 'alterar'], alterar: ['editar', 'trocar'], trocar: ['alterar', 'editar'],
+    senha: ['login', 'entrar'], logar: ['entrar', 'login'], sair: ['sessao'],
+    ordem: ['o.s'], chamado: ['o.s', 'chamados'], servico: ['o.s'],
+    material: ['produto', 'estoque'], peca: ['produto', 'material'], item: ['produto'],
+    permissao: ['perfil', 'acesso'], liberar: ['permiss', 'acesso'], bloquear: ['permiss'],
+    oleo: ['alerta', 'manutencao'], revisao: ['manutencao', 'alerta'], conserto: ['manutencao'],
+    combustivel: ['abastecimento'], gasolina: ['abastecimento'], tempo: ['previsao'], clima: ['previsao'],
+    funcionario: ['equipe'], tecnico: ['equipe', 'funcionario'], cliente: ['contrato'],
+  };
+
+  function variantes(palavra) {
+    const lista = [palavra];
+    Object.keys(SINONIMOS).forEach((chave) => {
+      if (palavra.startsWith(chave) || chave.startsWith(palavra) && palavra.length >= 4) lista.push(...SINONIMOS[chave]);
+    });
+    // "veiculos" acha "veiculo": tira o plural simples.
+    if (palavra.length > 4 && palavra.endsWith('s')) lista.push(palavra.slice(0, -1));
+    return lista;
+  }
+
   function pesquisar(termo) {
     const alvo = normalizar(termo).trim();
     if (alvo.length < 2) return null;
-    const palavras = alvo.split(/\s+/);
+    const palavras = alvo.split(/\s+/).filter((p) => p.length > 1 && !['de', 'da', 'do', 'um', 'uma', 'como', 'o', 'a', 'e', 'no', 'na'].includes(p));
+    if (!palavras.length) return null;
+    const grupos = palavras.map(variantes);
     const achados = [];
 
     secoes.forEach((secao) => {
       (secao.topicos || []).filter(topicoVisivel).forEach((topico) => {
-        const texto = normalizar(textoDoTopico(topico));
-        const tituloNorm = normalizar(topico.titulo);
-        // Exige TODAS as palavras: pesquisar "retirada material" nao pode
-        // devolver tudo que fala so de material.
-        if (!palavras.every((p) => texto.includes(p))) return;
+        const original = textoDoTopico(topico) + ' ' + (topico.grupo || '');
+        const texto = normalizar(original);
+        const tituloNorm = normalizar(topico.titulo + ' ' + (topico.grupo || ''));
+        // Cada palavra pesquisada (ou um sinônimo dela) precisa aparecer.
+        if (!grupos.every((vs) => vs.some((v) => texto.includes(v)))) return;
 
-        // Titulo vale mais que corpo, para o resultado mais obvio vir primeiro.
+        // Título vale mais que o corpo; a palavra exata vale mais que o sinônimo.
         let peso = 0;
-        palavras.forEach((p) => { if (tituloNorm.includes(p)) peso += 10; });
-        const indice = texto.indexOf(palavras[0]);
-        peso += Math.max(0, 5 - Math.floor(indice / 200));
-
-        achados.push({ secao: secao, topico: topico, peso: peso, trecho: trechoDe(texto, textoDoTopico(topico), palavras[0]) });
+        grupos.forEach((vs) => {
+          if (tituloNorm.includes(vs[0])) peso += 12;
+          else if (vs.some((v) => tituloNorm.includes(v))) peso += 6;
+          if (texto.includes(vs[0])) peso += 3;
+        });
+        if (secao.id === 'manual') peso += 1;
+        const primeira = grupos[0].find((v) => texto.includes(v)) || grupos[0][0];
+        achados.push({ secao, topico, peso, termos: grupos.flat(), trecho: trechoDe(texto, original, primeira) });
       });
     });
 
     achados.sort((a, b) => b.peso - a.peso);
     return achados;
+  }
+
+  // Destaca os termos encontrados (ignorando acento e maiúsculas).
+  function comMarcacao(texto, termos) {
+    const original = String(texto);
+    const norm = normalizar(original);
+    const marcas = new Array(original.length).fill(false);
+    termos.forEach((t) => {
+      if (!t || t.length < 2) return;
+      let i = norm.indexOf(t);
+      while (i >= 0) {
+        for (let k = i; k < i + t.length; k++) marcas[k] = true;
+        i = norm.indexOf(t, i + t.length);
+      }
+    });
+    let saida = '';
+    let aberto = false;
+    for (let k = 0; k < original.length; k++) {
+      if (marcas[k] && !aberto) { saida += '<mark>'; aberto = true; }
+      if (!marcas[k] && aberto) { saida += '</mark>'; aberto = false; }
+      saida += escapar(original[k]);
+    }
+    return saida + (aberto ? '</mark>' : '');
   }
 
   function trechoDe(textoNorm, textoOriginal, palavra) {
@@ -227,7 +277,7 @@
         '</header>' +
         '<div class="ajuda-busca-area">' +
           '<input type="search" id="ajuda-busca" class="ajuda-busca" autocomplete="off" ' +
-                 'placeholder="Pesquisar no Manual, FAQ e Guia Rápido...">' +
+                 'placeholder="Buscar na ajuda (ex.: trocar status do veículo)">' +
         '</div>' +
         '<nav class="ajuda-secoes" id="ajuda-secoes" aria-label="Seções da ajuda"></nav>' +
         '<div class="ajuda-corpo">' +
@@ -245,6 +295,13 @@
     busca.addEventListener('input', () => {
       clearTimeout(debounce);
       debounce = setTimeout(() => aplicarBusca(busca.value), 150);
+    });
+    busca.addEventListener('keydown', (ev) => {
+      if (ev.key !== 'Enter') return;
+      ev.preventDefault();
+      clearTimeout(debounce);
+      const resultados = pesquisar(busca.value);
+      if (resultados && resultados.length) abrirTopico(resultados[0].topico.id);
     });
 
     // Navegacao interna (relacionados / resultados de busca / indice)
@@ -285,15 +342,23 @@
     const topicos = (secao.topicos || []).filter(topicoVisivel);
 
     const indice = overlay.querySelector('#ajuda-indice');
-    indice.innerHTML = '<span class="ajuda-indice-titulo">' + escapar(secao.rotulo) + '</span>' +
-      topicos.map((t) => '<button type="button" class="ajuda-indice-item" data-ir-topico="' +
-        escapar(t.id) + '">' + escapar(t.titulo) + '</button>').join('');
+    let grupoAtual = null;
+    indice.innerHTML = topicos.map((t) => {
+      const cabeca = t.grupo && t.grupo !== grupoAtual ? '<span class="ajuda-indice-titulo">' + escapar(t.grupo) + '</span>' : '';
+      grupoAtual = t.grupo || grupoAtual;
+      return cabeca + '<button type="button" class="ajuda-indice-item" data-ir-topico="' +
+        escapar(t.id) + '">' + escapar(t.titulo) + '</button>';
+    }).join('');
 
     const conteudo = overlay.querySelector('#ajuda-conteudo');
+    grupoAtual = null;
     conteudo.innerHTML =
-      '<div class="ajuda-trilha">Informações e Ajuda <span>›</span> ' + escapar(secao.rotulo) + '</div>' +
       (secao.descricao ? '<p class="ajuda-secao-descricao">' + comDestaque(secao.descricao) + '</p>' : '') +
-      topicos.map(renderTopico).join('');
+      topicos.map((t) => {
+        const cabeca = t.grupo && t.grupo !== grupoAtual ? '<h2 class="ajuda-grupo">' + escapar(t.grupo) + '</h2>' : '';
+        grupoAtual = t.grupo || grupoAtual;
+        return cabeca + renderTopico(t);
+      }).join('');
     conteudo.scrollTop = 0;
 
     if (idTopicoFoco) irAoTopicoNaPagina(idTopicoFoco);
@@ -331,17 +396,28 @@
       return;
     }
     conteudo.innerHTML = '<div class="ajuda-trilha">Pesquisa <span>›</span> "' + escapar(termo) + '"</div>' +
-      resultados.map((r) =>
-        '<button type="button" class="ajuda-resultado" data-ir-topico="' + escapar(r.topico.id) + '">' +
-          '<span class="ajuda-resultado-secao">' + escapar(r.secao.rotulo) +
-            (r.topico.modulo ? ' · ' + escapar(r.topico.modulo) : '') + '</span>' +
-          '<span class="ajuda-resultado-titulo">' + escapar(r.topico.titulo) + '</span>' +
-          '<span class="ajuda-resultado-trecho">' + escapar(r.trecho) + '</span>' +
-        '</button>').join('');
+      resultados.map((r, i) =>
+        '<button type="button" class="ajuda-resultado' + (i === 0 ? ' primeiro' : '') + '" data-ir-topico="' + escapar(r.topico.id) + '">' +
+          '<span class="ajuda-resultado-secao">' + escapar(r.topico.grupo || r.secao.rotulo) +
+            (r.secao.id !== 'manual' ? ' · ' + escapar(r.secao.rotulo) : '') + '</span>' +
+          '<span class="ajuda-resultado-titulo">' + comMarcacao(r.topico.titulo, r.termos) + '</span>' +
+          '<span class="ajuda-resultado-trecho">' + comMarcacao(r.trecho.replace(/\*\*/g, ''), r.termos) + '</span>' +
+        '</button>').join('') +
+      '<p class="ajuda-dica">Enter abre o primeiro resultado.</p>';
     conteudo.scrollTop = 0;
   }
 
   //------------------------------------------------------------ abrir/fechar
+  // Tópico da página em que a pessoa está (e da aba, quando houver).
+  function topicoDaPagina() {
+    const pagina = (location.pathname.split('/').pop() || '').replace(/\.html$/, '');
+    const aba = (location.hash || '').replace('#', '') ||
+      (document.querySelector('.content > .tab-content.active') || {}).id || '';
+    const doManual = (secoes.find((s) => s.id === 'manual') || {}).topicos || [];
+    const daPagina = doManual.filter((t) => t.pagina === pagina);
+    return (daPagina.find((t) => t.aba && t.aba === aba) || daPagina[0] || {}).id || null;
+  }
+
   function abrir(idSecao, idTopico) {
     if (!overlay) construir();
     overlay.classList.add('aberto');
@@ -355,7 +431,13 @@
       renderSecoes();
       const busca = overlay.querySelector('#ajuda-busca');
       if (busca) busca.value = '';
+      if (!idSecao && !idTopico) {
+        idTopico = topicoDaPagina();
+        if (idTopico) idSecao = 'manual';
+      }
       mostrarSecao(idSecao || secaoAtiva || (secoes[0] && secoes[0].id), idTopico);
+      // No computador o cursor já vai para a busca.
+      if (busca && window.matchMedia('(min-width: 769px)').matches) busca.focus({ preventScroll: true });
     });
   }
 

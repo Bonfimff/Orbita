@@ -162,6 +162,8 @@
   }
 
   function iniciar() {
+    // Desligado em Configurações: a logo fica sozinha.
+    if (window.KernelPreferencias && !window.KernelPreferencias.clima()) return;
     montar();
     // A gaveta do sino é criada pelo geral.js; espera ela existir.
     if (!montarGaveta()) {
