@@ -1541,6 +1541,7 @@ button[type="submit"]:hover, .btn-primario:hover {
 }
 
 .opcoes-abas .top-tab2.active,
+.opcoes-abas .top-tab2.ativo,
 .opcoes-abas .top-tab2.active-requisitantes {
   color: var(--cor-primaria);
   border-color: var(--cor-primaria);

@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=58" />
-  <link rel="stylesheet" href="../CSS/jornada.css?v=3" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=59" />
+  <link rel="stylesheet" href="../CSS/jornada.css?v=4" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
-  <title>Jornada</title>
+  <title>Ponto</title>
 </head>
 <body>
 
   <!-- Menu lateral -->
   <div class="menu">
-    <button class="tab-btn active" data-tab="meu-painel" data-nav-label="Minha Jornada" data-nav-icone="painel">Minha Jornada</button>
+    <button class="tab-btn active" data-tab="meu-painel" data-nav-label="Meu Ponto" data-nav-icone="painel">Meu Ponto</button>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
         <img src="../IMG/configuracoes.png" alt="Configurações">
@@ -34,14 +34,14 @@
       <span class="account-info">
         <img src="../IMG/user-icon.png" alt="Usuário" class="user-icon">
         <span id="logged-user"></span>
-        <span id="modulo-ativo">Jornada</span>
+        <span id="modulo-ativo">Ponto</span>
       </span>
     </div>
     <div class="top-bar-right">
       <button class="top-tab" id="almoxarifado-tab">Estoque</button>
       <button class="top-tab" id="frota-tab">Frota</button>
       <button class="top-tab" id="ordens-tab">Ordens de Serviço</button>
-      <button class="top-tab active" id="jornada-tab">Jornada</button>
+      <button class="top-tab active" id="jornada-tab">Ponto</button>
       <button class="top-tab" id="gestao-tab">Gestão</button>
     </div>
   </div>
@@ -51,26 +51,26 @@
 
     <!-- ===== ABA: MEU PAINEL ===== -->
     <div id="meu-painel" class="tab-content active">
-      <h2 class="aba-legenda">Minha Jornada</h2>
+      <h2 class="aba-legenda">Meu Ponto</h2>
       <hr class="aba-linha">
 
       <div class="jor-grade">
         <section id="jor-status-card" class="jor-cartao jor-status-card jor-status-fora">
           <div class="jor-status-topo">
-            <span class="jor-estado"><span class="jor-estado-ponto"></span><span id="jor-status-texto">Fora de jornada</span></span>
+            <span class="jor-estado"><span class="jor-estado-ponto"></span><span id="jor-status-texto">Fora do expediente</span></span>
             <button type="button" id="jor-btn-calendario" class="jor-btn-contorno">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
               Ver calendário
             </button>
           </div>
           <div class="jor-status-tempo" id="jor-status-tempo">--:--:--</div>
-          <div class="jor-status-detalhe" id="jor-status-detalhe">Nenhuma jornada em andamento.</div>
+          <div class="jor-status-detalhe" id="jor-status-detalhe">Nenhum registro em andamento.</div>
 
           <div class="jor-acoes">
-            <button id="jor-btn-iniciar" class="jor-btn jor-btn-principal">Iniciar jornada</button>
-            <button id="jor-btn-pausar" class="jor-btn jor-btn-secundario" style="display:none">Pausar</button>
-            <button id="jor-btn-retomar" class="jor-btn jor-btn-principal" style="display:none">Retomar</button>
-            <button id="jor-btn-finalizar" class="jor-btn jor-btn-perigo" style="display:none">Finalizar jornada</button>
+            <button id="jor-btn-iniciar" class="jor-btn jor-btn-principal">Registrar entrada</button>
+            <button id="jor-btn-pausar" class="jor-btn jor-btn-secundario" style="display:none">Iniciar intervalo</button>
+            <button id="jor-btn-retomar" class="jor-btn jor-btn-principal" style="display:none">Voltar do intervalo</button>
+            <button id="jor-btn-finalizar" class="jor-btn jor-btn-perigo" style="display:none">Registrar saída</button>
           </div>
           <div id="jor-mensagem" class="jor-mensagem"></div>
         </section>
@@ -84,13 +84,13 @@
         </section>
       </div>
 
-      <h3 class="jor-subtitulo">Meu histórico recente</h3>
+      <h3 class="jor-subtitulo">Meus registros recentes</h3>
       <div class="tabela-responsiva">
         <table class="estilo-tabela jor-tabela" id="jor-tabela-historico">
           <thead>
             <tr>
-              <th>Início</th>
-              <th>Término</th>
+              <th>Entrada</th>
+              <th>Saída</th>
               <th>Duração</th>
               <th>Status</th>
               <th>Observação</th>
@@ -110,8 +110,8 @@
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=12"></script>
-  <script src="../SCRIPT/jornada.js?v=4"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=13"></script>
+  <script src="../SCRIPT/jornada.js?v=5"></script>
 
   <!-- Calendário: escala e feriados -->
   <div id="jor-cal" class="jor-cal-fundo" hidden>

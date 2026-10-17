@@ -174,3 +174,86 @@
   .jor-cal-fundo { align-items: flex-end; padding: 0; }
   .jor-cal { max-width: none; border-radius: 16px 16px 0 0; padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
 }
+
+/* ---- Gestão › Controle de Ponto ---- */
+.ponto-secao { margin-top: 14px; }
+.ponto-barra { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; padding: 14px; margin-bottom: 14px; }
+.ponto-campo { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #64748b; }
+.ponto-campo select, .ponto-campo input {
+  min-width: 0; padding: 9px 10px; border: 1px solid #d5dbe3; border-radius: 8px; background: #fff;
+  font: inherit; font-size: 14px; font-weight: 400; color: #1F2D3D;
+}
+.ponto-barra .ponto-campo:first-child { flex: 1 1 240px; }
+.ponto-barra-acoes { display: flex; gap: 8px; margin-left: auto; }
+
+.ponto-folha-cab { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.ponto-folha-cab:empty { display: none; }
+.ponto-folha-cab strong { font-size: 17px; color: var(--cor-destaque); }
+.ponto-folha-cab span { color: #64748b; font-size: 13px; }
+.ponto-folha-cab span::first-letter { text-transform: uppercase; }
+
+.ponto-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.ponto-kpi { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px 14px; }
+.ponto-kpi span { display: block; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #94a3b8; }
+.ponto-kpi strong { display: block; margin-top: 4px; font-size: 20px; color: var(--cor-destaque); font-variant-numeric: tabular-nums; }
+.ponto-kpi.alerta strong { color: var(--cor-erro); }
+
+.ponto-tabela td { font-variant-numeric: tabular-nums; vertical-align: top; }
+.ponto-tabela small { color: #94a3b8; }
+.ponto-dia { font-weight: 700; }
+.ponto-fds td { background: #fafbfc; }
+.ponto-feriado td { background: rgba(37, 99, 235, .05); }
+.ponto-falta td:first-child { box-shadow: inset 3px 0 0 var(--cor-erro); }
+.ponto-situacao { font-size: 12px; color: #64748b; }
+.ponto-falta .ponto-situacao { color: var(--cor-erro); font-weight: 700; }
+.ponto-feriado .ponto-situacao { color: #2563eb; }
+.ponto-tag { display: inline-block; padding: 1px 7px; border-radius: 999px; background: rgba(168, 134, 79, .14); color: var(--cor-primaria-escura); font-size: 11px; font-weight: 700; }
+.ponto-clicavel { cursor: pointer; }
+.ponto-clicavel:hover td { background: #f4f1ea; }
+.ponto-assinaturas { display: none; }
+
+/* Modais do ponto (mesma base do calendário) */
+.ponto-modal { max-width: 460px; }
+.ponto-modal-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.ponto-modal-topo h3 { margin: 0; font-size: 17px; color: var(--cor-destaque); }
+.ponto-modal-topo small { display: block; margin-top: 3px; color: #64748b; font-size: 13px; }
+.ponto-modal-topo small::first-letter { text-transform: uppercase; }
+.ponto-modal-sub { margin: 16px 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #64748b; }
+.ponto-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin: 0; }
+.ponto-info dt { font-size: 11px; color: #94a3b8; font-weight: 600; }
+.ponto-info dd { margin: 2px 0 0; font-size: 14px; color: #1F2D3D; }
+.ponto-eventos { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 2px solid #eef1f4; }
+.ponto-eventos li { position: relative; padding: 0 0 10px 10px; display: flex; flex-direction: column; gap: 1px; font-size: 13px; }
+.ponto-eventos li::before { content: ""; position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; border: 2px solid #fff; }
+.ponto-eventos li.ev-inicio::before { background: var(--cor-sucesso); }
+.ponto-eventos li.ev-fim::before { background: var(--cor-destaque); }
+.ponto-eventos li.ev-pausa::before, .ponto-eventos li.ev-retorno::before { background: var(--cor-aviso); }
+.ponto-eventos li.ev-correcao::before { background: var(--cor-primaria); }
+.ponto-eventos li.ev-cancelamento::before { background: var(--cor-erro); }
+.ponto-ev-hora { font-size: 12px; color: #94a3b8; font-variant-numeric: tabular-nums; }
+.ponto-ev-tipo { font-weight: 700; color: #1F2D3D; }
+.ponto-eventos small { color: #64748b; }
+.ponto-acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.ponto-acoes:empty { display: none; }
+.ponto-form { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid #eef1f4; }
+.ponto-form-acoes { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.ponto-grade-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ponto-largo { grid-column: 1 / -1; }
+.ponto-dica { margin: 10px 0 0; font-size: 12px; color: #94a3b8; }
+
+@media (max-width: 768px) {
+  .ponto-barra-acoes { width: 100%; margin-left: 0; }
+  .ponto-barra-acoes .jor-btn { flex: 1; }
+  .ponto-info { grid-template-columns: 1fr; }
+}
+
+/* Impressão da folha de ponto: só a folha, com espaço para assinaturas */
+@media print {
+  body.imprimindo-ponto * { visibility: hidden !important; }
+  body.imprimindo-ponto #ponto-folha, body.imprimindo-ponto #ponto-folha * { visibility: visible !important; }
+  body.imprimindo-ponto #ponto-folha { position: absolute; left: 0; top: 0; width: 100%; padding: 12mm; }
+  body.imprimindo-ponto .tabela-responsiva { overflow: visible !important; max-height: none !important; }
+  body.imprimindo-ponto .ponto-tabela th { background: #eee !important; color: #000 !important; }
+  body.imprimindo-ponto .ponto-assinaturas { display: flex; justify-content: space-between; gap: 40px; margin-top: 50px; }
+  body.imprimindo-ponto .ponto-assinaturas span { flex: 1; border-top: 1px solid #000; padding-top: 6px; text-align: center; font-size: 12px; }
+}

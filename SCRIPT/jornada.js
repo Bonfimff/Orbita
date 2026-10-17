@@ -55,7 +55,7 @@
   }
 
   function badge(status) {
-    const rotulos = { aberta: 'Aberta', pausada: 'Pausada', encerrada: 'Encerrada', cancelada: 'Cancelada' };
+    const rotulos = { aberta: 'Trabalhando', pausada: 'Em intervalo', encerrada: 'Encerrada', cancelada: 'Cancelada' };
     return `<span class="jor-badge jor-badge-${status}">${rotulos[status] || status}</span>`;
   }
 
@@ -108,21 +108,21 @@
 
     if (situacao === 'em_jornada') {
       card.classList.add('jor-status-aberta');
-      texto.textContent = 'Em jornada';
-      detalhe.textContent = `Início: ${formatarDataHora(jornada.iniciado_em)}`;
+      texto.textContent = 'Trabalhando';
+      detalhe.textContent = `Entrada: ${formatarDataHora(jornada.iniciado_em)}`;
       btnPausar.style.display = '';
       btnFinalizar.style.display = '';
       iniciarCronometro(jornada.iniciado_em);
     } else if (situacao === 'em_pausa') {
       card.classList.add('jor-status-pausada');
-      texto.textContent = 'Em pausa';
-      detalhe.textContent = `Jornada iniciada em ${formatarDataHora(jornada.iniciado_em)}`;
+      texto.textContent = 'Em intervalo';
+      detalhe.textContent = `Entrada: ${formatarDataHora(jornada.iniciado_em)}`;
       btnRetomar.style.display = '';
       btnFinalizar.style.display = '';
     } else {
       card.classList.add('jor-status-fora');
-      texto.textContent = 'Fora de jornada';
-      detalhe.textContent = 'Nenhuma jornada em andamento.';
+      texto.textContent = 'Fora do expediente';
+      detalhe.textContent = 'Nenhum registro em andamento.';
       btnIniciar.style.display = '';
     }
   }
@@ -159,7 +159,7 @@
     el('jor-btn-iniciar').addEventListener('click', async () => {
       try {
         await chamar('POST', '/jornada/iniciar', {});
-        mostrarMensagem(msg, 'Jornada iniciada.', 'sucesso');
+        mostrarMensagem(msg, 'Entrada registrada.', 'sucesso');
         await carregarEstadoAtual();
         await carregarMeuHistorico();
       } catch (e) { mostrarMensagem(msg, e.message, 'erro'); }
@@ -168,7 +168,7 @@
     el('jor-btn-pausar').addEventListener('click', async () => {
       try {
         await chamar('POST', '/jornada/pausar', {});
-        mostrarMensagem(msg, 'Jornada pausada.', 'sucesso');
+        mostrarMensagem(msg, 'Intervalo iniciado.', 'sucesso');
         await carregarEstadoAtual();
       } catch (e) { mostrarMensagem(msg, e.message, 'erro'); }
     });
@@ -176,16 +176,16 @@
     el('jor-btn-retomar').addEventListener('click', async () => {
       try {
         await chamar('POST', '/jornada/retomar', {});
-        mostrarMensagem(msg, 'Jornada retomada.', 'sucesso');
+        mostrarMensagem(msg, 'Intervalo encerrado.', 'sucesso');
         await carregarEstadoAtual();
       } catch (e) { mostrarMensagem(msg, e.message, 'erro'); }
     });
 
     el('jor-btn-finalizar').addEventListener('click', async () => {
-      if (!confirm('Finalizar a jornada atual?')) return;
+      if (!confirm('Registrar a saída agora?')) return;
       try {
         await chamar('POST', '/jornada/finalizar', {});
-        mostrarMensagem(msg, 'Jornada finalizada.', 'sucesso');
+        mostrarMensagem(msg, 'Saída registrada.', 'sucesso');
         await carregarEstadoAtual();
         await carregarMeuHistorico();
       } catch (e) { mostrarMensagem(msg, e.message, 'erro'); }

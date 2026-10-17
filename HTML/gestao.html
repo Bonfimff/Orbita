@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=58" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=59" />
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
   <link rel="stylesheet" href="../CSS/gestao.css?v=12" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
-  <link rel="stylesheet" href="../CSS/jornada.css?v=3" />
+  <link rel="stylesheet" href="../CSS/jornada.css?v=4" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Gestão de Usuários</title>
@@ -29,7 +29,7 @@
       <button class="top-tab" id="almoxarifado-tab">Estoque</button>
       <button class="top-tab" id="frota-tab">Frota</button>
       <button class="top-tab" id="ordens-tab">Ordens de Serviço</button>
-      <button class="top-tab" id="jornada-tab">Jornada</button>
+      <button class="top-tab" id="jornada-tab">Ponto</button>
       <button class="top-tab active" id="gestao-tab">Gestão</button>
     </div>
   </div>
@@ -40,7 +40,7 @@
     <button class="tab-btn" data-tab="usuarios" data-nav-label="Usuários" data-nav-icone="usuarios">Usuários</button>
     <button class="tab-btn" data-tab="contratos" data-nav-label="Contratos" data-nav-icone="agenda">Contratos</button>
     <button class="tab-btn" data-tab="funcionarios" data-nav-label="Funcionários" data-nav-icone="usuarios">Funcionários</button>
-    <button class="tab-btn" data-tab="jornadas" data-permissao="jornada_admin:ver" data-nav-label="Jornadas" data-nav-icone="agenda">Controle de Jornadas</button>
+    <button class="tab-btn" data-tab="jornadas" data-permissao="jornada_admin:ver" data-nav-label="Ponto" data-nav-icone="agenda">Controle de Ponto</button>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
         <img src="../IMG/configuracoes.png" alt="Configurações">
@@ -220,57 +220,161 @@
       </div>
     </div>
 
-    <!-- ===== ABA: CONTROLE DE JORNADAS ===== -->
+    <!-- ===== ABA: CONTROLE DE PONTO ===== -->
     <div id="jornadas" class="tab-content" data-permissao="jornada_admin:ver">
-      <h3 class="jor-subtitulo">Funcionários em jornada agora</h3>
-      <div class="tabela-responsiva">
-        <table class="estilo-tabela jor-tabela" id="jor-tabela-painel">
-          <thead>
-            <tr>
-              <th>Funcionário</th>
-              <th>Contrato</th>
-              <th>Situação</th>
-              <th>Desde</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div class="opcoes-abas cad-subabas" id="ponto-subabas">
+        <button type="button" class="top-tab2 ativo" data-ponto="folha">Folha de Ponto</button>
+        <button type="button" class="top-tab2" data-ponto="agora">Em Expediente</button>
+        <button type="button" class="top-tab2" data-ponto="historico">Histórico</button>
       </div>
 
-      <h3 class="jor-subtitulo">Histórico de jornadas</h3>
-      <div class="jor-cartao jor-filtros">
-        <input type="text" id="jor-filtro-usuario" placeholder="Código do usuário" inputmode="numeric">
-        <select id="jor-filtro-status">
-          <option value="">Todos os status</option>
-          <option value="aberta">Aberta</option>
-          <option value="pausada">Pausada</option>
-          <option value="encerrada">Encerrada</option>
-          <option value="cancelada">Cancelada</option>
-        </select>
-        <input type="date" id="jor-filtro-inicio">
-        <input type="date" id="jor-filtro-fim">
-        <button id="jor-btn-buscar" class="jor-btn jor-btn-principal">Buscar</button>
-      </div>
-      <div class="tabela-responsiva">
-        <table class="estilo-tabela jor-tabela" id="jor-tabela-busca">
-          <thead>
-            <tr>
-              <th>Funcionário</th>
-              <th>Contrato</th>
-              <th>Início</th>
-              <th>Término</th>
-              <th>Duração</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+      <!-- Folha de ponto -->
+      <section class="ponto-secao" id="ponto-sec-folha">
+        <div class="jor-cartao ponto-barra">
+          <label class="ponto-campo">
+            <span>Funcionário</span>
+            <select id="ponto-pessoa"><option value="">Carregando...</option></select>
+          </label>
+          <label class="ponto-campo">
+            <span>Mês</span>
+            <input type="month" id="ponto-mes">
+          </label>
+          <div class="ponto-barra-acoes">
+            <button type="button" class="jor-btn jor-btn-secundario" id="ponto-imprimir">Imprimir</button>
+            <button type="button" class="jor-btn jor-btn-principal" id="ponto-lancar" data-permissao="jornada_admin:editar">+ Lançar jornada</button>
+          </div>
+        </div>
+
+        <div id="ponto-folha" class="ponto-folha">
+          <div class="ponto-folha-cab" id="ponto-folha-cab"></div>
+          <div class="ponto-kpis" id="ponto-kpis"></div>
+          <div class="tabela-responsiva">
+            <table class="estilo-tabela jor-tabela ponto-tabela" id="ponto-tabela">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Entrada</th>
+                  <th>Intervalo</th>
+                  <th>Saída</th>
+                  <th>Trabalhado</th>
+                  <th>Situação</th>
+                </tr>
+              </thead>
+              <tbody><tr><td colspan="6">Escolha um funcionário.</td></tr></tbody>
+            </table>
+          </div>
+          <div class="ponto-assinaturas">
+            <span>Assinatura do funcionário</span>
+            <span>Assinatura do responsável</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Em expediente agora -->
+      <section class="ponto-secao" id="ponto-sec-agora" hidden>
+        <div class="tabela-responsiva">
+          <table class="estilo-tabela jor-tabela" id="jor-tabela-painel">
+            <thead>
+              <tr>
+                <th>Funcionário</th>
+                <th>Contrato</th>
+                <th>Situação</th>
+                <th>Desde</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Histórico -->
+      <section class="ponto-secao" id="ponto-sec-historico" hidden>
+        <div class="jor-cartao jor-filtros">
+          <select id="jor-filtro-usuario"><option value="">Todos os funcionários</option></select>
+          <select id="jor-filtro-status">
+            <option value="">Todas as situações</option>
+            <option value="aberta">Trabalhando</option>
+            <option value="pausada">Em intervalo</option>
+            <option value="encerrada">Encerrada</option>
+            <option value="cancelada">Cancelada</option>
+          </select>
+          <input type="date" id="jor-filtro-inicio" aria-label="De">
+          <input type="date" id="jor-filtro-fim" aria-label="Até">
+          <button id="jor-btn-buscar" class="jor-btn jor-btn-principal">Buscar</button>
+        </div>
+        <div class="tabela-responsiva">
+          <table class="estilo-tabela jor-tabela" id="jor-tabela-busca">
+            <thead>
+              <tr>
+                <th>Funcionário</th>
+                <th>Contrato</th>
+                <th>Entrada</th>
+                <th>Saída</th>
+                <th>Trabalhado</th>
+                <th>Situação</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
       <div id="jor-admin-mensagem" class="jor-mensagem"></div>
     </div>
 
+  </div>
+
+  <!-- ===== PONTO: DETALHE DA JORNADA ===== -->
+  <div id="ponto-detalhe" class="jor-cal-fundo" hidden>
+    <div class="jor-cal ponto-modal" role="dialog" aria-modal="true" aria-labelledby="ponto-detalhe-titulo">
+      <div class="ponto-modal-topo">
+        <div>
+          <h3 id="ponto-detalhe-titulo"></h3>
+          <small id="ponto-detalhe-sub"></small>
+        </div>
+        <button type="button" class="jor-cal-fechar" data-fechar aria-label="Fechar">&times;</button>
+      </div>
+      <dl class="ponto-info" id="ponto-detalhe-info"></dl>
+      <h4 class="ponto-modal-sub">Linha do tempo</h4>
+      <ol class="ponto-eventos" id="ponto-detalhe-eventos"></ol>
+      <div class="ponto-acoes" id="ponto-detalhe-acoes" data-permissao="jornada_admin:editar"></div>
+      <form class="ponto-form" id="ponto-corrigir" hidden>
+        <label class="ponto-campo"><span id="ponto-corrigir-rotulo">Novo horário</span><input type="datetime-local" id="ponto-corrigir-valor" required></label>
+        <label class="ponto-campo"><span>Motivo</span><input type="text" id="ponto-corrigir-motivo" maxlength="200" required placeholder="Ex.: esqueceu de registrar"></label>
+        <div class="ponto-form-acoes">
+          <button type="button" class="jor-btn jor-btn-secundario" id="ponto-corrigir-cancelar">Cancelar</button>
+          <button type="submit" class="jor-btn jor-btn-principal">Salvar correção</button>
+        </div>
+      </form>
+      <div class="jor-mensagem" id="ponto-detalhe-msg"></div>
+    </div>
+  </div>
+
+  <!-- ===== PONTO: LANÇAR JORNADA ===== -->
+  <div id="ponto-lancamento" class="jor-cal-fundo" hidden>
+    <form class="jor-cal ponto-modal" id="ponto-form-lancar" role="dialog" aria-modal="true" aria-labelledby="ponto-lancar-titulo">
+      <div class="ponto-modal-topo">
+        <div>
+          <h3 id="ponto-lancar-titulo">Lançar jornada</h3>
+          <small>Para quando o funcionário não conseguiu registrar o ponto.</small>
+        </div>
+        <button type="button" class="jor-cal-fechar" data-fechar aria-label="Fechar">&times;</button>
+      </div>
+      <div class="ponto-grade-form">
+        <label class="ponto-campo ponto-largo"><span>Funcionário</span><select id="lancar-pessoa" required></select></label>
+        <label class="ponto-campo ponto-largo"><span>Data</span><input type="date" id="lancar-data" required></label>
+        <label class="ponto-campo"><span>Entrada</span><input type="time" id="lancar-entrada" required></label>
+        <label class="ponto-campo"><span>Saída</span><input type="time" id="lancar-saida" required></label>
+        <label class="ponto-campo"><span>Intervalo de</span><input type="time" id="lancar-int-ini"></label>
+        <label class="ponto-campo"><span>Intervalo até</span><input type="time" id="lancar-int-fim"></label>
+        <label class="ponto-campo ponto-largo"><span>Motivo</span><input type="text" id="lancar-motivo" maxlength="200" required placeholder="Ex.: celular sem bateria"></label>
+      </div>
+      <p class="ponto-dica">Saída antes da entrada conta como o dia seguinte (turno da noite).</p>
+      <div class="jor-mensagem" id="ponto-lancar-msg"></div>
+      <div class="ponto-form-acoes">
+        <button type="button" class="jor-btn jor-btn-secundario" data-fechar>Cancelar</button>
+        <button type="submit" class="jor-btn jor-btn-principal">Lançar</button>
+      </div>
+    </form>
   </div>
 
   <!-- Sidebar direita Gestão -->
@@ -324,17 +428,17 @@
 
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
-  <script src="../SCRIPT/gestao.js?v=17"></script>
+  <script src="../SCRIPT/gestao.js?v=18"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
   <script src="../SCRIPT/geral.js?v=40"></script>
   <script src="../SCRIPT/configuracoes.js?v=6"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=12"></script>
-  <script src="../SCRIPT/gestao-nav.js?v=11"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=13"></script>
+  <script src="../SCRIPT/gestao-nav.js?v=12"></script>
   <script src="../SCRIPT/gestao-funcionarios.js?v=4"></script>
-  <script src="../SCRIPT/gestao-jornadas.js?v=1"></script>
+  <script src="../SCRIPT/gestao-jornadas.js?v=2"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/relatorios/graficos.js?v=1"></script>
   <script src="../SCRIPT/contexto/painel.js?v=2"></script>
