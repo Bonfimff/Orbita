@@ -112,7 +112,7 @@
     if (p.casca.z >= 0) {
       p.opacidade = 1;
     } else {
-      const luz = 0.5 + 0.5 * Math.sin(t * 0.7 - p.casca.nx * 2.6);
+      const luz = 0.5 + 0.5 * Math.sin(t * 0.22 - p.casca.nx * 2.6);   // bem devagar
       p.opacidade = 0.35 + 0.35 * luz;
     }
   }
@@ -132,22 +132,31 @@
       return (t) => {
         repor();
         ps.forEach((p) => profundidade(p, t));
-        // Gira rígido no plano (raios incluídos) em volta do centro do sol:
-        // todas as logos giram juntas, então a geometria não muda.
-        const a = t * 0.12;
-        const c = Math.cos(a);
-        const sn = Math.sin(a);
+        // Bola do meio: gira em volta do próprio centro (as logos giram junto).
+        // Raios: dão a volta no sol no sentido horário, como ponteiros de
+        // relógio, sempre apontando para fora e sem girar sobre si mesmos.
         ps.forEach((p) => {
+          const disco = p.grupo === 'disco';
+          const a = disco ? t * 0.14 : t * 0.05;
+          const c = Math.cos(a);
+          const sn = Math.sin(a);
           const dx = p.rx - 150;
           const dy = p.ry - 100;
           p.rx = 150 + dx * c - dy * sn;
           p.ry = 100 + dx * sn + dy * c;
-          p.ang = a;                      // a própria logo gira junto
+          p.ang = disco ? a : 0;
         });
       };
     }
 
     if (nome === 'vento') {
+      // Cada corrente tem o próprio óleo: uma não liga na outra.
+      ps.forEach((p) => {
+        if ((p.x0 > 195 && p.y0 < 100) || p.y0 < 97) p.grupo = 'topo';
+        else if (p.y0 < 128 || p.x0 > 238) p.grupo = 'meio';
+        else p.grupo = 'baixo';
+        p.poucasPontes = true;
+      });
       return (t) => {
         repor();
         ps.forEach((p) => {
@@ -284,6 +293,8 @@
         if (a.casca && b.casca && Math.sign(a.casca.z) !== Math.sign(b.casca.z)) return;
         // Partes diferentes do desenho (disco x raio, sol x nuvem...) não se ligam.
         if ((a.grupo || '') !== (b.grupo || '')) return;
+        // Vento: menos ligações, para o traço continuar leve.
+        if (a.poucasPontes && Math.random() < 0.5) return;
         const dist = Math.hypot(a.x - b.x, a.y - b.y);
         if (dist < (a.t + b.t) * 0.95) cand.push([dist, i, j]);
       }));
