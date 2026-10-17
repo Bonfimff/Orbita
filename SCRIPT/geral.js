@@ -433,110 +433,66 @@ document.addEventListener('DOMContentLoaded', async function () {
       animation: fadeIn 0.3s ease;
     `;
     
-    // Conteúdo do modal
+    // Conteúdo do modal: crachá digital. Os dados vêm de /conta (sempre
+    // atualizados); até lá aparece o que já está guardado no navegador.
     const modalContent = document.createElement('div');
-    modalContent.style.cssText = `
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-      position: relative;
-      animation: slideIn 0.3s ease;
-    `;
-    
-    // Obtém dados do usuário
+    modalContent.className = 'cracha';
+
     const usuarioCompleto = JSON.parse(localStorage.getItem('usuario') || '{}');
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     const imagemUsuario = localStorage.getItem(`imagem_usuario_${userId}`);
-    
-    // HTML do modal
+    const SEM_FOTO = '../IMG/user-icon.png';
+    const nomeInicial = username || usuarioCompleto.username || 'Usuário';
+
     modalContent.innerHTML = `
-      <div style="position: absolute; top: 10px; right: 15px;">
-        <button id="close-profile-modal" style="
-          background: none;
-          border: none;
-          font-size: 24px;
-          cursor: pointer;
-          color: #666;
-          padding: 0;
-          width: 30px;
-          height: 30px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        ">×</button>
+      <button id="close-profile-modal" type="button" class="cracha-fechar" data-fechar-flutuante aria-label="Fechar">&times;</button>
+      <div class="cracha-topo">
+        <span class="cracha-furo" aria-hidden="true"></span>
+        <img src="../IMG/Logoescura.png" alt="KERNEL" class="cracha-logo">
+        <span class="cracha-rotulo">Crachá digital</span>
       </div>
-      
-      <div style="margin-bottom: 20px;">
-        <img id="profile-photo" src="${imagemUsuario || '../IMG/default-user.png'}" 
-             style="
-               width: 100px;
-               height: 100px;
-               border-radius: 50%;
-               object-fit: cover;
-               border: 4px solid #475569;
-               margin-bottom: 15px;
-               cursor: pointer;
-               transition: transform 0.2s ease, box-shadow 0.2s ease;
-             "
-             title="Clique para expandir a foto">
-        <h3 style="margin: 0; color: #333; font-size: 24px;">${username || usuarioCompleto.username || 'Usuário'}</h3>
+      <div class="cracha-identidade">
+        <img id="profile-photo" class="cracha-foto" src="${imagemUsuario || SEM_FOTO}" alt="Foto"
+             onerror="this.onerror=null;this.src='${SEM_FOTO}'" title="Clique para ampliar a foto">
+        <h3 class="cracha-nome" id="cracha-nome">${nomeInicial}</h3>
+        <span class="cracha-cargo" id="cracha-cargo"></span>
       </div>
-      
-      <div style="text-align: left; margin: 20px 0;">
-        <div style="margin-bottom: 12px;">
-          <strong style="color: #666;">ID:</strong> 
-          <span style="color: #333;">${userId || 'N/A'}</span>
-        </div>
-        
-        <div style="margin-bottom: 12px;">
-          <strong style="color: #666;">Email:</strong> 
-          <span style="color: #333;">${usuarioCompleto.email || 'N/A'}</span>
-        </div>
-        
-        <div style="margin-bottom: 12px;">
-          <strong style="color: #666;">Tipo:</strong> 
-          <span style="color: #333;">${usuarioCompleto.tipo || 'N/A'}</span>
-        </div>
-        
-        <div style="margin-bottom: 12px;">
-          <strong style="color: #666;">Status:</strong> 
-          <span style="color: #28a745;">●</span> 
-          <span style="color: #333;">Online</span>
-        </div>
-        
-        <div style="margin-bottom: 12px;">
-          <strong style="color: #666;">Token expira em:</strong> 
-          <span id="token-countdown" style="color: #007bff; font-weight: bold;">${calcularTempoRestanteToken()}</span>
-        </div>
+      <dl class="cracha-ficha">
+        <div><dt>Usuário</dt><dd id="cracha-usuario">${username || '-'}</dd></div>
+        <div><dt>Matrícula</dt><dd>${userId ? String(userId).padStart(5, '0') : '-'}</dd></div>
+        <div class="cracha-largo"><dt>E-mail</dt><dd id="cracha-email">${usuarioCompleto.email || '-'}</dd></div>
+        <div><dt>Perfil</dt><dd id="cracha-perfil">-</dd></div>
+        <div><dt>Tipo sanguíneo</dt><dd><span class="cracha-sangue" id="cracha-sangue">-</span></dd></div>
+      </dl>
+      <div class="cracha-sessao">
+        <span><i class="cracha-online"></i>Online</span>
+        <span>Sessão expira em <strong id="token-countdown">${calcularTempoRestanteToken()}</strong></span>
       </div>
-      
-      <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: center;">
-        <button id="refresh-token-btn" style="
-          background-color: #007bff;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 14px;
-        ">Renovar Token</button>
-        
-        <button id="logout-from-modal" style="
-          background-color: #dc3545;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 14px;
-        ">Sair</button>
+      <div class="cracha-acoes">
+        <button id="refresh-token-btn" type="button" class="btn-secundario">Renovar sessão</button>
+        <button id="logout-from-modal" type="button" class="cracha-sair">Sair</button>
       </div>
     `;
-    
+
+    (async () => {
+      try {
+        const resp = await fetch(apiUrl('/conta'), { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } });
+        const dados = await resp.json();
+        if (dados.status !== 'ok') return;
+        const c = dados.conta;
+        const preencher = (id, valor) => { const el = modalContent.querySelector('#' + id); if (el) el.textContent = valor || '-'; };
+        preencher('cracha-nome', c.nome || c.usuario);
+        preencher('cracha-usuario', c.usuario);
+        preencher('cracha-email', c.email);
+        preencher('cracha-perfil', c.perfil);
+        preencher('cracha-sangue', c.tipo_sanguineo);
+        modalContent.querySelector('#cracha-sangue').classList.toggle('vazio', !c.tipo_sanguineo);
+        const cargo = modalContent.querySelector('#cracha-cargo');
+        cargo.textContent = c.cargo || '';
+        cargo.hidden = !c.cargo;
+        if (c.foto_url && !imagemUsuario) modalContent.querySelector('#profile-photo').src = c.foto_url;
+      } catch (e) { /* sem conexão: fica com os dados locais */ }
+    })();
+
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
     

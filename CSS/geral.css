@@ -3173,3 +3173,31 @@ label > input[type="checkbox"] {
 /* Preferências de tela */
 html.texto-grande body { zoom: 1.1; }
 html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after { animation: none !important; transition: none !important; }
+
+/* ===== Crachá digital (perfil do usuário) ===== */
+.cracha { position: relative; width: 100%; max-width: 340px; overflow: hidden; border-radius: 16px; background: #fff; box-shadow: 0 18px 45px rgba(0,0,0,.3); animation: slideIn .3s ease; }
+.cracha-fechar { position: absolute; top: 10px; right: 10px; z-index: 2; width: 32px; height: 32px; border: 0; border-radius: 50%; background: rgba(255,255,255,.95); color: #1F2D3D; font-size: 20px; line-height: 1; cursor: pointer; }
+.cracha-topo { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 26px 16px 46px; background: #1F2D3D; }
+.cracha-furo { position: absolute; top: 10px; left: 50%; width: 44px; height: 8px; margin-left: -22px; border-radius: 6px; background: rgba(255,255,255,.18); }
+.cracha-logo { height: 26px; width: auto; }
+.cracha-rotulo { font-size: 10.5px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--cor-primaria, #A8864F); }
+.cracha-identidade { display: flex; flex-direction: column; align-items: center; margin-top: -40px; padding: 0 18px; text-align: center; }
+.cracha-foto { width: 96px; height: 112px; object-fit: cover; border-radius: 12px; border: 4px solid #fff; background: #e9edf2; box-shadow: 0 4px 14px rgba(0,0,0,.18); cursor: pointer; }
+.cracha-nome { margin: 12px 0 2px; font-size: 21px; color: #1F2D3D; }
+.cracha-cargo { font-size: 13px; font-weight: 600; color: var(--cor-primaria, #A8864F); }
+.cracha-ficha { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; margin: 18px 18px 0; padding: 14px 0 0; border-top: 1px dashed #d5dbe3; }
+.cracha-ficha div { min-width: 0; }
+.cracha-ficha .cracha-largo { grid-column: 1 / -1; }
+.cracha-ficha dt { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #94a3b8; }
+.cracha-ficha dd { margin: 2px 0 0; font-size: 14px; font-weight: 600; color: #1F2D3D; overflow-wrap: anywhere; }
+.cracha-sangue { display: inline-block; min-width: 38px; padding: 2px 8px; border-radius: 6px; background: #c62828; color: #fff; font-weight: 800; text-align: center; }
+.cracha-sangue.vazio { background: #e5e7eb; color: #64748b; font-weight: 600; }
+.cracha-sessao { display: flex; justify-content: space-between; gap: 8px; margin: 16px 18px 0; padding: 10px 12px; border-radius: 10px; background: #f8fafc; font-size: 12px; color: #64748b; }
+.cracha-sessao strong { color: #1F2D3D; }
+.cracha-online { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: #1a9e55; }
+.cracha-acoes { display: flex; gap: 10px; padding: 16px 18px 18px; }
+.cracha-acoes button { flex: 1; }
+.cracha-sair { padding: 10px 16px; border: 0; border-radius: 8px; background: #c62828; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.cracha-sair:hover { background: #a61f1f; }
+
+.config-bloco select { padding: 9px 10px; border: 1px solid #ccc; border-radius: 8px; font: inherit; font-size: 15px; font-weight: 400; background: #fff; }

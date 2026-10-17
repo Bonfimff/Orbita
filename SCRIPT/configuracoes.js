@@ -57,6 +57,12 @@
               <div class="config-linha-info" id="config-usuario"></div>
               <label>Nome <input type="text" id="config-nome" maxlength="150" required></label>
               <label>E-mail <input type="email" id="config-email" maxlength="150"></label>
+              <label>Tipo sanguíneo
+                <select id="config-sangue">
+                  <option value="">Não informado</option>
+                  ${['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((t) => `<option>${t}</option>`).join('')}
+                </select>
+              </label>
               <button type="submit" class="btn-primario">Salvar dados</button>
               <p class="config-retorno" id="config-conta-retorno" role="status"></p>
             </form>
@@ -112,7 +118,11 @@
     janela.querySelector('#config-conta').addEventListener('submit', async (e) => {
       e.preventDefault();
       const retorno = janela.querySelector('#config-conta-retorno');
-      await enviar('/conta', { nome: janela.querySelector('#config-nome').value, email: janela.querySelector('#config-email').value }, retorno);
+      await enviar('/conta', {
+        nome: janela.querySelector('#config-nome').value,
+        email: janela.querySelector('#config-email').value,
+        tipo_sanguineo: janela.querySelector('#config-sangue').value,
+      }, retorno);
     });
 
     janela.querySelector('#config-senha').addEventListener('submit', async (e) => {
@@ -157,6 +167,7 @@
       usuario.innerHTML = `Usuário: <strong>${escapar(c.usuario)}</strong>${c.cargo ? ' · ' + escapar(c.cargo) : ''}`;
       janela.querySelector('#config-nome').value = c.nome;
       janela.querySelector('#config-email').value = c.email;
+      janela.querySelector('#config-sangue').value = c.tipo_sanguineo || '';
       bloquear('#config-conta', !c.pode_editar_dados, 'Seu perfil não permite alterar estes dados.');
       bloquear('#config-senha', !c.pode_trocar_senha, 'Seu perfil não permite trocar a senha. Fale com o administrador.');
     } catch (e) {
@@ -166,7 +177,7 @@
 
   function bloquear(seletor, bloquear, aviso) {
     const form = janela.querySelector(seletor);
-    form.querySelectorAll('input, button').forEach((c) => { c.disabled = bloquear; });
+    form.querySelectorAll('input, select, button').forEach((c) => { c.disabled = bloquear; });
     const retorno = form.querySelector('.config-retorno');
     if (bloquear) mostrarRetorno(retorno, aviso, true);
     else if (retorno.classList.contains('erro') && retorno.textContent === aviso) mostrarRetorno(retorno, '', false);
