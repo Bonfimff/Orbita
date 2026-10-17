@@ -67,6 +67,114 @@
     return [p.x + (HEX[i][0] - CENTRO[0]) / UNIDADE * p.t, p.y + (HEX[i][1] - CENTRO[1]) / UNIDADE * p.t];
   }
 
+  // ---------------------------------------------------------------- movimento
+  // Cada ícone tem um movimento próprio, aplicado à posição de repouso das
+  // logos (o ímã e a mola continuam por cima):
+  //  - formas cheias (disco do sol, nuvens) são tratadas como um objeto OCO:
+  //    as logos grandes ficam na casca da frente e as pequenas na de trás.
+  //    A forma gira devagar em torno do eixo vertical; as de trás ficam
+  //    menores e mais apagadas e andam ao contrário das da frente (paralaxe);
+  //  - sol: além disso, roda devagar no plano, com os raios;
+  //  - vento: uma onda percorre as correntes e a espiral balança;
+  //  - tempestade: a chuva cai e some.
+  function casca(ps, filtro) {
+    const corpo = ps.filter(filtro);
+    if (!corpo.length) return null;
+    const xs = corpo.map((p) => p.x0);
+    const ys = corpo.map((p) => p.y0);
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+    const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    const rx = (Math.max(...xs) - Math.min(...xs)) / 2 + 4;
+    const ry = (Math.max(...ys) - Math.min(...ys)) / 2 + 4;
+    const tamanhos = corpo.map((p) => p.t0).sort((a, b) => a - b);
+    const mediana = tamanhos[Math.floor(tamanhos.length / 2)];
+    corpo.forEach((p) => {
+      const nx = (p.x0 - cx) / rx;
+      const ny = (p.y0 - cy) / ry;
+      const fundo = Math.sqrt(Math.max(0.08, 1 - nx * nx - ny * ny));
+      p.casca = { nx, z: p.t0 >= mediana ? fundo : -fundo };
+    });
+    return { cx, rx };
+  }
+
+  function girar3D(p, forma, angulo) {
+    if (!p.casca) return;
+    const c = Math.cos(angulo);
+    const sn = Math.sin(angulo);
+    const nx = p.casca.nx * c + p.casca.z * sn;
+    const z = -p.casca.nx * sn + p.casca.z * c;
+    p.rx = forma.cx + nx * forma.rx;
+    p.z = z;
+    p.t = p.t0 * (1 + 0.1 * z);
+    p.opacidade = 0.4 + 0.6 * (z + 1) / 2;
+  }
+
+  function movimentoDoIcone(nome, ps) {
+    const repor = () => ps.forEach((p) => { p.rx = p.x0; p.ry = p.y0; p.t = p.t0; p.z = p.casca ? p.casca.z : 0; p.opacidade = 1; });
+
+    if (nome === 'sol') {
+      const forma = casca(ps, (p) => Math.hypot(p.x0 - 150, p.y0 - 100) < 58);
+      return (t) => {
+        repor();
+        ps.forEach((p) => girar3D(p, forma, 0.3 * Math.sin(t * 0.5)));
+        // Roda no plano (raios incluídos) em volta do centro do sol.
+        const a = t * 0.12;
+        const c = Math.cos(a);
+        const sn = Math.sin(a);
+        ps.forEach((p) => {
+          const dx = p.rx - 150;
+          const dy = p.ry - 100;
+          p.rx = 150 + dx * c - dy * sn;
+          p.ry = 100 + dx * sn + dy * c;
+        });
+      };
+    }
+
+    if (nome === 'vento') {
+      return (t) => {
+        repor();
+        ps.forEach((p) => {
+          // Onda correndo da esquerda para a direita, mais forte na ponta.
+          const amplitude = 0.8 + 4.2 * (p.x0 / 300);
+          p.ry = p.y0 + amplitude * Math.sin(0.065 * p.x0 - 2.3 * t);
+          p.rx = p.x0 + 1.5 * Math.sin(0.04 * p.y0 - 1.7 * t);
+          // A espiral de cima balança em volta do próprio centro.
+          if (p.x0 > 196 && p.y0 < 100) {
+            const a = 0.22 * Math.sin(t * 1.1);
+            const dx = p.rx - 225;
+            const dy = p.ry - 68;
+            p.rx = 225 + dx * Math.cos(a) - dy * Math.sin(a);
+            p.ry = 68 + dx * Math.sin(a) + dy * Math.cos(a);
+          }
+          // As pequenas parecem mais longe: mais apagadas.
+          p.opacidade = Math.min(1, 0.55 + p.t0 / 20);
+        });
+      };
+    }
+
+    if (nome === 'tempestade') {
+      const forma = casca(ps, (p) => p.y0 < 120);
+      const chuva = ps.filter((p) => p.y0 >= 126 && (p.x0 < 118 || p.x0 > 205));
+      return (t) => {
+        repor();
+        ps.forEach((p) => girar3D(p, forma, 0.22 * Math.sin(t * 0.4)));
+        chuva.forEach((p) => {
+          const queda = (t * 22 + p.x0 * 1.7) % 26;
+          p.ry = p.y0 + queda;
+          p.rx = p.x0 - queda * 0.35;
+          p.opacidade = 1 - queda / 26;
+        });
+      };
+    }
+
+    // Nuvem e sol com nuvem: objeto oco girando devagar.
+    const forma = casca(ps, () => true);
+    return (t) => {
+      repor();
+      ps.forEach((p) => girar3D(p, forma, 0.24 * Math.sin(t * 0.4)));
+    };
+  }
+
   let contador = 0;
 
   function montar(alvo, nome, opcoes) {
@@ -105,7 +213,8 @@
       alvo.appendChild(svg);
 
       // Partículas (logos): posição de repouso, posição atual e velocidade.
-      const ps = lista.map(([x, y, t]) => ({ rx: x, ry: y, x, y, vx: 0, vy: 0, t }));
+      const ps = lista.map(([x, y, t]) => ({ x0: x, y0: y, rx: x, ry: y, x, y, vx: 0, vy: 0, t, t0: t, z: 0 }));
+      const mover = movimentoDoIcone(nome, ps);
       ps.forEach((p) => {
         p.no = el('use', { href: `#${id}k` });
         ferro.appendChild(p.no);
@@ -121,6 +230,8 @@
       const cand = [];
       ps.forEach((a, i) => ps.forEach((b, j) => {
         if (j <= i || Math.min(a.t, b.t) < 5) return;
+        // Frente só liga com frente e fundo com fundo (camadas do objeto oco).
+        if (a.casca && b.casca && Math.sign(a.casca.z) !== Math.sign(b.casca.z)) return;
         const dist = Math.hypot(a.x - b.x, a.y - b.y);
         if (dist < (a.t + b.t) * 0.95) cand.push([dist, i, j]);
       }));
@@ -170,6 +281,7 @@
 
       const RAIO_IMA = 55;
       let inicio = performance.now();
+      let quadroN = 0;
 
       function passo(agora) {
         if (parado) return;
@@ -199,6 +311,15 @@
         ima.mvx = (ima.mvx || 0) * 0.94;
         ima.mvy = (ima.mvy || 0) * 0.94;
 
+        // Movimento próprio do ícone (giro em 3D, sol rodando, onda do vento,
+        // chuva caindo): define onde cada logo "mora" neste quadro.
+        mover(t);
+        quadroN = (quadroN + 1) % 12;
+        if (quadroN === 0) {
+          // De trás para a frente, para as logos da frente cobrirem as de trás.
+          ps.slice().sort((m, n) => m.z - n.z).forEach((p) => ferro.appendChild(p.no));
+        }
+
         // Partículas: puxadas para o ímã, presas ao lugar por mola.
         ps.forEach((p) => {
           const dx = ima.x - p.rx;
@@ -213,7 +334,8 @@
           p.vy = (p.vy + (ay - p.y) * 0.07) * 0.8;
           p.x += p.vx;
           p.y += p.vy;
-          p.no.setAttribute('transform', `translate(${p.x.toFixed(2)} ${p.y.toFixed(2)}) scale(${p.t})`);
+          p.no.setAttribute('transform', `translate(${p.x.toFixed(2)} ${p.y.toFixed(2)}) scale(${p.t.toFixed(2)})`);
+          p.no.setAttribute('opacity', p.opacidade == null ? 1 : p.opacidade.toFixed(2));
 
           // Gota puxada pelo ímã: base larga, lados abaulados e ponta redonda,
           // como óleo grosso. Cresce e murcha devagar (viscosidade) e, sem o
@@ -258,6 +380,12 @@
         pontes.forEach((b) => {
           const A = hexNoMundo(b.a, b.ha);
           const B = hexNoMundo(b.b, b.hb);
+          // Esticou demais (o giro afastou as duas): a ponte rompe.
+          if (!b.comp0) b.comp0 = Math.hypot(B[0] - A[0], B[1] - A[1]) || 1;
+          const esticou = Math.hypot(B[0] - A[0], B[1] - A[1]) > b.comp0 * 1.8 + 3;
+          const opac = Math.min(b.a.opacidade == null ? 1 : b.a.opacidade, b.b.opacidade == null ? 1 : b.b.opacidade);
+          b.lados[0].setAttribute('opacity', opac.toFixed(2));
+          b.lados[1].setAttribute('opacity', opac.toFixed(2));
           const mx = (A[0] + B[0]) / 2;
           const my = (A[1] + B[1]) / 2;
           const dIma = Math.hypot(ima.x - mx, ima.y - my);
@@ -276,7 +404,7 @@
           }
           // Mexendo o mouse, o arrasto manda mais que a atração parada.
           const movimento = ima.alvo ? Math.min(1, vel / 1.2) : 0;
-          const alvoE = Math.max(b.minimo, Math.min(1,
+          const alvoE = esticou ? 0 : Math.max(b.minimo, Math.min(1,
             perto * (0.4 + 1.6 * F) * (1 - 0.75 * movimento) + 0.45 * Math.sin(t * b.ritmo + b.fase) * (1 - 0.5 * F) + 0.05 + arrasto));
           // Viscosidade: segue o alvo devagar; afinar é mais lento que esticar.
           b.e += (alvoE - b.e) * (alvoE > b.e ? 0.045 : 0.025);
@@ -320,7 +448,7 @@
             return 'M' + esq.join('L') + 'L' + dir.reverse().join('L') + 'Z';
           }
           const w = b.w * (0.6 + 0.4 * Math.min(1, e * 2)) * (1 + 0.6 * perto * F + 0.5 * Math.max(0, arrasto));
-          if (e < 0.03) {
+          if (e < 0.03 || esticou) {
             b.lados[0].setAttribute('d', '');
             b.lados[1].setAttribute('d', '');
           } else if (unido) {
