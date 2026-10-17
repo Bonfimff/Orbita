@@ -105,7 +105,7 @@
       '<div><strong>' + escapar(nomeDe(m)) + '</strong>' +
       (m.funcao_nome ? ' <span style="color:#666;">(' + escapar(m.funcao_nome) + ')</span>' : '') +
       '</div>' +
-      '<button type="button" class="os-op-cracha" data-cracha="' + m.id + '" title="Ver crachá" aria-label="Ver crachá de ' + escapar(nomeDe(m)) + '">Crachá</button>' +
+      '<button type="button" class="os-op-cracha" data-cracha="' + m.id + '" title="Ver crachá" aria-label="Ver crachá de ' + escapar(nomeDe(m)) + '"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="2.5"/><path d="M9 5V3.5h6V5"/><circle cx="9" cy="11.5" r="2"/><path d="M5.8 17c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14.5 10.5h3.5M14.5 14h3.5"/></svg></button>' +
       '<button type="button" class="os-op-remover os-op-equipe-remover" title="Remover" aria-label="Remover" data-id="' + m.id +
       '"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'
     )).join('');
