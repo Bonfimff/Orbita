@@ -64,7 +64,12 @@
 
   // Centro de um hexágono da logo, em coordenadas do desenho.
   function hexNoMundo(p, i) {
-    return [p.x + (HEX[i][0] - CENTRO[0]) / UNIDADE * p.t, p.y + (HEX[i][1] - CENTRO[1]) / UNIDADE * p.t];
+    const ox = (HEX[i][0] - CENTRO[0]) / UNIDADE * p.t;
+    const oy = (HEX[i][1] - CENTRO[1]) / UNIDADE * p.t;
+    if (!p.ang) return [p.x + ox, p.y + oy];
+    const c = Math.cos(p.ang);
+    const s = Math.sin(p.ang);
+    return [p.x + ox * c - oy * s, p.y + ox * s + oy * c];
   }
 
   // ---------------------------------------------------------------- movimento
@@ -97,16 +102,19 @@
     return { cx, rx };
   }
 
-  function girar3D(p, forma, angulo) {
+  // Profundidade SEM mover as logos (mover deformava a forma): a casca de
+  // trás fica mais apagada e uma faixa de luz passa devagar por ela, de um
+  // lado ao outro, o que dá a impressão de volume girando.
+  function profundidade(p, t) {
     if (!p.casca) return;
-    const c = Math.cos(angulo);
-    const sn = Math.sin(angulo);
-    const nx = p.casca.nx * c + p.casca.z * sn;
-    const z = -p.casca.nx * sn + p.casca.z * c;
-    p.rx = forma.cx + nx * forma.rx;
-    p.z = z;
-    p.t = p.t0 * (1 + 0.1 * z);
-    p.opacidade = 0.4 + 0.6 * (z + 1) / 2;
+    p.z = p.casca.z;
+    p.t = p.t0 * (1 + 0.06 * p.casca.z);
+    if (p.casca.z >= 0) {
+      p.opacidade = 1;
+    } else {
+      const luz = 0.5 + 0.5 * Math.sin(t * 0.7 - p.casca.nx * 2.6);
+      p.opacidade = 0.35 + 0.35 * luz;
+    }
   }
 
   function movimentoDoIcone(nome, ps) {
@@ -116,8 +124,9 @@
       const forma = casca(ps, (p) => Math.hypot(p.x0 - 150, p.y0 - 100) < 58);
       return (t) => {
         repor();
-        ps.forEach((p) => girar3D(p, forma, 0.3 * Math.sin(t * 0.5)));
-        // Roda no plano (raios incluídos) em volta do centro do sol.
+        ps.forEach((p) => profundidade(p, t));
+        // Gira rígido no plano (raios incluídos) em volta do centro do sol:
+        // todas as logos giram juntas, então a geometria não muda.
         const a = t * 0.12;
         const c = Math.cos(a);
         const sn = Math.sin(a);
@@ -126,6 +135,7 @@
           const dy = p.ry - 100;
           p.rx = 150 + dx * c - dy * sn;
           p.ry = 100 + dx * sn + dy * c;
+          p.ang = a;                      // a própria logo gira junto
         });
       };
     }
@@ -157,7 +167,7 @@
       const chuva = ps.filter((p) => p.y0 >= 126 && (p.x0 < 118 || p.x0 > 205));
       return (t) => {
         repor();
-        ps.forEach((p) => girar3D(p, forma, 0.22 * Math.sin(t * 0.4)));
+        ps.forEach((p) => profundidade(p, t));
         chuva.forEach((p) => {
           const queda = (t * 22 + p.x0 * 1.7) % 26;
           p.ry = p.y0 + queda;
@@ -171,7 +181,7 @@
     const forma = casca(ps, () => true);
     return (t) => {
       repor();
-      ps.forEach((p) => girar3D(p, forma, 0.24 * Math.sin(t * 0.4)));
+      ps.forEach((p) => profundidade(p, t));
     };
   }
 
@@ -334,7 +344,8 @@
           p.vy = (p.vy + (ay - p.y) * 0.07) * 0.8;
           p.x += p.vx;
           p.y += p.vy;
-          p.no.setAttribute('transform', `translate(${p.x.toFixed(2)} ${p.y.toFixed(2)}) scale(${p.t.toFixed(2)})`);
+          p.no.setAttribute('transform', `translate(${p.x.toFixed(2)} ${p.y.toFixed(2)})` +
+            (p.ang ? ` rotate(${(p.ang * 180 / Math.PI).toFixed(2)})` : '') + ` scale(${p.t.toFixed(2)})`);
           p.no.setAttribute('opacity', p.opacidade == null ? 1 : p.opacidade.toFixed(2));
 
           // Gota puxada pelo ímã: base larga, lados abaulados e ponta redonda,
