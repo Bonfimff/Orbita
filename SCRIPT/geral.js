@@ -124,6 +124,8 @@ document.addEventListener('DOMContentLoaded', async function () {
   };
 
   const userNameElement = document.getElementById('logged-user');
+  // Sessão renovada em Configurações: passa a usar o token novo sem recarregar.
+  window.addEventListener('kernel:token-renovado', (e) => { token = e.detail; });
   const userIconElement = document.querySelector('.user-icon'); // Elemento da imagem do usuário
   let token = localStorage.getItem('token');
   
@@ -467,10 +469,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         <span><i class="cracha-online"></i>Online</span>
         <span>Sessão expira em <strong id="token-countdown">${calcularTempoRestanteToken()}</strong></span>
       </div>
-      <div class="cracha-acoes">
-        <button id="refresh-token-btn" type="button" class="btn-secundario">Renovar sessão</button>
-        <button id="logout-from-modal" type="button" class="cracha-sair">Sair</button>
-      </div>
     `;
 
     (async () => {
@@ -666,18 +664,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     });
     
-    // Renovar token (redireciona para login)
-    document.getElementById('refresh-token-btn').addEventListener('click', () => {
-      alert('Você será redirecionado para fazer login novamente.');
-      limparStorageERedirecionarLogin(); //  USA NOVA FUNÇÃO
-    });
-    
-    // Logout
-    document.getElementById('logout-from-modal').addEventListener('click', () => {
-      if (confirm('Tem certeza que deseja sair?')) {
-        limparStorageERedirecionarLogin(); //  USA NOVA FUNÇÃO
-      }
-    });
     
     return modal;
   }
@@ -957,6 +943,28 @@ document.addEventListener('DOMContentLoaded', function () {
       });
 
       menu.insertBefore(secao, menu.firstChild);
+
+      // Celular: a foto e o nome do topo somem, então o acesso ao crachá
+      // fica no alto do menu. Tocar fecha o menu e abre o crachá.
+      const iconeUsuario = document.querySelector('.user-icon');
+      if (iconeUsuario) {
+        let nome = '';
+        try { nome = JSON.parse(localStorage.getItem('usuario') || '{}').username || ''; } catch (e) { /* sem dados */ }
+        const linha = document.createElement('button');
+        linha.type = 'button';
+        linha.className = 'menu-usuario';
+        linha.innerHTML = '<img alt="" src="' + (iconeUsuario.getAttribute('src') || '../IMG/user-icon.png') + '">' +
+          '<span><strong></strong><small>Ver crachá</small></span>';
+        linha.querySelector('strong').textContent = nome || 'Minha conta';
+        linha.addEventListener('click', () => {
+          fechar();
+          iconeUsuario.click();
+        });
+        // Acompanha a foto quando ela termina de carregar.
+        new MutationObserver(() => { linha.querySelector('img').src = iconeUsuario.src; })
+          .observe(iconeUsuario, { attributes: true, attributeFilter: ['src'] });
+        menu.insertBefore(linha, menu.firstChild);
+      }
 
       // Mantém os clones em sincronia quando as permissões escondem uma aba
       const observer = new MutationObserver(() => {

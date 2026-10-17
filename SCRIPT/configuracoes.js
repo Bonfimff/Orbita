@@ -81,6 +81,16 @@
           </section>
 
           <section class="config-bloco">
+            <h3>Sessão</h3>
+            <form id="config-sessao" autocomplete="off">
+              <div class="config-linha-info">Sua sessão expira em <strong id="config-sessao-tempo">-</strong>.</div>
+              <label>Senha <input type="password" id="config-sessao-senha" autocomplete="current-password" required></label>
+              <button type="submit" class="btn-primario">Renovar sessão</button>
+              <p class="config-retorno" id="config-sessao-retorno" role="status"></p>
+            </form>
+          </section>
+
+          <section class="config-bloco">
             <h3>Aparência</h3>
             <label class="config-check"><input type="checkbox" id="config-texto-grande"> Texto maior</label>
             <label class="config-check"><input type="checkbox" id="config-sem-animacoes"> Reduzir animações</label>
@@ -123,6 +133,27 @@
         email: janela.querySelector('#config-email').value,
         tipo_sanguineo: janela.querySelector('#config-sangue').value,
       }, retorno);
+    });
+
+    janela.querySelector('#config-sessao').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const retorno = janela.querySelector('#config-sessao-retorno');
+      mostrarRetorno(retorno, 'Renovando...', false);
+      try {
+        const resp = await fetch(url('/conta/renovar'), {
+          method: 'POST', headers: cabecalhos(),
+          body: JSON.stringify({ senha: janela.querySelector('#config-sessao-senha').value }),
+        });
+        const dados = await resp.json().catch(() => ({}));
+        if (!resp.ok || dados.status !== 'ok' || !dados.token) throw new Error(dados.mensagem || 'Não foi possível renovar.');
+        localStorage.setItem('token', dados.token);
+        window.dispatchEvent(new CustomEvent('kernel:token-renovado', { detail: dados.token }));
+        e.target.reset();
+        atualizarTempoSessao();
+        mostrarRetorno(retorno, 'Sessão renovada.', false);
+      } catch (erro) {
+        mostrarRetorno(retorno, erro.message, true);
+      }
     });
 
     janela.querySelector('#config-senha').addEventListener('submit', async (e) => {
@@ -183,8 +214,27 @@
     else if (retorno.classList.contains('erro') && retorno.textContent === aviso) mostrarRetorno(retorno, '', false);
   }
 
+  // Tempo até a sessão expirar, lido do próprio token.
+  let relogio = null;
+  function atualizarTempoSessao() {
+    const alvo = janela && janela.querySelector('#config-sessao-tempo');
+    if (!alvo) return;
+    try {
+      const corpo = JSON.parse(atob(localStorage.getItem('token').split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      const resta = Math.max(0, corpo.exp - Math.floor(Date.now() / 1000));
+      const h = Math.floor(resta / 3600);
+      const m = Math.floor((resta % 3600) / 60);
+      alvo.textContent = resta ? (h ? `${h}h ${String(m).padStart(2, '0')}min` : `${m}min`) : 'expirada';
+    } catch (e) {
+      alvo.textContent = '-';
+    }
+  }
+
   function abrir() {
     if (!janela) construir();
+    atualizarTempoSessao();
+    clearInterval(relogio);
+    relogio = setInterval(atualizarTempoSessao, 15000);
     janela.querySelector('#config-texto-grande').checked = lerPref(PREF.texto, 'normal') === 'grande';
     janela.querySelector('#config-sem-animacoes').checked = lerPref(PREF.animacoes, 'sim') === 'nao';
     janela.querySelector('#config-clima').checked = lerPref(PREF.clima, 'sim') !== 'nao';
@@ -197,6 +247,7 @@
   function fechar() {
     if (!janela || !janela.classList.contains('aberta')) return;
     janela.classList.remove('aberta');
+    clearInterval(relogio);
     if (window.travarRolagemFundo) window.travarRolagemFundo(false);
   }
 

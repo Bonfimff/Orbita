@@ -3201,3 +3201,15 @@ html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after 
 .cracha-sair:hover { background: #a61f1f; }
 
 .config-bloco select { padding: 9px 10px; border: 1px solid #ccc; border-radius: 8px; font: inherit; font-size: 15px; font-weight: 400; background: #fff; }
+
+.cracha-sessao { margin-bottom: 18px; }
+
+/* Acesso ao crachá no topo do menu (só celular) */
+.menu-usuario { display: none; }
+@media (max-width: 768px) {
+  .menu .menu-usuario { display: flex !important; align-items: center; gap: 12px; width: 100%; padding: 14px 20px !important; border: 0; border-bottom: 1px solid rgba(255,255,255,.1) !important; background: none; color: #fff; text-align: left; cursor: pointer; }
+  .menu-usuario img { width: 40px; height: 40px; flex: 0 0 40px; border-radius: 50%; object-fit: cover; background: #e9edf2; }
+  .menu-usuario span { display: flex; flex-direction: column; line-height: 1.25; }
+  .menu-usuario strong { font-size: 15px; }
+  .menu-usuario small { font-size: 12px; color: var(--cor-primaria, #A8864F); }
+}

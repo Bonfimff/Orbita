@@ -50,6 +50,7 @@ window.OrbitaAjuda.registrarSecao({
           'Digite a nova senha duas vezes. Ela precisa ter pelo menos 6 caracteres e ser diferente da atual.',
           'Clique em Trocar senha. Na próxima vez que entrar, use a nova.',
         ] },
+        { tipo: 'paragrafo', texto: 'Em **Sessão** você vê quanto tempo falta para a sessão expirar. Para renovar, digite só a senha: não precisa sair nem recarregar a página.' },
         { tipo: 'paragrafo', texto: 'Em **Aparência** você aumenta o texto ou reduz as animações. Em **Previsão do tempo** escolhe se ela aparece no painel lateral. Essas escolhas valem só neste navegador.' },
       ],
     },
