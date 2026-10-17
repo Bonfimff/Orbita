@@ -3241,3 +3241,16 @@ html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after 
 .cracha-vazio { margin: 0; font-size: 12.5px; color: #94a3b8; }
 
 .cracha { isolation: isolate; }
+
+/* Informações de emergência (recolhidas) e link do certificado */
+.config-emergencia, .cracha-emergencia { border: 1px solid #f3c9c9; border-radius: 10px; background: #fff7f7; }
+.config-emergencia { padding: 0 12px; }
+.config-emergencia[open] { padding-bottom: 12px; }
+.config-emergencia summary, .cracha-emergencia summary { padding: 11px 0; font-size: 13px; font-weight: 700; color: #c62828; cursor: pointer; }
+.config-emergencia label { margin-top: 8px; }
+.cracha-emergencia { margin: 14px 18px 0; padding: 0 12px; }
+.cracha-emergencia dl { margin: 0; padding: 0 0 12px; display: flex; flex-direction: column; gap: 8px; }
+.cracha-emergencia dt { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #94a3b8; }
+.cracha-emergencia dd { margin: 2px 0 0; font-size: 13.5px; font-weight: 600; color: #1F2D3D; }
+.cracha-pdf { font-size: 11.5px; font-weight: 700; color: var(--cor-primaria, #A8864F); text-decoration: none; }
+.cracha-pdf:hover { text-decoration: underline; }

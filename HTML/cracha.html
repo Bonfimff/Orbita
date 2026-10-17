@@ -39,6 +39,12 @@
     .ok { margin-bottom: 8px; padding: 9px 11px; border-radius: 8px; background: #e3f4ea; color: #1a7f45; font-size: 13px; font-weight: 700; }
     .rodape { padding: 12px 18px; background: #f8fafc; font-size: 12px; color: var(--suave); text-align: center; }
     .aviso { padding: 40px 20px; text-align: center; color: var(--suave); }
+    .pdf { font-size: 12.5px; font-weight: 700; color: var(--bronze); text-decoration: none; }
+    .emergencia { margin: 0 18px 18px; border: 1px solid #f3c9c9; border-radius: 10px; background: #fff7f7; }
+    .emergencia summary { padding: 11px 13px; font-size: 13px; font-weight: 700; color: #c62828; cursor: pointer; }
+    .emergencia dl { margin: 0; padding: 0 13px 12px; display: flex; flex-direction: column; gap: 8px; }
+    .emergencia dt { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #94a3b8; }
+    .emergencia dd { margin: 2px 0 0; font-size: 14px; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -61,7 +67,14 @@
           if (d.status !== 'ok') throw new Error(d.mensagem || 'Crachá não encontrado.');
           const c = d.cracha;
           const pend = (c.pendencias || []).map((p) => `<div class="pendencia">${esc(p.motivo)}</div>`).join('');
-          const caps = (c.capacitacoes || []).map((k) => `<li><strong>${esc(k.nome)}</strong><span class="selo ${esc(k.situacao)}">${esc(k.rotulo)}</span>` +
+          const pdf = (k) => k.tem_arquivo
+            ? `<a class="pdf" target="_blank" rel="noopener" href="${window.apiUrl('/cracha/' + encodeURIComponent(codigo) + '/certificado/' + k.id)}">Ver certificado (PDF)</a>` : '';
+          const med = c.medicas || {};
+          const linhasMed = [['Alergias', med.alergias], ['Contraindicações', med.condicoes], ['Medicamentos', med.medicamentos],
+            ['Contato de emergência', [med.emergencia_nome, med.emergencia_telefone].filter(Boolean).join(' · ')]].filter(([, v]) => v);
+          const emergencia = linhasMed.length
+            ? `<details class="emergencia"><summary>Informações de emergência</summary><dl>${linhasMed.map(([r, v]) => `<div><dt>${r}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl></details>` : '';
+          const caps = (c.capacitacoes || []).map((k) => `<li><strong>${esc(k.nome)}</strong><span class="selo ${esc(k.situacao)}">${esc(k.rotulo)}</span>${pdf(k)}` +
             `<small>${k.certificado ? 'Certificado ' + esc(k.certificado) + ' · ' : ''}${k.validade ? 'válida até ' + k.validade.split('-').reverse().join('/') : 'sem validade informada'}</small></li>`).join('');
           const situacao = pend || ((c.capacitacoes || []).length ? '<div class="ok">Certificados exigidos em dia</div>' : '');
           aviso.outerHTML = `
@@ -78,6 +91,7 @@
               ${situacao}
               ${caps ? `<ul>${caps}</ul>` : '<p style="margin:0;color:#94a3b8;font-size:13px">Nenhum certificado cadastrado.</p>'}
             </section>
+            ${emergencia}
             <div class="rodape">Consultado em ${esc(c.consultado_em)}</div>`;
         })
         .catch((e) => { aviso.textContent = e.message || 'Não foi possível consultar o crachá.'; });

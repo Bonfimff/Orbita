@@ -603,3 +603,5 @@
 .gestao-caps-nova label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; font-weight: 600; color: #444; }
 .gestao-caps-nova button { grid-column: 1 / -1; }
 @media (max-width: 768px) { .gestao-caps-nova { grid-template-columns: 1fr; } .gestao-caps-nova input { font-size: 16px; } }
+.gestao-caps-link { padding: 0; border: 0; background: none; font: inherit; font-size: 12px; font-weight: 700; color: var(--cor-primaria, #A8864F); cursor: pointer; white-space: nowrap; }
+.gestao-caps-link:hover { text-decoration: underline; }

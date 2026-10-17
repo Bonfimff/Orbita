@@ -63,6 +63,16 @@
                   ${['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((t) => `<option>${t}</option>`).join('')}
                 </select>
               </label>
+              <details class="config-emergencia">
+                <summary>Informações de emergência</summary>
+                <p class="config-nota">Ajudam quem for atender você numa emergência.</p>
+                <label>Alergias <input type="text" id="config-med-alergias" maxlength="255" placeholder="Ex.: dipirona, camarão"></label>
+                <label>Contraindicações e condições de saúde <input type="text" id="config-med-condicoes" maxlength="255" placeholder="Ex.: diabetes, hipertensão"></label>
+                <label>Medicamentos de uso contínuo <input type="text" id="config-med-medicamentos" maxlength="255"></label>
+                <label>Contato de emergência (nome) <input type="text" id="config-med-contato" maxlength="120"></label>
+                <label>Telefone do contato <input type="tel" id="config-med-telefone" maxlength="40"></label>
+                <label class="config-check"><input type="checkbox" id="config-med-publico"> Mostrar estas informações na leitura do QR do crachá</label>
+              </details>
               <button type="submit" class="btn-primario">Salvar dados</button>
               <p class="config-retorno" id="config-conta-retorno" role="status"></p>
             </form>
@@ -132,6 +142,14 @@
         nome: janela.querySelector('#config-nome').value,
         email: janela.querySelector('#config-email').value,
         tipo_sanguineo: janela.querySelector('#config-sangue').value,
+        medicas: {
+          alergias: janela.querySelector('#config-med-alergias').value,
+          condicoes: janela.querySelector('#config-med-condicoes').value,
+          medicamentos: janela.querySelector('#config-med-medicamentos').value,
+          emergencia_nome: janela.querySelector('#config-med-contato').value,
+          emergencia_telefone: janela.querySelector('#config-med-telefone').value,
+          publico: janela.querySelector('#config-med-publico').checked,
+        },
       }, retorno);
     });
 
@@ -199,6 +217,13 @@
       janela.querySelector('#config-nome').value = c.nome;
       janela.querySelector('#config-email').value = c.email;
       janela.querySelector('#config-sangue').value = c.tipo_sanguineo || '';
+      const m = c.medicas || {};
+      janela.querySelector('#config-med-alergias').value = m.alergias || '';
+      janela.querySelector('#config-med-condicoes').value = m.condicoes || '';
+      janela.querySelector('#config-med-medicamentos').value = m.medicamentos || '';
+      janela.querySelector('#config-med-contato').value = m.emergencia_nome || '';
+      janela.querySelector('#config-med-telefone').value = m.emergencia_telefone || '';
+      janela.querySelector('#config-med-publico').checked = m.publico !== false;
       bloquear('#config-conta', !c.pode_editar_dados, 'Seu perfil não permite alterar estes dados.');
       bloquear('#config-senha', !c.pode_trocar_senha, 'Seu perfil não permite trocar a senha. Fale com o administrador.');
     } catch (e) {

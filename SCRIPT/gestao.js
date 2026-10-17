@@ -302,6 +302,8 @@
         <span><strong>${esc(c.nome)}</strong>${c.certificado ? ' · ' + esc(c.certificado) : ''}
           <small>${c.validade ? 'válida até ' + c.validade.split('-').reverse().join('/') : 'sem validade'}</small></span>
         <span class="gestao-caps-selo ${esc(c.situacao)}">${esc(c.rotulo)}</span>
+        ${c.tem_arquivo ? `<button type="button" class="gestao-caps-link" data-cap-ver="${c.id}">Ver PDF</button>` : ''}
+        <label class="gestao-caps-link">${c.tem_arquivo ? 'Trocar PDF' : 'Anexar PDF'}<input type="file" accept="application/pdf" data-cap-arquivo="${c.id}" hidden></label>
         <button type="button" class="gestao-btn-icone" data-cap-excluir="${c.id}" title="Remover" aria-label="Remover ${esc(c.nome)}">&times;</button>
       </div>`).join('');
     lista.innerHTML = pend + (itens || '<p class="gestao-ajuda-texto">Nenhuma capacitação cadastrada.</p>');
@@ -336,6 +338,13 @@
       if (dados.status !== 'ok') { alert(dados.mensagem || 'Não foi possível adicionar.'); return; }
       ['cap-nome', 'cap-certificado', 'cap-emissao', 'cap-validade'].forEach((id) => { document.getElementById(id).value = ''; });
       renderCapacitacoes(dados);
+      return;
+    }
+    const ver = e.target.closest('[data-cap-ver]');
+    if (ver && usuarioEditandoId) {
+      const resp = await fetch(window.apiUrl(`/usuarios/${usuarioEditandoId}/capacitacoes/${ver.dataset.capVer}/arquivo`), { headers: authHeaders() });
+      if (!resp.ok) { alert('Não foi possível abrir o PDF.'); return; }
+      window.open(URL.createObjectURL(await resp.blob()), '_blank');
       return;
     }
     const excluir = e.target.closest('[data-cap-excluir]');
@@ -834,5 +843,19 @@
       const btn = e.target.closest('[data-remove-contrato-arquivo]');
       if (btn) excluirArquivoContrato(Number(btn.dataset.removeContratoArquivo));
     });
+  });
+
+  // Anexar o PDF do certificado de uma capacitação.
+  document.addEventListener('change', async (e) => {
+    const campo = e.target.closest('[data-cap-arquivo]');
+    if (!campo || !campo.files.length || !usuarioEditandoId) return;
+    const formulario = new FormData();
+    formulario.append('arquivo', campo.files[0]);
+    const resp = await fetch(window.apiUrl(`/usuarios/${usuarioEditandoId}/capacitacoes/${campo.dataset.capArquivo}/arquivo`), {
+      method: 'POST', headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }, body: formulario,
+    });
+    const dados = await resp.json().catch(() => ({}));
+    if (dados.status !== 'ok') alert(dados.mensagem || 'Não foi possível anexar.');
+    carregarCapacitacoes(usuarioEditandoId);
   });
 })();

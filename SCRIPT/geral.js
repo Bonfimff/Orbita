@@ -471,6 +471,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         <div><dt>Tipo sanguíneo</dt><dd><span class="cracha-sangue" id="cracha-sangue">-</span></dd></div>
       </dl>
       <div class="cracha-caps" id="cracha-caps"></div>
+      <div id="cracha-emergencia"></div>
       <div class="cracha-qr-linha">
         <div class="cracha-qr" id="cracha-qr" aria-label="QR code do crachá"></div>
       </div>
@@ -515,10 +516,21 @@ document.addEventListener('DOMContentLoaded', async function () {
         const caixa = modalContent.querySelector('#cracha-caps');
         const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
         const pend = (c.pendencias || []).map((p) => `<div class="cracha-pendencia">${esc(p.motivo)}</div>`).join('');
+        const pdf = (k) => (k.tem_arquivo && c.cracha_codigo)
+          ? `<a class="cracha-pdf" target="_blank" rel="noopener" href="${apiUrl('/cracha/' + encodeURIComponent(c.cracha_codigo) + '/certificado/' + k.id)}">Ver certificado</a>` : '';
         const caps = (c.capacitacoes || []).map((k) => `
-          <li><strong>${esc(k.nome)}</strong><span class="cracha-cap ${k.situacao}">${esc(k.rotulo)}</span>
+          <li><strong>${esc(k.nome)}</strong><span class="cracha-cap ${k.situacao}">${esc(k.rotulo)}</span>${pdf(k)}
           ${k.validade ? `<small>até ${k.validade.split('-').reverse().join('/')}</small>` : ''}</li>`).join('');
         caixa.innerHTML = `<h4>Certificados</h4>${pend}${caps ? `<ul>${caps}</ul>` : '<p class="cracha-vazio">Nenhum certificado cadastrado.</p>'}`;
+
+        // Informações de emergência: recolhidas, abrem ao tocar.
+        const med = c.medicas || {};
+        const linhasMed = [['Alergias', med.alergias], ['Contraindicações', med.condicoes], ['Medicamentos', med.medicamentos],
+          ['Contato de emergência', [med.emergencia_nome, med.emergencia_telefone].filter(Boolean).join(' · ')]]
+          .filter(([, v]) => v);
+        modalContent.querySelector('#cracha-emergencia').innerHTML = linhasMed.length
+          ? `<details class="cracha-emergencia"><summary>Informações de emergência</summary><dl>${
+            linhasMed.map(([r, v]) => `<div><dt>${r}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl></details>` : '';
 
         // QR: abre a página pública de verificação deste crachá.
         if (c.cracha_codigo) {
