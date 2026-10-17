@@ -56,6 +56,41 @@ function aplicarPermissoesNaTela(raiz) {
   });
 }
 window.aplicarPermissoesNaTela = aplicarPermissoesNaTela;
+
+//======================================================================================================
+// TRAVA DA ROLAGEM DO FUNDO
+// Com uma gaveta aberta (menu da esquerda ou painel do sino), o dedo não pode
+// rolar a página de trás nem o cabeçalho. Só overflow:hidden não basta no
+// celular, então o corpo fica fixo na posição em que estava e volta ao fechar.
+// Contador: se as duas gavetas mexerem, só destrava quando a última fechar.
+//======================================================================================================
+let _travasRolagem = 0;
+let _rolagemSalva = 0;
+window.travarRolagemFundo = function travarRolagemFundo(travar) {
+  const corpo = document.body;
+  if (travar) {
+    _travasRolagem += 1;
+    if (_travasRolagem > 1) return;
+    _rolagemSalva = window.scrollY || document.documentElement.scrollTop || 0;
+    corpo.style.position = 'fixed';
+    corpo.style.top = -_rolagemSalva + 'px';
+    corpo.style.left = '0';
+    corpo.style.right = '0';
+    corpo.style.width = '100%';
+    corpo.classList.add('rolagem-travada');
+  } else {
+    if (_travasRolagem === 0) return;
+    _travasRolagem -= 1;
+    if (_travasRolagem > 0) return;
+    corpo.style.position = '';
+    corpo.style.top = '';
+    corpo.style.left = '';
+    corpo.style.right = '';
+    corpo.style.width = '';
+    corpo.classList.remove('rolagem-travada');
+    window.scrollTo(0, _rolagemSalva);
+  }
+};
 document.addEventListener('DOMContentLoaded', () => {
   if (!localStorage.getItem('token')) return;
   window.obterModulos().then(info => {
@@ -1044,6 +1079,7 @@ document.addEventListener('DOMContentLoaded', function () {
       ajustarTopoDrawer();
       menu.classList.add('aberto');
       overlay.classList.add('ativo');
+      if (!document.body.classList.contains('drawer-aberto')) window.travarRolagemFundo(true);
       document.body.classList.add('drawer-aberto');
       botao.setAttribute('aria-expanded', 'true');
       botao.setAttribute('aria-label', 'Fechar menu');
@@ -1052,6 +1088,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function fechar() {
       menu.classList.remove('aberto');
       overlay.classList.remove('ativo');
+      if (document.body.classList.contains('drawer-aberto')) window.travarRolagemFundo(false);
       document.body.classList.remove('drawer-aberto');
       botao.setAttribute('aria-expanded', 'false');
       botao.setAttribute('aria-label', 'Abrir menu');
@@ -1531,12 +1568,14 @@ document.addEventListener('DOMContentLoaded', function () {
       // Fecha o menu da esquerda se estiver aberto
       const menuEsq = document.querySelector('.menu.aberto');
       if (menuEsq) document.querySelector('.menu-toggle')?.click();
+      if (!painel.classList.contains('aberto')) window.travarRolagemFundo(true);
       painel.classList.add('aberto');
       sombra.classList.add('ativo');
       botao.setAttribute('aria-expanded', 'true');
     }
 
     function fechar() {
+      if (painel.classList.contains('aberto')) window.travarRolagemFundo(false);
       painel.classList.remove('aberto');
       sombra.classList.remove('ativo');
       botao.setAttribute('aria-expanded', 'false');

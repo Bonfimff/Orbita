@@ -3143,3 +3143,7 @@ label > input[type="checkbox"] {
 /* Previsão do tempo no topo da gaveta do sino (celular) */
 .clima-gaveta { display: flex; align-items: center; gap: 10px; padding: 14px 16px 12px; border-bottom: 1px solid #e5e7eb; }
 .clima-gaveta .clima-icone { width: 55%; flex: 0 0 55%; }
+
+/* Gavetas abertas: rolam por dentro sem "vazar" a rolagem para a página */
+.menu, .sino-painel { overscroll-behavior: contain; }
+@media (max-width: 768px) { .sino-painel { overflow-y: auto; -webkit-overflow-scrolling: touch; } }
