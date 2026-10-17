@@ -163,7 +163,7 @@
         vazio: 'Nenhum equipamento cadastrado',
         vazioDetalhe: tipos.length
           ? 'Use "+ Novo equipamento" para cadastrar os ativos identificáveis em campo.'
-          : 'Cadastre primeiro um Tipo de equipamento em Cadastro de Parâmetros.',
+          : 'Cadastre primeiro um Tipo de equipamento em Gestão › Cadastros › Parâmetros.',
       });
     } catch (erro) {
       api.estadoErro(alvo, erro.message);

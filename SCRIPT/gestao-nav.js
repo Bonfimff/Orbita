@@ -51,7 +51,7 @@
     { id: 'funcionarios', rotulo: 'Funcionários',     pagina: 'gestao.html',     tab: 'funcionarios', modulo: 'gestao' },
     { id: 'cadastros',    rotulo: 'Cadastros',        pagina: 'cadastros.html',  tab: null,           modulo: 'cadastros' },
     { id: 'relatorios',   rotulo: 'Relatórios',       pagina: 'relatorios.html', tab: null,           modulo: 'relatorios' },
-    { id: 'jornada',      rotulo: 'Jornadas',         pagina: 'jornada.html',    tab: null,           modulo: 'jornada' },
+    { id: 'jornadas',     rotulo: 'Controle de Jornadas', pagina: 'gestao.html', tab: 'jornadas',     modulo: 'jornada', permissao: 'jornada_admin' },
   ];
 
   function paginaAtual() {
@@ -61,7 +61,11 @@
 
   function permitidas(modulos) {
     if (!modulos) return [];
-    return SUBAREAS.filter((s) => !!modulos[s.modulo]);
+    const matriz = modulos.permissoes;
+    // `permissao` - item da matriz que a subárea exige além do módulo
+    // (ex.: Controle de Jornadas pede "Jornadas da equipe", não só Jornada).
+    return SUBAREAS.filter((s) => !!modulos[s.modulo] &&
+      (!s.permissao || !matriz || !!(matriz[s.permissao] || {}).ver));
   }
 
   function primeiraPermitida(modulos) {

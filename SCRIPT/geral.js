@@ -952,7 +952,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (modulo === 'gestao' && window.GestaoNav) {
         const primeira = window.GestaoNav.primeiraPermitida(modulos);
         permitido = !!primeira;
-        if (primeira) destino = primeira.pagina;
+        if (primeira) destino = primeira.pagina + (primeira.tab ? '#' + primeira.tab : '');
       }
 
       if (permitido) {

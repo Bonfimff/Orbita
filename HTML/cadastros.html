@@ -20,11 +20,11 @@
          legenda (ver .menu-subtabs no CSS e montarSubnavDesktop em
          gestao-nav.js) - o menu fica só com as áreas de Gestão. -->
     <div class="menu-subtabs">
-      <button class="tab-btn active" data-tab="analise-operacional" data-nav-label="Parâmetros" data-nav-icone="cadastros">Cadastro de Parâmetros</button>
+      <button class="tab-btn active" data-tab="analise-operacional" data-nav-label="Parâmetros" data-nav-icone="cadastros">Parâmetros</button>
       <button class="tab-btn" data-tab="ativos" data-nav-label="Ativos" data-nav-icone="veiculo">Equipamentos</button>
       <button class="tab-btn" data-tab="locais" data-nav-label="Locais" data-nav-icone="mapa">Bases de Atendimento</button>
-      <button class="tab-btn" data-tab="usuario" data-nav-label="Usuário" data-nav-icone="usuarios">Usuário</button>
-      <button class="tab-btn" data-tab="funcionario" data-nav-label="Funcionário" data-nav-icone="usuarios">Funcionário</button>
+      <button class="tab-btn" data-tab="usuario" data-nav-label="Usuários" data-nav-icone="usuarios">Usuários</button>
+      <button class="tab-btn" data-tab="funcionario" data-nav-label="Funcionários" data-nav-icone="usuarios">Funcionários</button>
     </div>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
@@ -53,6 +53,7 @@
       <button class="top-tab" id="almoxarifado-tab">Estoque</button>
       <button class="top-tab" id="frota-tab">Frota</button>
       <button class="top-tab" id="ordens-tab">Ordens de Serviço</button>
+      <button class="top-tab" id="jornada-tab">Jornada</button>
       <button class="top-tab active" id="gestao-tab">Gestão</button>
     </div>
   </div>
@@ -60,8 +61,8 @@
   <div class="content">
 
     <!-- ===== ABA: CADASTRO DE PARÂMETROS ===== -->
-    <div id="analise-operacional" class="tab-content active" data-secao="Cadastro de Parâmetros">
-      <h2 class="aba-legenda">Cadastro de Parâmetros</h2>
+    <div id="analise-operacional" class="tab-content active" data-secao="Parâmetros">
+      <h2 class="aba-legenda">Parâmetros</h2>
       <hr class="aba-linha">
 
       <select class="cad-subabas-select" id="cad-subabas">
@@ -117,7 +118,7 @@
     </div>
 
     <!-- ===== ABA: PONTOS E REGIÕES ===== -->
-    <div id="usuario" class="tab-content" data-secao="Usuário">
+    <div id="usuario" class="tab-content" data-secao="Usuários">
       <div class="aba-legenda-linha">
         <h2 class="aba-legenda" id="titulo-cadastro-usuario">Novo usuário</h2>
       </div>
@@ -211,7 +212,7 @@
       </form>
     </div>
 
-    <div id="funcionario" class="tab-content" data-secao="Funcionário">
+    <div id="funcionario" class="tab-content" data-secao="Funcionários">
       <div class="aba-legenda-linha">
         <h2 class="aba-legenda" id="titulo-cadastro-funcionario">Novo funcionário</h2>
       </div>
@@ -355,17 +356,17 @@
 
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=39"></script>
+  <script src="../SCRIPT/geral.js?v=40"></script>
   <script src="../SCRIPT/configuracoes.js?v=6"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=11"></script>
-  <script src="../SCRIPT/gestao-nav.js?v=10"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=12"></script>
+  <script src="../SCRIPT/gestao-nav.js?v=11"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
   <script src="../SCRIPT/cadastros/catalogos.js?v=2"></script>
-  <script src="../SCRIPT/cadastros/equipamentos.js?v=3"></script>
+  <script src="../SCRIPT/cadastros/equipamentos.js?v=4"></script>
   <script src="../SCRIPT/cadastros/locais.js?v=3"></script>
   <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
   <script src="../SCRIPT/cadastros/capacitacoes-ui.js?v=1"></script>

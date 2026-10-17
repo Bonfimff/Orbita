@@ -4,18 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=58" />
-  <link rel="stylesheet" href="../CSS/jornada.css?v=2" />
-  <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
+  <link rel="stylesheet" href="../CSS/jornada.css?v=3" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
-  <title>Jornada Operacional</title>
+  <title>Jornada</title>
 </head>
 <body>
 
   <!-- Menu lateral -->
   <div class="menu">
-    <button class="tab-btn active" data-tab="meu-painel" data-nav-label="Meu Painel" data-nav-icone="painel">Meu Painel</button>
-    <button class="tab-btn" data-tab="administracao" data-permissao="jornada_admin:ver" data-nav-label="Administração" data-nav-icone="usuarios">Administração</button>
+    <button class="tab-btn active" data-tab="meu-painel" data-nav-label="Minha Jornada" data-nav-icone="painel">Minha Jornada</button>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
         <img src="../IMG/configuracoes.png" alt="Configurações">
@@ -36,14 +34,15 @@
       <span class="account-info">
         <img src="../IMG/user-icon.png" alt="Usuário" class="user-icon">
         <span id="logged-user"></span>
-        <span id="modulo-ativo">Gestão</span>
+        <span id="modulo-ativo">Jornada</span>
       </span>
     </div>
     <div class="top-bar-right">
       <button class="top-tab" id="almoxarifado-tab">Estoque</button>
       <button class="top-tab" id="frota-tab">Frota</button>
       <button class="top-tab" id="ordens-tab">Ordens de Serviço</button>
-      <button class="top-tab active" id="gestao-tab">Gestão</button>
+      <button class="top-tab active" id="jornada-tab">Jornada</button>
+      <button class="top-tab" id="gestao-tab">Gestão</button>
     </div>
   </div>
 
@@ -102,72 +101,17 @@
       </div>
     </div>
 
-    <!-- ===== ABA: ADMINISTRAÇÃO ===== -->
-    <div id="administracao" class="tab-content" data-permissao="jornada_admin:ver">
-      <h2 class="aba-legenda">Administração de Jornadas</h2>
-      <hr class="aba-linha">
-
-      <h3 class="jor-subtitulo">Funcionários em jornada agora</h3>
-      <div class="tabela-responsiva">
-        <table class="estilo-tabela jor-tabela" id="jor-tabela-painel">
-          <thead>
-            <tr>
-              <th>Funcionário</th>
-              <th>Contrato</th>
-              <th>Situação</th>
-              <th>Desde</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <h3 class="jor-subtitulo">Histórico / busca</h3>
-      <div class="jor-cartao jor-filtros">
-        <input type="text" id="jor-filtro-usuario" placeholder="ID do funcionário">
-        <select id="jor-filtro-status">
-          <option value="">Todos os status</option>
-          <option value="aberta">Aberta</option>
-          <option value="pausada">Pausada</option>
-          <option value="encerrada">Encerrada</option>
-          <option value="cancelada">Cancelada</option>
-        </select>
-        <input type="date" id="jor-filtro-inicio">
-        <input type="date" id="jor-filtro-fim">
-        <button id="jor-btn-buscar" class="jor-btn jor-btn-principal">Buscar</button>
-      </div>
-      <div class="tabela-responsiva">
-        <table class="estilo-tabela jor-tabela" id="jor-tabela-busca">
-          <thead>
-            <tr>
-              <th>Funcionário</th>
-              <th>Contrato</th>
-              <th>Início</th>
-              <th>Término</th>
-              <th>Duração</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div id="jor-admin-mensagem" class="jor-mensagem"></div>
-    </div>
-
   </div>
 
   <script src="../SCRIPT/config.js"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=39"></script>
+  <script src="../SCRIPT/geral.js?v=40"></script>
   <script src="../SCRIPT/configuracoes.js?v=6"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=11"></script>
-  <script src="../SCRIPT/gestao-nav.js?v=10"></script>
-  <script src="../SCRIPT/jornada.js?v=2"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=12"></script>
+  <script src="../SCRIPT/jornada.js?v=3"></script>
 
   <!-- Calendário: escala e feriados -->
   <div id="jor-cal" class="jor-cal-fundo" hidden>

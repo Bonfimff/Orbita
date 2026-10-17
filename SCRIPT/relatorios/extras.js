@@ -154,7 +154,7 @@
         tituloCard: (i) => '<b>' + i.posicao + 'º</b> ' + escapar(i.rotulo),
         destaqueCard: (i) => api.numero(i.ocorrencias),
         vazio: 'Nenhum registro classificado nesta dimensão',
-        vazioDetalhe: 'Cadastre os itens em Cadastros → Cadastro de Parâmetros e '
+        vazioDetalhe: 'Cadastre os itens em Gestão › Cadastros › Parâmetros e '
           + 'classifique as O.S. para ver este ranking.',
       });
 

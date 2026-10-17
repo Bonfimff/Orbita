@@ -7,7 +7,7 @@
 window.OrbitaAjuda.META = {
   produto: 'KERNEL',
   versao: 'versão 1.0',
-  atualizadoEm: '16/10/2026',
+  atualizadoEm: '17/10/2026',
 };
 
 window.OrbitaAjuda.registrarSecao({
@@ -64,7 +64,7 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'paragrafo', texto: 'O QR do crachá abre uma página de verificação com a identificação e as capacitações, sem precisar de login. Ela não mostra e-mail nem permissões.' },
         { tipo: 'paragrafo', texto: 'Certificados com PDF anexado mostram o botão Ver certificado. As informações de emergência (alergias, contraindicações, medicamentos e contato) ficam recolhidas e abrem ao tocar; a pessoa escolhe se aparecem no QR.' },
         { tipo: 'paragrafo', texto: 'Para mudar tipo sanguíneo e informações de emergência, use o lápis no alto do crachá. Clicar no QR abre a página do crachá numa nova aba.' },
-        { tipo: 'paragrafo', texto: 'Esses dados são do funcionário: o administrador edita tipo sanguíneo, emergência, certificados e PDFs em Cadastros › Funcionário. O crachá de quem tem login mostra os dados do funcionário ligado a ele.' },
+        { tipo: 'paragrafo', texto: 'Esses dados são do funcionário: o administrador edita tipo sanguíneo, emergência, certificados e PDFs em Gestão › Cadastros › Funcionários. O crachá de quem tem login mostra os dados do funcionário ligado a ele.' },
       ],
       relacionados: ['configuracoes', 'gestao-usuarios'],
     },
@@ -124,7 +124,7 @@ window.OrbitaAjuda.registrarSecao({
       pagina: 'frota',
       titulo: 'Frota',
       corpo: [
-        { tipo: 'paragrafo', texto: 'O **Painel** mostra os totais da frota e o mapa com a posição dos veículos. As outras abas são de consulta e trabalho: Veículos, Manutenção, Abastecimento, Checklist e Relatórios.' },
+        { tipo: 'paragrafo', texto: 'O **Painel** mostra os totais da frota e o mapa com a posição dos veículos. As outras abas são de consulta e trabalho: Veículos, Manutenções, Abastecimentos, Checklists e Relatórios.' },
         { tipo: 'paragrafo', texto: 'Todos os formulários ficam em **Cadastros**: veículos, oficinas, cartões de abastecimento e manutenção. As tabelas ficam nas abas de trabalho. Clicar numa linha abre os detalhes, e o botão Editar leva ao cadastro já preenchido.' },
       ],
       relacionados: ['frota-veiculos', 'frota-manutencao'],
@@ -232,7 +232,7 @@ window.OrbitaAjuda.registrarSecao({
       aba: 'usuarios',
       titulo: 'Usuários e perfis de acesso',
       corpo: [
-        { tipo: 'paragrafo', texto: 'A aba **Usuários** lista as contas. **+ Novo Usuário** e o lápis de editar abrem o formulário em **Cadastros › Usuário**; ao salvar, você volta para a lista. Cada conta usa um perfil de acesso ou permissões próprias.' },
+        { tipo: 'paragrafo', texto: 'A aba **Usuários** lista as contas. **+ Novo Usuário** e o lápis de editar abrem o formulário em **Cadastros › Usuários**; ao salvar, você volta para a lista. Cada conta usa um perfil de acesso ou permissões próprias.' },
         { tipo: 'paragrafo', texto: 'Um perfil é um conjunto de permissões reaproveitável. A tela mostra uma lista por área (Minha conta, Início, Frota, Estoque, O.S., Análise, Jornada e Gestão), e cada linha tem as colunas Ver, Editar e Criar/Excluir. O botão "todos" marca a coluna inteira do grupo.' },
         { tipo: 'paragrafo', texto: 'Marcar Editar ou Criar/Excluir marca Ver junto. O servidor confere a permissão em toda ação, então esconder um botão não é a única proteção.' },
         { tipo: 'paragrafo', texto: 'Tipo sanguíneo, informações de emergência e certificados (NR-10, NR-35 e outros, com PDF) ficam no cadastro do funcionário. O formulário do usuário tem um atalho para abrir o funcionário ligado a ele.' },
@@ -248,7 +248,7 @@ window.OrbitaAjuda.registrarSecao({
       corpo: [
         { tipo: 'paragrafo', texto: 'O contrato separa os dados entre clientes. Para limitar uma pessoa, edite o usuário e marque os contratos que ela pode ver. Sem nenhum marcado, vale o que o perfil dela define; sem perfil, ela vê tudo.' },
         { tipo: 'paragrafo', texto: 'Arquivos do contrato só podem ser anexados depois que ele for salvo.' },
-        { tipo: 'paragrafo', texto: 'A aba **Funcionários** lista quem trabalha em campo. **+ Novo funcionário** e um clique na linha abrem o formulário em **Cadastros › Funcionário**, com tipo sanguíneo, informações de emergência e capacitações. O crachá do usuário ligado a ele mostra esses mesmos dados.' },
+        { tipo: 'paragrafo', texto: 'A aba **Funcionários** lista quem trabalha em campo. **+ Novo funcionário** e um clique na linha abrem o formulário em **Cadastros › Funcionários**, com tipo sanguíneo, informações de emergência e capacitações. O crachá do usuário ligado a ele mostra esses mesmos dados.' },
       ],
     },
 
@@ -279,8 +279,10 @@ window.OrbitaAjuda.registrarSecao({
       pagina: 'jornada',
       titulo: 'Jornada de trabalho',
       corpo: [
-        { tipo: 'paragrafo', texto: 'Em **Meu Painel** você inicia, pausa, retoma e encerra a sua jornada. A tela só mostra as ações possíveis no momento.' },
-        { tipo: 'paragrafo', texto: 'Em **Administração**, quem tem permissão vê quem está em jornada, consulta o histórico e pode corrigir, encerrar ou cancelar uma jornada.' },
+        { tipo: 'paragrafo', texto: 'Jornada fica no topo, ao lado de Gestão. Em **Minha Jornada** você inicia, pausa, retoma e encerra a sua jornada. A tela só mostra as ações possíveis no momento.' },
+        { tipo: 'paragrafo', texto: 'O cartão **Hoje** diz se o dia é de trabalho ou folga na sua escala e qual é o próximo feriado. **Ver calendário** mostra os dias da sua escala e os feriados nacionais e municipais deste ano e do próximo.' },
+        { tipo: 'paragrafo', texto: 'A escala é definida no cadastro do funcionário, em **Gestão › Cadastros › Funcionários**.' },
+        { tipo: 'paragrafo', texto: 'O acompanhamento da equipe fica em **Gestão › Controle de Jornadas**, só para quem tem a permissão "Jornadas da equipe": quem está em jornada agora, histórico e as ações de encerrar ou cancelar.' },
       ],
     },
   ],

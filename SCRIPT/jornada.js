@@ -1,10 +1,8 @@
 //======================================================================================================
-// JORNADA OPERACIONAL (Fase 10)
-// Auto-servico (iniciar/pausar/retomar/finalizar a propria jornada) +
-// painel administrativo (quem esta em jornada agora, historico, acoes
-// administrativas). Nunca envia status/inicio/fim livres para a API - so
-// chama as acoes de dominio (/jornada/iniciar, /pausar, /retomar,
-// /finalizar, /<id>/encerrar-administrativo, /<id>/cancelar).
+// JORNADA (módulo próprio, acessível sem Gestão)
+// Auto-serviço: iniciar/pausar/retomar/finalizar a própria jornada, histórico
+// e calendário com escala e feriados. O controle das jornadas da equipe fica
+// em Gestão › Controle de Jornadas (SCRIPT/gestao-jornadas.js).
 //======================================================================================================
 (function () {
   'use strict';
@@ -194,88 +192,6 @@
     });
   }
 
-  // ---------------------------------------------------------- ADMINISTRACAO
-  async function carregarPainelAdmin() {
-    try {
-      const resp = await chamar('GET', '/jornada/painel');
-      const tbody = document.querySelector('#jor-tabela-painel tbody');
-      tbody.innerHTML = (resp.dados || []).map((j) => `
-        <tr>
-          <td>${escapar(j.usuario_nome || ('#' + j.usuario_id))}</td>
-          <td>${escapar(j.contrato_nome || '-')}</td>
-          <td>${badge(j.status)}</td>
-          <td>${formatarDataHora(j.iniciado_em)}</td>
-          <td>
-            <button class="jor-btn jor-btn-admin" data-acao="encerrar" data-id="${j.id}">Encerrar</button>
-            <button class="jor-btn jor-btn-admin" data-acao="cancelar" data-id="${j.id}">Cancelar</button>
-          </td>
-        </tr>`).join('') || '<tr><td colspan="5">Nenhum funcionário em jornada no momento.</td></tr>';
-    } catch (e) {
-      if (e.codigo !== 403) console.error('[jornada] painel admin', e);
-    }
-  }
-
-  async function buscarHistoricoAdmin() {
-    const params = new URLSearchParams();
-    const usuarioId = el('jor-filtro-usuario').value.trim();
-    if (usuarioId) params.set('usuario_id', usuarioId);
-    if (el('jor-filtro-status').value) params.set('status', el('jor-filtro-status').value);
-    if (el('jor-filtro-inicio').value) params.set('inicio', el('jor-filtro-inicio').value);
-    if (el('jor-filtro-fim').value) params.set('fim', el('jor-filtro-fim').value);
-    params.set('limite', '100');
-
-    try {
-      const resp = await chamar('GET', '/jornada/buscar?' + params.toString());
-      const tbody = document.querySelector('#jor-tabela-busca tbody');
-      tbody.innerHTML = (resp.dados || []).map((j) => `
-        <tr>
-          <td>${escapar(j.usuario_nome || ('#' + j.usuario_id))}</td>
-          <td>${escapar(j.contrato_nome || '-')}</td>
-          <td>${formatarDataHora(j.iniciado_em)}</td>
-          <td>${formatarDataHora(j.finalizado_em)}</td>
-          <td>${formatarDuracao(j.duracao_minutos)}</td>
-          <td>${badge(j.status)}</td>
-          <td>
-            ${(j.status === 'aberta' || j.status === 'pausada')
-              ? `<button class="jor-btn jor-btn-admin" data-acao="encerrar" data-id="${j.id}">Encerrar</button>
-                 <button class="jor-btn jor-btn-admin" data-acao="cancelar" data-id="${j.id}">Cancelar</button>`
-              : '-'}
-          </td>
-        </tr>`).join('') || '<tr><td colspan="7">Nenhum resultado.</td></tr>';
-    } catch (e) {
-      mostrarMensagem(el('jor-admin-mensagem'), e.message, 'erro');
-    }
-  }
-
-  function ligarAcoesAdmin() {
-    el('jor-btn-buscar').addEventListener('click', buscarHistoricoAdmin);
-
-    document.addEventListener('click', async (ev) => {
-      const botao = ev.target.closest('[data-acao]');
-      if (!botao) return;
-      const acao = botao.dataset.acao;
-      const id = botao.dataset.id;
-      if (acao === 'encerrar') {
-        if (!confirm('Encerrar administrativamente esta jornada?')) return;
-        try {
-          await chamar('POST', `/jornada/${id}/encerrar-administrativo`, {});
-          mostrarMensagem(el('jor-admin-mensagem'), 'Jornada encerrada.', 'sucesso');
-          await carregarPainelAdmin();
-          await buscarHistoricoAdmin();
-        } catch (e) { mostrarMensagem(el('jor-admin-mensagem'), e.message, 'erro'); }
-      } else if (acao === 'cancelar') {
-        const motivo = prompt('Motivo do cancelamento:');
-        if (!motivo) return;
-        try {
-          await chamar('POST', `/jornada/${id}/cancelar`, { motivo });
-          mostrarMensagem(el('jor-admin-mensagem'), 'Jornada cancelada.', 'sucesso');
-          await carregarPainelAdmin();
-          await buscarHistoricoAdmin();
-        } catch (e) { mostrarMensagem(el('jor-admin-mensagem'), e.message, 'erro'); }
-      }
-    });
-  }
-
   // ---------------------------------------------------------- CALENDÁRIO
   // Escala da pessoa (do cadastro de funcionário) e feriados nacionais e
   // municipais deste ano e do próximo.
@@ -422,23 +338,11 @@
     if (typeof window.inicializarAbasPadrao === 'function') window.inicializarAbasPadrao();
     if (!localStorage.getItem('token')) return;
     ligarAcoesMeuPainel();
-    ligarAcoesAdmin();
     carregarEstadoAtual();
     carregarMeuHistorico();
     ligarCalendario();
     carregarCalendario();
 
-    // Administração: só para quem tem a permissão (a API também bloqueia).
-    const iniciarAdmin = (info) => {
-      const matriz = info && info.modulos && info.modulos.permissoes;
-      if (matriz && !(matriz.jornada_admin || {}).ver) return;
-      carregarPainelAdmin();
-      document.querySelectorAll('.tab-btn[data-tab="administracao"]').forEach((botao) => {
-        botao.addEventListener('click', () => { buscarHistoricoAdmin(); });
-      });
-    };
-    if (typeof window.obterModulos === 'function') window.obterModulos().then(iniciarAdmin, () => iniciarAdmin(null));
-    else iniciarAdmin();
   }
 
   // 'DOMContentLoaded' pode ja ter disparado quando este script roda

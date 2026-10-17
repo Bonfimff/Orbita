@@ -47,6 +47,7 @@
       <button class="top-tab" id="almoxarifado-tab">Estoque</button>
       <button class="top-tab" id="frota-tab">Frota</button>
       <button class="top-tab active" id="ordens-tab">Ordens de Serviço</button>
+      <button class="top-tab" id="jornada-tab">Jornada</button>
       <button class="top-tab" id="gestao-tab">Gestão</button>
     </div>
   </div>
@@ -186,7 +187,7 @@
     <div id="cronograma" class="tab-content">
       <div class="cronograma-header">
         <div>
-          <h2 class="aba-legenda">Cronograma de Serviço</h2>
+          <h2 class="aba-legenda">Cronograma</h2>
           <p class="cronograma-subtitulo">Atividades e despacho diário de equipes</p>
         </div>
         <button type="button" class="btn-primario" id="btn-agendar" data-permissao="os_agendamentos:excluir">+ Agendar</button>
@@ -210,7 +211,7 @@
       <hr class="aba-linha">
       <div class="opcoes-abas os-subabas" role="tablist">
         <button type="button" class="top-tab2 active" data-subaba="os-sub-nova" data-permissao="os_ordens:excluir">Nova O.S.</button>
-        <button type="button" class="top-tab2" data-subaba="os-sub-base" data-permissao="os_bases:editar os_bases:excluir">Base</button>
+        <button type="button" class="top-tab2" data-subaba="os-sub-base" data-permissao="os_bases:editar os_bases:excluir">Bases</button>
         <button type="button" class="top-tab2" data-subaba="os-sub-agendamento" data-permissao="os_agendamentos:editar os_agendamentos:excluir">Agendamento</button>
       </div>
 
@@ -459,7 +460,7 @@
 
     <!-- ===== ABA: BUSCA ===== -->
     <div id="busca" class="tab-content">
-      <h2 class="aba-legenda">Busca de Ordens</h2>
+      <h2 class="aba-legenda">Busca</h2>
       <hr class="aba-linha">
       <div class="os-lista-filtros os-lista-filtros-direita">
         <button type="button" class="btn-primario" id="btn-nova-os" data-permissao="os_ordens:excluir">Nova O.S.</button>
@@ -567,13 +568,13 @@
 
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=39"></script>
+  <script src="../SCRIPT/geral.js?v=40"></script>
   <script src="../SCRIPT/configuracoes.js?v=6"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=11"></script>
-  <script src="../SCRIPT/gestao-nav.js?v=10"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=12"></script>
+  <script src="../SCRIPT/gestao-nav.js?v=11"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="../SCRIPT/ordens.js?v=27"></script>
   <script src="../SCRIPT/relatorios/alertas-dashboard.js?v=5"></script>
