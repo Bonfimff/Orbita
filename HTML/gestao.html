@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=49" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=50" />
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
-  <link rel="stylesheet" href="../CSS/gestao.css?v=10" />
+  <link rel="stylesheet" href="../CSS/gestao.css?v=11" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -347,6 +347,20 @@
           </div>
         </div>
 
+        <div class="gestao-secao" id="bloco-capacitacoes" style="display:none;">
+          <h4>Capacitações</h4>
+          <p class="gestao-ajuda-texto">Aparecem no crachá com a situação da validade. Cargo de eletricista exige NR-10 válida.</p>
+          <div id="usuario-capacitacoes-lista" class="gestao-caps-lista"></div>
+          <div class="gestao-caps-nova">
+            <input type="text" id="cap-nome" placeholder="Capacitação (ex.: NR-10)" list="cap-sugestoes" maxlength="80">
+            <datalist id="cap-sugestoes"><option>NR-10</option><option>NR-10 SEP</option><option>NR-35</option><option>NR-33</option><option>NR-12</option><option>NR-06</option><option>Primeiros socorros</option></datalist>
+            <input type="text" id="cap-certificado" placeholder="Nº do certificado" maxlength="80">
+            <label>Emissão <input type="date" id="cap-emissao"></label>
+            <label>Validade <input type="date" id="cap-validade"></label>
+            <button type="button" class="btn-secundario" id="cap-adicionar">Adicionar</button>
+          </div>
+        </div>
+
         <div id="usuario-form-feedback" class="gestao-feedback" style="display:none;"></div>
 
         <div class="gestao-modal-acoes">
@@ -399,13 +413,13 @@
   </div>
 
   <script src="../SCRIPT/config.js?v=2"></script>
-  <script src="../SCRIPT/gestao.js?v=11"></script>
+  <script src="../SCRIPT/gestao.js?v=12"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=32"></script>
+  <script src="../SCRIPT/geral.js?v=33"></script>
   <script src="../SCRIPT/configuracoes.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=5"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=6"></script>
   <script src="../SCRIPT/gestao-nav.js?v=10"></script>
   <script src="../SCRIPT/gestao-funcionarios.js?v=1"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>

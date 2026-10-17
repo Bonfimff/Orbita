@@ -7,7 +7,7 @@
 window.OrbitaAjuda.META = {
   produto: 'KERNEL',
   versao: 'versão 1.0',
-  atualizadoEm: '17/10/2026',
+  atualizadoEm: '16/10/2026',
 };
 
 window.OrbitaAjuda.registrarSecao({

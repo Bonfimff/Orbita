@@ -148,6 +148,15 @@ document.addEventListener('DOMContentLoaded', async function () {
       console.error('❌ Erro ao parsear usuarioData do localStorage:', error);
     }
   }
+  // Sem o registro do login (apagado ou antigo): usa o que vem no próprio token.
+  if (!userId || !username) {
+    try {
+      const corpoToken = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      userId = userId || corpoToken.sub;
+      username = username || corpoToken.username;
+      if (userId && username) localStorage.setItem('usuario', JSON.stringify({ id: Number(userId) || userId, username }));
+    } catch (e) { /* token ilegível: segue sem perfil */ }
+  }
 
   //======================================================================================================
   // FUNÇÃO PRINCIPAL: Calcular Tempo Restante do Token
@@ -465,11 +474,34 @@ document.addEventListener('DOMContentLoaded', async function () {
         <div><dt>Perfil</dt><dd id="cracha-perfil">-</dd></div>
         <div><dt>Tipo sanguíneo</dt><dd><span class="cracha-sangue" id="cracha-sangue">-</span></dd></div>
       </dl>
+      <div class="cracha-caps" id="cracha-caps"></div>
+      <div class="cracha-qr-linha">
+        <div class="cracha-qr" id="cracha-qr" aria-label="QR code do crachá"></div>
+        <span>Aponte a câmera para conferir os dados e as capacitações deste crachá.</span>
+      </div>
       <div class="cracha-sessao">
         <span><i class="cracha-online"></i>Online</span>
         <span>Sessão expira em <strong id="token-countdown">${calcularTempoRestanteToken()}</strong></span>
       </div>
     `;
+
+    // Gera o QR (biblioteca carregada só quando o crachá abre).
+    function desenharQr(alvo, texto) {
+      const pintar = () => {
+        try {
+          const qr = window.qrcode(0, 'M');
+          qr.addData(texto);
+          qr.make();
+          alvo.innerHTML = qr.createSvgTag({ cellSize: 3, margin: 0, scalable: true });
+          alvo.title = texto;
+        } catch (e) { alvo.textContent = ''; }
+      };
+      if (window.qrcode) return pintar();
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+      script.onload = pintar;
+      document.head.appendChild(script);
+    }
 
     (async () => {
       try {
@@ -488,6 +520,21 @@ document.addEventListener('DOMContentLoaded', async function () {
         cargo.textContent = c.cargo || '';
         cargo.hidden = !c.cargo;
         if (c.foto_url && !imagemUsuario) modalContent.querySelector('#profile-photo').src = c.foto_url;
+
+        // Capacitações (NR-10, NR-35...) com a situação de cada uma.
+        const caixa = modalContent.querySelector('#cracha-caps');
+        const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+        const pend = (c.pendencias || []).map((p) => `<div class="cracha-pendencia">${esc(p.motivo)}</div>`).join('');
+        const caps = (c.capacitacoes || []).map((k) => `
+          <li><strong>${esc(k.nome)}</strong><span class="cracha-cap ${k.situacao}">${esc(k.rotulo)}</span>
+          ${k.validade ? `<small>até ${k.validade.split('-').reverse().join('/')}</small>` : ''}</li>`).join('');
+        caixa.innerHTML = (pend || caps) ? `<h4>Capacitações</h4>${pend}${caps ? `<ul>${caps}</ul>` : ''}` : '';
+
+        // QR: abre a página pública de verificação deste crachá.
+        if (c.cracha_codigo) {
+          const endereco = new URL('cracha.html?c=' + encodeURIComponent(c.cracha_codigo), location.href).href;
+          desenharQr(modalContent.querySelector('#cracha-qr'), endereco);
+        }
       } catch (e) { /* sem conexão: fica com os dados locais */ }
     })();
 
@@ -950,6 +997,9 @@ document.addEventListener('DOMContentLoaded', function () {
       if (iconeUsuario) {
         let nome = '';
         try { nome = JSON.parse(localStorage.getItem('usuario') || '{}').username || ''; } catch (e) { /* sem dados */ }
+        if (!nome) {
+          try { nome = JSON.parse(atob(localStorage.getItem('token').split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).username || ''; } catch (e) { /* sem token */ }
+        }
         const linha = document.createElement('button');
         linha.type = 'button';
         linha.className = 'menu-usuario';

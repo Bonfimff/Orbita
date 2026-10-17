@@ -284,8 +284,69 @@
     feedback.style.display = 'none';
     feedback.textContent = '';
 
+    // Capacitações só existem para usuário já salvo.
+    document.getElementById('bloco-capacitacoes').style.display = usuario ? '' : 'none';
+    ['cap-nome', 'cap-certificado', 'cap-emissao', 'cap-validade'].forEach((id) => { document.getElementById(id).value = ''; });
+    if (usuario) carregarCapacitacoes(usuario.id);
+
     document.getElementById('modal-usuario').style.display = 'flex';
   }
+
+  // ===== Capacitações do usuário (NR-10, NR-35...) =====
+  function renderCapacitacoes(dados) {
+    const lista = document.getElementById('usuario-capacitacoes-lista');
+    const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const pend = (dados.pendencias || []).map((p) => `<div class="gestao-caps-pendencia">${esc(p.motivo)}</div>`).join('');
+    const itens = (dados.capacitacoes || []).map((c) => `
+      <div class="gestao-caps-item">
+        <span><strong>${esc(c.nome)}</strong>${c.certificado ? ' · ' + esc(c.certificado) : ''}
+          <small>${c.validade ? 'válida até ' + c.validade.split('-').reverse().join('/') : 'sem validade'}</small></span>
+        <span class="gestao-caps-selo ${esc(c.situacao)}">${esc(c.rotulo)}</span>
+        <button type="button" class="gestao-btn-icone" data-cap-excluir="${c.id}" title="Remover" aria-label="Remover ${esc(c.nome)}">&times;</button>
+      </div>`).join('');
+    lista.innerHTML = pend + (itens || '<p class="gestao-ajuda-texto">Nenhuma capacitação cadastrada.</p>');
+  }
+
+  async function carregarCapacitacoes(id) {
+    const lista = document.getElementById('usuario-capacitacoes-lista');
+    lista.innerHTML = '<p class="gestao-ajuda-texto">Carregando...</p>';
+    try {
+      const resp = await fetch(window.apiUrl(`/usuarios/${id}/capacitacoes`), { headers: authHeaders() });
+      const dados = await resp.json();
+      if (dados.status !== 'ok') throw new Error(dados.mensagem);
+      renderCapacitacoes(dados);
+    } catch (e) {
+      lista.innerHTML = `<p class="gestao-ajuda-texto">${e.message || 'Não foi possível carregar.'}</p>`;
+    }
+  }
+
+  document.addEventListener('click', async (e) => {
+    if (e.target.closest('#cap-adicionar')) {
+      if (!usuarioEditandoId) return;
+      const corpo = {
+        nome: document.getElementById('cap-nome').value,
+        certificado: document.getElementById('cap-certificado').value,
+        emissao: document.getElementById('cap-emissao').value,
+        validade: document.getElementById('cap-validade').value,
+      };
+      const resp = await fetch(window.apiUrl(`/usuarios/${usuarioEditandoId}/capacitacoes`), {
+        method: 'POST', headers: authHeaders(true), body: JSON.stringify(corpo),
+      });
+      const dados = await resp.json().catch(() => ({}));
+      if (dados.status !== 'ok') { alert(dados.mensagem || 'Não foi possível adicionar.'); return; }
+      ['cap-nome', 'cap-certificado', 'cap-emissao', 'cap-validade'].forEach((id) => { document.getElementById(id).value = ''; });
+      renderCapacitacoes(dados);
+      return;
+    }
+    const excluir = e.target.closest('[data-cap-excluir]');
+    if (excluir && usuarioEditandoId) {
+      if (!confirm('Remover esta capacitação?')) return;
+      await fetch(window.apiUrl(`/usuarios/${usuarioEditandoId}/capacitacoes/${excluir.dataset.capExcluir}`), {
+        method: 'DELETE', headers: authHeaders(),
+      });
+      carregarCapacitacoes(usuarioEditandoId);
+    }
+  });
 
   function fecharModalUsuario() {
     document.getElementById('modal-usuario').style.display = 'none';
