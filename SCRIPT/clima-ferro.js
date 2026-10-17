@@ -28,7 +28,7 @@
   let dadosPromessa = null;
   function dados(base) {
     if (!dadosPromessa) {
-      dadosPromessa = fetch(base + 'particulas.json?v=2').then((r) => {
+      dadosPromessa = fetch(base + 'particulas.json?v=3').then((r) => {
         if (!r.ok) throw new Error('particulas.json');
         return r.json();
       });
@@ -141,7 +141,7 @@
         const forma = () => { const c = el('path', { d: '' }); oleo.appendChild(c); return c; };
         pontes.push({
           a: ps[i], b: ps[j], ha: melhor[1], hb: melhor[2],
-          w: 0.17 * Math.min(ps[i].t, ps[j].t) + 0.5,
+          w: 0.24 * Math.min(ps[i].t, ps[j].t) + 0.7,
           e: 0, fase: Math.random() * Math.PI * 2, ritmo: 0.25 + Math.random() * 0.35,
           lados: [forma(), forma()],
           // Um terço das pontes nunca seca de vez: mantém o efeito vivo.
@@ -215,31 +215,41 @@
           p.y += p.vy;
           p.no.setAttribute('transform', `translate(${p.x.toFixed(2)} ${p.y.toFixed(2)}) scale(${p.t})`);
 
-          // Espícula (instabilidade de Rosensweig): ponta afiada que nasce da
-          // logo e aponta para o ímã, crescendo com o campo.
+          // Gota puxada pelo ímã: base larga, lados abaulados e ponta redonda,
+          // como óleo grosso. Cresce e murcha devagar (viscosidade) e, sem o
+          // cursor por perto, fica bem discreta.
           if (p.espicula) {
-            const altura = p.t * 0.75 * F * gauss;
-            if (altura < 0.6) {
+            const alvoForca = (ima.alvo ? 1 : 0.3) * F * gauss;
+            p.forca = (p.forca || 0) + (alvoForca - (p.forca || 0)) * (alvoForca > (p.forca || 0) ? 0.05 : 0.025);
+            const altura = p.t * 0.7 * p.forca;
+            if (altura < 0.5) {
               p.espicula.setAttribute('d', '');
             } else {
-              const ux = (ima.x - p.x) / (Math.hypot(ima.x - p.x, ima.y - p.y) || 1);
-              const uy = (ima.y - p.y) / (Math.hypot(ima.x - p.x, ima.y - p.y) || 1);
-              const r0 = p.t * 0.32;                 // nasce da borda da logo
-              const base = p.t * 0.16;               // meia largura da base
-              const bx = p.x + ux * r0;
-              const by = p.y + uy * r0;
-              const tx = bx + ux * altura;
-              const ty = by + uy * altura;
-              const nx = -uy * base;
-              const ny = ux * base;
-              // Lados côncavos, como a ponta de um líquido puxado.
-              const c1x = bx + ux * altura * 0.35 + nx * 0.25;
-              const c1y = by + uy * altura * 0.35 + ny * 0.25;
-              const c2x = bx + ux * altura * 0.35 - nx * 0.25;
-              const c2y = by + uy * altura * 0.35 - ny * 0.25;
+              const dist = Math.hypot(ima.x - p.x, ima.y - p.y) || 1;
+              const ux = (ima.x - p.x) / dist;
+              const uy = (ima.y - p.y) / dist;
+              const nxu = -uy;
+              const nyu = ux;
+              const base = p.t * 0.22;                     // meia largura da base
+              const rp = base * (0.75 - 0.25 * Math.min(1, altura / (p.t * 0.7)));  // raio da ponta
+              const bx = p.x + ux * p.t * 0.28;
+              const by = p.y + uy * p.t * 0.28;
+              const cx = bx + ux * altura;                 // centro da ponta
+              const cy = by + uy * altura;
+              const f = (x) => x.toFixed(2);
+              const L0 = [bx + nxu * base, by + nyu * base];
+              const R0 = [bx - nxu * base, by - nyu * base];
+              const L1 = [cx + nxu * rp, cy + nyu * rp];
+              const R1 = [cx - nxu * rp, cy - nyu * rp];
+              const frente = [cx + ux * rp, cy + uy * rp];
+              // Lados: saem da base inchados e afinam suave até a ponta.
+              const cL = [bx + ux * altura * 0.45 + nxu * base * 0.95, by + uy * altura * 0.45 + nyu * base * 0.95];
+              const cR = [bx + ux * altura * 0.45 - nxu * base * 0.95, by + uy * altura * 0.45 - nyu * base * 0.95];
               p.espicula.setAttribute('d',
-                `M${(bx + nx).toFixed(2)} ${(by + ny).toFixed(2)}Q${c1x.toFixed(2)} ${c1y.toFixed(2)} ${tx.toFixed(2)} ${ty.toFixed(2)}` +
-                `Q${c2x.toFixed(2)} ${c2y.toFixed(2)} ${(bx - nx).toFixed(2)} ${(by - ny).toFixed(2)}Z`);
+                `M${f(L0[0])} ${f(L0[1])}Q${f(cL[0])} ${f(cL[1])} ${f(L1[0])} ${f(L1[1])}` +
+                `Q${f(L1[0] + ux * rp)} ${f(L1[1] + uy * rp)} ${f(frente[0])} ${f(frente[1])}` +
+                `Q${f(R1[0] + ux * rp)} ${f(R1[1] + uy * rp)} ${f(R1[0])} ${f(R1[1])}` +
+                `Q${f(cR[0])} ${f(cR[1])} ${f(R0[0])} ${f(R0[1])}Z`);
             }
           }
         });
@@ -309,21 +319,28 @@
             }
             return 'M' + esq.join('L') + 'L' + dir.reverse().join('L') + 'Z';
           }
-          const w = b.w * (0.55 + 0.45 * Math.min(1, e * 2));
+          const w = b.w * (0.6 + 0.4 * Math.min(1, e * 2)) * (1 + 0.6 * perto * F + 0.5 * Math.max(0, arrasto));
           if (e < 0.03) {
             b.lados[0].setAttribute('d', '');
             b.lados[1].setAttribute('d', '');
           } else if (unido) {
             // Pescoço: cheio nas pontas, cintura no meio (mais fina quanto
             // menos "puxado" estiver o óleo).
-            const meio = 0.25 + 0.55 * cintura;
+            const meio = 0.4 + 0.45 * cintura;
             b.lados[0].setAttribute('d', contorno(0, 1, (f) => w * (1 - (1 - meio) * Math.sin(Math.PI * f))));
             b.lados[1].setAttribute('d', '');
           } else {
             // Dois tentáculos crescendo um na direção do outro.
-            const ponta = (f) => w * Math.pow(1 - f, 0.6) * (0.85 + 0.15 * (1 - f)) + 0.15;
-            b.lados[0].setAttribute('d', contorno(0, alcance, ponta));
-            b.lados[1].setAttribute('d', contorno(1, 1 - alcance, ponta));
+            const fim = 0.5;                                   // a ponta mantém metade da largura
+            const ponta = (f) => w * (1 - (1 - fim) * Math.pow(f, 1.4));
+            const gota = (u) => {
+              const [gx, gy] = ponto(u);
+              const r = (w * fim) / 2;
+              return `M${(gx - r).toFixed(2)} ${gy.toFixed(2)}a${r.toFixed(2)} ${r.toFixed(2)} 0 1 0 ${(2 * r).toFixed(2)} 0` +
+                `a${r.toFixed(2)} ${r.toFixed(2)} 0 1 0 ${(-2 * r).toFixed(2)} 0Z`;
+            };
+            b.lados[0].setAttribute('d', contorno(0, alcance, ponta) + gota(alcance));
+            b.lados[1].setAttribute('d', contorno(1, 1 - alcance, ponta) + gota(1 - alcance));
           }
         });
 
