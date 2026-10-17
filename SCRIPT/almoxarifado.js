@@ -807,7 +807,8 @@ document.addEventListener('DOMContentLoaded', function () {
           
 const tabelaProdutos = document.getElementById('Lista-dos-produtos');
 
-tabelaProdutos.addEventListener('dblclick', function(event) {
+tabelaProdutos.addEventListener('click', function(event) {
+  if (event.target.closest('button, a, input')) return;
   const row = event.target.closest('tr');
   
   // Verifica se é uma linha do tbody (não do thead)

@@ -351,7 +351,7 @@
     tbody.querySelectorAll('tr').forEach(row => {
       const placa = row.querySelector('td:nth-child(3)')?.textContent.trim();
       if (!placa) return;
-      row.addEventListener('dblclick', () => {
+      row.addEventListener('click', () => {
         const veiculo = buscarVeiculoPorPlaca(placa);
         if (veiculo) {
           preencherFormularioVeiculo(veiculo);

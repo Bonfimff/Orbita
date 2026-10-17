@@ -102,6 +102,14 @@
           window.location.href = 'cadastros.html#usuario-' + id;
         });
       });
+      // Um clique (ou toque) na linha abre a edição, como nas outras tabelas.
+      tbody.querySelectorAll('tr[data-usuario-id]').forEach(linha => {
+        linha.classList.add('linha-clicavel');
+        linha.addEventListener('click', (e) => {
+          if (e.target.closest('button, a, input')) return;
+          window.location.href = 'cadastros.html#usuario-' + linha.dataset.usuarioId;
+        });
+      });
       tbody.querySelectorAll('.gestao-excluir-usuario').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const id = e.target.closest('tr').dataset.usuarioId;

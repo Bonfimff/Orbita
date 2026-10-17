@@ -3267,3 +3267,7 @@ html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after 
 .cracha-edicao-acoes { display: flex; gap: 10px; }
 .cracha-edicao-acoes button { flex: 1; }
 @media (max-width: 768px) { .cracha-edicao input:not([type="checkbox"]), .cracha-edicao select { font-size: 16px; } }
+
+/* Linhas que abrem com um clique/toque */
+.linha-clicavel, #Lista-dos-produtos tbody tr, tr[data-os-id] { cursor: pointer; }
+.linha-clicavel:hover td, #Lista-dos-produtos tbody tr:hover td, tr[data-os-id]:hover td { background: rgba(168, 134, 79, .06); }

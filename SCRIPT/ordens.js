@@ -2625,7 +2625,7 @@ function adicionarListenersAcoesOS(container) {
   });
 
   container.querySelectorAll('tr').forEach(row => {
-    row.addEventListener('dblclick', event => {
+    row.addEventListener('click', event => {
       if (event.target.closest('button')) return;
       const osId = row.dataset.osId;
       if (!osId) return;
