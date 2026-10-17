@@ -3283,3 +3283,15 @@ html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after 
 .config-sessao .config-retorno.erro { color: #ffb4b4; }
 .config-sessao .config-retorno:empty { display: none; }
 @media (max-width: 768px) { .config-sessao-senha input { font-size: 16px; } }
+
+
+/* Emergência no crachá: discreta (cruz + palavra), telefone clicável */
+.cracha-emergencia { margin: 12px 18px 0; padding: 0; border: 0; background: none; }
+.cracha-emergencia summary { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; border: 1px solid #eef1f4; border-radius: 999px;
+  font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; list-style: none; }
+.cracha-emergencia summary::-webkit-details-marker { display: none; }
+.cracha-emergencia summary svg { color: #c62828; }
+.cracha-emergencia[open] summary { color: #1F2D3D; }
+.cracha-emergencia dl { margin: 10px 0 0; padding: 10px 12px; border-left: 2px solid #f3c9c9; }
+.emerg-tel { color: #c62828; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.emerg-tel::before { content: "\260E  "; }

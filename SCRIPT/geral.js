@@ -524,12 +524,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Informações de emergência: recolhidas, abrem ao tocar.
         const med = c.medicas || {};
-        const linhasMed = [['Alergias', med.alergias], ['Contraindicações', med.condicoes], ['Medicamentos', med.medicamentos],
-          ['Contato de emergência', [med.emergencia_nome, med.emergencia_telefone].filter(Boolean).join(' · ')]]
-          .filter(([, v]) => v);
+        const telLimpo = String(med.emergencia_telefone || '').replace(/[^\d+]/g, '');
+        const contato = [esc(med.emergencia_nome || ''), med.emergencia_telefone
+          ? `<a class="emerg-tel" href="tel:${telLimpo}">${esc(med.emergencia_telefone)}</a>` : ''].filter(Boolean).join(' · ');
+        const linhasMed = [['Alergias', esc(med.alergias || '')], ['Contraindicações', esc(med.condicoes || '')],
+          ['Medicamentos', esc(med.medicamentos || '')], ['Contato de emergência', contato]].filter(([, v]) => v);
         modalContent.querySelector('#cracha-emergencia').innerHTML = linhasMed.length
-          ? `<details class="cracha-emergencia"><summary>Informações de emergência</summary><dl>${
-            linhasMed.map(([r, v]) => `<div><dt>${r}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl></details>` : '';
+          ? `<details class="cracha-emergencia"><summary><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/></svg>Emergência</summary><dl>${
+            linhasMed.map(([r, v]) => `<div><dt>${r}</dt><dd>${v}</dd></div>`).join('')}</dl></details>` : '';
 
         // QR: abre a página pública de verificação deste crachá.
         if (c.cracha_codigo) {

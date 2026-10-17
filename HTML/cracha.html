@@ -40,9 +40,15 @@
     .rodape { padding: 12px 18px; background: #f8fafc; font-size: 12px; color: var(--suave); text-align: center; }
     .aviso { padding: 40px 20px; text-align: center; color: var(--suave); }
     .pdf { font-size: 12.5px; font-weight: 700; color: var(--bronze); text-decoration: none; }
-    .emergencia { margin: 0 18px 18px; border: 1px solid #f3c9c9; border-radius: 10px; background: #fff7f7; }
-    .emergencia summary { padding: 11px 13px; font-size: 13px; font-weight: 700; color: #c62828; cursor: pointer; }
-    .emergencia dl { margin: 0; padding: 0 13px 12px; display: flex; flex-direction: column; gap: 8px; }
+    .emergencia { margin: 0 18px 16px; }
+    .emergencia summary { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; border: 1px solid #eef1f4; border-radius: 999px;
+      font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; list-style: none; }
+    .emergencia summary::-webkit-details-marker { display: none; }
+    .emergencia summary svg { color: #c62828; }
+    .emergencia[open] summary { color: #1F2D3D; }
+    .emergencia dl { margin: 10px 0 0; padding: 10px 12px; border-left: 2px solid #f3c9c9; display: flex; flex-direction: column; gap: 8px; }
+    .emerg-tel { color: #c62828; font-weight: 700; text-decoration: none; white-space: nowrap; }
+    .emerg-tel::before { content: "\260E  "; }
     .emergencia dt { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #94a3b8; }
     .emergencia dd { margin: 2px 0 0; font-size: 14px; font-weight: 600; }
   </style>
@@ -71,10 +77,13 @@
           const pdf = (k) => k.tem_arquivo
             ? `<a class="pdf" target="_blank" rel="noopener" href="${window.apiUrl('/cracha/' + encodeURIComponent(codigo) + '/certificado/' + k.id)}">Ver certificado (PDF)</a>` : '';
           const med = c.medicas || {};
-          const linhasMed = [['Alergias', med.alergias], ['Contraindicações', med.condicoes], ['Medicamentos', med.medicamentos],
-            ['Contato de emergência', [med.emergencia_nome, med.emergencia_telefone].filter(Boolean).join(' · ')]].filter(([, v]) => v);
+          const telLimpo = String(med.emergencia_telefone || '').replace(/[^\d+]/g, '');
+          const contato = [esc(med.emergencia_nome || ''), med.emergencia_telefone
+            ? `<a class="emerg-tel" href="tel:${telLimpo}">${esc(med.emergencia_telefone)}</a>` : ''].filter(Boolean).join(' · ');
+          const linhasMed = [['Alergias', esc(med.alergias || '')], ['Contraindicações', esc(med.condicoes || '')],
+            ['Medicamentos', esc(med.medicamentos || '')], ['Contato de emergência', contato]].filter(([, v]) => v);
           const emergencia = linhasMed.length
-            ? `<details class="emergencia"><summary>Informações de emergência</summary><dl>${linhasMed.map(([r, v]) => `<div><dt>${r}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl></details>` : '';
+            ? `<details class="emergencia"><summary><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/></svg>Emergência</summary><dl>${linhasMed.map(([r, v]) => `<div><dt>${r}</dt><dd>${v}</dd></div>`).join('')}</dl></details>` : '';
           const caps = (c.capacitacoes || []).map((k) => `<li><strong>${esc(k.nome)}</strong><span class="selo ${esc(k.situacao)}">${esc(k.rotulo)}</span>${pdf(k)}` +
             `<small>${k.certificado ? 'Certificado ' + esc(k.certificado) + ' · ' : ''}${k.validade ? 'válida até ' + k.validade.split('-').reverse().join('/') : 'sem validade informada'}</small></li>`).join('');
           const situacao = pend || ((c.capacitacoes || []).length ? '<div class="ok">Certificados exigidos em dia</div>' : '');
