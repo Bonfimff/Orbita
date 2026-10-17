@@ -197,18 +197,33 @@
   // municipais deste ano e do próximo.
   const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho',
     'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-  const cal = { escala: null, feriados: {}, ano: 0, mes: 0, selecionado: null };
+  const cal = { escala: null, feriados: {}, excecoes: {}, ano: 0, mes: 0, selecionado: null };
 
   const iso = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   const dataLocal = (texto) => { const [a, m, d] = texto.split('-').map(Number); return new Date(a, m - 1, d); };
 
-  function trabalhaNo(d) {
+  function trabalhaPadrao(d) {
     const e = cal.escala;
     if (!e) return false;
     if (Array.isArray(e.dias) && !e.ciclo) return e.dias.includes(d.getDay());
     if (!e.ciclo || !e.inicio) return false;
     const diff = Math.round((d - dataLocal(e.inicio)) / 86400000);
     return ((diff % e.ciclo) + e.ciclo) % e.ciclo === 0;
+  }
+
+  // Padrão da escala + feriado (não trabalha) + ajuste daquele dia feito pela gestão.
+  function trabalhaNo(d) {
+    const exc = cal.excecoes[iso(d)];
+    if (exc) return exc.tipo === 'trabalho' || exc.tipo === 'extra_banco';
+    if (cal.feriados[iso(d)]) return false;
+    return trabalhaPadrao(d);
+  }
+
+  function horarioDo(d) {
+    const e = cal.escala || {};
+    const exc = cal.excecoes[iso(d)];
+    const h = (!e.ciclo && (e.horarios || {})[String(d.getDay())]) || { entrada: e.entrada, saida: e.saida };
+    return { entrada: (exc && exc.entrada) || h.entrada, saida: (exc && exc.saida) || h.saida };
   }
 
   function limitesNavegacao() {
@@ -238,7 +253,12 @@
       if (fer) classes.push('feriado', fer.tipo);
       if (chave === hojeIso) classes.push('hoje');
       if (chave === cal.selecionado) classes.push('selecionado');
-      const titulo = fer ? fer.nome + (fer.tipo === 'municipal' ? ' (municipal)' : ' (nacional)') : '';
+      const exc = cal.excecoes[chave];
+      const h = horarioDo(data);
+      const titulo = [fer ? fer.nome + (fer.tipo === 'municipal' ? ' (municipal)' : ' (nacional)') : '',
+        exc ? exc.rotulo + (exc.observacao ? ': ' + exc.observacao : '') : '',
+        trabalhaNo(data) && h.entrada && h.saida ? h.entrada + ' às ' + h.saida : ''].filter(Boolean).join(' · ');
+      if (exc) classes.push('ajuste');
       html += '<button type="button" class="' + classes.join(' ') + '" data-dia="' + chave + '"' +
         (titulo ? ' title="' + escapar(titulo) + '"' : ' tabindex="-1"') + '>' + d + '</button>';
     }
@@ -308,9 +328,13 @@
     const hoje = new Date();
     const hojeIso = iso(hoje);
     el('jor-hoje-data').textContent = hoje.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    const excHoje = cal.excecoes[hojeIso];
+    const hHoje = horarioDo(hoje);
+    const nota = excHoje ? ' · ' + escapar(excHoje.rotulo) + (excHoje.observacao ? ': ' + escapar(excHoje.observacao) : '') : '';
     el('jor-hoje-escala').innerHTML = cal.escala
-      ? (trabalhaNo(hoje) ? '<i class="lg-escala"></i>Dia de trabalho na sua escala (' + escapar(cal.escala.tipo === 'semanal' ? 'personalizada' : cal.escala.tipo) + ')'
-        : '<i style="background:#e2e8f0"></i>Folga na sua escala (' + escapar(cal.escala.tipo === 'semanal' ? 'personalizada' : cal.escala.tipo) + ')')
+      ? (trabalhaNo(hoje)
+        ? '<i class="lg-escala"></i>Dia de trabalho' + (hHoje.entrada && hHoje.saida ? ', ' + hHoje.entrada + ' às ' + hHoje.saida : '') + nota
+        : '<i style="background:#e2e8f0"></i>Folga hoje' + nota)
       : '<i style="background:#e2e8f0"></i>Escala não cadastrada';
     const fer = cal.feriados[hojeIso];
     el('jor-hoje-feriado').innerHTML = fer ? '<i class="lg-' + fer.tipo + '" style="border-radius:50%"></i>Feriado: ' + escapar(fer.nome) : '';
@@ -324,6 +348,7 @@
     try {
       const resp = await chamar('GET', '/jornada/calendario');
       cal.escala = resp.dados.escala || null;
+      cal.excecoes = resp.dados.excecoes || {};
       cal.feriados = {};
       (resp.dados.feriados || []).forEach((f) => { cal.feriados[f.data] = f; });
     } catch (e) {

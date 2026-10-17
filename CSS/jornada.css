@@ -319,3 +319,54 @@
   .escala-grade { grid-template-columns: 1fr; }
   .escala-lista { max-height: 260px; }
 }
+
+/* ---- Escalas: horário por dia, calendário clicável e ajuste do dia ---- */
+.escala-dica { margin: 4px 0 10px; }
+.escala-horario .ponto-campo input[type="number"] { width: 100%; }
+.escala-por-dia { display: flex; flex-direction: column; gap: 6px; max-width: 460px; }
+.escala-por-dia-linha { display: grid; grid-template-columns: 80px 1fr 1fr 64px; align-items: center; gap: 8px; }
+.escala-por-dia-linha span { font-size: 13px; font-weight: 600; color: #475569; }
+.escala-por-dia-linha input { padding: 7px 8px; border: 1px solid #d5dbe3; border-radius: 8px; font: inherit; font-size: 13px; }
+.escala-por-dia-linha.diferente input { border-color: var(--cor-primaria); background: #fbf8f2; }
+.escala-por-dia-limpar { border: 0; background: none; color: var(--cor-primaria-escura); font: inherit; font-size: 12px; text-decoration: underline; cursor: pointer; }
+.escala-acoes-padrao { display: flex; justify-content: flex-end; margin-top: 14px; }
+
+.escala-cal-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 22px; padding-top: 16px; border-top: 1px solid #eef1f4; }
+.escala-cal-cab .escala-rotulo { margin: 0; }
+.escala-cal-nav { display: flex; align-items: center; gap: 4px; }
+.escala-cal-nav strong { min-width: 140px; text-align: center; font-size: 14px; color: var(--cor-destaque); }
+.escala-cal-nav strong::first-letter { text-transform: uppercase; }
+.escala-previa-semana, .escala-previa { max-width: 420px; }
+.escala-previa-dia {
+  flex-direction: column; gap: 1px; height: 46px; border: 0; font: inherit; font-size: 13px; line-height: 1.1;
+}
+.escala-previa-dia small { font-size: 10px; font-weight: 600; opacity: .8; }
+.escala-previa-dia.fora { visibility: hidden; }
+.escala-previa-dia.clicavel { cursor: pointer; }
+.escala-previa-dia.clicavel:hover { outline: 2px solid #cbd5e1; }
+.escala-previa-dia.ajuste { box-shadow: inset 0 0 0 2px #2563eb; }
+.escala-previa-dia.aj-folga, .escala-previa-dia.aj-folga_banco { background: #eef2ff; color: #3730a3; }
+.escala-previa-dia.aj-folga_banco, .escala-previa-dia.aj-extra_banco { box-shadow: inset 0 0 0 2px #7c3aed; }
+.escala-previa-dia.aj-extra_banco { background: rgba(124, 58, 237, .12); color: #5b21b6; font-weight: 700; }
+.escala-previa-dia.selecionado { outline: 2px solid var(--cor-destaque) !important; outline-offset: 1px; }
+.escala-previa-dia.passado { opacity: .55; }
+.lg-ajuste { box-shadow: inset 0 0 0 2px #2563eb; }
+.lg-banco { box-shadow: inset 0 0 0 2px #7c3aed; }
+
+.escala-dia-painel { margin-top: 14px; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fcfcfd; max-width: 520px; }
+.escala-dia-topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.escala-dia-topo strong { display: block; font-size: 15px; color: var(--cor-destaque); }
+.escala-dia-topo strong::first-letter { text-transform: uppercase; }
+.escala-dia-topo small { color: #64748b; font-size: 12px; }
+.escala-dia-opcoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.escala-dia-obs { margin-top: 12px; }
+
+/* Folha: saldo */
+.ponto-saldo { font-weight: 700; font-variant-numeric: tabular-nums; }
+.ponto-saldo.pos { color: var(--cor-sucesso); }
+.ponto-saldo.neg { color: var(--cor-erro); }
+.ponto-kpi.positivo strong { color: var(--cor-sucesso); }
+.ponto-tag-folga, .ponto-tag-folga_banco { background: #eef2ff; color: #3730a3; }
+.ponto-tag-extra_banco { background: rgba(124, 58, 237, .12); color: #5b21b6; }
+.jor-cal-dia.ajuste { box-shadow: inset 0 0 0 2px #2563eb; }
+.jor-cal-dia.ajuste.hoje { box-shadow: inset 0 0 0 2px var(--cor-destaque), inset 0 0 0 4px #2563eb; }

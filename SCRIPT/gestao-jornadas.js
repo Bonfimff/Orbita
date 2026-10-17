@@ -58,10 +58,16 @@
   }
   function duracao(min) {
     if (min === null || min === undefined) return '-';
-    const h = Math.floor(min / 60);
-    const m = Math.round(min % 60);
-    return h + 'h' + String(m).padStart(2, '0');
+    const negativo = min < 0;
+    const abs = Math.abs(min);
+    const h = Math.floor(abs / 60);
+    const m = Math.round(abs % 60);
+    return (negativo ? '-' : '') + h + 'h' + String(m).padStart(2, '0');
   }
+  const saldoTexto = (min) => (min === null || min === undefined ? '' : (min > 0 ? '+' : '') + duracao(min));
+  const ROTULOS_AJUSTE = {
+    trabalho: 'Ajuste', folga: 'Folga', folga_banco: 'Folga (banco)', extra_banco: 'Banco de horas',
+  };
   const isoLocal = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   function paraInput(v) {
     const d = data(v);
@@ -108,19 +114,19 @@
     const pessoa = el('ponto-pessoa').value;
     const corpo = document.querySelector('#ponto-tabela tbody');
     if (!pessoa || !el('ponto-mes').value) {
-      corpo.innerHTML = '<tr><td colspan="6">Escolha um funcionário.</td></tr>';
+      corpo.innerHTML = '<tr><td colspan="8">Escolha um funcionário.</td></tr>';
       el('ponto-kpis').innerHTML = '';
       el('ponto-folha-cab').innerHTML = '';
       return;
     }
-    corpo.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
+    corpo.innerHTML = '<tr><td colspan="8">Carregando...</td></tr>';
     const { inicio, fim } = periodoDoMes();
     try {
       const r = await chamar('GET', `/jornada/folha?usuario_id=${pessoa}&inicio=${inicio}&fim=${fim}`);
       ultimaFolha = r;
       desenharFolha(r);
     } catch (e) {
-      corpo.innerHTML = `<tr><td colspan="6">${escapar(e.message)}</td></tr>`;
+      corpo.innerHTML = `<tr><td colspan="8">${escapar(e.message)}</td></tr>`;
     }
   }
 
@@ -132,6 +138,9 @@
     const kpi = (rotulo, valor, classe) => `<div class="ponto-kpi ${classe || ''}"><span>${rotulo}</span><strong>${valor}</strong></div>`;
     el('ponto-kpis').innerHTML =
       kpi('Horas trabalhadas', duracao(t.trabalhado_minutos)) +
+      (t.tem_previsto ? kpi('Horas previstas', duracao(t.previsto_minutos)) : '') +
+      (t.tem_previsto ? kpi('Saldo (banco de horas)', saldoTexto(t.saldo_minutos) || '0h00',
+        t.saldo_minutos < 0 ? 'alerta' : (t.saldo_minutos > 0 ? 'positivo' : '')) : '') +
       kpi('Dias trabalhados', t.dias_trabalhados || 0) +
       (r.escala ? kpi('Dias na escala', t.dias_escala || 0) : '') +
       (r.escala ? kpi('Faltas', t.faltas || 0, t.faltas ? 'alerta' : '') : '') +
@@ -142,23 +151,30 @@
       const d = new Date(dia.data + 'T12:00');
       const rotuloData = `<span class="ponto-dia">${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}</span> <small>${DIAS[d.getDay()]}</small>`;
       const classeDia = 'ponto-' + dia.situacao + (d.getDay() === 0 || d.getDay() === 6 ? ' ponto-fds' : '');
-      const situacaoDia = {
+      const ajuste = dia.excecao ? `<span class="ponto-tag ponto-tag-${dia.excecao.tipo}" title="${escapar(dia.excecao.observacao || '')}">${ROTULOS_AJUSTE[dia.excecao.tipo] || 'Ajuste'}</span>` : '';
+      const situacaoDia = ({
         feriado: 'Feriado' + (dia.feriado ? ': ' + escapar(dia.feriado.nome) : ''),
-        falta: 'Falta', folga: dia.previsto ? '' : 'Folga', previsto: 'Previsto', trabalhado: '',
-      }[dia.situacao] || '';
+        falta: 'Falta', folga: dia.excecao ? '' : 'Folga', previsto: 'Previsto', trabalhado: '',
+      }[dia.situacao] || '') + (dia.feriado && dia.situacao !== 'feriado' ? ' Feriado' : '');
+      const previstoTxt = dia.previsto_minutos ? duracao(dia.previsto_minutos) +
+        (dia.entrada_prevista ? `<small> ${dia.entrada_prevista}–${dia.saida_prevista}</small>` : '') : '';
+      const saldoTxt = dia.saldo_minutos ? `<span class="ponto-saldo ${dia.saldo_minutos < 0 ? 'neg' : 'pos'}">${saldoTexto(dia.saldo_minutos)}</span>` : '';
       if (!dia.jornadas.length) {
-        linhas.push(`<tr class="${classeDia}"><td>${rotuloData}</td><td></td><td></td><td></td><td></td>` +
-          `<td><span class="ponto-situacao">${situacaoDia}</span></td></tr>`);
+        linhas.push(`<tr class="${classeDia}"><td>${rotuloData}</td><td></td><td></td><td></td>` +
+          `<td>${previstoTxt}</td><td></td><td>${saldoTxt}</td>` +
+          `<td><span class="ponto-situacao">${situacaoDia}</span> ${ajuste}</td></tr>`);
         return;
       }
       dia.jornadas.forEach((j, i) => {
         const intervalo = (j.pausas || []).map((p) => hora(p.inicio) + ' às ' + hora(p.fim)).join('<br>');
         const saida = j.finalizado_em ? hora(j.finalizado_em) + (data(j.finalizado_em).getDate() !== d.getDate() ? ' <small>(+1)</small>' : '') : '';
         const lancada = j.origem === 'Admin' ? ' <span class="ponto-tag" title="Lançada ou ajustada pela gestão">ajuste</span>' : '';
+        const ultima = i === dia.jornadas.length - 1;
         linhas.push(`<tr class="${classeDia} ponto-clicavel" data-jornada="${j.id}" tabindex="0">` +
           `<td>${i === 0 ? rotuloData : ''}</td><td>${hora(j.iniciado_em)}</td><td>${intervalo || '-'}</td>` +
-          `<td>${saida || '-'}</td><td><strong>${duracao(j.trabalhado_minutos)}</strong></td>` +
-          `<td>${j.status === 'encerrada' ? '' : selo(j.status)}${dia.feriado ? ' <span class="ponto-situacao">Feriado</span>' : ''}${lancada}</td></tr>`);
+          `<td>${saida || '-'}</td><td>${i === 0 ? previstoTxt : ''}</td><td><strong>${duracao(j.trabalhado_minutos)}</strong></td>` +
+          `<td>${ultima ? saldoTxt : ''}</td>` +
+          `<td>${j.status === 'encerrada' ? '' : selo(j.status)}${dia.feriado ? ' <span class="ponto-situacao">Feriado</span>' : ''}${lancada} ${i === 0 ? ajuste : ''}</td></tr>`);
       });
     });
     document.querySelector('#ponto-tabela tbody').innerHTML = linhas.join('');
@@ -353,13 +369,25 @@
 
   // ---------------------------------------------------------- ESCALAS
   // Lista de funcionários à esquerda; à direita, o tipo de escala, os dias,
-  // o horário previsto e a prévia das próximas 4 semanas.
+  // o horário padrão (com horário diferente por dia da semana) e o
+  // calendário do mês, onde um clique num dia cria um ajuste só daquela data.
   const DIAS_LONGOS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const DIAS_EXTENSO = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
   const DESCR_TIPOS = {
     '': 'Não definida', '5x2': 'Segunda a sexta', '6x1': 'Segunda a sábado', semanal: 'Escolher os dias',
     '12x36': 'Trabalha 1, folga 1', '24x48': 'Trabalha 1, folga 2', '24x72': 'Trabalha 1, folga 3',
   };
-  const esc = { lista: [], tipos: [], feriados: {}, atual: null, tipo: '', dias: [] };
+  const OPCOES_DIA = [
+    { tipo: '', rotulo: 'Seguir a escala', descr: 'Sem ajuste neste dia' },
+    { tipo: 'trabalho', rotulo: 'Trabalho', descr: 'Dia extra, outro horário ou feriado trabalhado' },
+    { tipo: 'folga', rotulo: 'Folga', descr: 'Não trabalha neste dia' },
+    { tipo: 'folga_banco', rotulo: 'Folga com banco de horas', descr: 'Desconta as horas do dia do banco' },
+    { tipo: 'extra_banco', rotulo: 'Trabalho para banco de horas', descr: 'As horas trabalhadas viram crédito' },
+  ];
+  const esc = {
+    lista: [], tipos: [], feriados: {}, excecoes: {}, atual: null, tipo: '', dias: [], horarios: {},
+    ano: 0, mes: 0, diaAberto: null, tipoDia: '',
+  };
 
   async function carregarEscalas() {
     try {
@@ -375,7 +403,7 @@
     desenharListaEscalas();
     if (esc.atual) {
       const novo = esc.lista.find((f) => f.id === esc.atual.id);
-      if (novo) selecionarFuncionario(novo.id);
+      if (novo) selecionarFuncionario(novo.id, true);
     }
   }
 
@@ -390,29 +418,44 @@
       </button></li>`).join('') || '<li class="escala-vazio">Nenhum funcionário.</li>';
   }
 
-  function selecionarFuncionario(id) {
+  async function carregarExcecoes() {
+    if (!esc.atual) return;
+    try {
+      esc.excecoes = (await chamar('GET', `/jornada/escalas/${esc.atual.id}/excecoes`)).dados || {};
+    } catch (e) { esc.excecoes = {}; }
+    desenharCalendarioEscala();
+  }
+
+  function selecionarFuncionario(id, manterMes) {
     const f = esc.lista.find((x) => String(x.id) === String(id));
     if (!f) return;
+    const trocou = !esc.atual || esc.atual.id !== f.id;
     esc.atual = f;
     const e = f.escala || {};
     esc.tipo = e.tipo || '';
-    esc.dias = Array.isArray(e.dias) ? e.dias.slice() : [1, 2, 3, 4, 5];
+    esc.dias = Array.isArray(e.dias) && e.tipo === 'semanal' ? e.dias.slice() : [1, 2, 3, 4, 5];
+    esc.horarios = JSON.parse(JSON.stringify(e.horarios || {}));
     el('escala-nome').textContent = f.nome;
     el('escala-funcao').textContent = (f.funcao || '') + (f.tem_login ? '' : (f.funcao ? ' · ' : '') + 'sem login no sistema (não registra ponto)');
     el('escala-ref').value = e.inicio || '';
     el('escala-entrada').value = e.entrada || '';
     el('escala-saida').value = e.saida || '';
+    el('escala-intervalo').value = e.intervalo === null || e.intervalo === undefined ? '' : e.intervalo;
     mensagem(el('escala-msg'), '');
     el('escala-editor-vazio').hidden = true;
     el('escala-editor-corpo').hidden = false;
+    if (trocou || !manterMes) {
+      const hoje = new Date();
+      esc.ano = hoje.getFullYear(); esc.mes = hoje.getMonth();
+      fecharDia();
+      esc.excecoes = {};
+    }
     desenharListaEscalas();
     desenharEditor();
+    if (trocou || !manterMes) carregarExcecoes();
   }
 
-  function cicloDo(tipo) {
-    const t = esc.tipos.find((x) => x.tipo === tipo);
-    return t ? t.ciclo : null;
-  }
+  const cicloDo = (tipo) => { const t = esc.tipos.find((x) => x.tipo === tipo); return t ? t.ciclo : null; };
 
   function diasDoTipo(tipo) {
     if (tipo === '5x2') return [1, 2, 3, 4, 5];
@@ -421,7 +464,7 @@
     return null;
   }
 
-  function trabalhaNoDia(d) {
+  function trabalhaPadrao(d) {
     if (!esc.tipo) return false;
     const dias = diasDoTipo(esc.tipo);
     if (dias) return dias.includes(d.getDay());
@@ -431,6 +474,29 @@
     const [a, m, dd] = ref.split('-').map(Number);
     const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(a, m - 1, dd)) / 86400000);
     return ((diff % ciclo) + ciclo) % ciclo === 0;
+  }
+
+  function horarioPadrao(d) {
+    const h = !cicloDo(esc.tipo) && esc.horarios[String(d.getDay())];
+    if (h) return { entrada: h.entrada, saida: h.saida };
+    return { entrada: el('escala-entrada').value, saida: el('escala-saida').value };
+  }
+
+  // Mesmo raciocínio de services/escalas.py: padrão, feriado e ajuste do dia.
+  function planoDoDia(d) {
+    const chave = isoLocal(d);
+    const fer = esc.feriados[chave];
+    const exc = esc.excecoes[chave];
+    const base = trabalhaPadrao(d);
+    const h = horarioPadrao(d);
+    let trabalha = base && !fer;
+    let entrada = h.entrada;
+    let saida = h.saida;
+    if (exc) {
+      trabalha = exc.tipo === 'trabalho' || exc.tipo === 'extra_banco';
+      if (trabalha) { entrada = exc.entrada || entrada; saida = exc.saida || saida; }
+    }
+    return { chave, fer, exc, base, trabalha, entrada, saida };
   }
 
   function desenharEditor() {
@@ -448,25 +514,118 @@
     el('escala-bloco-horario').hidden = !esc.tipo;
     el('escala-dias').innerHTML = DIAS_LONGOS.map((n, i) => `
       <button type="button" class="escala-dia${esc.dias.includes(i) ? ' ativo' : ''}" data-dia="${i}" aria-pressed="${esc.dias.includes(i)}">${n}</button>`).join('');
-    desenharPrevia();
+    desenharHorariosPorDia();
+    desenharCalendarioEscala();
   }
 
-  function desenharPrevia() {
+  function desenharHorariosPorDia() {
+    const dias = diasDoTipo(esc.tipo);
+    const mostra = !!dias && !!el('escala-entrada').value && !!el('escala-saida').value;
+    el('escala-bloco-por-dia').hidden = !mostra;
+    if (!mostra) return;
+    const ordem = [1, 2, 3, 4, 5, 6, 0].filter((d) => dias.includes(d));
+    el('escala-por-dia').innerHTML = ordem.map((d) => {
+      const h = esc.horarios[String(d)] || {};
+      const diferente = !!esc.horarios[String(d)];
+      return `<div class="escala-por-dia-linha${diferente ? ' diferente' : ''}" data-dia-semana="${d}">
+        <span>${DIAS_EXTENSO[d]}</span>
+        <input type="time" data-campo="entrada" value="${h.entrada || el('escala-entrada').value}" aria-label="Entrada de ${DIAS_EXTENSO[d]}">
+        <input type="time" data-campo="saida" value="${h.saida || el('escala-saida').value}" aria-label="Saída de ${DIAS_EXTENSO[d]}">
+        ${diferente ? '<button type="button" class="escala-por-dia-limpar" title="Voltar ao horário padrão">padrão</button>' : ''}
+      </div>`;
+    }).join('');
+  }
+
+  function desenharCalendarioEscala() {
+    if (!esc.atual) return;
+    const { ano, mes } = esc;
+    el('escala-mes').textContent = new Date(ano, mes, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
     const hoje = new Date();
-    const inicio = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - hoje.getDay());
+    const hojeIso = isoLocal(hoje);
+    const primeiro = new Date(ano, mes, 1);
+    const total = new Date(ano, mes + 1, 0).getDate();
     let html = '';
-    for (let i = 0; i < 28; i++) {
-      const d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + i);
-      const chave = isoLocal(d);
-      const fer = esc.feriados[chave];
-      const classes = ['escala-previa-dia'];
-      if (trabalhaNoDia(d)) classes.push('trabalho');
-      if (fer) classes.push('feriado');
-      if (chave === isoLocal(hoje)) classes.push('hoje');
+    for (let i = 0; i < primeiro.getDay(); i++) html += '<span class="escala-previa-dia fora"></span>';
+    for (let n = 1; n <= total; n++) {
+      const d = new Date(ano, mes, n);
+      const p = planoDoDia(d);
+      const classes = ['escala-previa-dia', 'clicavel'];
+      if (p.trabalha) classes.push('trabalho');
+      if (p.fer) classes.push('feriado');
+      if (p.exc) classes.push('ajuste', 'aj-' + p.exc.tipo);
+      if (p.chave === hojeIso) classes.push('hoje');
+      if (p.chave === esc.diaAberto) classes.push('selecionado');
       if (d < new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate())) classes.push('passado');
-      html += `<span class="${classes.join(' ')}" title="${fer ? escapar(fer.nome) : ''}">${d.getDate()}</span>`;
+      const dica = [p.fer ? p.fer.nome : '', p.exc ? p.exc.rotulo : '',
+        p.trabalha && p.entrada && p.saida ? p.entrada + ' às ' + p.saida : ''].filter(Boolean).join(' · ');
+      const hora = p.trabalha && p.saida ? `<small>${p.saida}</small>` : '';
+      html += `<button type="button" class="${classes.join(' ')}" data-dia-cal="${p.chave}" title="${escapar(dica)}">${n}${hora}</button>`;
     }
     el('escala-previa').innerHTML = html;
+  }
+
+  function mudarMesEscala(passo) {
+    const alvo = esc.ano * 12 + esc.mes + passo;
+    esc.ano = Math.floor(alvo / 12); esc.mes = alvo % 12;
+    fecharDia();
+    desenharCalendarioEscala();
+  }
+
+  // ---- painel do dia
+  function abrirDia(chave) {
+    esc.diaAberto = chave;
+    const [a, m, n] = chave.split('-').map(Number);
+    const d = new Date(a, m - 1, n);
+    const p = planoDoDia(d);
+    const h = horarioPadrao(d);
+    const pela = p.fer && p.base ? 'Feriado: ' + p.fer.nome + ' (não trabalha)'
+      : p.base ? 'Pela escala: trabalho' + (h.entrada && h.saida ? ', ' + h.entrada + ' às ' + h.saida : '')
+        : 'Pela escala: folga' + (p.fer ? ' · Feriado: ' + p.fer.nome : '');
+    el('escala-dia-titulo').textContent = d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    el('escala-dia-sub').textContent = pela;
+    esc.tipoDia = p.exc ? p.exc.tipo : '';
+    el('escala-dia-entrada').value = (p.exc && p.exc.entrada) || h.entrada || '';
+    el('escala-dia-saida').value = (p.exc && p.exc.saida) || h.saida || '';
+    el('escala-dia-obs').value = (p.exc && p.exc.observacao) || '';
+    mensagem(el('escala-dia-msg'), '');
+    desenharOpcoesDia();
+    el('escala-dia-painel').hidden = false;
+    desenharCalendarioEscala();
+    el('escala-dia-painel').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  function fecharDia() {
+    esc.diaAberto = null;
+    el('escala-dia-painel').hidden = true;
+  }
+
+  function desenharOpcoesDia() {
+    el('escala-dia-opcoes').innerHTML = OPCOES_DIA.map((o) => `
+      <button type="button" role="radio" aria-checked="${esc.tipoDia === o.tipo}" class="escala-tipo escala-op-dia${esc.tipoDia === o.tipo ? ' ativo' : ''}" data-tipo-dia="${o.tipo}">
+        <strong>${o.rotulo}</strong><small>${o.descr}</small>
+      </button>`).join('');
+    el('escala-dia-horas').hidden = !(esc.tipoDia === 'trabalho' || esc.tipoDia === 'extra_banco');
+  }
+
+  async function salvarDia() {
+    if (!esc.atual || !esc.diaAberto) return;
+    const url = `/jornada/escalas/${esc.atual.id}/excecoes/${esc.diaAberto}`;
+    try {
+      if (!esc.tipoDia) {
+        await chamar('DELETE', url);
+      } else {
+        const comHora = esc.tipoDia === 'trabalho' || esc.tipoDia === 'extra_banco';
+        await chamar('PUT', url, {
+          tipo: esc.tipoDia,
+          entrada: comHora ? el('escala-dia-entrada').value : null,
+          saida: comHora ? el('escala-dia-saida').value : null,
+          observacao: el('escala-dia-obs').value.trim(),
+        });
+      }
+      await carregarExcecoes();
+      mensagem(el('escala-dia-msg'), esc.tipoDia ? 'Dia ajustado.' : 'Dia volta a seguir a escala.', 'sucesso');
+      if (ultimaFolha && el('ponto-pessoa').value) carregarFolha();
+    } catch (err) { mensagem(el('escala-dia-msg'), err.message, 'erro'); }
   }
 
   function ligarEscalas() {
@@ -489,10 +648,49 @@
       esc.dias = esc.dias.includes(n) ? esc.dias.filter((x) => x !== n) : esc.dias.concat(n).sort();
       desenharEditor();
     });
-    el('escala-ref').addEventListener('change', desenharPrevia);
+    ['escala-entrada', 'escala-saida'].forEach((id) => el(id).addEventListener('change', () => {
+      desenharHorariosPorDia();
+      desenharCalendarioEscala();
+    }));
+    el('escala-ref').addEventListener('change', desenharCalendarioEscala);
+    el('escala-por-dia').addEventListener('change', (e) => {
+      const linha = e.target.closest('[data-dia-semana]');
+      if (!linha) return;
+      const d = linha.dataset.diaSemana;
+      const ent = linha.querySelector('[data-campo="entrada"]').value;
+      const sai = linha.querySelector('[data-campo="saida"]').value;
+      if (ent === el('escala-entrada').value && sai === el('escala-saida').value) delete esc.horarios[d];
+      else esc.horarios[d] = { entrada: ent, saida: sai };
+      desenharHorariosPorDia();
+      desenharCalendarioEscala();
+    });
+    el('escala-por-dia').addEventListener('click', (e) => {
+      const b = e.target.closest('.escala-por-dia-limpar');
+      if (!b) return;
+      delete esc.horarios[b.closest('[data-dia-semana]').dataset.diaSemana];
+      desenharHorariosPorDia();
+      desenharCalendarioEscala();
+    });
+    el('escala-mes-ant').addEventListener('click', () => mudarMesEscala(-1));
+    el('escala-mes-prox').addEventListener('click', () => mudarMesEscala(1));
+    el('escala-previa').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-dia-cal]');
+      if (b) abrirDia(b.dataset.diaCal);
+    });
+    el('escala-dia-opcoes').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-tipo-dia]');
+      if (!b) return;
+      esc.tipoDia = b.dataset.tipoDia;
+      desenharOpcoesDia();
+    });
+    el('escala-dia-fechar').addEventListener('click', () => { fecharDia(); desenharCalendarioEscala(); });
+    el('escala-dia-salvar').addEventListener('click', salvarDia);
     el('escala-editor').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!esc.atual) return;
+      const dias = diasDoTipo(esc.tipo) || [];
+      const horarios = {};
+      Object.keys(esc.horarios).forEach((k) => { if (dias.includes(Number(k))) horarios[k] = esc.horarios[k]; });
       try {
         await chamar('PUT', '/jornada/escalas/' + esc.atual.id, {
           escala_tipo: esc.tipo,
@@ -500,6 +698,8 @@
           escala_inicio: el('escala-ref').value,
           escala_entrada: el('escala-entrada').value,
           escala_saida: el('escala-saida').value,
+          escala_intervalo: el('escala-intervalo').value,
+          escala_horarios: horarios,
         });
         await carregarEscalas();
         mensagem(el('escala-msg'), 'Escala salva.', 'sucesso');
