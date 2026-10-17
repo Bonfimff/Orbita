@@ -24,6 +24,7 @@
       <button class="tab-btn" data-tab="ativos" data-nav-label="Ativos" data-nav-icone="veiculo">Equipamentos</button>
       <button class="tab-btn" data-tab="locais" data-nav-label="Locais" data-nav-icone="mapa">Bases de Atendimento</button>
       <button class="tab-btn" data-tab="usuario" data-nav-label="Usuário" data-nav-icone="usuarios">Usuário</button>
+      <button class="tab-btn" data-tab="funcionario" data-nav-label="Funcionário" data-nav-icone="usuarios">Funcionário</button>
     </div>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
@@ -219,16 +220,7 @@
 
         <div class="gestao-secao" id="bloco-capacitacoes" style="display:none;">
           <h4>Capacitações</h4>
-          <p class="gestao-ajuda-texto">Aparecem no crachá com a situação da validade. Cargo de eletricista exige NR-10 válida.</p>
-          <div id="usuario-capacitacoes-lista" class="gestao-caps-lista"></div>
-          <div class="gestao-caps-nova">
-            <input type="text" id="cap-nome" placeholder="Capacitação (ex.: NR-10)" list="cap-sugestoes" maxlength="80">
-            <datalist id="cap-sugestoes"><option>NR-10</option><option>NR-10 SEP</option><option>NR-35</option><option>NR-33</option><option>NR-12</option><option>NR-06</option><option>Primeiros socorros</option></datalist>
-            <input type="text" id="cap-certificado" placeholder="Nº do certificado" maxlength="80">
-            <label>Emissão <input type="date" id="cap-emissao"></label>
-            <label>Validade <input type="date" id="cap-validade"></label>
-            <button type="button" class="btn-secundario" id="cap-adicionar">Adicionar</button>
-          </div>
+          <div id="usuario-caps"></div>
         </div>
 
         <div id="usuario-form-feedback" class="gestao-feedback" style="display:none;"></div>
@@ -236,6 +228,87 @@
         <div class="gestao-modal-acoes">
           <button type="button" class="btn-secundario" id="cancelar-cadastro-usuario">Voltar para a lista</button>
           <button type="submit" class="btn-primario">Salvar</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="funcionario" class="tab-content" data-secao="Funcionário">
+      <div class="aba-legenda-linha">
+        <h2 class="aba-legenda" id="titulo-cadastro-funcionario">Novo funcionário</h2>
+      </div>
+      <hr class="aba-linha">
+      <form id="form-funcionario" autocomplete="off">
+        <input type="hidden" id="func-id">
+        <div class="gestao-form-grid">
+          <div class="gestao-form-item">
+            <label for="func-nome">Nome *</label>
+            <input type="text" id="func-nome" maxlength="150" required>
+          </div>
+          <div class="gestao-form-item">
+            <label for="func-cpf">CPF</label>
+            <input type="text" id="func-cpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00">
+          </div>
+          <div class="gestao-form-item gestao-form-full func-mesma-pessoa" id="func-mesma-pessoa" hidden></div>
+          <div class="gestao-form-item">
+            <label for="func-matricula">Matrícula</label>
+            <input type="text" id="func-matricula" maxlength="50">
+          </div>
+          <div class="gestao-form-item">
+            <label for="func-funcao">Função padrão</label>
+            <select id="func-funcao"><option value="">Sem função definida</option></select>
+          </div>
+          <div class="gestao-form-item">
+            <label for="func-telefone">Telefone</label>
+            <input type="tel" id="func-telefone" maxlength="40">
+          </div>
+          <div class="gestao-form-item">
+            <label for="func-email">E-mail</label>
+            <input type="email" id="func-email" maxlength="150">
+          </div>
+          <div class="gestao-form-item">
+            <label for="func-usuario">Usuário do sistema</label>
+            <select id="func-usuario"><option value="">Sem login</option></select>
+          </div>
+          <div class="gestao-form-item">
+            <label><input type="checkbox" id="func-ativo" checked> Ativo</label>
+          </div>
+          <div class="gestao-form-item">
+            <label for="func-sangue">Tipo sanguíneo</label>
+            <select id="func-sangue">
+              <option value="">Não informado</option>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+            </select>
+          </div>
+          <div class="gestao-form-item gestao-form-full">
+            <label for="func-observacao">Observação</label>
+            <input type="text" id="func-observacao" maxlength="255">
+          </div>
+        </div>
+
+        <div class="gestao-secao">
+          <details class="config-emergencia">
+            <summary>Informações de emergência</summary>
+            <div class="gestao-form-grid">
+              <div class="gestao-form-item"><label for="func-med-alergias">Alergias</label><input type="text" id="func-med-alergias" maxlength="255"></div>
+              <div class="gestao-form-item"><label for="func-med-condicoes">Contraindicações e condições de saúde</label><input type="text" id="func-med-condicoes" maxlength="255"></div>
+              <div class="gestao-form-item"><label for="func-med-medicamentos">Medicamentos de uso contínuo</label><input type="text" id="func-med-medicamentos" maxlength="255"></div>
+              <div class="gestao-form-item"><label for="func-med-contato">Contato de emergência (nome)</label><input type="text" id="func-med-contato" maxlength="120"></div>
+              <div class="gestao-form-item"><label for="func-med-telefone">Telefone do contato</label><input type="tel" id="func-med-telefone" maxlength="40"></div>
+              <div class="gestao-form-item gestao-checkbox-item"><label><input type="checkbox" id="func-med-publico" checked> Mostrar na leitura do QR do crachá</label></div>
+            </div>
+          </details>
+        </div>
+
+        <div class="gestao-secao" id="func-bloco-capacitacoes" hidden>
+          <h4>Capacitações</h4>
+          <p class="gestao-ajuda-texto" id="func-caps-aviso" hidden>Este funcionário tem login: as capacitações são as mesmas do usuário dele.</p>
+          <div id="func-caps"></div>
+        </div>
+        <div id="func-feedback" class="gestao-feedback" style="display:none;"></div>
+        <div class="gestao-modal-acoes" style="justify-content:flex-start;">
+          <button type="submit" class="btn-primario" id="btn-salvar-funcionario">Salvar funcionário</button>
+          <button type="button" class="btn-secundario" id="btn-limpar-funcionario">Voltar para a lista</button>
         </div>
       </form>
     </div>
@@ -293,7 +366,7 @@
   <script src="../SCRIPT/configuracoes.js?v=5"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=9"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=10"></script>
   <script src="../SCRIPT/gestao-nav.js?v=10"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
@@ -301,7 +374,9 @@
   <script src="../SCRIPT/cadastros/equipamentos.js?v=3"></script>
   <script src="../SCRIPT/cadastros/locais.js?v=3"></script>
   <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
-  <script src="../SCRIPT/cadastros/usuario.js?v=1"></script>
+  <script src="../SCRIPT/cadastros/capacitacoes-ui.js?v=1"></script>
+  <script src="../SCRIPT/cadastros/usuario.js?v=2"></script>
+  <script src="../SCRIPT/gestao-funcionarios.js?v=2"></script>
   <script src="../SCRIPT/contexto/painel.js?v=2"></script>
   <script src="../SCRIPT/contexto/cadastros.js?v=3"></script>
 

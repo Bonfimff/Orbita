@@ -74,8 +74,8 @@
     el('usuario-form-feedback').style.display = 'none';
 
     el('bloco-capacitacoes').style.display = u ? '' : 'none';
-    ['cap-nome', 'cap-certificado', 'cap-emissao', 'cap-validade'].forEach((id) => { el(id).value = ''; });
-    if (u) carregarCapacitacoes(u.id);
+    caps.limpar();
+    if (u) caps.carregar('/usuarios/' + u.id);
   }
 
   async function abrirPeloEndereco() {
@@ -145,69 +145,8 @@
     }
   }
 
-  // ---------------------------------------------------- capacitações
-  function renderCapacitacoes(dados) {
-    const pend = (dados.pendencias || []).map((p) => `<div class="gestao-caps-pendencia">${esc(p.motivo)}</div>`).join('');
-    const itens = (dados.capacitacoes || []).map((c) => `
-      <div class="gestao-caps-item">
-        <span><strong>${esc(c.nome)}</strong>${c.certificado ? ' · ' + esc(c.certificado) : ''}
-          <small>${c.validade ? 'válida até ' + c.validade.split('-').reverse().join('/') : 'sem validade'}</small></span>
-        <span class="gestao-caps-selo ${esc(c.situacao)}">${esc(c.rotulo)}</span>
-        ${c.tem_arquivo ? `<button type="button" class="gestao-caps-link" data-cap-ver="${c.id}">Ver PDF</button>` : ''}
-        <label class="gestao-caps-link">${c.tem_arquivo ? 'Trocar PDF' : 'Anexar PDF'}<input type="file" accept="application/pdf" data-cap-arquivo="${c.id}" hidden></label>
-        <button type="button" class="gestao-btn-icone" data-cap-excluir="${c.id}" title="Remover" aria-label="Remover ${esc(c.nome)}">&times;</button>
-      </div>`).join('');
-    el('usuario-capacitacoes-lista').innerHTML = pend + (itens || '<p class="gestao-ajuda-texto">Nenhuma capacitação cadastrada.</p>');
-  }
-
-  async function carregarCapacitacoes(id) {
-    const lista = el('usuario-capacitacoes-lista');
-    lista.innerHTML = '<p class="gestao-ajuda-texto">Carregando...</p>';
-    try {
-      const resp = await fetch(window.apiUrl(`/usuarios/${id}/capacitacoes`), { headers: auth() });
-      const dados = await resp.json();
-      if (dados.status !== 'ok') throw new Error(dados.mensagem);
-      renderCapacitacoes(dados);
-    } catch (e) {
-      lista.innerHTML = `<p class="gestao-ajuda-texto">${esc(e.message || 'Não foi possível carregar.')}</p>`;
-    }
-  }
-
-  document.addEventListener('click', async (e) => {
-    if (e.target.closest('#cap-adicionar') && editandoId) {
-      const corpo = { nome: el('cap-nome').value, certificado: el('cap-certificado').value, emissao: el('cap-emissao').value, validade: el('cap-validade').value };
-      const resp = await fetch(window.apiUrl(`/usuarios/${editandoId}/capacitacoes`), { method: 'POST', headers: auth(true), body: JSON.stringify(corpo) });
-      const dados = await resp.json().catch(() => ({}));
-      if (dados.status !== 'ok') { alert(dados.mensagem || 'Não foi possível adicionar.'); return; }
-      ['cap-nome', 'cap-certificado', 'cap-emissao', 'cap-validade'].forEach((id) => { el(id).value = ''; });
-      renderCapacitacoes(dados);
-      return;
-    }
-    const ver = e.target.closest('[data-cap-ver]');
-    if (ver && editandoId) {
-      const resp = await fetch(window.apiUrl(`/usuarios/${editandoId}/capacitacoes/${ver.dataset.capVer}/arquivo`), { headers: auth() });
-      if (!resp.ok) { alert('Não foi possível abrir o PDF.'); return; }
-      window.open(URL.createObjectURL(await resp.blob()), '_blank');
-      return;
-    }
-    const excluir = e.target.closest('[data-cap-excluir]');
-    if (excluir && editandoId) {
-      if (!confirm('Remover esta capacitação?')) return;
-      await fetch(window.apiUrl(`/usuarios/${editandoId}/capacitacoes/${excluir.dataset.capExcluir}`), { method: 'DELETE', headers: auth() });
-      carregarCapacitacoes(editandoId);
-    }
-  });
-
-  document.addEventListener('change', async (e) => {
-    const campo = e.target.closest('[data-cap-arquivo]');
-    if (!campo || !campo.files.length || !editandoId) return;
-    const formulario = new FormData();
-    formulario.append('arquivo', campo.files[0]);
-    const resp = await fetch(window.apiUrl(`/usuarios/${editandoId}/capacitacoes/${campo.dataset.capArquivo}/arquivo`), { method: 'POST', headers: auth(), body: formulario });
-    const dados = await resp.json().catch(() => ({}));
-    if (dados.status !== 'ok') alert(dados.mensagem || 'Não foi possível anexar.');
-    carregarCapacitacoes(editandoId);
-  });
+  // Capacitações: componente compartilhado (capacitacoes-ui.js).
+  const caps = window.CapacitacoesUI.montar(el('usuario-caps'));
 
   // ---------------------------------------------------- ligações
   el('form-usuario').addEventListener('submit', salvar);

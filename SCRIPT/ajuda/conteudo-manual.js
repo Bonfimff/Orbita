@@ -248,7 +248,7 @@ window.OrbitaAjuda.registrarSecao({
       corpo: [
         { tipo: 'paragrafo', texto: 'O contrato separa os dados entre clientes. Para limitar uma pessoa, edite o usuário e marque os contratos que ela pode ver. Sem nenhum marcado, vale o que o perfil dela define; sem perfil, ela vê tudo.' },
         { tipo: 'paragrafo', texto: 'Arquivos do contrato só podem ser anexados depois que ele for salvo.' },
-        { tipo: 'paragrafo', texto: 'Em **Funcionários** fica o cadastro de quem trabalha em campo.' },
+        { tipo: 'paragrafo', texto: 'A aba **Funcionários** lista quem trabalha em campo. **+ Novo funcionário** e um clique na linha abrem o formulário em **Cadastros › Funcionário**, com tipo sanguíneo, informações de emergência e capacitações. Se o funcionário tem login, esses dados são os mesmos do usuário dele.' },
       ],
     },
 
@@ -259,7 +259,7 @@ window.OrbitaAjuda.registrarSecao({
       pagina: 'cadastros',
       titulo: 'Cadastros de análise',
       corpo: [
-        { tipo: 'paragrafo', texto: 'Aqui ficam os catálogos usados para classificar os chamados (categorias, problemas, causas, soluções e resultados), os equipamentos, as bases de atendimento e o formulário de usuário.' },
+        { tipo: 'paragrafo', texto: 'Aqui ficam os catálogos usados para classificar os chamados (categorias, problemas, causas, soluções e resultados), os equipamentos, as bases de atendimento e os formulários de usuário e de funcionário.' },
         { tipo: 'paragrafo', texto: 'Os catálogos começam vazios, para usar o vocabulário da sua operação. Um item em uso não é apagado: ele é desativado e some das listas novas, mas continua no histórico.' },
       ],
     },
