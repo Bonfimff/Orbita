@@ -105,6 +105,7 @@
       '<div><strong>' + escapar(nomeDe(m)) + '</strong>' +
       (m.funcao_nome ? ' <span style="color:#666;">(' + escapar(m.funcao_nome) + ')</span>' : '') +
       '</div>' +
+      '<button type="button" class="os-op-cracha" data-cracha="' + m.id + '" title="Ver crachá" aria-label="Ver crachá de ' + escapar(nomeDe(m)) + '">Crachá</button>' +
       '<button type="button" class="os-op-remover os-op-equipe-remover" title="Remover" aria-label="Remover" data-id="' + m.id +
       '"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'
     )).join('');
@@ -120,6 +121,21 @@
         } catch (erro) {
           feedback(erro.message, 'erro');
           await recarregarLista();
+        }
+      });
+    });
+
+    // Crachá do integrante: link temporário (10 min) aberto numa nova aba.
+    container.querySelectorAll('.os-op-cracha').forEach((botao) => {
+      botao.addEventListener('click', async () => {
+        const aba = window.open('about:blank', '_blank');   // abre já, para o navegador não bloquear
+        try {
+          const dados = await chamar('GET', '/ordens/alocacoes/' + botao.dataset.cracha + '/cracha');
+          const endereco = new URL('cracha.html?c=' + encodeURIComponent(dados.token), location.href).href;
+          if (aba) aba.location.href = endereco; else window.open(endereco, '_blank');
+        } catch (erro) {
+          if (aba) aba.close();
+          feedback(erro.message, 'erro');
         }
       });
     });

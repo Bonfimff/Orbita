@@ -2659,3 +2659,8 @@ button.ponto-foto-modal-tags {
   .os-detalhe-grade { grid-template-columns: minmax(0, 1fr); }
   .os-lista-filtros button { width: 100%; }
 }
+
+/* Botão "Crachá" de cada integrante da equipe da O.S. */
+.os-op-cracha { margin-left: auto; padding: 5px 10px; border: 1px solid #d5dbe3; border-radius: 999px; background: #fff; color: #1F2D3D; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.os-op-cracha:hover { border-color: var(--cor-primaria, #A8864F); color: var(--cor-primaria, #A8864F); }
+.os-op-cracha + .os-op-remover { margin-left: 6px; }
