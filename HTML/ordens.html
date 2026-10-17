@@ -4,9 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=59" />
-  <link rel="stylesheet" href="../CSS/ordens.css?v=38" />
+  <link rel="stylesheet" href="../CSS/ordens.css?v=39" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
+  <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
+  <link rel="stylesheet" href="../CSS/cadastros.css?v=2" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Ordens de Serviço</title>
 </head>
@@ -17,7 +19,7 @@
     <button class="tab-btn active" data-tab="gerenciamento" data-nav-label="Painel" data-nav-icone="painel">Painel Geral</button>
     <button class="tab-btn" data-tab="cronograma" data-nav-label="Cronograma" data-nav-icone="agenda">Cronograma</button>
     <button class="tab-btn" data-tab="busca" data-nav-label="Busca" data-nav-icone="busca">Busca</button>
-    <button class="tab-btn" data-tab="bases" data-nav-label="Bases" data-nav-icone="mapa">Bases</button>
+    <button class="tab-btn" data-tab="bases" data-nav-label="Bases" data-nav-icone="mapa">Bases e Equipamentos</button>
     <button class="tab-btn" data-tab="cadastros" data-nav-icone="cadastros">Cadastros</button>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
@@ -160,9 +162,15 @@
 
     <!-- ===== ABA: BASES ===== -->
     <div id="bases" class="tab-content">
-      <h2 class="aba-legenda">Bases</h2>
+      <h2 class="aba-legenda">Bases e Equipamentos</h2>
       <hr class="aba-linha">
 
+      <div class="opcoes-abas" id="bases-seletor" role="tablist">
+        <button type="button" class="top-tab2 active" data-bases-ver="bases">Bases</button>
+        <button type="button" class="top-tab2" data-bases-ver="equipamentos">Equipamentos</button>
+      </div>
+
+      <div id="bases-vista-bases">
       <div class="os-lista-filtros">
         <input type="search" id="bases-busca" placeholder="Buscar por ID, endereço ou contrato">
         <button type="button" class="btn-primario" id="btn-nova-base" data-permissao="os_bases:excluir">Cadastrar base</button>
@@ -180,6 +188,31 @@
           </thead>
           <tbody></tbody>
         </table>
+      </div>
+      </div>
+
+      <div id="bases-vista-equipamentos" hidden>
+        <div class="os-lista-filtros eqi-filtros">
+          <input type="search" id="eqi-busca" placeholder="Buscar por código, nome, série ou patrimônio">
+          <select id="eqi-tipo"><option value="">Todos os tipos</option></select>
+          <select id="eqi-local"><option value="">Todas as bases</option></select>
+          <button type="button" class="btn-primario" id="eqi-cadastrar" data-permissao="analise_cadastros:editar analise_cadastros:excluir">Cadastrar equipamento</button>
+        </div>
+        <div class="tabela-responsiva">
+          <table id="eqi-tabela" class="estilo-tabela">
+            <thead>
+              <tr>
+                <th>Equipamento</th>
+                <th>Tipo</th>
+                <th>Base</th>
+                <th>Modelo / série</th>
+                <th>Composição</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody><tr><td colspan="6">Carregando...</td></tr></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -213,6 +246,29 @@
         <button type="button" class="top-tab2 active" data-subaba="os-sub-nova" data-permissao="os_ordens:excluir">Nova O.S.</button>
         <button type="button" class="top-tab2" data-subaba="os-sub-base" data-permissao="os_bases:editar os_bases:excluir">Bases</button>
         <button type="button" class="top-tab2" data-subaba="os-sub-agendamento" data-permissao="os_agendamentos:editar os_agendamentos:excluir">Agendamento</button>
+        <button type="button" class="top-tab2" data-subaba="os-sub-equipamento" data-permissao="analise_cadastros:editar analise_cadastros:excluir">Equipamentos</button>
+      </div>
+
+      <div id="os-sub-equipamento" class="os-subaba">
+      <p class="rel-ajuda rel-ajuda-bloco">
+          Equipamento nunca é obrigatório numa O.S. Cadastre apenas os ativos que
+          a operação realmente identifica em campo.
+        </p>
+
+        <div class="cad-cabecalho">
+          <div class="cad-busca">
+            <input type="search" id="eq-busca" placeholder="Código, nome, série ou patrimônio..." autocomplete="off">
+          </div>
+          <select id="eq-filtro-tipo" class="cad-filtro"><option value="">Todos os tipos</option></select>
+          <select id="eq-filtro-ponto" class="cad-filtro"><option value="">Todos os pontos</option></select>
+          <label class="cad-check-inline">
+            <input type="checkbox" id="eq-incluir-inativos"> Mostrar inativos
+          </label>
+          <button type="button" class="rel-btn rel-btn-primario" id="eq-novo">+ Novo equipamento</button>
+        </div>
+
+        <div class="rel-feedback" id="eq-feedback" hidden></div>
+        <div class="rel-tabela-area" id="eq-tabela"></div>
       </div>
 
       <div id="os-sub-nova" class="os-subaba ativa">
@@ -566,6 +622,79 @@
     </div>
   </div>
 
+  <div class="rel-detalhe-overlay" id="cad-form-overlay" hidden></div>
+  <aside class="rel-detalhe cad-form-painel" id="cad-form-painel" hidden aria-label="Formulário de cadastro">
+    <div class="rel-detalhe-cabecalho">
+      <strong id="cad-form-titulo">Novo registro</strong>
+      <button type="button" class="rel-filtros-fechar" id="cad-form-fechar" aria-label="Fechar">&times;</button>
+    </div>
+    <form class="cad-form-corpo" id="cad-form">
+      <div id="cad-form-campos"></div>
+      <div class="cad-form-meta" id="cad-form-meta" hidden></div>
+      <div class="cad-form-acoes">
+        <button type="button" class="rel-btn rel-btn-secundario" id="cad-form-cancelar">Cancelar</button>
+        <button type="submit" class="rel-btn rel-btn-primario" id="cad-form-salvar">Salvar</button>
+      </div>
+    </form>
+  </aside>
+
+  <div class="eqi-fundo" id="eqi-detalhe" hidden>
+    <div class="eqi-modal" role="dialog" aria-modal="true" aria-labelledby="eqi-titulo">
+      <div class="eqi-topo">
+        <div>
+          <h3 id="eqi-titulo"></h3>
+          <small id="eqi-sub"></small>
+        </div>
+        <div class="eqi-topo-acoes">
+          <button type="button" class="eqi-editar" id="eqi-editar" title="Editar características" data-permissao="analise_cadastros:editar analise_cadastros:excluir">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>
+            Editar
+          </button>
+          <button type="button" class="eqi-fechar" data-eqi-fechar aria-label="Fechar">&times;</button>
+        </div>
+      </div>
+      <div class="eqi-base" id="eqi-base"></div>
+      <dl class="eqi-info" id="eqi-info"></dl>
+
+      <div class="opcoes-abas eqi-abas" id="eqi-abas" role="tablist">
+        <button type="button" class="top-tab2 active" data-eqi-aba="composicao">Composição <em id="eqi-n-mat"></em></button>
+        <button type="button" class="top-tab2" data-eqi-aba="arquivos">Arquivos <em id="eqi-n-arq"></em></button>
+        <button type="button" class="top-tab2" data-eqi-aba="historico">Histórico</button>
+      </div>
+
+      <section data-eqi-painel="composicao">
+        <ul class="eqi-materiais" id="eqi-materiais"></ul>
+        <form class="eqi-mat-form" id="eqi-mat-form" autocomplete="off" hidden>
+          <input type="hidden" id="eqi-mat-id">
+          <input type="text" id="eqi-mat-nome" list="eqi-mat-sugestoes" placeholder="Material (ex.: Bateria 12V 9Ah)" maxlength="160" required>
+          <datalist id="eqi-mat-sugestoes"></datalist>
+          <input type="text" id="eqi-mat-qtd" inputmode="decimal" placeholder="Qtd." value="1" required>
+          <input type="text" id="eqi-mat-un" placeholder="Un." maxlength="20">
+          <input type="text" id="eqi-mat-obs" placeholder="Observação" maxlength="200">
+          <button type="submit" class="btn-primario" id="eqi-mat-salvar">Adicionar</button>
+          <button type="button" class="eqi-link" id="eqi-mat-cancelar" hidden>Cancelar</button>
+        </form>
+        <p class="eqi-dica" id="eqi-mat-dica"></p>
+      </section>
+
+      <section data-eqi-painel="arquivos" hidden>
+        <div class="eqi-pastas" id="eqi-pastas"></div>
+        <label class="eqi-soltar" id="eqi-soltar" hidden>
+          <input type="file" id="eqi-arquivos" class="sem-botao-upload" multiple hidden>
+          <span><strong>Enviar arquivos</strong> para <span id="eqi-pasta-nome"></span> (ou arraste aqui)</span>
+          <small>PDF, imagem, Word, Excel, TXT ou ZIP, até 10 MB cada.</small>
+        </label>
+        <div class="eqi-progresso" id="eqi-progresso"></div>
+        <ul class="eqi-lista-arquivos" id="eqi-lista-arquivos"></ul>
+      </section>
+
+      <section data-eqi-painel="historico" hidden>
+        <ol class="eqi-historico" id="eqi-historico"></ol>
+      </section>
+      <div class="eqi-msg" id="eqi-msg"></div>
+    </div>
+  </div>
+
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
   <script src="../SCRIPT/geral.js?v=40"></script>
@@ -573,7 +702,7 @@
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=18"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=19"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="../SCRIPT/ordens.js?v=27"></script>
@@ -582,6 +711,10 @@
   <script src="../SCRIPT/operacional/equipe.js?v=8"></script>
   <script src="../SCRIPT/operacional/frota.js?v=3"></script>
   <script src="../SCRIPT/operacional/materiais.js?v=2"></script>
+  <script src="../SCRIPT/relatorios/api.js?v=2"></script>
+  <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
+  <script src="../SCRIPT/cadastros/equipamentos.js?v=5"></script>
+  <script src="../SCRIPT/operacional/equipamentos-info.js?v=2"></script>
 
   <!-- Modal de informações -->
   <div id="info-modal" class="modal" style="display: none;">

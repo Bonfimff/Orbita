@@ -1,5 +1,5 @@
 //======================================================================================================
-// CADASTROS - Equipamentos
+// O.S. › Cadastros › Equipamentos
 // Equipamento NUNCA e obrigatorio numa O.S.: so faz sentido cadastrar os ativos
 // que a operacao realmente identifica em campo.
 //======================================================================================================
@@ -14,6 +14,7 @@
   let tipos = [];
   let pontos = [];
   let contratos = [];
+  let bases = [];
   let carregado = false;
 
   const STATUS = ['Ativo', 'Inativo', 'Em Manutencao', 'Descartado'];
@@ -30,7 +31,11 @@
       { nome: 'modelo', rotulo: 'Modelo', max: 120 },
       { nome: 'numero_serie', rotulo: 'Número de série', max: 120 },
       { nome: 'patrimonio', rotulo: 'Patrimônio', max: 120 },
-      { nome: 'ponto_id', rotulo: 'Ponto / local', tipo: 'select',
+      { nome: 'base_id', rotulo: 'Base', tipo: 'select', obrigatorio: true, largo: true,
+        opcoes: bases.map((b) => ({ valor: b.id, texto: b.id + (b.endereco ? ' · ' + b.endereco : '') })),
+        vazio: bases.length ? 'Selecione a base...' : 'Cadastre uma base primeiro',
+        ajuda: 'Base onde o equipamento está instalado. Materiais e arquivos ficam na ficha do equipamento.' },
+      { nome: 'ponto_id', rotulo: 'Ponto de atendimento (opcional)', tipo: 'select',
         opcoes: pontos.map((p) => ({ valor: p.id,
           texto: p.codigo + ' · ' + (p.nome || p.endereco || '') })),
         vazio: 'Sem local definido',
@@ -54,7 +59,7 @@
     { titulo: 'Tipo', valor: (i) => escapar(i.tipo_nome || '-') },
     { titulo: 'Modelo', valor: (i) => escapar(i.modelo || '-') },
     { titulo: 'Série', valor: (i) => escapar(i.numero_serie || '-') },
-    { titulo: 'Ponto', valor: (i) => escapar(i.ponto_codigo || '-') },
+    { titulo: 'Base', valor: (i) => escapar(i.base_id || 'Sem base') },
     { titulo: 'Status', valor: (i) => escapar((i.status || '').replace('Manutencao', 'Manutenção')) },
     { titulo: 'Ocorrências', numerica: true,
       valor: (i) => api.numero(i.total_ocorrencias || 0) },
@@ -64,9 +69,11 @@
     if (registro) {
       await api.enviar('/equipamentos/' + registro.id, 'PUT', dados);
       form.feedback('eq-feedback', 'Equipamento atualizado.', 'ok');
+      document.dispatchEvent(new CustomEvent('orbita:equipamentos-alterados'));
     } else {
       await api.enviar('/equipamentos', 'POST', dados);
       form.feedback('eq-feedback', 'Equipamento cadastrado.', 'ok');
+      document.dispatchEvent(new CustomEvent('orbita:equipamentos-alterados'));
     }
     carregar();
   }
@@ -121,6 +128,11 @@
     try {
       pontos = await api.buscar('/pontos-atendimento', { limite: 500 }, 'eq-pontos') || [];
     } catch (erro) { pontos = []; }
+    try {
+      const resposta = await fetch(api.urlApi('/bases'), {
+        headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } });
+      bases = (await resposta.json()).bases || [];
+    } catch (erro) { bases = []; }
     try {
       const resposta = await fetch(api.urlApi('/contratos'), {
         headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } });
@@ -182,11 +194,20 @@
       temporizador = setTimeout(carregar, 350);
     });
 
-    // Carga sob demanda: quem nunca abre a aba de Equipamentos não paga por ela.
-    document.querySelector('.tab-btn[data-tab="ativos"]')?.addEventListener('click', () => {
-      if (carregado) return;
-      carregado = true;
-      carregarApoio().then(carregar);
-    });
+    // Carga sob demanda: quem nunca abre O.S. › Cadastros › Equipamentos não paga por ela.
+    document.querySelector('[data-subaba="os-sub-equipamento"]')?.addEventListener('click', garantirCarga);
   });
+
+  function garantirCarga() {
+    if (carregado) return Promise.resolve();
+    carregado = true;
+    return carregarApoio().then(carregar);
+  }
+
+  // Usado pela consulta (Bases e Equipamentos): abre o cadastro de um equipamento.
+  window.EquipamentosCadastro = {
+    novo: () => garantirCarga().then(() => abrirFormulario(null)),
+    editar: (registro) => garantirCarga().then(() => abrirFormulario(registro)),
+    recarregar: () => (carregado ? carregar() : Promise.resolve()),
+  };
 })();

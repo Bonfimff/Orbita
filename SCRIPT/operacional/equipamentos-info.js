@@ -1,0 +1,383 @@
+//======================================================================================================
+// O.S. › BASES E EQUIPAMENTOS › Equipamentos (consulta e ficha)
+// Lista os equipamentos com busca e filtros por tipo e base. Um clique abre a
+// ficha: base, dados, Composição (materiais que formam o equipamento),
+// Arquivos (pastas: ficha técnica, manuais, credenciais...) e Histórico.
+// Materiais e arquivos são mantidos direto na ficha; "Editar" leva só às
+// características, em O.S. › Cadastros › Equipamentos.
+//======================================================================================================
+(function () {
+  'use strict';
+
+  const el = (id) => document.getElementById(id);
+  const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const url = (c) => (typeof window.apiUrl === 'function' ? window.apiUrl(c) : c);
+  const auth = () => ({ Authorization: 'Bearer ' + localStorage.getItem('token') });
+  const dataBr = (v) => (v ? String(v).slice(0, 10).split('-').reverse().join('/') : '');
+  const tamanho = (b) => (b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB');
+  const STATUS = { Ativo: 'ok', Inativo: 'neutro', 'Em Manutencao': 'aviso', Descartado: 'neutro' };
+  const statusTexto = (s) => String(s || '').replace('Manutencao', 'Manutenção');
+  const ICONE = {
+    baixar: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+    excluir: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M10 11v6M14 11v6M7 7l1 12h8l1-12M9 7V4h6v3"/></svg>',
+    editar: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>',
+    cadeado: '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  };
+
+  let itens = [];
+  let bases = {};
+  let carregado = false;
+  let atual = null;
+  let pasta = 'ficha_tecnica';
+
+  async function pedir(metodo, caminho, corpo) {
+    const resp = await fetch(url(caminho), {
+      method: metodo,
+      headers: Object.assign(corpo instanceof FormData ? {} : { 'Content-Type': 'application/json' }, auth()),
+      body: corpo ? (corpo instanceof FormData ? corpo : JSON.stringify(corpo)) : undefined,
+    });
+    const dados = await resp.json().catch(() => ({}));
+    if (!resp.ok || dados.status !== 'ok') throw new Error(dados.mensagem || (resp.status === 413 ? 'Arquivo grande demais.' : 'Não foi possível concluir.'));
+    return dados.dados;
+  }
+
+  // ---------------------------------------------------------- lista
+  async function carregar() {
+    const corpo = el('eqi-tabela').querySelector('tbody');
+    try {
+      const [dados, respBases] = await Promise.all([
+        pedir('GET', '/equipamentos?limite=500&incluir_inativos=1'),
+        fetch(url('/bases'), { headers: auth() }).then((r) => r.json()).catch(() => ({})),
+      ]);
+      itens = (dados && dados.itens) || [];
+      bases = {};
+      (respBases.bases || []).forEach((b) => { bases[b.id] = b; });
+    } catch (e) {
+      corpo.innerHTML = `<tr><td colspan="6">${esc(e.message)}</td></tr>`;
+      return;
+    }
+    preencherFiltros();
+    desenhar();
+  }
+
+  function preencherFiltros() {
+    const tipo = el('eqi-tipo').value;
+    const base = el('eqi-local').value;
+    const tipos = Array.from(new Set(itens.map((i) => i.tipo_nome).filter(Boolean))).sort();
+    el('eqi-tipo').innerHTML = '<option value="">Todos os tipos</option>' + tipos.map((v) => `<option>${esc(v)}</option>`).join('');
+    el('eqi-local').innerHTML = '<option value="">Todas as bases</option>' +
+      Object.keys(bases).sort().map((id) => `<option value="${esc(id)}">${esc(id)}</option>`).join('') +
+      (itens.some((i) => !i.base_id) ? '<option value="__sem">Sem base</option>' : '');
+    el('eqi-tipo').value = tipo;
+    el('eqi-local').value = base;
+  }
+
+  function desenhar() {
+    const termo = el('eqi-busca').value.trim().toLowerCase();
+    const tipo = el('eqi-tipo').value;
+    const base = el('eqi-local').value;
+    const lista = itens.filter((i) => (!tipo || i.tipo_nome === tipo) &&
+      (!base || (base === '__sem' ? !i.base_id : i.base_id === base)) &&
+      (!termo || [i.codigo, i.nome, i.numero_serie, i.patrimonio, i.modelo, i.fabricante, i.base_id].some((v) => String(v || '').toLowerCase().includes(termo))));
+    el('eqi-tabela').querySelector('tbody').innerHTML = lista.map((i) => `
+      <tr class="linha-clicavel${i.ativo ? '' : ' eqi-inativo'}" data-eqi="${i.id}" tabindex="0">
+        <td><strong>${esc(i.codigo)}</strong>${i.nome ? `<small class="eqi-sub">${esc(i.nome)}</small>` : ''}</td>
+        <td>${esc(i.tipo_nome || '-')}</td>
+        <td>${i.base_id ? esc(i.base_id) + (i.base_endereco ? `<small class="eqi-sub">${esc(i.base_endereco)}</small>` : '') : '<span class="eqi-alerta">Sem base</span>'}</td>
+        <td>${esc(i.modelo || '-')}${i.numero_serie ? `<small class="eqi-sub">Série ${esc(i.numero_serie)}</small>` : ''}</td>
+        <td><small class="eqi-contagem">${Number(i.total_materiais || 0)} materiais · ${Number(i.total_arquivos || 0)} arquivos</small></td>
+        <td><span class="eqi-selo ${STATUS[i.status] || 'neutro'}">${esc(statusTexto(i.status) || '-')}</span></td>
+      </tr>`).join('') || `<tr><td colspan="6">${itens.length ? 'Nenhum equipamento com esse filtro.' : 'Nenhum equipamento cadastrado.'}</td></tr>`;
+  }
+
+  // ---------------------------------------------------------- ficha
+  function msg(texto, tipo) {
+    el('eqi-msg').textContent = texto || '';
+    el('eqi-msg').className = 'eqi-msg' + (tipo ? ' ' + tipo : '');
+  }
+
+  async function abrirDetalhe(id, aba) {
+    el('eqi-titulo').textContent = 'Carregando...';
+    el('eqi-sub').textContent = '';
+    el('eqi-base').innerHTML = '';
+    el('eqi-info').innerHTML = '';
+    msg('');
+    el('eqi-detalhe').hidden = false;
+    if (window.travarRolagemFundo) window.travarRolagemFundo(true);
+    try {
+      atual = await pedir('GET', '/equipamentos/' + id);
+    } catch (err) {
+      el('eqi-titulo').textContent = 'Equipamento';
+      msg(err.message, 'erro');
+      return;
+    }
+    desenharFicha();
+    mostrarAba(aba || 'composicao');
+  }
+
+  function desenharFicha() {
+    const e = atual;
+    el('eqi-titulo').textContent = e.codigo + (e.nome ? ' · ' + e.nome : '');
+    el('eqi-sub').textContent = [e.tipo_nome, statusTexto(e.status)].filter(Boolean).join(' · ');
+    const b = bases[e.base_id];
+    el('eqi-base').innerHTML = e.base_id
+      ? `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+         <span><strong>${esc(e.base_id)}</strong>${(e.base_endereco || (b && b.endereco)) ? ' · ' + esc(e.base_endereco || b.endereco) : ''}</span>`
+      : '<span class="eqi-alerta">Sem base definida. Use "Editar" para escolher a base.</span>';
+    const item = (r, v) => (v ? `<div><dt>${r}</dt><dd>${v}</dd></div>` : '');
+    el('eqi-info').innerHTML =
+      item('Fabricante', esc(e.fabricante || '')) +
+      item('Modelo', esc(e.modelo || '')) +
+      item('Número de série', esc(e.numero_serie || '')) +
+      item('Patrimônio', esc(e.patrimonio || '')) +
+      item('Instalação', esc(dataBr(e.data_instalacao))) +
+      item('Contrato', esc(e.contrato_nome || '')) +
+      item('Ponto de atendimento', esc(e.ponto_codigo || '')) +
+      item('Observação', esc(e.observacao || ''));
+    el('eqi-mat-form').hidden = !e.pode_alterar;
+    el('eqi-soltar').hidden = !e.pode_alterar;
+    // Sugestões: materiais registrados na base do equipamento.
+    el('eqi-mat-sugestoes').innerHTML = ((b && b.materiais) || [])
+      .map((m) => `<option value="${esc(m.nome)}">${esc(m.quantidade || '')} ${esc(m.unidade || '')} na base</option>`).join('');
+    desenharMateriais();
+    desenharArquivos();
+    el('eqi-historico').innerHTML = (e.alocacoes || []).map((a) => `
+      <li${a.fim || a.data_fim ? '' : ' class="atual"'}>
+        <strong>${esc(a.ponto_codigo || 'Ponto não informado')}</strong>
+        <small>${dataBr(a.inicio || a.data_inicio) || '?'} até ${(a.fim || a.data_fim) ? dataBr(a.fim || a.data_fim) : 'hoje'}${a.motivo ? ' · ' + esc(a.motivo) : ''}</small>
+      </li>`).join('') || '<li>Sem histórico de pontos de atendimento.</li>';
+  }
+
+  function mostrarAba(aba) {
+    document.querySelectorAll('#eqi-abas [data-eqi-aba]').forEach((b) => b.classList.toggle('active', b.dataset.eqiAba === aba));
+    document.querySelectorAll('[data-eqi-painel]').forEach((p) => { p.hidden = p.dataset.eqiPainel !== aba; });
+  }
+
+  // ---- composição
+  function desenharMateriais() {
+    const mats = atual.materiais || [];
+    el('eqi-n-mat').textContent = mats.length || '';
+    el('eqi-materiais').innerHTML = mats.map((m) => `
+      <li>
+        <span class="eqi-qtd">${esc(m.quantidade)}${m.unidade ? ' ' + esc(m.unidade) : ''}</span>
+        <span class="eqi-mat-nome"><strong>${esc(m.nome)}</strong>${m.observacao ? `<small>${esc(m.observacao)}</small>` : ''}</span>
+        ${atual.pode_alterar ? `<button type="button" class="eqi-acao" data-mat-editar="${m.id}" title="Alterar" aria-label="Alterar">${ICONE.editar}</button>
+        <button type="button" class="eqi-acao perigo" data-mat-excluir="${m.id}" title="Remover" aria-label="Remover">${ICONE.excluir}</button>` : ''}
+      </li>`).join('') || '<li class="eqi-vazio">Nenhum material na composição.</li>';
+    el('eqi-mat-dica').textContent = mats.length === 1
+      ? 'Equipamento formado por um único material.'
+      : (atual.pode_alterar ? 'Um equipamento pode ser um único material ou um conjunto (ex.: nobreak + banco de baterias).' : '');
+    limparFormMaterial();
+  }
+
+  function limparFormMaterial() {
+    el('eqi-mat-id').value = '';
+    el('eqi-mat-nome').value = '';
+    el('eqi-mat-qtd').value = '1';
+    el('eqi-mat-un').value = '';
+    el('eqi-mat-obs').value = '';
+    el('eqi-mat-salvar').textContent = 'Adicionar';
+    el('eqi-mat-cancelar').hidden = true;
+  }
+
+  async function salvarMaterial(ev) {
+    ev.preventDefault();
+    const id = el('eqi-mat-id').value;
+    try {
+      const r = await pedir(id ? 'PUT' : 'POST', `/equipamentos/${atual.id}/materiais${id ? '/' + id : ''}`, {
+        nome: el('eqi-mat-nome').value, quantidade: el('eqi-mat-qtd').value,
+        unidade: el('eqi-mat-un').value, observacao: el('eqi-mat-obs').value,
+      });
+      atual.materiais = r.materiais;
+      desenharMateriais();
+      msg('');
+      tocarLista();
+    } catch (e) { msg(e.message, 'erro'); }
+  }
+
+  // ---- arquivos
+  function desenharArquivos() {
+    const arqs = atual.arquivos || [];
+    el('eqi-n-arq').textContent = arqs.length || '';
+    el('eqi-pastas').innerHTML = (atual.pastas || []).map((p) => {
+      const n = arqs.filter((a) => a.pasta === p.id).length;
+      return `<button type="button" class="eqi-pasta${p.id === pasta ? ' ativo' : ''}" data-eqi-pasta="${p.id}">
+        ${p.id === 'credenciais' ? ICONE.cadeado : ''}${esc(p.nome)}${n ? ` <em>${n}</em>` : ''}</button>`;
+    }).join('');
+    const atualPasta = (atual.pastas || []).find((p) => p.id === pasta) || {};
+    el('eqi-pasta-nome').textContent = (atualPasta.nome || '').toLowerCase();
+    const lista = arqs.filter((a) => a.pasta === pasta);
+    el('eqi-lista-arquivos').innerHTML = lista.map((a) => `
+      <li>
+        <span class="eqi-icone ${a.mime === 'application/pdf' ? 'pdf' : (a.mime.startsWith('image/') ? 'img' : 'doc')}">${a.mime === 'application/pdf' ? 'PDF' : (a.mime.startsWith('image/') ? 'IMG' : 'ARQ')}</span>
+        <button type="button" class="eqi-arq-nome" data-arq-ver="${a.id}" title="Abrir">
+          <strong>${esc(a.titulo || a.arquivo_nome)}</strong>
+          <small>${a.titulo ? esc(a.arquivo_nome) + ' · ' : ''}${tamanho(a.tamanho)} · ${esc(dataBr(a.enviado_em))}${a.enviado_por ? ' por ' + esc(a.enviado_por) : ''}</small>
+        </button>
+        <button type="button" class="eqi-acao" data-arq-baixar="${a.id}" title="Baixar" aria-label="Baixar">${ICONE.baixar}</button>
+        ${atual.pode_alterar ? `<button type="button" class="eqi-acao perigo" data-arq-excluir="${a.id}" title="Excluir" aria-label="Excluir">${ICONE.excluir}</button>` : ''}
+      </li>`).join('') || `<li class="eqi-vazio">Nenhum arquivo em ${esc((atualPasta.nome || '').toLowerCase())}.</li>`;
+  }
+
+  async function abrirArquivo(id, baixar) {
+    const a = (atual.arquivos || []).find((x) => String(x.id) === String(id));
+    const aba = baixar ? null : window.open('about:blank', '_blank');
+    try {
+      const resp = await fetch(url(`/equipamentos/${atual.id}/arquivos/${id}`), { headers: auth() });
+      if (!resp.ok) {
+        const d = await resp.json().catch(() => ({}));
+        throw new Error(d.mensagem || 'Não foi possível abrir o arquivo.');
+      }
+      const link = URL.createObjectURL(await resp.blob());
+      if (baixar || (a && !/^(application\/pdf|image\/|text\/)/.test(a.mime))) {
+        if (aba) aba.close();
+        const tag = document.createElement('a');
+        tag.href = link; tag.download = a ? a.arquivo_nome : 'arquivo';
+        document.body.appendChild(tag); tag.click(); tag.remove();
+      } else if (aba) {
+        aba.location.href = link;
+      }
+      setTimeout(() => URL.revokeObjectURL(link), 60000);
+    } catch (e) {
+      if (aba) aba.close();
+      msg(e.message, 'erro');
+    }
+  }
+
+  // Um arquivo por envio (o servidor aceita até 20 MB por requisição).
+  async function enviar(lista) {
+    if (!atual || !lista.length) return;
+    const erros = [];
+    let ok = 0;
+    for (let i = 0; i < lista.length; i++) {
+      el('eqi-progresso').textContent = `Enviando ${i + 1} de ${lista.length}: ${lista[i].name}`;
+      const form = new FormData();
+      form.append('pasta', pasta);
+      form.append('arquivos', lista[i]);
+      try {
+        const r = await pedir('POST', `/equipamentos/${atual.id}/arquivos`, form);
+        atual.arquivos = r.arquivos;
+        ok += 1;
+      } catch (e) { erros.push(lista[i].name + ': ' + e.message); }
+    }
+    el('eqi-progresso').innerHTML = (ok ? `${ok} arquivo(s) enviado(s).` : '') +
+      (erros.length ? `<span class="erro">${erros.map(esc).join('<br>')}</span>` : '');
+    el('eqi-arquivos').value = '';
+    desenharArquivos();
+    tocarLista();
+  }
+
+  function tocarLista() {
+    const i = itens.find((x) => x.id === atual.id);
+    if (i) {
+      i.total_materiais = (atual.materiais || []).length;
+      i.total_arquivos = (atual.arquivos || []).length;
+      desenhar();
+    }
+  }
+
+  function fechar() {
+    if (el('eqi-detalhe').hidden) return;
+    el('eqi-detalhe').hidden = true;
+    el('eqi-progresso').textContent = '';
+    if (window.travarRolagemFundo) window.travarRolagemFundo(false);
+  }
+
+  function irParaCadastro(acao) {
+    fechar();
+    if (typeof window.abrirCadastroOS === 'function') window.abrirCadastroOS('os-sub-equipamento');
+    if (window.EquipamentosCadastro) acao(window.EquipamentosCadastro);
+  }
+
+  function mostrarVista(qual) {
+    document.querySelectorAll('#bases-seletor [data-bases-ver]').forEach((b) => b.classList.toggle('active', b.dataset.basesVer === qual));
+    el('bases-vista-bases').hidden = qual !== 'bases';
+    el('bases-vista-equipamentos').hidden = qual !== 'equipamentos';
+    if (qual === 'equipamentos' && !carregado) { carregado = true; carregar(); }
+  }
+
+  function iniciar() {
+    if (!el('bases-seletor')) return;
+    el('bases-seletor').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-bases-ver]');
+      if (b) mostrarVista(b.dataset.basesVer);
+    });
+    el('eqi-busca').addEventListener('input', desenhar);
+    el('eqi-tipo').addEventListener('change', desenhar);
+    el('eqi-local').addEventListener('change', desenhar);
+    el('eqi-tabela').addEventListener('click', (e) => {
+      const linha = e.target.closest('[data-eqi]');
+      if (linha) abrirDetalhe(linha.dataset.eqi);
+    });
+    el('eqi-tabela').addEventListener('keydown', (e) => {
+      const linha = e.target.closest('[data-eqi]');
+      if (linha && e.key === 'Enter') abrirDetalhe(linha.dataset.eqi);
+    });
+    el('eqi-detalhe').addEventListener('click', (e) => {
+      if (e.target === el('eqi-detalhe') || e.target.closest('[data-eqi-fechar]')) fechar();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
+    el('eqi-abas').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-eqi-aba]');
+      if (b) mostrarAba(b.dataset.eqiAba);
+    });
+    el('eqi-mat-form').addEventListener('submit', salvarMaterial);
+    el('eqi-mat-cancelar').addEventListener('click', limparFormMaterial);
+    el('eqi-materiais').addEventListener('click', async (e) => {
+      const ed = e.target.closest('[data-mat-editar]');
+      if (ed) {
+        const m = atual.materiais.find((x) => String(x.id) === ed.dataset.matEditar);
+        el('eqi-mat-id').value = m.id;
+        el('eqi-mat-nome').value = m.nome;
+        el('eqi-mat-qtd').value = m.quantidade;
+        el('eqi-mat-un').value = m.unidade || '';
+        el('eqi-mat-obs').value = m.observacao || '';
+        el('eqi-mat-salvar').textContent = 'Salvar';
+        el('eqi-mat-cancelar').hidden = false;
+        el('eqi-mat-nome').focus();
+        return;
+      }
+      const ex = e.target.closest('[data-mat-excluir]');
+      if (ex && confirm('Remover este material da composição?')) {
+        try {
+          const r = await pedir('DELETE', `/equipamentos/${atual.id}/materiais/${ex.dataset.matExcluir}`);
+          atual.materiais = r.materiais;
+          desenharMateriais();
+          tocarLista();
+        } catch (err) { msg(err.message, 'erro'); }
+      }
+    });
+    el('eqi-pastas').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-eqi-pasta]');
+      if (!b) return;
+      pasta = b.dataset.eqiPasta;
+      desenharArquivos();
+    });
+    el('eqi-lista-arquivos').addEventListener('click', async (e) => {
+      const ver = e.target.closest('[data-arq-ver]');
+      if (ver) { abrirArquivo(ver.dataset.arqVer, false); return; }
+      const baixar = e.target.closest('[data-arq-baixar]');
+      if (baixar) { abrirArquivo(baixar.dataset.arqBaixar, true); return; }
+      const ex = e.target.closest('[data-arq-excluir]');
+      if (ex && confirm('Excluir este arquivo? Não dá para desfazer.')) {
+        try {
+          const r = await pedir('DELETE', `/equipamentos/${atual.id}/arquivos/${ex.dataset.arqExcluir}`);
+          atual.arquivos = r.arquivos;
+          desenharArquivos();
+          tocarLista();
+        } catch (err) { msg(err.message, 'erro'); }
+      }
+    });
+    el('eqi-arquivos').addEventListener('change', () => enviar(Array.from(el('eqi-arquivos').files)));
+    const zona = el('eqi-soltar');
+    ['dragenter', 'dragover'].forEach((ev) => zona.addEventListener(ev, (e) => { e.preventDefault(); zona.classList.add('arrastando'); }));
+    ['dragleave', 'drop'].forEach((ev) => zona.addEventListener(ev, () => zona.classList.remove('arrastando')));
+    zona.addEventListener('drop', (e) => { e.preventDefault(); enviar(Array.from(e.dataTransfer.files || [])); });
+    el('eqi-editar').addEventListener('click', () => { const r = atual; irParaCadastro((c) => c.editar(r)); });
+    el('eqi-cadastrar').addEventListener('click', () => irParaCadastro((c) => c.novo()));
+    document.addEventListener('orbita:equipamentos-alterados', () => { if (carregado) carregar(); });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();

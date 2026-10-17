@@ -22,7 +22,6 @@
          gestao-nav.js) - o menu fica só com as áreas de Gestão. -->
     <div class="menu-subtabs">
       <button class="tab-btn active" data-tab="analise-operacional" data-nav-label="Parâmetros" data-nav-icone="cadastros">Parâmetros</button>
-      <button class="tab-btn" data-tab="ativos" data-nav-label="Ativos" data-nav-icone="veiculo">Equipamentos</button>
       <button class="tab-btn" data-tab="locais" data-nav-label="Locais" data-nav-icone="mapa">Bases de Atendimento</button>
       <button class="tab-btn" data-tab="usuario" data-nav-label="Usuários" data-nav-icone="usuarios">Usuários</button>
       <button class="tab-btn" data-tab="funcionario" data-nav-label="Funcionários" data-nav-icone="usuarios">Funcionários</button>
@@ -93,31 +92,6 @@
     </div>
 
     <!-- ===== ABA: EQUIPAMENTOS ===== -->
-    <div id="ativos" class="tab-content" data-secao="Equipamentos">
-      <h2 class="aba-legenda">Equipamentos</h2>
-      <hr class="aba-linha">
-
-      <p class="rel-ajuda rel-ajuda-bloco">
-        Equipamento nunca é obrigatório numa O.S. Cadastre apenas os ativos que
-        a operação realmente identifica em campo.
-      </p>
-
-      <div class="cad-cabecalho">
-        <div class="cad-busca">
-          <input type="search" id="eq-busca" placeholder="Código, nome, série ou patrimônio..." autocomplete="off">
-        </div>
-        <select id="eq-filtro-tipo" class="cad-filtro"><option value="">Todos os tipos</option></select>
-        <select id="eq-filtro-ponto" class="cad-filtro"><option value="">Todos os pontos</option></select>
-        <label class="cad-check-inline">
-          <input type="checkbox" id="eq-incluir-inativos"> Mostrar inativos
-        </label>
-        <button type="button" class="rel-btn rel-btn-primario" id="eq-novo">+ Novo equipamento</button>
-      </div>
-
-      <div class="rel-feedback" id="eq-feedback" hidden></div>
-      <div class="rel-tabela-area" id="eq-tabela"></div>
-    </div>
-
     <!-- ===== ABA: PONTOS E REGIÕES ===== -->
     <div id="usuario" class="tab-content" data-secao="Usuários">
       <div class="aba-legenda-linha">
@@ -456,12 +430,11 @@
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=18"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=19"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
   <script src="../SCRIPT/cadastros/catalogos.js?v=2"></script>
-  <script src="../SCRIPT/cadastros/equipamentos.js?v=4"></script>
   <script src="../SCRIPT/cadastros/locais.js?v=3"></script>
   <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
   <script src="../SCRIPT/cadastros/capacitacoes-ui.js?v=1"></script>

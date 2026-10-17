@@ -171,6 +171,7 @@ window.OrbitaAjuda.registrarSecao({
       titulo: 'Ordens de Serviço',
       corpo: [
         { tipo: 'paragrafo', texto: 'O **Painel** mostra as O.S. por situação e o mapa com bases e veículos. **Bases** lista os locais atendidos, **Cronograma** mostra os agendamentos e **Busca** encontra qualquer O.S. por número, período, status, solicitante ou técnico.' },
+        { tipo: 'paragrafo', texto: 'Em **Bases e Equipamentos** um seletor alterna entre as bases e os equipamentos. Todo equipamento fica numa base. Um clique no equipamento abre a ficha: a base, os dados, a **Composição** (os materiais que formam o equipamento, de um único item a um conjunto, como nobreak e banco de baterias), os **Arquivos** em pastas (ficha técnica, manuais, garantia, laudos, credenciais, fotos) e o histórico. Materiais e arquivos são incluídos, abertos e baixados ali mesmo. **Editar** muda só as características, e o cadastro de equipamentos fica em **O.S. › Cadastros › Equipamentos**. A pasta de credenciais só abre para quem pode alterar equipamentos.' },
         { tipo: 'paragrafo', texto: 'Os formulários ficam em **Cadastros**: Nova O.S., Base e Agendamento.' },
       ],
       relacionados: ['os-abrir', 'os-atendimento'],
@@ -262,7 +263,7 @@ window.OrbitaAjuda.registrarSecao({
       pagina: 'cadastros',
       titulo: 'Cadastros de análise',
       corpo: [
-        { tipo: 'paragrafo', texto: 'Aqui ficam os catálogos usados para classificar os chamados (categorias, problemas, causas, soluções e resultados), os equipamentos, as bases de atendimento e os formulários de usuário e de funcionário.' },
+        { tipo: 'paragrafo', texto: 'Aqui ficam os catálogos usados para classificar os chamados (categorias, problemas, causas, soluções e resultados), as bases de atendimento e os formulários de usuário e de funcionário.' },
         { tipo: 'paragrafo', texto: 'Os catálogos começam vazios, para usar o vocabulário da sua operação. Um item em uso não é apagado: ele é desativado e some das listas novas, mas continua no histórico.' },
       ],
     },
