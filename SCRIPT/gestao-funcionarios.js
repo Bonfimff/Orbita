@@ -61,7 +61,7 @@
         '<td>' + esc(f.usuario_login || 'Sem login') + '</td>' +
         '<td>' + (f.ativo ? 'Ativo' : 'Inativo') + '</td>' +
         '<td><div class="gestao-acoes-cell">' +
-          '<button type="button" class="gestao-btn-icone func-editar" title="Editar">' + ICONE_EDITAR + '</button>' +
+          '<button type="button" class="gestao-btn-icone func-editar" title="Editar" data-permissao="gestao_funcionarios:editar">' + ICONE_EDITAR + '</button>' +
           (f.ativo ? '<button type="button" class="gestao-btn-icone func-desativar" title="Desativar">' + ICONE_DESATIVAR + '</button>' : '') +
         '</div></td>' +
       '</tr>').join('');
@@ -78,9 +78,11 @@
         try { await chamar('DELETE', '/funcionarios/' + f.id); await atualizarLista(); } catch (err) { alert(err.message); }
         return;
       }
-      // Um clique na linha (ou no lápis) abre a edição.
-      irParaCadastro(linha.dataset.id);
+      // Lápis: edição (Cadastros). Clique na linha: ficha de consulta aqui mesmo.
+      if (e.target.closest('.func-editar')) { irParaCadastro(linha.dataset.id); return; }
+      abrirFicha(linha.dataset.id, 'documentos');
     });
+    ligarFicha();
     el('func-busca').addEventListener('input', render);
     el('func-mostrar-inativos').addEventListener('change', render);
     el('btn-novo-funcionario')?.addEventListener('click', () => irParaCadastro());
@@ -138,8 +140,75 @@
     });
     document.querySelector('#tabela-ferias tbody').addEventListener('click', (e) => {
       const linha = e.target.closest('[data-ferias-id]');
-      if (linha) window.location.href = 'cadastros.html#funcionario-' + linha.dataset.feriasId + '-ferias';
+      if (linha) abrirFicha(linha.dataset.feriasId, 'ferias');
     });
+  }
+
+  //============================================================ FICHA (Gestão): documentos e férias
+  // Consulta sem sair da lista. Só "Editar" leva ao cadastro.
+  let fichaId = null;
+  let feriasMudou = false;
+
+  function abaFicha(qual) {
+    document.querySelectorAll('#func-ficha-abas [data-ficha-aba]').forEach((b) => b.classList.toggle('ativo', b.dataset.fichaAba === qual));
+    document.querySelectorAll('#func-ficha [data-ficha-painel]').forEach((p) => { p.hidden = p.dataset.fichaPainel !== qual; });
+  }
+
+  async function abrirFicha(id, aba) {
+    fichaId = String(id);
+    feriasMudou = false;
+    const f = funcionarios.find((x) => String(x.id) === fichaId) || {};
+    el('func-ficha-titulo').textContent = f.nome || 'Funcionário';
+    el('func-ficha-sub').textContent = [f.funcao_nome, f.ativo === 0 ? 'Inativo' : ''].filter(Boolean).join(' · ');
+    const item = (r, v) => (v ? '<div><dt>' + r + '</dt><dd>' + esc(v) + '</dd></div>' : '');
+    const dataBr = (iso) => (iso ? iso.slice(0, 10).split('-').reverse().join('/') : '');
+    el('func-ficha-info').innerHTML =
+      item('Matrícula', f.matricula) + item('CPF', cpfFormatado(f.cpf || '')) + item('Telefone', f.telefone) +
+      item('E-mail', f.email) + item('Admissão', dataBr(f.data_admissao)) + item('Contrato de trabalho', f.tipo_contrato) +
+      item('Usuário do sistema', f.usuario_login);
+    el('func-ficha').hidden = false;
+    if (window.travarRolagemFundo) window.travarRolagemFundo(true);
+    abaFicha(aba || 'documentos');
+    // Documentos (explorador) e férias (componente compartilhado com o cadastro).
+    const docs = el('func-ficha-docs');
+    docs.innerHTML = '<p class="ficha-vazio">Carregando...</p>';
+    try {
+      const r = await chamar('GET', '/explorador/funcionarios/' + fichaId + '/arquivos');
+      if (String(id) !== fichaId) return;
+      window.Explorador.montar(docs, {
+        base: '/explorador/funcionarios/' + fichaId,
+        podeAlterar: typeof window.temPermissao !== 'function' || window.temPermissao('gestao_funcionarios', 'editar'),
+        dados: r.dados,
+        raizNome: f.nome || 'Funcionário',
+      });
+    } catch (err) {
+      docs.innerHTML = '<p class="ficha-vazio">' + esc(err.message) + '</p>';
+    }
+    window.FeriasUI.montar(el('func-ficha-ferias'), {
+      funcionarioId: fichaId,
+      aoMudar: () => { feriasMudou = true; },
+      aoPedirAdmissao: () => { window.location.href = 'cadastros.html#funcionario-' + fichaId + '-admissao'; },
+    });
+  }
+
+  function fecharFicha() {
+    if (el('func-ficha').hidden) return;
+    el('func-ficha').hidden = true;
+    if (window.travarRolagemFundo) window.travarRolagemFundo(false);
+    if (feriasMudou && !el('func-sub-ferias').hidden) carregarFerias();
+  }
+
+  function ligarFicha() {
+    if (!el('func-ficha')) return;
+    el('func-ficha-abas').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-ficha-aba]');
+      if (b) abaFicha(b.dataset.fichaAba);
+    });
+    el('func-ficha-editar').addEventListener('click', () => irParaCadastro(fichaId));
+    el('func-ficha').addEventListener('click', (e) => {
+      if (e.target === el('func-ficha') || e.target.closest('[data-fechar-func]')) fecharFicha();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharFicha(); });
   }
 
   async function atualizarLista() {

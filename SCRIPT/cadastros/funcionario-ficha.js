@@ -35,7 +35,7 @@
     return dados;
   }
 
-  const estado = { id: null, ferias: null };
+  const estado = { id: null };
 
   // ---------------------------------------------------------- subabas
   function mostrar(secao) {
@@ -49,7 +49,6 @@
 
   function definir(f) {
     estado.id = f ? f.id : null;
-    estado.ferias = null;
     document.querySelectorAll('#func-abas [data-so-salvo]').forEach((b) => { b.hidden = !f; });
     el('func-admissao').value = (f && f.data_admissao) || '';
     el('func-contrato').value = (f && f.tipo_contrato) || '';
@@ -95,74 +94,12 @@
   }
 
   // ---------------------------------------------------------- férias
-  async function carregarFerias() {
-    if (!estado.id) return;
-    try {
-      estado.ferias = await chamar('GET', `/funcionarios/${estado.id}/ferias`);
-    } catch (e) {
-      feedbackFerias(e.message, 'erro');
-      return;
-    }
-    desenharFerias();
-  }
-
-  function feedbackFerias(texto, tipo) {
-    const f = el('ferias-feedback');
-    f.textContent = texto || '';
-    f.className = 'gestao-feedback' + (tipo ? ' ' + tipo : '');
-    f.style.display = texto ? '' : 'none';
-  }
-
-  function desenharFerias() {
-    const r = estado.ferias;
-    const semAdmissao = !r.admissao.data_admissao;
-    el('ferias-sem-admissao').hidden = !semAdmissao;
-    el('ferias-conteudo').hidden = semAdmissao;
-    if (semAdmissao) return;
-    el('ferias-periodos').querySelector('tbody').innerHTML = r.periodos.slice().reverse().map((p) => {
-      const [rot, cls] = SITUACAO_PERIODO[p.situacao] || [p.situacao, 'neutro'];
-      const prazo = p.situacao === 'em_aquisicao' ? '-' : dataBr(p.prazo) +
-        (p.situacao === 'vencendo' ? ` <small>(${p.dias_para_prazo} dias)</small>` : '');
-      return `<tr><td>${dataBr(p.inicio)} a ${dataBr(p.fim)}</td><td>${p.direito} dias</td><td>${p.programados}</td>
-        <td><strong>${p.saldo}</strong></td><td>${prazo}</td><td><span class="ficha-selo ${cls}">${rot}</span></td></tr>`;
-    }).join('') || '<tr><td colspan="6">Sem períodos.</td></tr>';
-    const comSaldo = r.periodos.filter((p) => p.saldo > 0);
-    el('ferias-periodo').innerHTML = comSaldo.map((p) =>
-      `<option value="${p.inicio}">${dataBr(p.inicio)} a ${dataBr(p.fim)} (saldo ${p.saldo} dias${p.situacao === 'em_aquisicao' ? ', em aquisição' : ''})</option>`).join('') ||
-      '<option value="">Sem saldo</option>';
-    el('ferias-lista').querySelector('tbody').innerHTML = r.ferias.slice().reverse().map((f) => `
-      <tr><td>${dataBr(f.periodo_inicio)}</td><td>${dataBr(f.inicio)}</td><td>${dataBr(f.fim)}</td><td>${f.dias}</td>
-        <td>${f.abono_dias || '-'}</td><td><span class="ficha-selo ${f.situacao === 'em_gozo' ? 'ok' : 'neutro'}">${SITUACAO_FERIAS[f.situacao] || f.situacao}</span>
-        ${f.observacao ? `<small>${esc(f.observacao)}</small>` : ''}</td>
-        <td>${f.situacao === 'programada' ? `<button type="button" class="ficha-acao perigo" data-cancelar-ferias="${f.id}" title="Cancelar" aria-label="Cancelar férias" data-permissao="gestao_funcionarios:editar">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>` : ''}</td></tr>`).join('') ||
-      '<tr><td colspan="7">Nenhuma férias registrada.</td></tr>';
-    contarDias();
-  }
-
-  function contarDias() {
-    const i = el('ferias-inicio').value;
-    const f = el('ferias-fim').value;
-    if (!i || !f) { el('ferias-dias').textContent = ''; return; }
-    const dias = Math.round((new Date(f + 'T12:00') - new Date(i + 'T12:00')) / 86400000) + 1;
-    el('ferias-dias').textContent = dias > 0 ? dias + ' dias de descanso' : 'Fim antes do início';
-  }
-
-  async function programar() {
-    feedbackFerias('');
-    try {
-      await chamar('POST', `/funcionarios/${estado.id}/ferias`, {
-        periodo_inicio: el('ferias-periodo').value,
-        inicio: el('ferias-inicio').value,
-        fim: el('ferias-fim').value,
-        abono_dias: el('ferias-abono').value,
-        observacao: el('ferias-obs').value.trim(),
-      });
-      ['ferias-inicio', 'ferias-fim', 'ferias-obs'].forEach((id) => { el(id).value = ''; });
-      el('ferias-abono').value = 0;
-      await carregarFerias();
-      feedbackFerias('Férias programadas.', 'sucesso');
-    } catch (e) { feedbackFerias(e.message, 'erro'); }
+  function carregarFerias() {
+    if (!estado.id || !window.FeriasUI) return;
+    window.FeriasUI.montar(el('func-ferias'), {
+      funcionarioId: estado.id,
+      aoPedirAdmissao: () => mostrar('admissao'),
+    });
   }
 
   // ---------------------------------------------------------- ligações
@@ -178,13 +115,6 @@
       mostrar(ir.dataset.irFsec);
     });
     ['func-admissao', 'func-desligamento'].forEach((id) => el(id).addEventListener('change', atualizarTempoCasa));
-    ['ferias-inicio', 'ferias-fim'].forEach((id) => el(id).addEventListener('change', contarDias));
-    el('ferias-salvar').addEventListener('click', programar);
-    el('ferias-lista').addEventListener('click', async (e) => {
-      const b = e.target.closest('[data-cancelar-ferias]');
-      if (!b || !confirm('Cancelar estas férias programadas?')) return;
-      try { await chamar('DELETE', `/funcionarios/${estado.id}/ferias/${b.dataset.cancelarFerias}`); await carregarFerias(); } catch (err) { feedbackFerias(err.message, 'erro'); }
-    });
   }
 
   window.FichaFuncionario = {

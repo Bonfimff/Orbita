@@ -315,43 +315,9 @@
           <div id="ficha-explorador"></div>
         </div>
 
-        <!-- Férias -->
+        <!-- Férias (componente SCRIPT/cadastros/ferias-ui.js) -->
         <div data-fsec-painel="ferias" hidden>
-          <div class="ficha-ferias-aviso" id="ferias-sem-admissao" hidden>
-            Para calcular as férias, informe a data de admissão em
-            <button type="button" class="ficha-link" data-ir-fsec="admissao">Admissão</button> e salve.
-          </div>
-          <div id="ferias-conteudo">
-            <h4 class="ficha-titulo">Períodos aquisitivos</h4>
-            <div class="tabela-responsiva">
-              <table class="estilo-tabela ficha-tabela" id="ferias-periodos">
-                <thead><tr><th>Período</th><th>Direito</th><th>Programados</th><th>Saldo</th><th>Tirar até</th><th>Situação</th></tr></thead>
-                <tbody></tbody>
-              </table>
-            </div>
-
-            <h4 class="ficha-titulo">Programar férias</h4>
-            <div class="ficha-ferias-form" data-permissao="gestao_funcionarios:editar">
-              <label class="ficha-campo"><span>Período aquisitivo</span><select id="ferias-periodo"></select></label>
-              <label class="ficha-campo"><span>Início</span><input type="date" id="ferias-inicio"></label>
-              <label class="ficha-campo"><span>Fim</span><input type="date" id="ferias-fim"></label>
-              <label class="ficha-campo"><span>Abono (dias vendidos)</span><input type="number" id="ferias-abono" min="0" max="10" value="0"></label>
-              <label class="ficha-campo ficha-campo-largo"><span>Observação</span><input type="text" id="ferias-obs" maxlength="200"></label>
-              <div class="ficha-ferias-acoes">
-                <span class="ficha-dias" id="ferias-dias"></span>
-                <button type="button" class="btn-primario" id="ferias-salvar">Programar</button>
-              </div>
-            </div>
-            <div class="gestao-feedback" id="ferias-feedback" style="display:none;"></div>
-
-            <h4 class="ficha-titulo">Férias programadas e tiradas</h4>
-            <div class="tabela-responsiva">
-              <table class="estilo-tabela ficha-tabela" id="ferias-lista">
-                <thead><tr><th>Período aquisitivo</th><th>Início</th><th>Fim</th><th>Dias</th><th>Abono</th><th>Situação</th><th></th></tr></thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
+          <div id="func-ferias"></div>
         </div>
 
         <div id="func-feedback" class="gestao-feedback" style="display:none;"></div>
@@ -451,7 +417,7 @@
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=26"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=27"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
@@ -462,7 +428,8 @@
   <script src="../SCRIPT/cadastros/usuario.js?v=4"></script>
   <script src="../SCRIPT/gestao-funcionarios.js?v=6"></script>
   <script src="../SCRIPT/operacional/explorador.js?v=3"></script>
-  <script src="../SCRIPT/cadastros/funcionario-ficha.js?v=2"></script>
+  <script src="../SCRIPT/cadastros/ferias-ui.js?v=1"></script>
+  <script src="../SCRIPT/cadastros/funcionario-ficha.js?v=3"></script>
   <script src="../SCRIPT/cadastros/contrato.js?v=1"></script>
   <script src="../SCRIPT/contexto/painel.js?v=2"></script>
   <script src="../SCRIPT/contexto/cadastros.js?v=3"></script>

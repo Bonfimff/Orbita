@@ -465,6 +465,29 @@
     </form>
   </div>
 
+  <!-- ===== FICHA DO FUNCIONÁRIO (consulta, documentos e férias) ===== -->
+  <div id="func-ficha" class="jor-cal-fundo" hidden>
+    <div class="jor-cal ponto-modal contrato-ficha" role="dialog" aria-modal="true" aria-labelledby="func-ficha-titulo">
+      <div class="ponto-modal-topo">
+        <div>
+          <h3 id="func-ficha-titulo"></h3>
+          <small id="func-ficha-sub"></small>
+        </div>
+        <div class="contrato-ficha-acoes">
+          <button type="button" class="jor-btn jor-btn-secundario" id="func-ficha-editar" data-permissao="gestao_funcionarios:editar">Editar</button>
+          <button type="button" class="jor-cal-fechar" data-fechar-func aria-label="Fechar">&times;</button>
+        </div>
+      </div>
+      <dl class="ponto-info func-ficha-info" id="func-ficha-info"></dl>
+      <div class="opcoes-abas cad-subabas" id="func-ficha-abas">
+        <button type="button" class="top-tab2 ativo" data-ficha-aba="documentos">Documentos</button>
+        <button type="button" class="top-tab2" data-ficha-aba="ferias">Férias</button>
+      </div>
+      <div data-ficha-painel="documentos"><div id="func-ficha-docs"></div></div>
+      <div data-ficha-painel="ferias" hidden><div id="func-ficha-ferias"></div></div>
+    </div>
+  </div>
+
   <!-- ===== FICHA DO CONTRATO (consulta) ===== -->
   <div id="contrato-ficha" class="jor-cal-fundo" hidden>
     <div class="jor-cal ponto-modal contrato-ficha" role="dialog" aria-modal="true" aria-labelledby="contrato-ficha-titulo">
@@ -544,9 +567,10 @@
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=26"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=27"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
-  <script src="../SCRIPT/gestao-funcionarios.js?v=6"></script>
+  <script src="../SCRIPT/cadastros/ferias-ui.js?v=1"></script>
+  <script src="../SCRIPT/gestao-funcionarios.js?v=7"></script>
   <script src="../SCRIPT/gestao-jornadas.js?v=7"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/relatorios/graficos.js?v=1"></script>
