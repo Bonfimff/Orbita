@@ -117,11 +117,18 @@
     }
   }
 
+  // Raio de sol a que a logo pertence (pelo ângulo em volta do centro).
+  function grupoRaio(p, cx, cy) {
+    const graus = Math.atan2(p.y0 - cy, p.x0 - cx) * 180 / Math.PI;
+    return 'raio' + ((Math.round(graus / 45) + 8) % 8);
+  }
+
   function movimentoDoIcone(nome, ps) {
     const repor = () => ps.forEach((p) => { p.rx = p.x0; p.ry = p.y0; p.t = p.t0; p.z = p.casca ? p.casca.z : 0; p.opacidade = 1; });
 
     if (nome === 'sol') {
       const forma = casca(ps, (p) => Math.hypot(p.x0 - 150, p.y0 - 100) < 58);
+      ps.forEach((p) => { p.grupo = Math.hypot(p.x0 - 150, p.y0 - 100) < 58 ? 'disco' : grupoRaio(p, 150, 100); });
       return (t) => {
         repor();
         ps.forEach((p) => profundidade(p, t));
@@ -165,6 +172,11 @@
     if (nome === 'tempestade') {
       const forma = casca(ps, (p) => p.y0 < 120);
       const chuva = ps.filter((p) => p.y0 >= 126 && (p.x0 < 118 || p.x0 > 205));
+      ps.forEach((p) => {
+        if (p.y0 < 120) p.grupo = 'nuvem';
+        else if (chuva.includes(p)) p.grupo = 'chuva' + Math.round(p.x0 / 24);
+        else p.grupo = 'raio';
+      });
       return (t) => {
         repor();
         ps.forEach((p) => profundidade(p, t));
@@ -177,7 +189,35 @@
       };
     }
 
-    // Nuvem e sol com nuvem: objeto oco girando devagar.
+    if (nome === 'sol-nuvem') {
+      // Sol parado atrás (os raios só pulsam, crescendo e voltando) e a nuvem
+      // na frente com profundidade. Sol e nuvem não se ligam.
+      const SX = 196;
+      const SY = 76;
+      const naNuvem = (p) => [[72, 150, 30], [114, 128, 40], [160, 144, 32], [186, 160, 18]]
+        .some(([cx, cy, r]) => Math.hypot(p.x0 - cx, p.y0 - cy) <= r + 3) ||
+        (p.x0 >= 41 && p.x0 <= 201 && p.y0 >= 147);
+      ps.forEach((p) => {
+        if (naNuvem(p)) p.grupo = 'nuvem';
+        else if (Math.hypot(p.x0 - SX, p.y0 - SY) <= 47) p.grupo = 'disco';
+        else p.grupo = grupoRaio(p, SX, SY);
+      });
+      casca(ps, (p) => p.grupo === 'nuvem');
+      return (t) => {
+        repor();
+        ps.forEach((p) => {
+          if (p.grupo === 'nuvem') { profundidade(p, t); return; }
+          if (p.grupo.startsWith('raio')) {
+            const d = Math.hypot(p.x0 - SX, p.y0 - SY);
+            const pulso = 1 + 0.07 * Math.sin(t * 1.6) * Math.min(1, (d - 47) / 30);
+            p.rx = SX + (p.x0 - SX) * pulso;
+            p.ry = SY + (p.y0 - SY) * pulso;
+          }
+        });
+      };
+    }
+
+    // Nuvem: objeto oco, profundidade pela luz na casca de trás.
     const forma = casca(ps, () => true);
     return (t) => {
       repor();
@@ -242,6 +282,8 @@
         if (j <= i || Math.min(a.t, b.t) < 5) return;
         // Frente só liga com frente e fundo com fundo (camadas do objeto oco).
         if (a.casca && b.casca && Math.sign(a.casca.z) !== Math.sign(b.casca.z)) return;
+        // Partes diferentes do desenho (disco x raio, sol x nuvem...) não se ligam.
+        if ((a.grupo || '') !== (b.grupo || '')) return;
         const dist = Math.hypot(a.x - b.x, a.y - b.y);
         if (dist < (a.t + b.t) * 0.95) cand.push([dist, i, j]);
       }));
