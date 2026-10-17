@@ -20,8 +20,21 @@
   const dataHora = (v) => (v ? v.slice(8, 10) + '/' + v.slice(5, 7) + '/' + v.slice(0, 4) + ' ' + v.slice(11, 16) : '');
   const extensao = (nome) => (/\.([a-z0-9]{1,5})$/i.exec(nome || '') || [])[1]?.toLowerCase() || '';
 
-  // Área de transferência compartilhada entre exploradores da página.
-  let transferencia = null; // { modo: 'copiar'|'recortar', base, itens: [{tipo, id}] }
+  // Área de transferência compartilhada entre exploradores (inclusive de
+  // outro equipamento) e guardada na sessão, para sobreviver a recarregar.
+  // { modo: 'copiar'|'recortar', base, origem, itens: [{tipo, id, nome}] }
+  let transferencia = null;
+  try { transferencia = JSON.parse(sessionStorage.getItem('explorador.transferencia') || 'null'); } catch (e) { transferencia = null; }
+  function guardarTransferencia(valor) {
+    transferencia = valor;
+    try {
+      if (valor) sessionStorage.setItem('explorador.transferencia', JSON.stringify(valor));
+      else sessionStorage.removeItem('explorador.transferencia');
+    } catch (e) { /* sem armazenamento */ }
+  }
+  // '/equipamentos/3' -> tipo '/equipamentos/' e id 3: só cola entre donos do mesmo tipo.
+  const tipoBase = (b) => String(b || '').replace(/\d+$/, '');
+  const idBase = (b) => Number((/(\d+)$/.exec(String(b || '')) || [])[1] || 0);
 
   const TIPOS = {
     pdf: ['PDF', '#d93025', 'Documento PDF'], doc: ['DOC', '#2b579a', 'Documento do Word'], docx: ['DOC', '#2b579a', 'Documento do Word'],
@@ -281,7 +294,10 @@
 
     function guardar(modoTransferencia, itens) {
       if (!itens.length) return;
-      transferencia = { modo: modoTransferencia, base, itens: itens.map((i) => ({ tipo: i.tipo, id: i.id })) };
+      guardarTransferencia({
+        modo: modoTransferencia, base, origem: opcoes.raizNome || '',
+        itens: itens.map((i) => ({ tipo: i.tipo, id: i.id, nome: i.obj.nome })),
+      });
       mensagem(itens.length + (itens.length === 1 ? ' item ' : ' itens ') + (modoTransferencia === 'copiar' ? 'copiado' : 'recortado') + (itens.length === 1 ? '' : 's') + '. Use Colar no destino.');
       desenhar();
     }
@@ -303,11 +319,23 @@
       desenhar();
     }
 
+    const podeColarAqui = () => !!(podeAlterar && transferencia && tipoBase(transferencia.base) === tipoBase(base));
+
     async function colar(destino) {
-      if (!transferencia || transferencia.base !== base) return;
+      if (!podeColarAqui()) return;
       const t = transferencia;
+      if (t.base !== base) {
+        // Veio de outro equipamento: o servidor copia (ou move) de lá para cá.
+        try {
+          await pedir('POST', '/colar', { origem_id: idBase(t.base), itens: t.itens, pasta_id: destino, mover: t.modo === 'recortar' });
+          if (t.modo === 'recortar') guardarTransferencia(null);
+          mensagem((t.modo === 'recortar' ? 'Movido de ' : 'Copiado de ') + (t.origem || 'outro equipamento') + '.');
+        } catch (e) { mensagem(e.message, true); }
+        desenhar();
+        return;
+      }
       const itens = t.itens.map((i) => ({ tipo: i.tipo, id: i.id, obj: i.tipo === 'pasta' ? pastaPor(i.id) : dados.arquivos.find((a) => a.id === i.id) })).filter((i) => i.obj);
-      if (t.modo === 'recortar') transferencia = null;
+      if (t.modo === 'recortar') guardarTransferencia(null);
       await moverOuCopiar(itens, destino, t.modo === 'copiar');
     }
 
@@ -346,14 +374,16 @@
       const itens = alvo ? selecionados() : [];
       const um = itens.length === 1 ? itens[0] : null;
       const destinoColar = um && um.tipo === 'pasta' ? um.id : atual;
-      const podeColar = podeAlterar && transferencia && transferencia.base === base;
+      const podeColar = podeColarAqui();
+      const deOutro = podeColar && transferencia.base !== base;
+      const rotuloColar = deOutro ? 'Colar de ' + (transferencia.origem || 'outro equipamento') : 'Colar';
       const op = [];
       if (alvo) {
         if (um) op.push(['abrir', um.tipo === 'pasta' ? 'Abrir' : 'Abrir', true]);
         if (itens.every((i) => i.tipo === 'arquivo')) op.push(['baixar', itens.length > 1 ? 'Baixar ' + itens.length + ' arquivos' : 'Baixar']);
         if (podeAlterar) {
           op.push('-', ['recortar', 'Recortar', false, 'Ctrl+X'], ['copiar', 'Copiar', false, 'Ctrl+C']);
-          if (podeColar && um && um.tipo === 'pasta') op.push(['colar', 'Colar dentro', false, 'Ctrl+V']);
+          if (podeColar && um && um.tipo === 'pasta') op.push(['colar', rotuloColar + ' (dentro)', false, 'Ctrl+V']);
           op.push('-');
           if (um) op.push(['renomear', 'Renomear', false, 'F2']);
           op.push(['excluir', 'Excluir', false, 'Delete']);
@@ -364,7 +394,7 @@
         op.push(['exibir-icones', (modo === 'icones' ? '● ' : '') + 'Exibir como ícones'], ['exibir-detalhes', (modo === 'detalhes' ? '● ' : '') + 'Exibir como detalhes'], ['atualizar', 'Atualizar']);
         if (podeAlterar) {
           op.push('-');
-          if (podeColar) op.push(['colar', 'Colar', false, 'Ctrl+V']);
+          if (podeColar) op.push(['colar', rotuloColar, false, 'Ctrl+V']);
           op.push(['nova-pasta', 'Nova pasta'], ['enviar', 'Enviar arquivos...'], ['selecionar-tudo', 'Selecionar tudo', false, 'Ctrl+A']);
         }
       }
