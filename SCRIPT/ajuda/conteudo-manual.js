@@ -22,7 +22,7 @@ window.OrbitaAjuda.registrarSecao({
       titulo: 'Entrar e navegar',
       corpo: [
         { tipo: 'paragrafo', texto: 'Entre com o usuário e a senha que o administrador criou para você. Não existe cadastro próprio: contas novas são feitas em Gestão, na aba Usuários.' },
-        { tipo: 'paragrafo', texto: 'Os módulos ficam na barra de cima: Ordens de Serviço, Estoque, Frota, Ponto e Gestão. Ao entrar, o sistema abre o módulo escolhido no cadastro do usuário (campo **Abrir ao entrar**) ou, se não houver escolha, o primeiro que a pessoa pode ver. O menu da esquerda mostra as abas do módulo aberto. No celular, esse menu abre pelo botão de três traços.' },
+        { tipo: 'paragrafo', texto: 'Os módulos ficam na barra de cima: Ordens de Serviço, Estoque, Frota, Ponto e Gestão. Passe o mouse sobre um módulo para ver as subabas dele e ir direto para uma delas; no celular, toque na seta ao lado do módulo, no menu. Ao entrar, o sistema abre o módulo escolhido no cadastro do usuário (campo **Abrir ao entrar**) ou, se não houver escolha, o primeiro que a pessoa pode ver. O menu da esquerda mostra as abas do módulo aberto. No celular, esse menu abre pelo botão de três traços.' },
         { tipo: 'paragrafo', texto: 'No rodapé do menu ficam a engrenagem (Configurações), o **(i)**, que abre esta ajuda, e o botão de sair.' },
         { tipo: 'paragrafo', texto: 'A sessão expira depois de um tempo sem uso. O sistema avisa e volta para o login; é só entrar de novo.' },
       ],

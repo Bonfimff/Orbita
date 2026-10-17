@@ -3296,3 +3296,40 @@ html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after 
 .cracha-emergencia dl { margin: 10px 0 0; padding: 10px 12px; border-left: 2px solid #f3c9c9; }
 .emerg-tel { color: #c62828; font-weight: 700; text-decoration: none; white-space: nowrap; }
 .emerg-tel::before { content: "\260E  "; }
+
+
+/* ===================================================================
+   Subabas de qualquer módulo (SCRIPT/navegacao-subabas.js)
+   =================================================================== */
+.subabas-flutuante {
+  position: fixed; z-index: calc(var(--z-topbar) + 5); min-width: 190px; padding: 6px;
+  display: flex; flex-direction: column; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .18);
+}
+.subabas-flutuante[hidden] { display: none; }
+.subabas-flutuante::before {
+  content: ""; position: absolute; top: -6px; left: 50%; width: 10px; height: 10px; margin-left: -5px;
+  background: #fff; border-left: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb; transform: rotate(45deg);
+}
+.subabas-flutuante-item {
+  position: relative; padding: 9px 12px; border-radius: 8px; color: #1F2D3D; font-size: 14px; font-weight: 500;
+  text-decoration: none; white-space: nowrap;
+}
+.subabas-flutuante-item:hover, .subabas-flutuante-item:focus { background: #f4f1ea; color: var(--cor-primaria-escura); outline: none; }
+
+.menu-modulo-linha { display: flex; align-items: stretch; }
+.menu-modulo-linha.modulo-oculto { display: none !important; }
+.menu-modulo-linha > button[data-modulo-ref] { flex: 1; min-width: 0; }
+.menu-modulo-expandir {
+  flex: 0 0 48px; display: flex; align-items: center; justify-content: center;
+  border: 0; background: transparent; color: #bdbdbd; cursor: pointer;
+}
+.menu-modulo-expandir::after {
+  content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg); transition: transform .2s ease;
+}
+.menu-modulo-expandir[aria-expanded="true"]::after { transform: rotate(45deg) translateY(-3px); }
+.menu-modulo-subabas { display: flex; flex-direction: column; margin: 0 0 6px 24px; border-left: 1px solid #4a4a4a; }
+.menu-modulo-subabas[hidden] { display: none; }
+.menu-modulo-subaba { padding: 11px 16px; color: #d6d6d6; font-size: 15px; text-decoration: none; }
+.menu-modulo-subaba:active, .menu-modulo-subaba:hover { color: var(--cor-primaria); background: rgba(168,134,79,.08); }
