@@ -335,7 +335,15 @@
         }
         ima.alvo = novo;
       });
-      svg.addEventListener('pointerleave', () => { ima.alvo = null; ima.mvx = ima.mvy = 0; });
+      const soltar = () => { ima.alvo = null; ima.mvx = ima.mvy = 0; };
+      svg.addEventListener('pointerleave', soltar);
+      // Dedo no celular: o mesmo efeito do mouse enquanto arrasta sobre o ícone.
+      svg.style.touchAction = 'none';
+      svg.addEventListener('pointerdown', (e) => {
+        if (e.pointerType !== 'mouse') svg.setPointerCapture && svg.setPointerCapture(e.pointerId);
+      });
+      svg.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') soltar(); });
+      svg.addEventListener('pointercancel', soltar);
 
       let visivel = true;
       if ('IntersectionObserver' in window) {

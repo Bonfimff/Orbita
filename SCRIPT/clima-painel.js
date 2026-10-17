@@ -91,8 +91,14 @@
       agendar();
     }
 
+    // Mouse sobre o quadro: a pessoa está olhando/brincando, não troca sozinho.
+    let emCima = false;
+    palco.addEventListener('mouseenter', () => { emCima = true; clearTimeout(timer); });
+    palco.addEventListener('mouseleave', () => { emCima = false; agendar(); });
+
     function agendar() {
       clearTimeout(timer);
+      if (emCima) return;
       timer = setTimeout(() => {
         // Painel escondido (celular) ou aba em segundo plano: não troca.
         const visivel = painel.getClientRects().length && getComputedStyle(painel).display !== 'none' && !document.hidden;
@@ -108,7 +114,10 @@
 
     // Arrastar (mouse ou dedo) para o lado também passa.
     let inicioX = null;
-    palco.addEventListener('pointerdown', (e) => { inicioX = e.clientX; });
+    palco.addEventListener('pointerdown', (e) => {
+      // Arrastar em cima do ícone animado mexe no óleo, não troca o cartão.
+      inicioX = e.target.closest('svg.clima-ferro') ? null : e.clientX;
+    });
     palco.addEventListener('pointerup', (e) => {
       if (inicioX === null) return;
       const dx = e.clientX - inicioX;
