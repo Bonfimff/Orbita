@@ -253,7 +253,7 @@
 
     el('jor-cal-info').textContent = cal.escala
       ? 'Escala ' + cal.escala.rotulo + '.'
-      : 'Sua escala ainda não foi cadastrada. Peça para incluírem no seu cadastro de funcionário.';
+      : '';
   }
 
   function abrirCalendario() {
