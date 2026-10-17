@@ -60,15 +60,21 @@
     let atual = 0;
     let timer = null;
 
+    let animacao = null;
     async function preencherClima() {
       const p = await previsao();
+      if (animacao) animacao.parar();
       cartao.innerHTML = `
-        <img class="clima-icone" src="../IMG/clima/${p.icone}.svg" alt="">
+        <div class="clima-icone"></div>
         <div class="clima-info">
           <strong class="clima-temp">${p.temperatura}°</strong>
           <span class="clima-condicao">${p.condicao}</span>
           <span class="clima-extra">${p.cidade} · mín ${p.minima}° máx ${p.maxima}°</span>
         </div>`;
+      const alvo = cartao.querySelector('.clima-icone');
+      // Ícone vivo (ferrofluido); sem o script, o SVG estático.
+      if (window.ClimaFerro) animacao = window.ClimaFerro.montar(alvo, p.icone);
+      else alvo.innerHTML = `<img src="../IMG/clima/${p.icone}.svg" alt="" style="width:100%">`;
     }
 
     async function irPara(i) {
