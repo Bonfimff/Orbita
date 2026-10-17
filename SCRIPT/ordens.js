@@ -397,12 +397,9 @@ async function renderizarMapaBasesGerenciamento() {
     const id = String(base.id || '').trim() || 'Base';
     const enderecoExibicao = construirEnderecoMapaBase(base) || construirLocalizacaoBase(base);
     const marcador = L.marker([posicao.lat, posicao.lng]).addTo(basesMapaLeafletCamada);
-    marcador.bindPopup(`
-      <div style="min-width:180px;">
-        <strong>📍 ${escapeHtml(id)}</strong><br>
-        <span>${escapeHtml(enderecoExibicao)}</span>
-      </div>
-    `);
+    const topoBase = `<strong>📍 ${escapeHtml(id)}</strong><br><span>${escapeHtml(enderecoExibicao)}</span>`;
+    if (window.EquipamentosDaBase) window.EquipamentosDaBase.ligar(marcador, id, topoBase);
+    else marcador.bindPopup(`<div style="min-width:180px;">${topoBase}</div>`);
     itensLegenda.push(`<div class="pontos-mapa-legenda-item"><strong>📍 ${escapeHtml(id)}</strong> - ${escapeHtml(enderecoExibicao)}</div>`);
   });
 

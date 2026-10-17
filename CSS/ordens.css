@@ -2782,3 +2782,27 @@ button.ponto-foto-modal-tags {
   .eqi-mat-form { grid-template-columns: 1fr 1fr; }
   .eqi-mat-form #eqi-mat-nome, .eqi-mat-form #eqi-mat-obs { grid-column: 1 / -1; }
 }
+
+
+/* Ficha do equipamento: aba O.S. */
+.eqi-os-resumo { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+.eqi-os-resumo:empty { display: none; }
+.eqi-os-kpi { padding: 10px; border: 1px solid #eef1f4; border-radius: 10px; text-align: center; }
+.eqi-os-kpi strong { display: block; font-size: 20px; color: var(--cor-destaque); }
+.eqi-os-kpi span { font-size: 11px; color: #64748b; }
+.eqi-os-kpi.aviso strong { color: #b7791f; }
+.eqi-os-kpi.destaque strong { color: var(--cor-primaria-escura); }
+.eqi-os-lista { list-style: none; margin: 0; padding: 0; border: 1px solid #eef1f4; border-radius: 10px; overflow: hidden; }
+.eqi-os-lista li { border-top: 1px solid #eef1f4; }
+.eqi-os-lista li:first-child { border-top: 0; }
+.eqi-os-item { width: 100%; display: flex; flex-direction: column; gap: 3px; padding: 10px 12px; border: 0; background: #fff; font: inherit; text-align: left; cursor: pointer; }
+.eqi-os-item:hover { background: #fbf8f2; }
+.eqi-os-topo { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.eqi-os-topo strong { font-size: 14px; color: #1F2D3D; }
+.eqi-os-desc { font-size: 13px; color: #334155; }
+.eqi-os-item small { font-size: 12px; color: #94a3b8; }
+.eqi-selo.destaque { background: #f4f1ea; color: var(--cor-primaria-escura); }
+.eqi-os-links { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 10px; }
+.eqi-os-links small { color: #94a3b8; font-size: 12px; flex-basis: 100%; }
+.eqi-os-link { font-size: 13px; font-weight: 700; color: var(--cor-primaria-escura); }
+@media (max-width: 768px) { .eqi-os-resumo { grid-template-columns: repeat(2, 1fr); } }

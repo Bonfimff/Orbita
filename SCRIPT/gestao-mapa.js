@@ -71,10 +71,13 @@
     camadas.veiculos.clearLayers();
 
     bases.filter(temPosicao).forEach(b => {
-      L.marker([Number(b.latitude), Number(b.longitude)], {
+      const marcador = L.marker([Number(b.latitude), Number(b.longitude)], {
         icon: L.divIcon({ className: 'pg-mapa-base', iconSize: [16, 16] }),
         zIndexOffset: -100,
-      }).addTo(camadas.bases).bindPopup(`<strong>${escapar(b.id)}</strong><br>${escapar(b.endereco)}`);
+      }).addTo(camadas.bases);
+      const topo = `<strong>${escapar(b.id)}</strong><br>${escapar(b.endereco)}`;
+      if (window.EquipamentosDaBase) window.EquipamentosDaBase.ligar(marcador, b.id, topo);
+      else marcador.bindPopup(topo);
     });
 
     veiculos.filter(temPosicao).forEach(v => {

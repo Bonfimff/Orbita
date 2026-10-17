@@ -27,6 +27,15 @@
     status: '',
   };
 
+  // Link de outra tela (ex.: ficha do equipamento) já com o filtro aplicado.
+  (function filtrosDoEndereco() {
+    const url = new URLSearchParams(window.location.search);
+    ['base_id', 'equipamento_id', 'contrato_id', 'ponto_id', 'status'].forEach((campo) => {
+      if (url.get(campo)) estado[campo] = url.get(campo);
+    });
+    if (url.get('periodo') && ['hoje', '7d', '30d', '90d', '12m'].includes(url.get('periodo'))) estado.periodo = url.get('periodo');
+  })();
+
   const elemento = (id) => document.getElementById(id);
 
   function parametros(extras) {
@@ -242,7 +251,7 @@
     const limpar = elemento('rel-limpar');
     if (limpar) {
       limpar.addEventListener('click', () => {
-        ['contrato_id', 'ponto_id', 'categoria_id', 'problema_id',
+        ['contrato_id', 'base_id', 'ponto_id', 'categoria_id', 'problema_id',
          'causa_id', 'equipamento_id', 'status'].forEach((campo) => {
           estado[campo] = '';
         });
@@ -273,6 +282,11 @@
       botao.addEventListener('click', () => setTimeout(reposicionarBarra, 0));
     });
 
+    // Período vindo do endereço: marca o chip certo.
+    const chipsPeriodo = elemento('rel-periodo-chips');
+    if (chipsPeriodo) {
+      chipsPeriodo.querySelectorAll('.rel-chip').forEach((c) => c.classList.toggle('rel-chip-ativo', c.dataset.periodo === estado.periodo));
+    }
     atualizarResumo();
     carregarListas();
   }

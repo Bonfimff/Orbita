@@ -141,6 +141,7 @@
       .map((m) => `<option value="${esc(m.nome)}">${esc(m.quantidade || '')} ${esc(m.unidade || '')} na base</option>`).join('');
     desenharMateriais();
     desenharArquivos();
+    desenharOS();
     el('eqi-historico').innerHTML = (e.alocacoes || []).map((a) => `
       <li${a.fim || a.data_fim ? '' : ' class="atual"'}>
         <strong>${esc(a.ponto_codigo || 'Ponto não informado')}</strong>
@@ -151,6 +152,29 @@
   function mostrarAba(aba) {
     document.querySelectorAll('#eqi-abas [data-eqi-aba]').forEach((b) => b.classList.toggle('active', b.dataset.eqiAba === aba));
     document.querySelectorAll('[data-eqi-painel]').forEach((p) => { p.hidden = p.dataset.eqiPainel !== aba; });
+  }
+
+  // ---- O.S. da base (resumo; detalhes e fotos ficam na O.S. e no relatório)
+  function desenharOS() {
+    const r = atual.os || { total: 0, itens: [] };
+    el('eqi-n-os').textContent = r.total || '';
+    const kpi = (rot, n, cls) => `<div class="eqi-os-kpi ${cls || ''}"><strong>${n}</strong><span>${rot}</span></div>`;
+    el('eqi-os-resumo').innerHTML = r.total
+      ? kpi('na base', r.total) + kpi('abertas', r.abertas, r.abertas ? 'aviso' : '') +
+        kpi('concluídas', r.concluidas) + kpi('com este equipamento', r.do_equipamento, r.do_equipamento ? 'destaque' : '')
+      : '';
+    el('eqi-os-lista').innerHTML = (r.itens || []).map((o) => `
+      <li><button type="button" class="eqi-os-item" data-os-abrir="${o.id}">
+        <span class="eqi-os-topo"><strong>${esc(o.numero_os)}</strong>
+          <span class="eqi-selo ${/finaliz|conclu/i.test(o.status) ? 'ok' : (/cancel/i.test(o.status) ? 'neutro' : 'aviso')}">${esc(o.status)}</span>
+          ${o.do_equipamento ? '<span class="eqi-selo destaque">Este equipamento</span>' : ''}</span>
+        <span class="eqi-os-desc">${esc(o.descricao || o.tipo_servico)}</span>
+        <small>${esc(dataBr(o.data_abertura))} · ${esc(o.tipo_servico)}${o.pontos ? ' · ' + esc(o.pontos) : ''}</small>
+      </button></li>`).join('') || `<li class="eqi-vazio">Nenhuma O.S. registrada ${atual.base_id ? 'nesta base' : 'para este equipamento'}.</li>`;
+    const rel = 'relatorios.html?periodo=12m&';
+    el('eqi-os-links').innerHTML = (r.total > (r.itens || []).length ? `<small>Mostrando as ${r.itens.length} mais recentes de ${r.total}.</small>` : '') +
+      (atual.base_id ? `<a class="eqi-os-link" href="${rel}base_id=${encodeURIComponent(atual.base_id)}">Relatório completo da base ${esc(atual.base_id)}</a>` : '') +
+      `<a class="eqi-os-link" href="${rel}equipamento_id=${atual.id}">Relatório deste equipamento</a>`;
   }
 
   // ---- composição
@@ -166,7 +190,7 @@
       </li>`).join('') || '<li class="eqi-vazio">Nenhum material na composição.</li>';
     el('eqi-mat-dica').textContent = mats.length === 1
       ? 'Equipamento formado por um único material.'
-      : (atual.pode_alterar ? 'Um equipamento pode ser um único material ou um conjunto (ex.: nobreak + banco de baterias).' : '');
+      : (atual.pode_alterar ? 'Um equipamento pode ser um único material ou um conjunto de materiais.' : '');
     limparFormMaterial();
   }
 
@@ -374,6 +398,23 @@
     ['dragleave', 'drop'].forEach((ev) => zona.addEventListener(ev, () => zona.classList.remove('arrastando')));
     zona.addEventListener('drop', (e) => { e.preventDefault(); enviar(Array.from(e.dataTransfer.files || [])); });
     el('eqi-editar').addEventListener('click', () => { const r = atual; irParaCadastro((c) => c.editar(r)); });
+    el('eqi-os-lista').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-os-abrir]');
+      if (!b || typeof window.abrirModalEdicao !== 'function') return;
+      fechar();
+      window.abrirModalEdicao(b.dataset.osAbrir);
+    });
+    // Link do mapa (ordens.html#equipamento-<id>): abre a ficha direto.
+    const peloEndereco = () => {
+      const m = (location.hash || '').match(/^#equipamento-(\d+)$/);
+      if (!m) return;
+      document.querySelector('.tab-btn[data-tab="bases"]')?.click();
+      mostrarVista('equipamentos');
+      abrirDetalhe(m[1]);
+      history.replaceState(null, '', location.pathname + location.search + '#bases');
+    };
+    window.addEventListener('hashchange', peloEndereco);
+    setTimeout(peloEndereco, 400);
     el('eqi-cadastrar').addEventListener('click', () => irParaCadastro((c) => c.novo()));
     document.addEventListener('orbita:equipamentos-alterados', () => { if (carregado) carregar(); });
   }

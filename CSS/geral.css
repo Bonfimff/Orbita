@@ -3333,3 +3333,14 @@ html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after 
 .menu-modulo-subabas[hidden] { display: none; }
 .menu-modulo-subaba { padding: 11px 16px; color: #d6d6d6; font-size: 15px; text-decoration: none; }
 .menu-modulo-subaba:active, .menu-modulo-subaba:hover { color: var(--cor-primaria); background: rgba(168,134,79,.08); }
+
+
+/* Balão da base no mapa: equipamentos vinculados (SCRIPT/operacional/base-equipamentos.js) */
+.base-popup { font-size: 13px; line-height: 1.35; }
+.base-popup-eq { margin-top: 8px; padding-top: 8px; border-top: 1px solid #eef1f4; display: flex; flex-direction: column; gap: 2px; }
+.base-popup-titulo { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #64748b; margin-bottom: 2px; }
+.base-popup-item { display: block; padding: 6px 8px; margin: 0 -8px; border-radius: 8px; color: #1F2D3D !important; text-decoration: none; }
+.base-popup-item:hover { background: #f4f1ea; }
+.base-popup-item strong { color: var(--cor-primaria-escura); }
+.base-popup-item small { display: block; color: #94a3b8; font-size: 11px; }
+.base-popup-vazio { color: #94a3b8; }
