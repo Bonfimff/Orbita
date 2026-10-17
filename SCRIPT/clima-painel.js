@@ -16,6 +16,7 @@
     { icone: 'sol', condicao: 'Ensolarado', temperatura: 31, minima: 22, maxima: 33 },
     { icone: 'sol-nuvem', condicao: 'Parcialmente nublado', temperatura: 28, minima: 21, maxima: 30 },
     { icone: 'nuvem', condicao: 'Nublado', temperatura: 25, minima: 20, maxima: 27 },
+    { icone: 'chuva', condicao: 'Chuva', temperatura: 22, minima: 19, maxima: 25 },
     { icone: 'tempestade', condicao: 'Chuva com trovoadas', temperatura: 23, minima: 19, maxima: 26 },
     { icone: 'vento', condicao: 'Ventania', temperatura: 24, minima: 19, maxima: 27 },
   ];

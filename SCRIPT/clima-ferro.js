@@ -28,7 +28,7 @@
   let dadosPromessa = null;
   function dados(base) {
     if (!dadosPromessa) {
-      dadosPromessa = fetch(base + 'particulas.json?v=3').then((r) => {
+      dadosPromessa = fetch(base + 'particulas.json?v=4').then((r) => {
         if (!r.ok) throw new Error('particulas.json');
         return r.json();
       });
@@ -178,9 +178,9 @@
       };
     }
 
-    if (nome === 'tempestade') {
+    if (nome === 'tempestade' || nome === 'chuva') {
       const forma = casca(ps, (p) => p.y0 < 120);
-      const chuva = ps.filter((p) => p.y0 >= 126 && (p.x0 < 118 || p.x0 > 205));
+      const chuva = ps.filter((p) => p.y0 >= 126 && (nome === 'chuva' || p.x0 < 118 || p.x0 > 205));
       ps.forEach((p) => {
         if (p.y0 < 120) p.grupo = 'nuvem';
         else if (chuva.includes(p)) p.grupo = 'chuva' + Math.round(p.x0 / 24);
