@@ -456,6 +456,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     modalContent.innerHTML = `
       <button id="close-profile-modal" type="button" class="cracha-fechar" data-fechar-flutuante aria-label="Fechar">&times;</button>
+      <button id="cracha-editar" type="button" class="cracha-editar" aria-label="Editar meus dados" title="Editar meus dados">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>
+      </button>
       <div class="cracha-topo">
         <span class="cracha-furo" aria-hidden="true"></span>
         <img src="../IMG/Logoescura.png" alt="KERNEL" class="cracha-logo">
@@ -474,10 +477,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       <div id="cracha-emergencia"></div>
       <div class="cracha-qr-linha">
         <div class="cracha-qr" id="cracha-qr" aria-label="QR code do crachá"></div>
-      </div>
-      <div class="cracha-sessao">
-        <span><i class="cracha-online"></i>Online</span>
-        <span>Sessão expira em <strong id="token-countdown">${calcularTempoRestanteToken()}</strong></span>
       </div>
     `;
 
@@ -700,6 +699,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
     
     // Fechar modal
+    // Editar: fecha o crachá e abre Configurações (dados, tipo sanguíneo, emergência).
+    document.getElementById('cracha-editar').addEventListener('click', () => {
+      modal.style.display = 'none';
+      clearInterval(window.tokenCountdownInterval);
+      if (window.KernelConfiguracoes) window.KernelConfiguracoes.abrir();
+    });
+
     document.getElementById('close-profile-modal').addEventListener('click', () => {
       modal.style.display = 'none';
       clearInterval(window.tokenCountdownInterval); // Para o contador

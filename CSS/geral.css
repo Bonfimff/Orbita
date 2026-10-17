@@ -3254,3 +3254,5 @@ html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after 
 .cracha-emergencia dd { margin: 2px 0 0; font-size: 13.5px; font-weight: 600; color: #1F2D3D; }
 .cracha-pdf { font-size: 11.5px; font-weight: 700; color: var(--cor-primaria, #A8864F); text-decoration: none; }
 .cracha-pdf:hover { text-decoration: underline; }
+.cracha-editar { position: absolute; top: 10px; right: 50px; z-index: 2; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: rgba(255,255,255,.95); color: #1F2D3D; cursor: pointer; }
+.cracha-qr-linha { margin-bottom: 18px; }
