@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
   <link rel="stylesheet" href="../CSS/ficha.css?v=2" />
   <link rel="stylesheet" href="../CSS/explorador.css?v=1" />
-  <link rel="stylesheet" href="../CSS/jornada.css?v=8" />
+  <link rel="stylesheet" href="../CSS/jornada.css?v=9" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Gestão de Usuários</title>
@@ -191,33 +191,9 @@
     </div>
 
     <div id="contratos" class="tab-content">
-      <form id="form-contratos" autocomplete="off">
-        <div class="gestao-form-grid">
-          <div class="gestao-form-item">
-            <label for="contrato-nome">Nome do contrato *</label>
-            <input type="text" id="contrato-nome" placeholder="Nome do contrato/empresa" required>
-          </div>
-          <div class="gestao-form-item">
-            <label for="contrato-cnpj">CNPJ</label>
-            <input type="text" id="contrato-cnpj" placeholder="00.000.000/0000-00">
-          </div>
-          <div class="gestao-form-item gestao-form-full">
-            <label for="contrato-especificacoes">Especificações</label>
-            <textarea id="contrato-especificacoes" rows="3" placeholder="Descreva as especificações do contrato..."></textarea>
-          </div>
-          <div class="gestao-form-item gestao-form-full">
-            <label>Arquivos do contrato</label>
-            <div id="contrato-arquivos-lista"></div>
-          </div>
-        </div>
-
-        <div id="contrato-form-feedback" class="gestao-feedback" style="display:none;"></div>
-
-        <div class="gestao-modal-acoes" style="justify-content:flex-start;">
-          <button type="submit" class="btn-primario" id="btn-salvar-contrato">Salvar Contrato</button>
-          <button type="button" class="btn-secundario" id="btn-limpar-contrato">Limpar</button>
-        </div>
-      </form>
+      <div class="func-filtros">
+        <button type="button" class="btn-primario" id="btn-novo-contrato" data-permissao="gestao_contratos:excluir">+ Novo contrato</button>
+      </div>
 
       <div class="tabela-responsiva" style="margin-top:1.5rem;">
         <table class="estilo-tabela" id="tabela-contratos">
@@ -226,12 +202,11 @@
               <th>Nome</th>
               <th>CNPJ</th>
               <th>Usuários com acesso</th>
-              <th>Arquivos</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td colspan="5"><div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div></td></tr>
+            <tr><td colspan="4"><div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -490,6 +465,25 @@
     </form>
   </div>
 
+  <!-- ===== FICHA DO CONTRATO (consulta) ===== -->
+  <div id="contrato-ficha" class="jor-cal-fundo" hidden>
+    <div class="jor-cal ponto-modal contrato-ficha" role="dialog" aria-modal="true" aria-labelledby="contrato-ficha-titulo">
+      <div class="ponto-modal-topo">
+        <div>
+          <h3 id="contrato-ficha-titulo"></h3>
+          <small id="contrato-ficha-sub"></small>
+        </div>
+        <div class="contrato-ficha-acoes">
+          <button type="button" class="jor-btn jor-btn-secundario" id="contrato-ficha-editar" data-permissao="gestao_contratos:editar">Editar</button>
+          <button type="button" class="jor-cal-fechar" data-fechar-contrato aria-label="Fechar">&times;</button>
+        </div>
+      </div>
+      <dl class="ponto-info" id="contrato-ficha-info"></dl>
+      <h4 class="ponto-modal-sub">Arquivos</h4>
+      <div id="contrato-ficha-arquivos"></div>
+    </div>
+  </div>
+
   <!-- Sidebar direita Gestão -->
   <div class="sidebar-right sidebar-gestao">
     <img src="../IMG/Logo.png" alt="Logo" class="logo">
@@ -542,7 +536,7 @@
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
   <script src="../SCRIPT/operacional/explorador.js?v=3"></script>
-  <script src="../SCRIPT/gestao.js?v=19"></script>
+  <script src="../SCRIPT/gestao.js?v=21"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
   <script src="../SCRIPT/geral.js?v=40"></script>
   <script src="../SCRIPT/navegacao-subabas.js?v=1"></script>
@@ -550,7 +544,7 @@
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=24"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=25"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="../SCRIPT/gestao-funcionarios.js?v=6"></script>
   <script src="../SCRIPT/gestao-jornadas.js?v=7"></script>

@@ -248,7 +248,7 @@ window.OrbitaAjuda.registrarSecao({
       titulo: 'Contratos e funcionários',
       corpo: [
         { tipo: 'paragrafo', texto: 'O contrato separa os dados entre clientes. Para limitar uma pessoa, edite o usuário e marque os contratos que ela pode ver. Sem nenhum marcado, vale o que o perfil dela define; sem perfil, ela vê tudo.' },
-        { tipo: 'paragrafo', texto: 'Os arquivos do contrato ficam num explorador com pastas, igual ao dos equipamentos, disponível depois que o contrato é salvo.' },
+        { tipo: 'paragrafo', texto: 'A aba **Contratos** lista os contratos; um clique abre a ficha com as especificações, quem tem acesso e os arquivos (explorador com pastas, igual ao dos equipamentos). **+ Novo contrato** e **Editar** abrem o formulário em **Gestão › Cadastros › Contratos**.' },
         { tipo: 'paragrafo', texto: 'A aba **Funcionários** lista quem trabalha em campo. **+ Novo funcionário** e um clique na linha abrem o formulário em **Cadastros › Funcionários**, com tipo sanguíneo, informações de emergência e capacitações. O crachá do usuário ligado a ele mostra esses mesmos dados.' },
         { tipo: 'paragrafo', texto: 'A ficha do funcionário tem as abas **Dados**, **Admissão** (data de admissão, tipo de contrato, desligamento e tempo de casa), **Documentos** e **Férias**. Documentos e Férias aparecem depois que o cadastro é salvo.' },
         { tipo: 'paragrafo', texto: 'Em **Documentos** fica o explorador de arquivos, o mesmo dos equipamentos: crie as pastas que quiser (ex.: Admissão, Folhas de ponto, Contracheques), envie ou arraste arquivos e use o botão direito para renomear, copiar, mover, excluir ou proteger.' },

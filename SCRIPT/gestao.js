@@ -2,7 +2,6 @@
   let perfisCache = [];
   let usuarioLogadoId = null;
   let perfilEditandoId = null;
-  let contratoEditandoId = null;
 
   function authHeaders(json = false) {
     const h = { 'Authorization': 'Bearer ' + localStorage.getItem('token') };
@@ -286,115 +285,93 @@
     return String(texto ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
-  // Arquivos do contrato: explorador com pastas livres (SCRIPT/operacional/explorador.js),
-  // o mesmo dos equipamentos. Só existe para contrato já salvo.
-  async function renderizarArquivosContrato() {
-    const alvo = document.getElementById('contrato-arquivos-lista');
-    if (!alvo) return;
-    if (!contratoEditandoId || !window.Explorador) {
-      alvo.className = '';
-      alvo.innerHTML = '<p class="gestao-dica-arquivos">Salve o contrato para organizar os arquivos em pastas.</p>';
-      return;
-    }
-    const id = contratoEditandoId;
-    alvo.innerHTML = '<p class="gestao-dica-arquivos">Carregando arquivos...</p>';
-    try {
-      const resp = await fetch(window.apiUrl(`/explorador/contratos/${id}/arquivos`), { headers: authHeaders() });
-      const dados = await resp.json();
-      if (dados.status !== 'ok') throw new Error(dados.mensagem || 'Não foi possível carregar os arquivos.');
-      if (id !== contratoEditandoId) return;
-      const nome = document.getElementById('contrato-nome').value || 'Contrato';
-      window.Explorador.montar(alvo, {
-        base: '/explorador/contratos/' + id,
-        podeAlterar: typeof window.temPermissao !== 'function' || window.temPermissao('gestao_contratos', 'editar'),
-        dados: dados.dados,
-        raizNome: nome,
-      });
-    } catch (erro) {
-      alvo.innerHTML = '<p class="gestao-dica-arquivos">' + escapeHtml(erro.message) + '</p>';
-    }
-  }
-
-  async function excluirArquivoContrato(arquivoId) {
-    if (!confirm('Remover este arquivo do contrato?')) return;
-    await fetch(window.apiUrl(`/contratos/arquivos/${arquivoId}`), { method: 'DELETE', headers: authHeaders() });
-    if (contratoEditandoId) await carregarContratoParaEdicao(contratoEditandoId);
-  }
-
-  function limparFormularioContrato() {
-    document.getElementById('form-contratos')?.reset();
-    contratoEditandoId = null;
-    document.dispatchEvent(new CustomEvent('orbita:contrato-selecionado', { detail: { id: null } }));
-    document.getElementById('btn-salvar-contrato').textContent = 'Salvar Contrato';
-    renderizarArquivosContrato();
-    const feedback = document.getElementById('contrato-form-feedback');
-    feedback.style.display = 'none';
-    feedback.textContent = '';
-  }
+  // Aqui fica só a lista e a ficha de consulta (dados + arquivos). O cadastro
+  // e a edição ficam em Gestão › Cadastros › Contratos (SCRIPT/cadastros/contrato.js).
+  const irParaCadastroContrato = (id) => { window.location.href = 'cadastros.html#contrato' + (id ? '-' + id : ''); };
 
   async function carregarContratos() {
     const tbody = document.querySelector('#tabela-contratos tbody');
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="5"><div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div></td></tr>';
     try {
       const resp = await fetch(window.apiUrl('/contratos'), { headers: authHeaders() });
       const dados = await resp.json();
       if (dados.status !== 'ok') {
-        tbody.innerHTML = `<tr><td colspan="5" style="padding:0.75rem;">${dados.mensagem || 'Erro ao carregar contratos.'}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="padding:0.75rem;">${escapeHtml(dados.mensagem || 'Erro ao carregar contratos.')}</td></tr>`;
         return;
       }
       if (!dados.contratos.length) {
-        tbody.innerHTML = '<tr><td colspan="5" style="padding:0.75rem;">Nenhum contrato cadastrado.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="padding:0.75rem;">Nenhum contrato cadastrado.</td></tr>';
         return;
       }
       tbody.innerHTML = dados.contratos.map(c => `
-        <tr data-contrato-id="${c.id}">
+        <tr data-contrato-id="${c.id}" class="linha-clicavel" tabindex="0" title="Ver contrato">
           <td>${escapeHtml(c.nome)}</td>
           <td>${escapeHtml(c.cnpj || '-')}</td>
           <td>${(c.usuarios || []).map(u => escapeHtml(u.usuario)).join(', ') || '-'}</td>
-          <td>${(c.arquivos || []).length}</td>
           <td>
             <div class="gestao-acoes-cell">
-              <button type="button" class="gestao-btn-icone gestao-editar-contrato" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
-              <button type="button" class="gestao-btn-icone gestao-excluir-contrato" title="Excluir"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
+              <button type="button" class="gestao-btn-icone gestao-editar-contrato" title="Editar" data-permissao="gestao_contratos:editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+              <button type="button" class="gestao-btn-icone gestao-excluir-contrato" title="Excluir" data-permissao="gestao_contratos:excluir"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
             </div>
           </td>
         </tr>
       `).join('');
-      tbody.querySelectorAll('.gestao-editar-contrato').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = Number(e.target.closest('tr').dataset.contratoId);
-          carregarContratoParaEdicao(id);
-        });
-      });
-      tbody.querySelectorAll('.gestao-excluir-contrato').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = Number(e.target.closest('tr').dataset.contratoId);
-          excluirContrato(id);
-        });
-      });
     } catch (error) {
       console.error('Erro ao carregar contratos:', error);
-      tbody.innerHTML = '<tr><td colspan="5" style="padding:0.75rem;">Erro de conexão ao carregar contratos.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" style="padding:0.75rem;">Erro de conexão ao carregar contratos.</td></tr>';
     }
   }
 
-  async function carregarContratoParaEdicao(id) {
+  // Ficha de consulta: dados e arquivos, sem precisar entrar na edição.
+  let contratoFichaId = null;
+  async function abrirFichaContrato(id) {
+    const fundo = document.getElementById('contrato-ficha');
+    contratoFichaId = id;
+    document.getElementById('contrato-ficha-titulo').textContent = 'Carregando...';
+    document.getElementById('contrato-ficha-sub').textContent = '';
+    document.getElementById('contrato-ficha-info').innerHTML = '';
+    document.getElementById('contrato-ficha-arquivos').innerHTML = '';
+    fundo.hidden = false;
+    if (window.travarRolagemFundo) window.travarRolagemFundo(true);
+    document.dispatchEvent(new CustomEvent('orbita:contrato-selecionado', { detail: { id } }));
     try {
-      const resp = await fetch(window.apiUrl(`/contratos/${id}`), { headers: authHeaders() });
-      const dados = await resp.json();
-      if (dados.status !== 'ok') return;
-      const c = dados.contrato;
-      contratoEditandoId = c.id;
-      document.dispatchEvent(new CustomEvent('orbita:contrato-selecionado', { detail: { id: c.id } }));
-      document.getElementById('contrato-nome').value = c.nome || '';
-      document.getElementById('contrato-cnpj').value = c.cnpj || '';
-      document.getElementById('contrato-especificacoes').value = c.especificacoes || '';
-      document.getElementById('btn-salvar-contrato').textContent = 'Atualizar Contrato';
-      renderizarArquivosContrato();
-    } catch (error) {
-      console.error('Erro ao carregar contrato:', error);
+      const [rc, ra] = await Promise.all([
+        fetch(window.apiUrl(`/contratos/${id}`), { headers: authHeaders() }).then(r => r.json()),
+        fetch(window.apiUrl(`/explorador/contratos/${id}/arquivos`), { headers: authHeaders() }).then(r => r.json()).catch(() => ({})),
+      ]);
+      if (id !== contratoFichaId) return;
+      if (rc.status !== 'ok') throw new Error(rc.mensagem || 'Contrato não encontrado.');
+      const c = rc.contrato;
+      document.getElementById('contrato-ficha-titulo').textContent = c.nome;
+      document.getElementById('contrato-ficha-sub').textContent = c.cnpj ? 'CNPJ ' + c.cnpj : '';
+      const item = (r, v) => (v ? `<div><dt>${r}</dt><dd>${v}</dd></div>` : '');
+      document.getElementById('contrato-ficha-info').innerHTML =
+        item('Usuários com acesso', escapeHtml((c.usuarios || []).map(u => u.usuario).join(', '))) +
+        item('Especificações', escapeHtml(c.especificacoes || '').replace(/\n/g, '<br>'));
+      const alvo = document.getElementById('contrato-ficha-arquivos');
+      if (ra.status === 'ok' && window.Explorador) {
+        window.Explorador.montar(alvo, {
+          base: '/explorador/contratos/' + id,
+          podeAlterar: typeof window.temPermissao !== 'function' || window.temPermissao('gestao_contratos', 'editar'),
+          dados: ra.dados,
+          raizNome: c.nome,
+        });
+      } else {
+        alvo.innerHTML = `<p class="gestao-dica-arquivos">${escapeHtml(ra.mensagem || 'Sem acesso aos arquivos.')}</p>`;
+      }
+    } catch (erro) {
+      document.getElementById('contrato-ficha-titulo').textContent = 'Contrato';
+      document.getElementById('contrato-ficha-info').innerHTML = `<div><dd>${escapeHtml(erro.message)}</dd></div>`;
     }
+  }
+
+  function fecharFichaContrato() {
+    const fundo = document.getElementById('contrato-ficha');
+    if (!fundo || fundo.hidden) return;
+    fundo.hidden = true;
+    contratoFichaId = null;
+    if (window.travarRolagemFundo) window.travarRolagemFundo(false);
+    document.dispatchEvent(new CustomEvent('orbita:contrato-selecionado', { detail: { id: null } }));
   }
 
   async function excluirContrato(id) {
@@ -406,7 +383,6 @@
         alert(dados.mensagem || 'Erro ao excluir contrato.');
         return;
       }
-      if (contratoEditandoId === id) limparFormularioContrato();
       carregarContratos();
     } catch (error) {
       console.error('Erro ao excluir contrato:', error);
@@ -414,47 +390,28 @@
     }
   }
 
-  async function salvarContrato(event) {
-    event.preventDefault();
-    const feedback = document.getElementById('contrato-form-feedback');
-    feedback.style.display = 'none';
-
-    const nome = document.getElementById('contrato-nome').value.trim();
-    if (!nome) return;
-
-    const payload = {
-      nome,
-      cnpj: document.getElementById('contrato-cnpj').value.trim(),
-      especificacoes: document.getElementById('contrato-especificacoes').value.trim(),
-    };
-
-    const btn = document.getElementById('btn-salvar-contrato');
-    if (btn) btn.disabled = true;
-    try {
-      const url = contratoEditandoId ? `/contratos/${contratoEditandoId}` : '/contratos';
-      const method = contratoEditandoId ? 'PUT' : 'POST';
-      const resp = await fetch(window.apiUrl(url), {
-        method,
-        headers: authHeaders(true),
-        body: JSON.stringify(payload),
-      });
-      const dados = await resp.json();
-      if (dados.status !== 'ok') {
-        feedback.className = 'gestao-feedback erro';
-        feedback.textContent = dados.mensagem || 'Erro ao salvar contrato.';
-        feedback.style.display = 'block';
-        return;
-      }
-      limparFormularioContrato();
-      carregarContratos();
-    } catch (error) {
-      console.error('Erro ao salvar contrato:', error);
-      feedback.className = 'gestao-feedback erro';
-      feedback.textContent = 'Erro de conexão ao salvar o contrato.';
-      feedback.style.display = 'block';
-    } finally {
-      if (btn) btn.disabled = false;
-    }
+  function ligarContratos() {
+    const tbody = document.querySelector('#tabela-contratos tbody');
+    if (!tbody) return;
+    tbody.addEventListener('click', (e) => {
+      const linha = e.target.closest('tr[data-contrato-id]');
+      if (!linha) return;
+      const id = Number(linha.dataset.contratoId);
+      if (e.target.closest('.gestao-editar-contrato')) { irParaCadastroContrato(id); return; }
+      if (e.target.closest('.gestao-excluir-contrato')) { excluirContrato(id); return; }
+      abrirFichaContrato(id);
+    });
+    tbody.addEventListener('keydown', (e) => {
+      const linha = e.target.closest('tr[data-contrato-id]');
+      if (linha && e.key === 'Enter') abrirFichaContrato(Number(linha.dataset.contratoId));
+    });
+    document.getElementById('btn-novo-contrato')?.addEventListener('click', () => irParaCadastroContrato());
+    document.getElementById('contrato-ficha-editar')?.addEventListener('click', () => irParaCadastroContrato(contratoFichaId));
+    const fundo = document.getElementById('contrato-ficha');
+    fundo?.addEventListener('click', (e) => {
+      if (e.target === fundo || e.target.closest('[data-fechar-contrato]')) fecharFichaContrato();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharFichaContrato(); });
   }
 
   // ===== Abas (Usuários / Perfis) =====
@@ -521,7 +478,7 @@
     inicializarSubabaUsuarios();
     carregarUsuarios();
     carregarPerfis();
-    renderizarArquivosContrato();
+    ligarContratos();
 
 
     // Cadastro de usuário fica em Gestão › Cadastros (lista aqui, formulário lá).
@@ -536,11 +493,5 @@
       if (e.target.id === 'modal-perfil') fecharModalPerfil();
     });
 
-    document.getElementById('form-contratos')?.addEventListener('submit', salvarContrato);
-    document.getElementById('btn-limpar-contrato')?.addEventListener('click', limparFormularioContrato);
-    document.getElementById('contrato-arquivos-lista')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-remove-contrato-arquivo]');
-      if (btn) excluirArquivoContrato(Number(btn.dataset.removeContratoArquivo));
-    });
   });
 })();
