@@ -67,7 +67,7 @@
   const saldoTexto = (min) => (min === null || min === undefined ? '' : (min > 0 ? '+' : '') + duracao(min));
   const ROTULOS_AJUSTE = {
     trabalho: 'Ajuste', folga: 'Folga', folga_banco: 'Folga (banco)', extra_banco: 'Banco de horas',
-    justificado: 'Justificado',
+    justificado: 'Justificado', ferias: 'Férias',
   };
   const isoLocal = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   function paraInput(v) {

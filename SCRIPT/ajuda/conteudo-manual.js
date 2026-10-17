@@ -249,6 +249,9 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'paragrafo', texto: 'O contrato separa os dados entre clientes. Para limitar uma pessoa, edite o usuário e marque os contratos que ela pode ver. Sem nenhum marcado, vale o que o perfil dela define; sem perfil, ela vê tudo.' },
         { tipo: 'paragrafo', texto: 'Arquivos do contrato só podem ser anexados depois que ele for salvo.' },
         { tipo: 'paragrafo', texto: 'A aba **Funcionários** lista quem trabalha em campo. **+ Novo funcionário** e um clique na linha abrem o formulário em **Cadastros › Funcionários**, com tipo sanguíneo, informações de emergência e capacitações. O crachá do usuário ligado a ele mostra esses mesmos dados.' },
+        { tipo: 'paragrafo', texto: 'A ficha do funcionário tem as abas **Dados**, **Admissão** (data de admissão, tipo de contrato, desligamento e tempo de casa), **Documentos** e **Férias**. Documentos e Férias aparecem depois que o cadastro é salvo.' },
+        { tipo: 'paragrafo', texto: 'Em **Documentos** os arquivos ficam em pastas: documentos admissionais, folhas de ponto assinadas, contracheques assinados, férias, atestados e outros. Folha de ponto e contracheque pedem o mês de referência e aparecem agrupados por mês. Dá para escolher ou arrastar vários arquivos de uma vez (PDF, JPG ou PNG, até 10 MB cada).' },
+        { tipo: 'paragrafo', texto: 'Em **Férias** o sistema calcula os períodos aquisitivos pela data de admissão (30 dias por ano), mostra o saldo e até quando cada período precisa ser tirado. Ao programar, informe o período, o início, o fim e, se houver, os dias vendidos (abono). Os dias de férias aparecem na folha de ponto e no calendário do funcionário. A subaba **Férias** em Gestão › Funcionários mostra todos de uma vez, com as vencidas e as que vencem em até 90 dias primeiro.' },
       ],
     },
 

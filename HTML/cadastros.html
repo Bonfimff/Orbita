@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="../CSS/gestao.css?v=12" />
   <link rel="stylesheet" href="../CSS/geral.css?v=59" />
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
+  <link rel="stylesheet" href="../CSS/ficha.css?v=1" />
   <link rel="stylesheet" href="../CSS/cadastros.css?v=2" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
@@ -228,8 +229,15 @@
         <h2 class="aba-legenda" id="titulo-cadastro-funcionario">Novo funcionário</h2>
       </div>
       <hr class="aba-linha">
+      <div class="opcoes-abas cad-subabas" id="func-abas">
+        <button type="button" class="top-tab2 ativo" data-fsec="dados">Dados</button>
+        <button type="button" class="top-tab2" data-fsec="admissao">Admissão</button>
+        <button type="button" class="top-tab2" data-fsec="documentos" data-so-salvo>Documentos</button>
+        <button type="button" class="top-tab2" data-fsec="ferias" data-so-salvo>Férias</button>
+      </div>
       <form id="form-funcionario" autocomplete="off">
         <input type="hidden" id="func-id">
+        <div data-fsec-painel="dados">
         <div class="gestao-form-grid">
           <div class="gestao-form-item">
             <label for="func-nome">Nome *</label>
@@ -295,8 +303,99 @@
           <h4>Capacitações</h4>
           <div id="func-caps"></div>
         </div>
+        </div>
+
+        <!-- Admissão -->
+        <div data-fsec-painel="admissao" hidden>
+          <div class="gestao-form-grid">
+            <div class="gestao-form-item">
+              <label for="func-admissao">Data de admissão</label>
+              <input type="date" id="func-admissao">
+            </div>
+            <div class="gestao-form-item">
+              <label for="func-contrato">Tipo de contrato</label>
+              <select id="func-contrato">
+                <option value="">Não informado</option>
+                <option>CLT</option><option>Experiência</option><option>Temporário</option>
+                <option>Estágio</option><option>Aprendiz</option><option>PJ</option><option>Autônomo</option>
+              </select>
+            </div>
+            <div class="gestao-form-item">
+              <label for="func-desligamento">Data de desligamento</label>
+              <input type="date" id="func-desligamento">
+            </div>
+            <div class="gestao-form-item">
+              <label>Tempo de casa</label>
+              <div class="ficha-tempo" id="func-tempo-casa">-</div>
+            </div>
+          </div>
+          <p class="ficha-dica">Contrato assinado, documentos pessoais, ASO e demais papéis da admissão ficam em
+            <button type="button" class="ficha-link" data-ir-fsec="documentos" data-pasta="admissional">Documentos › Documentos admissionais</button>.</p>
+        </div>
+
+        <!-- Documentos -->
+        <div data-fsec-painel="documentos" hidden>
+          <div class="ficha-docs">
+            <ul class="ficha-pastas" id="ficha-pastas"></ul>
+            <div class="ficha-docs-corpo">
+              <div class="ficha-envio" id="ficha-envio">
+                <div class="ficha-envio-campos">
+                  <label class="ficha-campo" id="ficha-campo-competencia"><span>Mês de referência</span><input type="month" id="ficha-competencia"></label>
+                  <label class="ficha-campo ficha-campo-largo"><span>Descrição (opcional)</span><input type="text" id="ficha-titulo" maxlength="160" placeholder="Ex.: Contrato de trabalho"></label>
+                </div>
+                <label class="ficha-soltar" id="ficha-soltar">
+                  <input type="file" id="ficha-arquivos" class="sem-botao-upload" accept="application/pdf,image/jpeg,image/png" multiple hidden>
+                  <strong>Escolher arquivos</strong> ou arraste aqui
+                  <small>PDF, JPG ou PNG, até 10 MB cada. Pode enviar vários de uma vez.</small>
+                </label>
+                <div class="ficha-progresso" id="ficha-progresso"></div>
+              </div>
+              <div class="ficha-lista" id="ficha-lista"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Férias -->
+        <div data-fsec-painel="ferias" hidden>
+          <div class="ficha-ferias-aviso" id="ferias-sem-admissao" hidden>
+            Para calcular as férias, informe a data de admissão em
+            <button type="button" class="ficha-link" data-ir-fsec="admissao">Admissão</button> e salve.
+          </div>
+          <div id="ferias-conteudo">
+            <h4 class="ficha-titulo">Períodos aquisitivos</h4>
+            <div class="tabela-responsiva">
+              <table class="estilo-tabela ficha-tabela" id="ferias-periodos">
+                <thead><tr><th>Período</th><th>Direito</th><th>Programados</th><th>Saldo</th><th>Tirar até</th><th>Situação</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <h4 class="ficha-titulo">Programar férias</h4>
+            <div class="ficha-ferias-form" data-permissao="gestao_funcionarios:editar">
+              <label class="ficha-campo"><span>Período aquisitivo</span><select id="ferias-periodo"></select></label>
+              <label class="ficha-campo"><span>Início</span><input type="date" id="ferias-inicio"></label>
+              <label class="ficha-campo"><span>Fim</span><input type="date" id="ferias-fim"></label>
+              <label class="ficha-campo"><span>Abono (dias vendidos)</span><input type="number" id="ferias-abono" min="0" max="10" value="0"></label>
+              <label class="ficha-campo ficha-campo-largo"><span>Observação</span><input type="text" id="ferias-obs" maxlength="200"></label>
+              <div class="ficha-ferias-acoes">
+                <span class="ficha-dias" id="ferias-dias"></span>
+                <button type="button" class="btn-primario" id="ferias-salvar">Programar</button>
+              </div>
+            </div>
+            <div class="gestao-feedback" id="ferias-feedback" style="display:none;"></div>
+
+            <h4 class="ficha-titulo">Férias programadas e tiradas</h4>
+            <div class="tabela-responsiva">
+              <table class="estilo-tabela ficha-tabela" id="ferias-lista">
+                <thead><tr><th>Período aquisitivo</th><th>Início</th><th>Fim</th><th>Dias</th><th>Abono</th><th>Situação</th><th></th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <div id="func-feedback" class="gestao-feedback" style="display:none;"></div>
-        <div class="gestao-modal-acoes" style="justify-content:flex-start;">
+        <div class="gestao-modal-acoes" id="func-acoes-salvar" style="justify-content:flex-start;">
           <button type="submit" class="btn-primario" id="btn-salvar-funcionario">Salvar funcionário</button>
           <button type="button" class="btn-secundario" id="btn-limpar-funcionario">Voltar para a lista</button>
         </div>
@@ -357,7 +456,7 @@
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=17"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=18"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
@@ -367,7 +466,8 @@
   <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
   <script src="../SCRIPT/cadastros/capacitacoes-ui.js?v=1"></script>
   <script src="../SCRIPT/cadastros/usuario.js?v=4"></script>
-  <script src="../SCRIPT/gestao-funcionarios.js?v=5"></script>
+  <script src="../SCRIPT/gestao-funcionarios.js?v=6"></script>
+  <script src="../SCRIPT/cadastros/funcionario-ficha.js?v=1"></script>
   <script src="../SCRIPT/contexto/painel.js?v=2"></script>
   <script src="../SCRIPT/contexto/cadastros.js?v=3"></script>
 

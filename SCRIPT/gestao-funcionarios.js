@@ -85,6 +85,61 @@
     el('func-mostrar-inativos').addEventListener('change', render);
     el('btn-novo-funcionario')?.addEventListener('click', () => irParaCadastro());
     atualizarLista();
+    iniciarFerias();
+  }
+
+  //============================================================ FÉRIAS (Gestão)
+  const SITUACAO_FERIAS = {
+    vencida: ['Vencida', 'erro'], vencendo: ['Vencendo', 'aviso'], disponivel: ['Disponível', 'ok'],
+    em_aquisicao: ['Em aquisição', 'neutro'], quitado: ['Em dia', 'neutro'], sem_admissao: ['Sem admissão', 'neutro'],
+  };
+  const dataBr = (iso) => (iso ? iso.slice(0, 10).split('-').reverse().join('/') : '-');
+
+  async function carregarFerias() {
+    const tbody = document.querySelector('#tabela-ferias tbody');
+    try {
+      const lista = (await chamar('GET', '/funcionarios/ferias')).funcionarios || [];
+      const conta = (s) => lista.filter((f) => f.situacao === s).length;
+      const emFerias = lista.filter((f) => f.em_ferias).length;
+      el('ferias-resumo').innerHTML = [
+        ['Vencidas', conta('vencida'), 'erro'], ['Vencendo em 90 dias', conta('vencendo'), 'aviso'],
+        ['Disponíveis', conta('disponivel'), 'ok'], ['Em férias agora', emFerias, 'neutro'],
+        ['Sem data de admissão', conta('sem_admissao'), 'neutro'],
+      ].map(([r, n, c]) => '<div class="ferias-kpi ' + c + '"><span>' + r + '</span><strong>' + n + '</strong></div>').join('');
+      tbody.innerHTML = lista.map((f) => {
+        const p = f.periodo;
+        const [rot, cls] = SITUACAO_FERIAS[f.situacao] || [f.situacao, 'neutro'];
+        return '<tr class="linha-clicavel" data-ferias-id="' + f.id + '">' +
+          '<td>' + esc(f.nome) + (f.funcao ? '<small class="ferias-sub">' + esc(f.funcao) + '</small>' : '') + '</td>' +
+          '<td>' + dataBr(f.admissao) + '</td>' +
+          '<td>' + (p ? dataBr(p.inicio) + ' a ' + dataBr(p.fim) : '-') + '</td>' +
+          '<td>' + (p ? '<strong>' + f.saldo_total + '</strong> dias' + (f.periodos_abertos > 1 ? '<small class="ferias-sub">' + f.periodos_abertos + ' períodos</small>' : '') : '-') + '</td>' +
+          '<td>' + (p && f.situacao !== 'em_aquisicao' && f.situacao !== 'quitado' ? dataBr(p.prazo) : '-') + '</td>' +
+          '<td><span class="ficha-selo ' + cls + '">' + rot + '</span>' + (f.em_ferias ? ' <span class="ficha-selo ok">Em férias</span>' : '') + '</td>' +
+          '<td>' + (f.proximas ? dataBr(f.proximas.inicio) + ' a ' + dataBr(f.proximas.fim) : '-') + '</td>' +
+        '</tr>';
+      }).join('') || '<tr><td colspan="7">Nenhum funcionário ativo.</td></tr>';
+    } catch (e) {
+      tbody.innerHTML = '<tr><td colspan="7">' + esc(e.message) + '</td></tr>';
+    }
+  }
+
+  function iniciarFerias() {
+    const abas = el('func-subabas');
+    if (!abas) return;
+    let carregou = false;
+    abas.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-fsub]');
+      if (!b) return;
+      abas.querySelectorAll('[data-fsub]').forEach((x) => x.classList.toggle('ativo', x === b));
+      el('func-sub-lista').hidden = b.dataset.fsub !== 'lista';
+      el('func-sub-ferias').hidden = b.dataset.fsub !== 'ferias';
+      if (b.dataset.fsub === 'ferias' && !carregou) { carregou = true; carregarFerias(); }
+    });
+    document.querySelector('#tabela-ferias tbody').addEventListener('click', (e) => {
+      const linha = e.target.closest('[data-ferias-id]');
+      if (linha) window.location.href = 'cadastros.html#funcionario-' + linha.dataset.feriasId + '-ferias';
+    });
   }
 
   async function atualizarLista() {
@@ -156,6 +211,7 @@
     el('func-bloco-capacitacoes').hidden = !f;
     caps.limpar();
     if (f) caps.carregar('/funcionarios/' + f.id);
+    if (window.FichaFuncionario) window.FichaFuncionario.definir(f);
   }
 
   // ---- mesma pessoa (CPF ou nome) ----
@@ -209,6 +265,7 @@
       ativo: el('func-ativo').checked,
       observacao: el('func-observacao').value,
       tipo_sanguineo: el('func-sangue').value,
+      ...(window.FichaFuncionario ? window.FichaFuncionario.dadosAdmissao() : {}),
       medicas: {
         alergias: el('func-med-alergias').value,
         condicoes: el('func-med-condicoes').value,
