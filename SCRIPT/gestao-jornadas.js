@@ -1,7 +1,7 @@
 //======================================================================================================
 // GESTÃO › CONTROLE DE PONTO
 // Folha de ponto por funcionário e mês, quem está em expediente agora,
-// histórico com filtros, detalhe de cada jornada (linha do tempo, correção de
+// histórico com filtros, escalas de trabalho, detalhe de cada jornada (linha do tempo, correção de
 // horário, encerrar/cancelar) e lançamento manual de jornada. Só aparece para
 // quem tem a permissão "Ponto da equipe"; a API faz o bloqueio real.
 //======================================================================================================
@@ -351,12 +351,169 @@
     });
   }
 
+  // ---------------------------------------------------------- ESCALAS
+  // Lista de funcionários à esquerda; à direita, o tipo de escala, os dias,
+  // o horário previsto e a prévia das próximas 4 semanas.
+  const DIAS_LONGOS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const DESCR_TIPOS = {
+    '': 'Não definida', '5x2': 'Segunda a sexta', '6x1': 'Segunda a sábado', semanal: 'Escolher os dias',
+    '12x36': 'Trabalha 1, folga 1', '24x48': 'Trabalha 1, folga 2', '24x72': 'Trabalha 1, folga 3',
+  };
+  const esc = { lista: [], tipos: [], feriados: {}, atual: null, tipo: '', dias: [] };
+
+  async function carregarEscalas() {
+    try {
+      const r = await chamar('GET', '/jornada/escalas');
+      esc.lista = r.dados || [];
+      esc.tipos = r.tipos || [];
+      esc.feriados = {};
+      (r.feriados || []).forEach((f) => { esc.feriados[f.data] = f; });
+    } catch (e) {
+      el('escala-lista').innerHTML = `<li class="escala-vazio">${escapar(e.message)}</li>`;
+      return;
+    }
+    desenharListaEscalas();
+    if (esc.atual) {
+      const novo = esc.lista.find((f) => f.id === esc.atual.id);
+      if (novo) selecionarFuncionario(novo.id);
+    }
+  }
+
+  function desenharListaEscalas() {
+    const termo = el('escala-busca').value.trim().toLowerCase();
+    const itens = esc.lista.filter((f) => !termo || f.nome.toLowerCase().includes(termo));
+    el('escala-lista').innerHTML = itens.map((f) => `
+      <li><button type="button" class="escala-item${esc.atual && esc.atual.id === f.id ? ' ativo' : ''}" data-func="${f.id}">
+        <span class="escala-item-nome">${escapar(f.nome)}</span>
+        <span class="escala-item-info">${escapar(f.funcao || '')}${f.tem_login ? '' : (f.funcao ? ' · ' : '') + 'sem login'}</span>
+        <span class="escala-chip${f.escala ? '' : ' vazio'}">${f.escala ? escapar(f.escala.rotulo) : 'Sem escala'}</span>
+      </button></li>`).join('') || '<li class="escala-vazio">Nenhum funcionário.</li>';
+  }
+
+  function selecionarFuncionario(id) {
+    const f = esc.lista.find((x) => String(x.id) === String(id));
+    if (!f) return;
+    esc.atual = f;
+    const e = f.escala || {};
+    esc.tipo = e.tipo || '';
+    esc.dias = Array.isArray(e.dias) ? e.dias.slice() : [1, 2, 3, 4, 5];
+    el('escala-nome').textContent = f.nome;
+    el('escala-funcao').textContent = (f.funcao || '') + (f.tem_login ? '' : (f.funcao ? ' · ' : '') + 'sem login no sistema (não registra ponto)');
+    el('escala-ref').value = e.inicio || '';
+    el('escala-entrada').value = e.entrada || '';
+    el('escala-saida').value = e.saida || '';
+    mensagem(el('escala-msg'), '');
+    el('escala-editor-vazio').hidden = true;
+    el('escala-editor-corpo').hidden = false;
+    desenharListaEscalas();
+    desenharEditor();
+  }
+
+  function cicloDo(tipo) {
+    const t = esc.tipos.find((x) => x.tipo === tipo);
+    return t ? t.ciclo : null;
+  }
+
+  function diasDoTipo(tipo) {
+    if (tipo === '5x2') return [1, 2, 3, 4, 5];
+    if (tipo === '6x1') return [1, 2, 3, 4, 5, 6];
+    if (tipo === 'semanal') return esc.dias;
+    return null;
+  }
+
+  function trabalhaNoDia(d) {
+    if (!esc.tipo) return false;
+    const dias = diasDoTipo(esc.tipo);
+    if (dias) return dias.includes(d.getDay());
+    const ciclo = cicloDo(esc.tipo);
+    const ref = el('escala-ref').value;
+    if (!ciclo || !ref) return false;
+    const [a, m, dd] = ref.split('-').map(Number);
+    const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(a, m - 1, dd)) / 86400000);
+    return ((diff % ciclo) + ciclo) % ciclo === 0;
+  }
+
+  function desenharEditor() {
+    const opcoes = [{ tipo: '', rotulo: 'Sem escala' }].concat(esc.tipos.map((t) => ({
+      tipo: t.tipo, rotulo: t.tipo === 'semanal' ? 'Personalizada' : t.tipo,
+    })));
+    el('escala-tipos').innerHTML = opcoes.map((o) => `
+      <button type="button" role="radio" aria-checked="${esc.tipo === o.tipo}" class="escala-tipo${esc.tipo === o.tipo ? ' ativo' : ''}" data-tipo="${o.tipo}">
+        <strong>${escapar(o.rotulo)}</strong><small>${escapar(DESCR_TIPOS[o.tipo] || '')}</small>
+      </button>`).join('');
+    const semanal = esc.tipo === 'semanal';
+    const ciclo = cicloDo(esc.tipo);
+    el('escala-bloco-dias').hidden = !semanal;
+    el('escala-bloco-ref').hidden = !ciclo;
+    el('escala-bloco-horario').hidden = !esc.tipo;
+    el('escala-dias').innerHTML = DIAS_LONGOS.map((n, i) => `
+      <button type="button" class="escala-dia${esc.dias.includes(i) ? ' ativo' : ''}" data-dia="${i}" aria-pressed="${esc.dias.includes(i)}">${n}</button>`).join('');
+    desenharPrevia();
+  }
+
+  function desenharPrevia() {
+    const hoje = new Date();
+    const inicio = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - hoje.getDay());
+    let html = '';
+    for (let i = 0; i < 28; i++) {
+      const d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + i);
+      const chave = isoLocal(d);
+      const fer = esc.feriados[chave];
+      const classes = ['escala-previa-dia'];
+      if (trabalhaNoDia(d)) classes.push('trabalho');
+      if (fer) classes.push('feriado');
+      if (chave === isoLocal(hoje)) classes.push('hoje');
+      if (d < new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate())) classes.push('passado');
+      html += `<span class="${classes.join(' ')}" title="${fer ? escapar(fer.nome) : ''}">${d.getDate()}</span>`;
+    }
+    el('escala-previa').innerHTML = html;
+  }
+
+  function ligarEscalas() {
+    el('escala-busca').addEventListener('input', desenharListaEscalas);
+    el('escala-lista').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-func]');
+      if (b) selecionarFuncionario(b.dataset.func);
+    });
+    el('escala-tipos').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-tipo]');
+      if (!b) return;
+      esc.tipo = b.dataset.tipo;
+      if (cicloDo(esc.tipo) && !el('escala-ref').value) el('escala-ref').value = isoLocal(new Date());
+      desenharEditor();
+    });
+    el('escala-dias').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-dia]');
+      if (!b) return;
+      const n = Number(b.dataset.dia);
+      esc.dias = esc.dias.includes(n) ? esc.dias.filter((x) => x !== n) : esc.dias.concat(n).sort();
+      desenharEditor();
+    });
+    el('escala-ref').addEventListener('change', desenharPrevia);
+    el('escala-editor').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!esc.atual) return;
+      try {
+        await chamar('PUT', '/jornada/escalas/' + esc.atual.id, {
+          escala_tipo: esc.tipo,
+          escala_dias: esc.dias,
+          escala_inicio: el('escala-ref').value,
+          escala_entrada: el('escala-entrada').value,
+          escala_saida: el('escala-saida').value,
+        });
+        await carregarEscalas();
+        mensagem(el('escala-msg'), 'Escala salva.', 'sucesso');
+      } catch (err) { mensagem(el('escala-msg'), err.message, 'erro'); }
+    });
+  }
+
   // ---------------------------------------------------------- SUBABAS
   function mostrarSecao(qual) {
     document.querySelectorAll('#ponto-subabas .top-tab2').forEach((b) => b.classList.toggle('ativo', b.dataset.ponto === qual));
-    ['folha', 'agora', 'historico'].forEach((s) => { el('ponto-sec-' + s).hidden = s !== qual; });
+    ['folha', 'agora', 'historico', 'escalas'].forEach((s) => { el('ponto-sec-' + s).hidden = s !== qual; });
     if (qual === 'agora') carregarAgora();
     if (qual === 'historico') buscarHistorico();
+    if (qual === 'escalas') carregarEscalas();
   }
 
   function ligarGeral() {
@@ -404,6 +561,7 @@
       ligarGeral();
       ligarDetalhe();
       ligarLancamento();
+      ligarEscalas();
       let carregado = false;
       const carregar = () => {
         if (carregado) return;

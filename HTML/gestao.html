@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../CSS/gestao.css?v=12" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
-  <link rel="stylesheet" href="../CSS/jornada.css?v=4" />
+  <link rel="stylesheet" href="../CSS/jornada.css?v=5" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Gestão de Usuários</title>
@@ -226,6 +226,7 @@
         <button type="button" class="top-tab2 ativo" data-ponto="folha">Folha de Ponto</button>
         <button type="button" class="top-tab2" data-ponto="agora">Em Expediente</button>
         <button type="button" class="top-tab2" data-ponto="historico">Histórico</button>
+        <button type="button" class="top-tab2" data-ponto="escalas">Escalas</button>
       </div>
 
       <!-- Folha de ponto -->
@@ -318,6 +319,53 @@
           </table>
         </div>
       </section>
+      <!-- Escalas -->
+      <section class="ponto-secao" id="ponto-sec-escalas" hidden>
+        <div class="escala-grade">
+          <div class="jor-cartao escala-lista-cartao">
+            <input type="search" id="escala-busca" class="escala-busca" placeholder="Buscar funcionário">
+            <ul class="escala-lista" id="escala-lista"><li class="escala-vazio">Carregando...</li></ul>
+          </div>
+          <form class="jor-cartao escala-editor" id="escala-editor">
+            <div class="escala-editor-vazio" id="escala-editor-vazio">Escolha um funcionário na lista para montar a escala.</div>
+            <div id="escala-editor-corpo" hidden>
+              <div class="escala-cab">
+                <strong id="escala-nome"></strong>
+                <small id="escala-funcao"></small>
+              </div>
+
+              <span class="escala-rotulo">Tipo de escala</span>
+              <div class="escala-tipos" id="escala-tipos" role="radiogroup" aria-label="Tipo de escala"></div>
+
+              <div id="escala-bloco-dias" hidden>
+                <span class="escala-rotulo">Dias de trabalho</span>
+                <div class="escala-dias" id="escala-dias"></div>
+              </div>
+
+              <label class="ponto-campo" id="escala-bloco-ref" hidden>
+                <span>Um dia de trabalho (para contar o revezamento)</span>
+                <input type="date" id="escala-ref">
+              </label>
+
+              <div class="escala-horario" id="escala-bloco-horario" hidden>
+                <label class="ponto-campo"><span>Entrada prevista</span><input type="time" id="escala-entrada"></label>
+                <label class="ponto-campo"><span>Saída prevista</span><input type="time" id="escala-saida"></label>
+              </div>
+
+              <span class="escala-rotulo">Próximas 4 semanas</span>
+              <div class="escala-previa-semana"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
+              <div class="escala-previa" id="escala-previa"></div>
+              <div class="escala-legenda"><span><i class="lg-escala"></i>Trabalho</span><span><i class="lg-nacional"></i>Feriado</span></div>
+
+              <div class="jor-mensagem" id="escala-msg"></div>
+              <div class="ponto-form-acoes" data-permissao="jornada_admin:editar">
+                <button type="submit" class="jor-btn jor-btn-principal">Salvar escala</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
       <div id="jor-admin-mensagem" class="jor-mensagem"></div>
     </div>
 
@@ -435,10 +483,10 @@
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=13"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=14"></script>
   <script src="../SCRIPT/gestao-nav.js?v=12"></script>
-  <script src="../SCRIPT/gestao-funcionarios.js?v=4"></script>
-  <script src="../SCRIPT/gestao-jornadas.js?v=2"></script>
+  <script src="../SCRIPT/gestao-funcionarios.js?v=5"></script>
+  <script src="../SCRIPT/gestao-jornadas.js?v=3"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/relatorios/graficos.js?v=1"></script>
   <script src="../SCRIPT/contexto/painel.js?v=2"></script>

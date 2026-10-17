@@ -257,3 +257,65 @@
   body.imprimindo-ponto .ponto-assinaturas { display: flex; justify-content: space-between; gap: 40px; margin-top: 50px; }
   body.imprimindo-ponto .ponto-assinaturas span { flex: 1; border-top: 1px solid #000; padding-top: 6px; text-align: center; font-size: 12px; }
 }
+
+/* ---- Controle de Ponto › Escalas ---- */
+.escala-grade { display: grid; grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.escala-lista-cartao { padding: 12px; }
+.escala-busca { width: 100%; padding: 9px 10px; border: 1px solid #d5dbe3; border-radius: 8px; font: inherit; font-size: 14px; margin-bottom: 8px; }
+.escala-lista { list-style: none; margin: 0; padding: 0; max-height: 520px; overflow-y: auto; }
+.escala-vazio { padding: 12px; color: #94a3b8; font-size: 13px; }
+.escala-item {
+  width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 10px;
+  border: 0; border-radius: 8px; background: transparent; text-align: left; font: inherit; cursor: pointer;
+}
+.escala-item:hover { background: #f8fafc; }
+.escala-item.ativo { background: #f4f1ea; box-shadow: inset 3px 0 0 var(--cor-primaria); }
+.escala-item-nome { font-size: 14px; font-weight: 700; color: #1F2D3D; }
+.escala-item-info { font-size: 12px; color: #94a3b8; }
+.escala-chip { margin-top: 2px; padding: 2px 8px; border-radius: 999px; background: rgba(168, 134, 79, .14); color: var(--cor-primaria-escura); font-size: 11px; font-weight: 700; }
+.escala-chip.vazio { background: #f1f5f9; color: #94a3b8; }
+
+.escala-editor-vazio { padding: 40px 10px; text-align: center; color: #94a3b8; font-size: 14px; }
+.escala-cab { margin-bottom: 16px; }
+.escala-cab strong { display: block; font-size: 17px; color: var(--cor-destaque); }
+.escala-cab small { color: #64748b; font-size: 13px; }
+.escala-rotulo { display: block; margin: 16px 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #64748b; }
+.escala-cab + .escala-rotulo { margin-top: 0; }
+.escala-tipos { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+.escala-tipo {
+  display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 10px;
+  background: #fff; text-align: left; font: inherit; cursor: pointer;
+}
+.escala-tipo strong { font-size: 14px; color: #1F2D3D; }
+.escala-tipo small { font-size: 11px; color: #94a3b8; }
+.escala-tipo:hover { border-color: #cbd5e1; }
+.escala-tipo.ativo { border-color: var(--cor-primaria); background: #fbf8f2; box-shadow: 0 0 0 1px var(--cor-primaria); }
+.escala-tipo.ativo strong { color: var(--cor-primaria-escura); }
+.escala-dias { display: flex; flex-wrap: wrap; gap: 6px; }
+.escala-dia {
+  min-width: 48px; padding: 8px 0; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff;
+  font: inherit; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer;
+}
+.escala-dia.ativo { background: var(--cor-destaque); border-color: var(--cor-destaque); color: #fff; }
+#escala-bloco-ref { margin-top: 14px; max-width: 280px; }
+.escala-horario { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+.escala-horario .ponto-campo { flex: 0 1 160px; }
+
+.escala-previa-semana, .escala-previa { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; max-width: 360px; }
+.escala-previa-semana span { text-align: center; font-size: 11px; font-weight: 700; color: #94a3b8; }
+.escala-previa-dia {
+  position: relative; display: flex; align-items: center; justify-content: center; height: 34px;
+  border-radius: 8px; font-size: 13px; color: #94a3b8; background: #f8fafc;
+}
+.escala-previa-dia.trabalho { background: rgba(168, 134, 79, .18); color: var(--cor-primaria-escura); font-weight: 700; }
+.escala-previa-dia.feriado::after { content: ""; position: absolute; bottom: 4px; width: 5px; height: 5px; border-radius: 50%; background: var(--cor-erro); }
+.escala-previa-dia.hoje { box-shadow: inset 0 0 0 2px var(--cor-destaque); }
+.escala-previa-dia.passado { opacity: .45; }
+.escala-legenda { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; color: #64748b; }
+.escala-legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.escala-legenda i { width: 10px; height: 10px; border-radius: 3px; }
+
+@media (max-width: 900px) {
+  .escala-grade { grid-template-columns: 1fr; }
+  .escala-lista { max-height: 260px; }
+}

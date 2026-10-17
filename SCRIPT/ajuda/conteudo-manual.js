@@ -280,7 +280,7 @@ window.OrbitaAjuda.registrarSecao({
       titulo: 'Ponto',
       corpo: [
         { tipo: 'paragrafo', texto: 'Ponto fica no topo, ao lado de Gestão. Em **Meu Ponto** você registra a entrada, o intervalo e a saída. A tela só mostra os botões possíveis no momento.' },
-        { tipo: 'paragrafo', texto: 'O cartão **Hoje** diz se o dia é de trabalho ou folga na sua escala e qual é o próximo feriado. **Ver calendário** mostra os dias da sua escala e os feriados nacionais e municipais deste ano e do próximo. A escala é definida em **Gestão › Cadastros › Funcionários**.' },
+        { tipo: 'paragrafo', texto: 'O cartão **Hoje** diz se o dia é de trabalho ou folga na sua escala e qual é o próximo feriado. **Ver calendário** mostra os dias da sua escala e os feriados nacionais e municipais deste ano e do próximo. A escala de cada funcionário é montada em **Gestão › Controle de Ponto › Escalas**: escolha o funcionário, o tipo (5x2, 6x1, personalizada com os dias da semana, 12x36, 24x48 ou 24x72) e o horário previsto. A prévia mostra as próximas 4 semanas.' },
         { tipo: 'paragrafo', texto: 'Em **Gestão › Controle de Ponto**, quem tem a permissão "Ponto da equipe" vê a **Folha de Ponto** de cada funcionário por mês (entrada, intervalo, saída, horas, faltas e feriados), quem está em expediente agora e o histórico. Um clique numa linha abre a jornada com a linha do tempo, onde dá para corrigir a entrada ou a saída informando o motivo.' },
         { tipo: 'paragrafo', texto: '**+ Lançar jornada** registra um dia que o funcionário não conseguiu marcar. O lançamento pede um motivo e aparece na folha com a marca "ajuste". A folha pode ser impressa com espaço para as assinaturas.' },
       ],

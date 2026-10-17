@@ -205,9 +205,7 @@
   function trabalhaNo(d) {
     const e = cal.escala;
     if (!e) return false;
-    const dia = d.getDay();
-    if (e.tipo === '5x2') return dia >= 1 && dia <= 5;
-    if (e.tipo === '6x1') return dia >= 1 && dia <= 6;
+    if (Array.isArray(e.dias) && !e.ciclo) return e.dias.includes(d.getDay());
     if (!e.ciclo || !e.inicio) return false;
     const diff = Math.round((d - dataLocal(e.inicio)) / 86400000);
     return ((diff % e.ciclo) + e.ciclo) % e.ciclo === 0;
@@ -311,8 +309,8 @@
     const hojeIso = iso(hoje);
     el('jor-hoje-data').textContent = hoje.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
     el('jor-hoje-escala').innerHTML = cal.escala
-      ? (trabalhaNo(hoje) ? '<i class="lg-escala"></i>Dia de trabalho na sua escala (' + escapar(cal.escala.tipo) + ')'
-        : '<i style="background:#e2e8f0"></i>Folga na sua escala (' + escapar(cal.escala.tipo) + ')')
+      ? (trabalhaNo(hoje) ? '<i class="lg-escala"></i>Dia de trabalho na sua escala (' + escapar(cal.escala.tipo === 'semanal' ? 'personalizada' : cal.escala.tipo) + ')'
+        : '<i style="background:#e2e8f0"></i>Folga na sua escala (' + escapar(cal.escala.tipo === 'semanal' ? 'personalizada' : cal.escala.tipo) + ')')
       : '<i style="background:#e2e8f0"></i>Escala não cadastrada';
     const fer = cal.feriados[hojeIso];
     el('jor-hoje-feriado').innerHTML = fer ? '<i class="lg-' + fer.tipo + '" style="border-radius:50%"></i>Feriado: ' + escapar(fer.nome) : '';
