@@ -533,9 +533,22 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // QR: abre a página pública de verificação deste crachá.
         if (c.cracha_codigo) {
-          const endereco = new URL('cracha.html?c=' + encodeURIComponent(c.cracha_codigo), location.href).href;
+          // O link do QR vale 10 minutos: com o crachá aberto, renova antes de vencer.
+          let endereco = new URL('cracha.html?c=' + encodeURIComponent(c.cracha_codigo), location.href).href;
           const qr = modalContent.querySelector('#cracha-qr');
           desenharQr(qr, endereco);
+          clearInterval(window.crachaQrIntervalo);
+          window.crachaQrIntervalo = setInterval(async () => {
+            if (!document.body.contains(qr)) { clearInterval(window.crachaQrIntervalo); return; }
+            try {
+              const r = await fetch(apiUrl('/conta'), { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } });
+              const novo = (await r.json()).conta;
+              if (novo && novo.cracha_codigo) {
+                endereco = new URL('cracha.html?c=' + encodeURIComponent(novo.cracha_codigo), location.href).href;
+                desenharQr(qr, endereco);
+              }
+            } catch (e) { /* tenta de novo no próximo ciclo */ }
+          }, Math.max(60, (c.cracha_validade_seg || 600) - 60) * 1000);
           // Clicar no QR abre a página do crachá numa nova aba.
           qr.setAttribute('role', 'link');
           qr.tabIndex = 0;
@@ -549,6 +562,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
+    // Dificulta print do crachá (some ao perder o foco, marca d'água etc.).
+    if (window.ProtecaoPrint) {
+      if (window.crachaDesproteger) window.crachaDesproteger();
+      window.crachaDesproteger = window.ProtecaoPrint.proteger(modalContent, {
+        marca: 'KERNEL · ' + (username || '') + ' · ' + new Date().toLocaleString('pt-BR'),
+      });
+    }
     
     //  FUNÇÃO PARA CRIAR MODAL DE FOTO EXPANDIDA
     function criarModalFotoExpandida() {
@@ -773,6 +793,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('close-profile-modal').addEventListener('click', () => {
       modal.style.display = 'none';
       clearInterval(window.tokenCountdownInterval); // Para o contador
+      clearInterval(window.crachaQrIntervalo);
+      if (window.crachaDesproteger) window.crachaDesproteger();
     });
     
     // Fechar ao clicar fora
@@ -780,6 +802,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       if (e.target === modal) {
         modal.style.display = 'none';
         clearInterval(window.tokenCountdownInterval);
+        clearInterval(window.crachaQrIntervalo);
+        if (window.crachaDesproteger) window.crachaDesproteger();
       }
     });
     

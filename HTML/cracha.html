@@ -54,6 +54,7 @@
   </main>
 
   <script src="../SCRIPT/config.js?v=2"></script>
+  <script src="../SCRIPT/protecao-print.js?v=1"></script>
   <script>
     (function () {
       const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -92,9 +93,29 @@
               ${caps ? `<ul>${caps}</ul>` : '<p style="margin:0;color:#94a3b8;font-size:13px">Nenhum certificado cadastrado.</p>'}
             </section>
             ${emergencia}
-            <div class="rodape">Consultado em ${esc(c.consultado_em)}</div>`;
+            <div class="rodape">Consultado em ${esc(c.consultado_em)} · <span id="validade">válido por 10:00</span></div>`;
+
+          // Dificulta print (some ao perder o foco, marca d'água, sem imprimir).
+          if (window.ProtecaoPrint) {
+            window.ProtecaoPrint.proteger(document.getElementById('cartao'), { marca: 'KERNEL · ' + c.nome + ' · ' + c.consultado_em });
+          }
+
+          // O link vale 10 minutos: ao vencer, os dados somem mesmo sem recarregar.
+          const validade = document.getElementById('validade');
+          const fim = (c.expira_em || 0) * 1000;
+          const tique = () => {
+            const resta = Math.max(0, Math.round((fim - Date.now()) / 1000));
+            validade.textContent = 'válido por ' + String(Math.floor(resta / 60)).padStart(2, '0') + ':' + String(resta % 60).padStart(2, '0');
+            if (resta > 0) return;
+            clearInterval(relogio);
+            const cartao = document.getElementById('cartao');
+            cartao.querySelectorAll(':scope > :not(.topo)').forEach((n) => n.remove());
+            cartao.insertAdjacentHTML('beforeend', '<div class="aviso">Este QR expirou. Peça para abrir o crachá de novo e ler o QR atualizado.</div>');
+          };
+          const relogio = setInterval(tique, 1000);
+          tique();
         })
-        .catch((e) => { aviso.textContent = e.message || 'Não foi possível consultar o crachá.'; });
+        .catch((e) => { const a = document.getElementById('aviso'); if (a) a.textContent = e.message || 'Não foi possível consultar o crachá.'; });
     })();
   </script>
 </body>
