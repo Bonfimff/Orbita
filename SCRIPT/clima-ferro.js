@@ -144,6 +144,8 @@
           w: 0.17 * Math.min(ps[i].t, ps[j].t) + 0.5,
           e: 0, fase: Math.random() * Math.PI * 2, ritmo: 0.25 + Math.random() * 0.35,
           lados: [forma(), forma()],
+          // Um terço das pontes nunca seca de vez: mantém o efeito vivo.
+          minimo: Math.random() < 0.33 ? 0.35 : 0,
         });
       });
 
@@ -151,9 +153,15 @@
       const ima = { x: W / 2, y: H / 2, alvo: null };
       svg.addEventListener('pointermove', (e) => {
         const r = svg.getBoundingClientRect();
-        ima.alvo = [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H];
+        const novo = [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H];
+        // Velocidade do mouse (no desenho): o líquido é arrastado no sentido do movimento.
+        if (ima.alvo) {
+          ima.mvx = (ima.mvx || 0) * 0.6 + (novo[0] - ima.alvo[0]) * 0.4;
+          ima.mvy = (ima.mvy || 0) * 0.6 + (novo[1] - ima.alvo[1]) * 0.4;
+        }
+        ima.alvo = novo;
       });
-      svg.addEventListener('pointerleave', () => { ima.alvo = null; });
+      svg.addEventListener('pointerleave', () => { ima.alvo = null; ima.mvx = ima.mvy = 0; });
 
       let visivel = true;
       if ('IntersectionObserver' in window) {
@@ -188,6 +196,8 @@
         const campoAlvo = ima.alvo ? 1 : pulso * pulso * (3 - 2 * pulso);
         ima.campo = (ima.campo || 0) + (campoAlvo - (ima.campo || 0)) * 0.03;
         const F = ima.campo;
+        ima.mvx = (ima.mvx || 0) * 0.94;
+        ima.mvy = (ima.mvy || 0) * 0.94;
 
         // Partículas: puxadas para o ímã, presas ao lugar por mola.
         ps.forEach((p) => {
@@ -242,7 +252,22 @@
           const my = (A[1] + B[1]) / 2;
           const dIma = Math.hypot(ima.x - mx, ima.y - my);
           const perto = Math.exp(-(dIma * dIma) / (2 * RAIO_IMA * RAIO_IMA));
-          const alvoE = Math.max(0, Math.min(1, perto * (0.4 + 1.6 * F) + 0.45 * Math.sin(t * b.ritmo + b.fase) * (1 - 0.5 * F) + 0.05));
+          // Arrasto do mouse: à frente do movimento o líquido chega (pontes
+          // se formam); atrás dele o líquido sai (pontes secam).
+          let arrasto = 0;
+          const vel = Math.hypot(ima.mvx || 0, ima.mvy || 0);
+          if (ima.alvo && vel > 0.05) {
+            const rx = mx - ima.x;
+            const ry = my - ima.y;
+            const rd = Math.hypot(rx, ry) || 1;
+            const lado = (rx * ima.mvx + ry * ima.mvy) / (rd * vel);       // +1 à frente, -1 atrás
+            const alcance = Math.exp(-(rd * rd) / (2 * 75 * 75));
+            arrasto = lado * alcance * Math.min(1, vel / 1.2) * 1.8;
+          }
+          // Mexendo o mouse, o arrasto manda mais que a atração parada.
+          const movimento = ima.alvo ? Math.min(1, vel / 1.2) : 0;
+          const alvoE = Math.max(b.minimo, Math.min(1,
+            perto * (0.4 + 1.6 * F) * (1 - 0.75 * movimento) + 0.45 * Math.sin(t * b.ritmo + b.fase) * (1 - 0.5 * F) + 0.05 + arrasto));
           // Viscosidade: segue o alvo devagar; afinar é mais lento que esticar.
           b.e += (alvoE - b.e) * (alvoE > b.e ? 0.045 : 0.025);
           const e = b.e;
