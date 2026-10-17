@@ -258,7 +258,7 @@
       const titulo = [fer ? fer.nome + (fer.tipo === 'municipal' ? ' (municipal)' : ' (nacional)') : '',
         exc ? exc.rotulo + (exc.observacao ? ': ' + exc.observacao : '') : '',
         trabalhaNo(data) && h.entrada && h.saida ? h.entrada + ' às ' + h.saida : ''].filter(Boolean).join(' · ');
-      if (exc) classes.push('ajuste');
+      if (exc) classes.push('aj-' + exc.tipo);
       html += '<button type="button" class="' + classes.join(' ') + '" data-dia="' + chave + '"' +
         (titulo ? ' title="' + escapar(titulo) + '"' : ' tabindex="-1"') + '>' + d + '</button>';
     }

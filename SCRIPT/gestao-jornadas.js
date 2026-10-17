@@ -67,6 +67,7 @@
   const saldoTexto = (min) => (min === null || min === undefined ? '' : (min > 0 ? '+' : '') + duracao(min));
   const ROTULOS_AJUSTE = {
     trabalho: 'Ajuste', folga: 'Folga', folga_banco: 'Folga (banco)', extra_banco: 'Banco de horas',
+    justificado: 'Justificado',
   };
   const isoLocal = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   function paraInput(v) {
@@ -144,14 +145,17 @@
       kpi('Dias trabalhados', t.dias_trabalhados || 0) +
       (r.escala ? kpi('Dias na escala', t.dias_escala || 0) : '') +
       (r.escala ? kpi('Faltas', t.faltas || 0, t.faltas ? 'alerta' : '') : '') +
+      (t.justificados ? kpi('Justificados', t.justificados) : '') +
       kpi('Intervalos', duracao(t.pausa_minutos));
 
     const linhas = [];
     (r.dados || []).forEach((dia) => {
       const d = new Date(dia.data + 'T12:00');
       const rotuloData = `<span class="ponto-dia">${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}</span> <small>${DIAS[d.getDay()]}</small>`;
-      const classeDia = 'ponto-' + dia.situacao + (d.getDay() === 0 || d.getDay() === 6 ? ' ponto-fds' : '');
-      const ajuste = dia.excecao ? `<span class="ponto-tag ponto-tag-${dia.excecao.tipo}" title="${escapar(dia.excecao.observacao || '')}">${ROTULOS_AJUSTE[dia.excecao.tipo] || 'Ajuste'}</span>` : '';
+      const classeDia = 'ponto-' + dia.situacao + (d.getDay() === 0 || d.getDay() === 6 ? ' ponto-fds' : '') +
+        (dia.excecao ? ' ponto-aj-' + dia.excecao.tipo : '');
+      const ajuste = dia.excecao ? `<span class="ponto-tag ponto-tag-${dia.excecao.tipo}" title="${escapar(dia.excecao.observacao || '')}">${ROTULOS_AJUSTE[dia.excecao.tipo] || 'Ajuste'}</span>` +
+        (dia.excecao.tipo === 'justificado' && dia.excecao.observacao ? ` <small>${escapar(dia.excecao.observacao)}</small>` : '') : '';
       const situacaoDia = ({
         feriado: 'Feriado' + (dia.feriado ? ': ' + escapar(dia.feriado.nome) : ''),
         falta: 'Falta', folga: dia.excecao ? '' : 'Folga', previsto: 'Previsto', trabalhado: '',
@@ -383,9 +387,10 @@
     { tipo: 'folga', rotulo: 'Folga', descr: 'Não trabalha neste dia' },
     { tipo: 'folga_banco', rotulo: 'Folga com banco de horas', descr: 'Desconta as horas do dia do banco' },
     { tipo: 'extra_banco', rotulo: 'Trabalho para banco de horas', descr: 'As horas trabalhadas viram crédito' },
+    { tipo: 'justificado', rotulo: 'Justificado', descr: 'Atestado, declaração, licença: dia abonado' },
   ];
   const esc = {
-    lista: [], tipos: [], feriados: {}, excecoes: {}, atual: null, tipo: '', dias: [], horarios: {},
+    lista: [], tipos: [], motivos: [], feriados: {}, excecoes: {}, atual: null, tipo: '', dias: [], horarios: {},
     ano: 0, mes: 0, diaAberto: null, tipoDia: '',
   };
 
@@ -394,6 +399,7 @@
       const r = await chamar('GET', '/jornada/escalas');
       esc.lista = r.dados || [];
       esc.tipos = r.tipos || [];
+      esc.motivos = r.motivos_justificativa || [];
       esc.feriados = {};
       (r.feriados || []).forEach((f) => { esc.feriados[f.data] = f; });
     } catch (e) {
@@ -552,7 +558,8 @@
       const classes = ['escala-previa-dia', 'clicavel'];
       if (p.trabalha) classes.push('trabalho');
       if (p.fer) classes.push('feriado');
-      if (p.exc) classes.push('ajuste', 'aj-' + p.exc.tipo);
+      if (p.exc) classes.push('aj-' + p.exc.tipo);
+      if (p.exc && p.exc.tipo === 'trabalho') classes.push('ajuste');
       if (p.chave === hojeIso) classes.push('hoje');
       if (p.chave === esc.diaAberto) classes.push('selecionado');
       if (d < new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate())) classes.push('passado');
@@ -586,7 +593,11 @@
     esc.tipoDia = p.exc ? p.exc.tipo : '';
     el('escala-dia-entrada').value = (p.exc && p.exc.entrada) || h.entrada || '';
     el('escala-dia-saida').value = (p.exc && p.exc.saida) || h.saida || '';
-    el('escala-dia-obs').value = (p.exc && p.exc.observacao) || '';
+    const obs = (p.exc && p.exc.observacao) || '';
+    const motivo = esc.motivos.find((m) => obs === m || obs.startsWith(m + ' · '));
+    el('escala-dia-motivo').innerHTML = esc.motivos.map((m) => `<option>${escapar(m)}</option>`).join('');
+    el('escala-dia-motivo').value = motivo || esc.motivos[0] || '';
+    el('escala-dia-obs').value = motivo ? obs.slice(motivo.length).replace(/^ · /, '') : obs;
     mensagem(el('escala-dia-msg'), '');
     desenharOpcoesDia();
     el('escala-dia-painel').hidden = false;
@@ -605,6 +616,7 @@
         <strong>${o.rotulo}</strong><small>${o.descr}</small>
       </button>`).join('');
     el('escala-dia-horas').hidden = !(esc.tipoDia === 'trabalho' || esc.tipoDia === 'extra_banco');
+    el('escala-dia-bloco-motivo').hidden = esc.tipoDia !== 'justificado';
   }
 
   async function salvarDia() {
@@ -619,7 +631,9 @@
           tipo: esc.tipoDia,
           entrada: comHora ? el('escala-dia-entrada').value : null,
           saida: comHora ? el('escala-dia-saida').value : null,
-          observacao: el('escala-dia-obs').value.trim(),
+          observacao: esc.tipoDia === 'justificado'
+            ? [el('escala-dia-motivo').value, el('escala-dia-obs').value.trim()].filter(Boolean).join(' · ')
+            : el('escala-dia-obs').value.trim(),
         });
       }
       await carregarExcecoes();

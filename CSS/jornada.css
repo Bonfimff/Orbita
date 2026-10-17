@@ -370,3 +370,43 @@
 .ponto-tag-extra_banco { background: rgba(124, 58, 237, .12); color: #5b21b6; }
 .jor-cal-dia.ajuste { box-shadow: inset 0 0 0 2px #2563eb; }
 .jor-cal-dia.ajuste.hoje { box-shadow: inset 0 0 0 2px var(--cor-destaque), inset 0 0 0 4px #2563eb; }
+
+/* ---- Padrão de bordas dos calendários (escala e Meu Ponto) ----
+   Trabalho: fundo dourado. Folga: sem borda. Feriado: borda verde.
+   Banco de horas: borda lilás clara. Justificado (atestado...): borda âmbar.
+   Horário ajustado: pontinho no canto. Hoje: contorno escuro por fora. */
+:root { --borda-feriado: #43a047; --borda-banco: #c9b6f5; --borda-justificado: #f0b44c; }
+.lg-folga { background: #f1f5f9; }
+.lg-feriado { box-shadow: inset 0 0 0 2px var(--borda-feriado); }
+.lg-banco { box-shadow: inset 0 0 0 2px var(--borda-banco) !important; }
+.lg-justificado { box-shadow: inset 0 0 0 2px var(--borda-justificado); }
+.lg-ajuste { box-shadow: none !important; background: #f1f5f9; position: relative; }
+.lg-ajuste::after { content: ""; position: absolute; top: 1px; right: 1px; width: 4px; height: 4px; border-radius: 50%; background: var(--cor-primaria-escura); }
+
+.escala-previa-dia.feriado::after, .jor-cal-dia.feriado::after { display: none; }
+.escala-previa-dia.feriado, .jor-cal-dia.feriado { box-shadow: inset 0 0 0 2px var(--borda-feriado); }
+.escala-previa-dia.aj-folga, .jor-cal-dia.aj-folga { box-shadow: none; background: #f8fafc; color: #94a3b8; font-weight: 400; }
+.escala-previa-dia.aj-folga_banco, .jor-cal-dia.aj-folga_banco { box-shadow: inset 0 0 0 2px var(--borda-banco); background: #f8fafc; color: #64748b; font-weight: 400; }
+.escala-previa-dia.aj-extra_banco, .jor-cal-dia.aj-extra_banco {
+  box-shadow: inset 0 0 0 2px var(--borda-banco); background: rgba(168, 134, 79, .18); color: var(--cor-primaria-escura); font-weight: 700;
+}
+.escala-previa-dia.aj-justificado, .jor-cal-dia.aj-justificado { box-shadow: inset 0 0 0 2px var(--borda-justificado); background: #fffaf0; color: #92610a; }
+.escala-previa-dia.ajuste, .jor-cal-dia.ajuste { box-shadow: none; }
+.escala-previa-dia.aj-trabalho::before, .jor-cal-dia.aj-trabalho::before {
+  content: ""; position: absolute; top: 4px; right: 4px; width: 5px; height: 5px; border-radius: 50%; background: var(--cor-primaria-escura);
+}
+.escala-previa-dia.feriado.aj-trabalho { box-shadow: inset 0 0 0 2px var(--borda-feriado); }
+.escala-previa-dia.hoje, .jor-cal-dia.hoje { outline: 2px solid var(--cor-destaque); outline-offset: 1px; }
+.jor-cal-dia.hoje:not(.feriado):not([class*="aj-"]) { box-shadow: none; }
+.jor-cal-dia.selecionado { outline: 2px solid var(--cor-destaque); }
+
+/* Folha: linhas com ajuste */
+.ponto-feriado td { background: rgba(67, 160, 71, .06); }
+.ponto-feriado .ponto-situacao { color: #2e7d32; }
+.ponto-aj-justificado td:first-child { box-shadow: inset 3px 0 0 var(--borda-justificado); }
+.ponto-aj-folga_banco td:first-child, .ponto-aj-extra_banco td:first-child { box-shadow: inset 3px 0 0 var(--borda-banco); }
+.ponto-tag-folga { background: #f1f5f9; color: #64748b; }
+.ponto-tag-folga_banco, .ponto-tag-extra_banco { background: #f3eefe; color: #6d4bc4; }
+.ponto-tag-justificado { background: #fff4de; color: #92610a; }
+.escala-legenda, .jor-cal-legenda { flex-wrap: wrap; row-gap: 6px; }
+.escala-legenda i, .jor-cal-legenda i { flex: 0 0 auto; }
