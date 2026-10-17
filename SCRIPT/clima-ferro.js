@@ -255,7 +255,7 @@
     function desenhar(alvo, W, H, lista) {
       const id = 'cf' + (++contador);
       const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', class: 'clima-ferro' });
-      svg.style.color = COR;
+      svg.style.color = (opcoes && opcoes.cor) || COR;
       svg.style.width = '100%';
       svg.style.height = 'auto';
       svg.style.display = 'block';

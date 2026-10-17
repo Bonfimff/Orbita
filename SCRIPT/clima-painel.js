@@ -1,5 +1,6 @@
 //======================================================================================================
-// PREVISÃO DO TEMPO NO LUGAR DA LOGO (painel lateral direito, computador)
+// PREVISÃO DO TEMPO NO LUGAR DA LOGO (painel lateral no computador e
+// miniatura na barra de cima no celular)
 // A logo fica a maior parte do tempo; de vez em quando cede o lugar a um
 // cartão com a previsão, desenhada com os ícones feitos da própria logo
 // (IMG/clima/*.svg). Por enquanto os dados são de TESTE: a cada aparição
@@ -119,6 +120,61 @@
     irPara(0);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', montar);
-  else montar();
+  // Celular: miniatura no lugar da logo da barra de cima. Alterna sozinha
+  // entre a logo e a previsão (ícone + temperatura); um toque troca na hora.
+  function montarTopo() {
+    const logo = document.querySelector('.top-bar-logo');
+    if (!logo || document.querySelector('.clima-topo')) return;
+    const palco = document.createElement('button');
+    palco.type = 'button';
+    palco.className = 'clima-topo';
+    palco.setAttribute('aria-label', 'Alternar entre a logo e a previsão do tempo');
+    logo.replaceWith(palco);
+    logo.classList.add('clima-topo-face', 'ativa');
+    palco.appendChild(logo);
+    const mini = document.createElement('span');
+    mini.className = 'clima-topo-face clima-topo-mini';
+    palco.appendChild(mini);
+
+    const celular = window.matchMedia('(max-width: 768px)');
+    let mostrandoClima = false;
+    let timer = null;
+    let animacao = null;
+
+    async function mostrar(clima) {
+      if (clima) {
+        const p = await previsao();
+        if (animacao) animacao.parar();
+        mini.innerHTML = `<span class="clima-topo-icone"></span><span class="clima-topo-temp">${p.temperatura}°</span>`;
+        const alvo = mini.querySelector('.clima-topo-icone');
+        if (window.ClimaFerro) animacao = window.ClimaFerro.montar(alvo, p.icone, { cor: '#ffffff' });
+        palco.setAttribute('aria-label', `${p.condicao}, ${p.temperatura} graus. Tocar para voltar à logo`);
+      } else {
+        palco.setAttribute('aria-label', 'Logo KERNEL. Tocar para ver a previsão do tempo');
+      }
+      mostrandoClima = clima;
+      logo.classList.toggle('ativa', !clima);
+      mini.classList.toggle('ativa', clima);
+      agendar();
+    }
+
+    function agendar() {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (celular.matches && !document.hidden) mostrar(!mostrandoClima);
+        else agendar();
+      }, mostrandoClima ? TEMPO_CLIMA : TEMPO_LOGO);
+    }
+
+    palco.addEventListener('click', () => mostrar(!mostrandoClima));
+    agendar();
+  }
+
+  function iniciar() {
+    montar();
+    montarTopo();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
 })();

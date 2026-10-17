@@ -3139,3 +3139,25 @@ label > input[type="checkbox"] {
 .clima-pontos button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: #cbd5e1; cursor: pointer; transition: width .25s ease, background .25s ease; }
 .clima-pontos button.ativo { width: 20px; border-radius: 4px; background: #1F2D3D; }
 .clima-pontos button:focus-visible { outline: 2px solid var(--cor-destaque); outline-offset: 2px; }
+
+/* Previsão do tempo na barra de cima (celular): miniatura no lugar da logo */
+.clima-topo { display: none; }
+@media (max-width: 768px) {
+  .clima-topo {
+    display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 150px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .clima-topo .clima-topo-face {
+    position: absolute; inset: 0; margin: auto; opacity: 0; transition: opacity .6s ease;
+    pointer-events: none;
+  }
+  .clima-topo .clima-topo-face.ativa { opacity: 1; }
+  .clima-topo img.top-bar-logo {
+    display: block; position: absolute; top: 0; left: 0; transform: none;
+    width: 100%; height: 100%; max-width: none; object-fit: contain;
+  }
+  .clima-topo-mini { display: flex; align-items: center; justify-content: center; gap: 8px; color: #fff; }
+  .clima-topo-icone { width: 66px; flex: 0 0 66px; }
+  .clima-topo-temp { font-size: 20px; font-weight: 700; color: #fff; }
+}
