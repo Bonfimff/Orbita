@@ -3256,3 +3256,14 @@ html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after 
 .cracha-pdf:hover { text-decoration: underline; }
 .cracha-editar { position: absolute; top: 10px; right: 50px; z-index: 2; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: rgba(255,255,255,.95); color: #1F2D3D; cursor: pointer; }
 .cracha-qr-linha { margin-bottom: 18px; }
+
+/* Edição do crachá (dentro do próprio crachá) */
+.cracha-edicao { display: flex; flex-direction: column; gap: 10px; margin: 16px 18px 18px; }
+.cracha-edicao h4 { margin: 0; font-size: 15px; color: #1F2D3D; }
+.cracha-edicao label { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; font-weight: 600; color: #444; }
+.cracha-edicao input:not([type="checkbox"]), .cracha-edicao select { padding: 8px 10px; border: 1px solid #ccc; border-radius: 8px; font: inherit; font-size: 14px; font-weight: 400; }
+.cracha-edicao .cracha-edicao-check { flex-direction: row-reverse; justify-content: space-between; align-items: center; }
+.cracha-edicao-retorno { margin: 0; min-height: 1em; font-size: 12.5px; color: #c62828; }
+.cracha-edicao-acoes { display: flex; gap: 10px; }
+.cracha-edicao-acoes button { flex: 1; }
+@media (max-width: 768px) { .cracha-edicao input:not([type="checkbox"]), .cracha-edicao select { font-size: 16px; } }

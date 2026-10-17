@@ -1,26 +1,6 @@
 (function () {
-  // Lista de permissões: vem da API (services/permissoes.py), que é a mesma
-  // tabela usada para bloquear as rotas. Colunas: Visualizar, Editar e
-  // Criar/Excluir; a linha só mostra caixa nas colunas que fazem sentido.
-  const COLUNAS = [
-    { acao: 'ver', rotulo: 'Ver' },
-    { acao: 'editar', rotulo: 'Editar' },
-    { acao: 'excluir', rotulo: 'Criar/Excluir' },
-  ];
-  let catalogoPermissoes = null;
-
-  async function carregarCatalogoPermissoes() {
-    if (catalogoPermissoes) return catalogoPermissoes;
-    const resp = await fetch(window.apiUrl('/permissoes/catalogo'), { headers: authHeaders() });
-    const dados = await resp.json();
-    if (dados.status !== 'ok') throw new Error(dados.mensagem || 'Não foi possível carregar a lista de permissões.');
-    catalogoPermissoes = dados.catalogo;
-    return catalogoPermissoes;
-  }
-
   let perfisCache = [];
   let usuarioLogadoId = null;
-  let usuarioEditandoId = null;
   let perfilEditandoId = null;
   let contratoEditandoId = null;
 
@@ -49,96 +29,11 @@
     return Array.isArray(lista) ? lista.join(', ') : '';
   }
 
-  // ===== Matriz de permissões (usada no form de usuário e de perfil) =====
-  async function renderMatrizPermissoes(containerId, valoresAtuais) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const v = valoresAtuais || {};
-    container.innerHTML = '<div class="gestao-matriz-linha"><span>Carregando permissões...</span></div>';
-    let catalogo;
-    try {
-      catalogo = await carregarCatalogoPermissoes();
-    } catch (e) {
-      container.innerHTML = `<div class="gestao-matriz-linha"><span>${e.message}</span></div>`;
-      return;
-    }
-    container.innerHTML = `
-      <div class="gestao-matriz-linha gestao-matriz-cabecalho">
-        <span>Permissão</span>
-        ${COLUNAS.map(c => `<span>${c.rotulo.replace('/', '/<wbr>')}</span>`).join('')}
-      </div>
-      ${catalogo.map(g => `
-        <div class="gestao-matriz-grupo" data-grupo="${g.grupo}">
-          <span>${g.grupo}</span>
-          ${COLUNAS.map(c => g.itens.some(i => i.acoes.includes(c.acao))
-            ? `<button type="button" class="gestao-matriz-todos" data-acao="${c.acao}" title="Marcar ou desmarcar a coluna inteira deste grupo">todos</button>`
-            : '<span></span>').join('')}
-        </div>
-        ${g.itens.map(item => {
-          const atual = v[item.chave] || {};
-          return `
-            <div class="gestao-matriz-linha" data-modulo="${item.chave}" data-grupo="${g.grupo}">
-              <span>${item.rotulo}</span>
-              ${COLUNAS.map(c => item.acoes.includes(c.acao)
-                ? `<input type="checkbox" class="gestao-perm" data-acao="${c.acao}" aria-label="${c.rotulo}: ${item.rotulo}" ${atual[c.acao] ? 'checked' : ''}>`
-                : '<span class="gestao-matriz-vazio" aria-hidden="true"></span>').join('')}
-            </div>`;
-        }).join('')}
-      `).join('')}
-    `;
-  }
-
-  // Editar ou criar sem poder ver não faz sentido: marca "Visualizar" junto.
-  // O botão "todos" do grupo marca/desmarca a coluna inteira.
-  document.addEventListener('change', e => {
-    const caixa = e.target.closest('.gestao-perm');
-    if (!caixa || !caixa.checked || caixa.dataset.acao === 'ver') return;
-    const ver = caixa.closest('.gestao-matriz-linha').querySelector('.gestao-perm[data-acao="ver"]');
-    if (ver) ver.checked = true;
-  });
-  document.addEventListener('click', e => {
-    const botao = e.target.closest('.gestao-matriz-todos');
-    if (!botao) return;
-    const matriz = botao.closest('.gestao-matriz-permissoes');
-    const grupo = botao.closest('.gestao-matriz-grupo').dataset.grupo;
-    const caixas = Array.from(matriz.querySelectorAll(`.gestao-matriz-linha[data-grupo="${grupo}"] .gestao-perm[data-acao="${botao.dataset.acao}"]`));
-    const marcar = caixas.some(c => !c.checked);
-    caixas.forEach(c => {
-      c.checked = marcar;
-      if (marcar && c.dataset.acao !== 'ver') {
-        const ver = c.closest('.gestao-matriz-linha').querySelector('.gestao-perm[data-acao="ver"]');
-        if (ver) ver.checked = true;
-      }
-    });
-  });
-
-  function coletarMatrizPermissoes(containerId) {
-    const container = document.getElementById(containerId);
-    const resultado = {};
-    if (!container) return resultado;
-    container.querySelectorAll('.gestao-matriz-linha[data-modulo]').forEach(linha => {
-      const permissoes = {};
-      linha.querySelectorAll('.gestao-perm').forEach(campo => {
-        permissoes[campo.dataset.acao] = campo.checked ? 1 : 0;
-      });
-      resultado[linha.dataset.modulo] = permissoes;
-    });
-    return resultado;
-  }
-
-  function resumoPermissoesPerfil(permissoes) {
-    if (!catalogoPermissoes) return '';
-    return catalogoPermissoes.map(g => {
-      let total = 0;
-      let liberadas = 0;
-      g.itens.forEach(item => item.acoes.forEach(acao => {
-        total += 1;
-        if ((permissoes[item.chave] || {})[acao]) liberadas += 1;
-      }));
-      const texto = liberadas === 0 ? 'Sem acesso' : (liberadas === total ? 'Completo' : `${liberadas} de ${total}`);
-      return `<div class="gestao-perfil-modulo-linha"><span>${g.grupo}</span><span>${texto}</span></div>`;
-    }).join('');
-  }
+  // Matriz de permissões: componente compartilhado (SCRIPT/permissoes-matriz.js).
+  const {
+    carregar: carregarCatalogoPermissoes, render: renderMatrizPermissoes,
+    coletar: coletarMatrizPermissoes, resumo: resumoPermissoesPerfil,
+  } = window.MatrizPermissoes;
 
   // ===== Aba Usuários =====
   async function carregarUsuarios() {
@@ -204,7 +99,7 @@
       tbody.querySelectorAll('.gestao-editar-usuario').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const id = e.target.closest('tr').dataset.usuarioId;
-          abrirModalUsuario(dados.usuarios.find(u => String(u.id) === id));
+          window.location.href = 'cadastros.html#usuario-' + id;
         });
       });
       tbody.querySelectorAll('.gestao-excluir-usuario').forEach(btn => {
@@ -242,181 +137,6 @@
     select.innerHTML = '<option value="">Nenhum (sem acesso extra)</option>' +
       perfisCache.map(p => `<option value="${p.id}">${p.nome}${p.fabrica ? ' (fábrica)' : ''}</option>`).join('');
     if (atual) select.value = atual;
-  }
-
-  // O checklist de contratos (popular/coletar) é um componente compartilhado
-  // em geral.js - window.popularChecklistContratos / coletarContratosSelecionados -
-  // usado aqui e também em Frota/Bases pra vincular recursos a contratos.
-  function popularChecklistContratosUsuario(contratosSelecionadosNomes = []) {
-    return window.popularChecklistContratos(document.getElementById('usuario-contratos-lista'), contratosSelecionadosNomes);
-  }
-
-  function coletarContratosSelecionadosUsuario() {
-    return window.coletarContratosSelecionados(document.getElementById('usuario-contratos-lista'));
-  }
-
-  function abrirModalUsuario(usuario) {
-    usuarioEditandoId = usuario ? usuario.id : null;
-    document.getElementById('titulo-modal-usuario').textContent = usuario ? `Editar usuário [${usuario.usuario}]` : 'Novo usuário';
-    document.getElementById('usuario-id').value = usuario ? usuario.id : '';
-    document.getElementById('usuario-login').value = usuario ? usuario.usuario : '';
-    document.getElementById('usuario-login').disabled = !!usuario;
-    document.getElementById('usuario-nome').value = usuario ? (usuario.nome || '') : '';
-    document.getElementById('usuario-email').value = usuario ? (usuario.email || '') : '';
-    document.getElementById('usuario-cargo').value = usuario ? (usuario.credencial_acesso || '') : '';
-    document.getElementById('usuario-foto').value = usuario ? (usuario.foto_url || '') : '';
-    document.getElementById('usuario-perfil').value = usuario ? (usuario.perfil_id || '') : '';
-    document.getElementById('usuario-usa-customizadas').checked = usuario ? !!usuario.usa_permissoes_customizadas : false;
-    popularChecklistContratosUsuario(usuario ? (usuario.contratos_autorizados || []) : []);
-
-    document.getElementById('campo-senha-criacao').style.display = usuario ? 'none' : '';
-    document.getElementById('usuario-senha').required = !usuario;
-    document.getElementById('campo-redefinir-senha').style.display = usuario ? '' : 'none';
-    document.getElementById('usuario-redefinir-senha-toggle').checked = false;
-    document.getElementById('usuario-nova-senha').style.display = 'none';
-    document.getElementById('usuario-nova-senha').value = '';
-    document.getElementById('usuario-senha').value = '';
-
-    renderMatrizPermissoes('matriz-permissoes-usuario', usuario ? usuario.permissoes : {});
-    document.getElementById('bloco-permissoes-usuario').style.display = document.getElementById('usuario-usa-customizadas').checked ? '' : 'none';
-
-    const feedback = document.getElementById('usuario-form-feedback');
-    feedback.style.display = 'none';
-    feedback.textContent = '';
-
-    // Capacitações só existem para usuário já salvo.
-    document.getElementById('bloco-capacitacoes').style.display = usuario ? '' : 'none';
-    ['cap-nome', 'cap-certificado', 'cap-emissao', 'cap-validade'].forEach((id) => { document.getElementById(id).value = ''; });
-    if (usuario) carregarCapacitacoes(usuario.id);
-
-    document.getElementById('modal-usuario').style.display = 'flex';
-  }
-
-  // ===== Capacitações do usuário (NR-10, NR-35...) =====
-  function renderCapacitacoes(dados) {
-    const lista = document.getElementById('usuario-capacitacoes-lista');
-    const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    const pend = (dados.pendencias || []).map((p) => `<div class="gestao-caps-pendencia">${esc(p.motivo)}</div>`).join('');
-    const itens = (dados.capacitacoes || []).map((c) => `
-      <div class="gestao-caps-item">
-        <span><strong>${esc(c.nome)}</strong>${c.certificado ? ' · ' + esc(c.certificado) : ''}
-          <small>${c.validade ? 'válida até ' + c.validade.split('-').reverse().join('/') : 'sem validade'}</small></span>
-        <span class="gestao-caps-selo ${esc(c.situacao)}">${esc(c.rotulo)}</span>
-        ${c.tem_arquivo ? `<button type="button" class="gestao-caps-link" data-cap-ver="${c.id}">Ver PDF</button>` : ''}
-        <label class="gestao-caps-link">${c.tem_arquivo ? 'Trocar PDF' : 'Anexar PDF'}<input type="file" accept="application/pdf" data-cap-arquivo="${c.id}" hidden></label>
-        <button type="button" class="gestao-btn-icone" data-cap-excluir="${c.id}" title="Remover" aria-label="Remover ${esc(c.nome)}">&times;</button>
-      </div>`).join('');
-    lista.innerHTML = pend + (itens || '<p class="gestao-ajuda-texto">Nenhuma capacitação cadastrada.</p>');
-  }
-
-  async function carregarCapacitacoes(id) {
-    const lista = document.getElementById('usuario-capacitacoes-lista');
-    lista.innerHTML = '<p class="gestao-ajuda-texto">Carregando...</p>';
-    try {
-      const resp = await fetch(window.apiUrl(`/usuarios/${id}/capacitacoes`), { headers: authHeaders() });
-      const dados = await resp.json();
-      if (dados.status !== 'ok') throw new Error(dados.mensagem);
-      renderCapacitacoes(dados);
-    } catch (e) {
-      lista.innerHTML = `<p class="gestao-ajuda-texto">${e.message || 'Não foi possível carregar.'}</p>`;
-    }
-  }
-
-  document.addEventListener('click', async (e) => {
-    if (e.target.closest('#cap-adicionar')) {
-      if (!usuarioEditandoId) return;
-      const corpo = {
-        nome: document.getElementById('cap-nome').value,
-        certificado: document.getElementById('cap-certificado').value,
-        emissao: document.getElementById('cap-emissao').value,
-        validade: document.getElementById('cap-validade').value,
-      };
-      const resp = await fetch(window.apiUrl(`/usuarios/${usuarioEditandoId}/capacitacoes`), {
-        method: 'POST', headers: authHeaders(true), body: JSON.stringify(corpo),
-      });
-      const dados = await resp.json().catch(() => ({}));
-      if (dados.status !== 'ok') { alert(dados.mensagem || 'Não foi possível adicionar.'); return; }
-      ['cap-nome', 'cap-certificado', 'cap-emissao', 'cap-validade'].forEach((id) => { document.getElementById(id).value = ''; });
-      renderCapacitacoes(dados);
-      return;
-    }
-    const ver = e.target.closest('[data-cap-ver]');
-    if (ver && usuarioEditandoId) {
-      const resp = await fetch(window.apiUrl(`/usuarios/${usuarioEditandoId}/capacitacoes/${ver.dataset.capVer}/arquivo`), { headers: authHeaders() });
-      if (!resp.ok) { alert('Não foi possível abrir o PDF.'); return; }
-      window.open(URL.createObjectURL(await resp.blob()), '_blank');
-      return;
-    }
-    const excluir = e.target.closest('[data-cap-excluir]');
-    if (excluir && usuarioEditandoId) {
-      if (!confirm('Remover esta capacitação?')) return;
-      await fetch(window.apiUrl(`/usuarios/${usuarioEditandoId}/capacitacoes/${excluir.dataset.capExcluir}`), {
-        method: 'DELETE', headers: authHeaders(),
-      });
-      carregarCapacitacoes(usuarioEditandoId);
-    }
-  });
-
-  function fecharModalUsuario() {
-    document.getElementById('modal-usuario').style.display = 'none';
-    usuarioEditandoId = null;
-  }
-
-  async function salvarUsuario(event) {
-    event.preventDefault();
-    const feedback = document.getElementById('usuario-form-feedback');
-    feedback.style.display = 'none';
-
-    const usaCustomizadas = document.getElementById('usuario-usa-customizadas').checked;
-    const payload = {
-      nome: document.getElementById('usuario-nome').value,
-      email: document.getElementById('usuario-email').value,
-      foto_url: document.getElementById('usuario-foto').value,
-      credencial_acesso: document.getElementById('usuario-cargo').value,
-      perfil_id: document.getElementById('usuario-perfil').value || null,
-      usa_permissoes_customizadas: usaCustomizadas,
-      contratos_autorizados: coletarContratosSelecionadosUsuario(),
-    };
-
-    if (usaCustomizadas) {
-      payload.permissoes = coletarMatrizPermissoes('matriz-permissoes-usuario');
-    }
-
-    let url, method;
-    if (usuarioEditandoId) {
-      url = `/usuarios/${usuarioEditandoId}`;
-      method = 'PUT';
-      if (document.getElementById('usuario-redefinir-senha-toggle').checked) {
-        payload.nova_senha = document.getElementById('usuario-nova-senha').value;
-      }
-    } else {
-      url = '/usuarios';
-      method = 'POST';
-      payload.usuario = document.getElementById('usuario-login').value;
-      payload.senha = document.getElementById('usuario-senha').value;
-    }
-
-    try {
-      const resp = await fetch(window.apiUrl(url), {
-        method,
-        headers: authHeaders(true),
-        body: JSON.stringify(payload),
-      });
-      const dados = await resp.json();
-      if (dados.status !== 'ok') {
-        feedback.className = 'gestao-feedback erro';
-        feedback.textContent = dados.mensagem || 'Erro ao salvar usuário.';
-        feedback.style.display = 'block';
-        return;
-      }
-      fecharModalUsuario();
-      carregarUsuarios();
-    } catch (error) {
-      console.error('Erro ao salvar usuário:', error);
-      feedback.className = 'gestao-feedback erro';
-      feedback.textContent = 'Erro de conexão ao salvar o usuário.';
-      feedback.style.display = 'block';
-    }
   }
 
   // ===== Aba Perfis de Acesso =====
@@ -814,25 +534,15 @@
     carregarPerfis();
     renderizarArquivosContrato([]);
 
-    document.getElementById('btn-novo-usuario')?.addEventListener('click', () => abrirModalUsuario(null));
-    document.getElementById('fechar-modal-usuario')?.addEventListener('click', fecharModalUsuario);
-    document.getElementById('cancelar-modal-usuario')?.addEventListener('click', fecharModalUsuario);
-    document.getElementById('form-usuario')?.addEventListener('submit', salvarUsuario);
-    document.getElementById('usuario-usa-customizadas')?.addEventListener('change', (e) => {
-      document.getElementById('bloco-permissoes-usuario').style.display = e.target.checked ? '' : 'none';
-    });
-    document.getElementById('usuario-redefinir-senha-toggle')?.addEventListener('change', (e) => {
-      document.getElementById('usuario-nova-senha').style.display = e.target.checked ? '' : 'none';
-    });
+
+    // Cadastro de usuário fica em Gestão › Cadastros (lista aqui, formulário lá).
+    document.getElementById('btn-novo-usuario')?.addEventListener('click', () => { window.location.href = 'cadastros.html#usuario'; });
 
     document.getElementById('btn-novo-perfil')?.addEventListener('click', () => abrirModalPerfil(null));
     document.getElementById('fechar-modal-perfil')?.addEventListener('click', fecharModalPerfil);
     document.getElementById('cancelar-modal-perfil')?.addEventListener('click', fecharModalPerfil);
     document.getElementById('form-perfil')?.addEventListener('submit', salvarPerfil);
 
-    document.getElementById('modal-usuario')?.addEventListener('click', (e) => {
-      if (e.target.id === 'modal-usuario') fecharModalUsuario();
-    });
     document.getElementById('modal-perfil')?.addEventListener('click', (e) => {
       if (e.target.id === 'modal-perfil') fecharModalPerfil();
     });
@@ -843,19 +553,5 @@
       const btn = e.target.closest('[data-remove-contrato-arquivo]');
       if (btn) excluirArquivoContrato(Number(btn.dataset.removeContratoArquivo));
     });
-  });
-
-  // Anexar o PDF do certificado de uma capacitação.
-  document.addEventListener('change', async (e) => {
-    const campo = e.target.closest('[data-cap-arquivo]');
-    if (!campo || !campo.files.length || !usuarioEditandoId) return;
-    const formulario = new FormData();
-    formulario.append('arquivo', campo.files[0]);
-    const resp = await fetch(window.apiUrl(`/usuarios/${usuarioEditandoId}/capacitacoes/${campo.dataset.capArquivo}/arquivo`), {
-      method: 'POST', headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }, body: formulario,
-    });
-    const dados = await resp.json().catch(() => ({}));
-    if (dados.status !== 'ok') alert(dados.mensagem || 'Não foi possível anexar.');
-    carregarCapacitacoes(usuarioEditandoId);
   });
 })();

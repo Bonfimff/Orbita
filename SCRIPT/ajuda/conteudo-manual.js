@@ -44,7 +44,7 @@ window.OrbitaAjuda.registrarSecao({
       grupo: 'Geral',
       titulo: 'Configurações e troca de senha',
       corpo: [
-        { tipo: 'paragrafo', texto: 'Abra pela engrenagem, no rodapé do menu. Em **Minha conta** você corrige nome, e-mail e tipo sanguíneo.' },
+        { tipo: 'paragrafo', texto: 'Abra pela engrenagem, no rodapé do menu. Em **Minha conta** você corrige nome e e-mail.' },
         { tipo: 'passos', itens: [
           'Em **Trocar senha**, digite a senha atual.',
           'Digite a nova senha duas vezes. Ela precisa ter pelo menos 6 caracteres e ser diferente da atual.',
@@ -63,7 +63,8 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'paragrafo', texto: 'Cada capacitação aparece como válida, vencendo (até 30 dias) ou vencida. Quem tem cargo de eletricista precisa de NR-10 válida; sem ela, o crachá mostra um alerta.' },
         { tipo: 'paragrafo', texto: 'O QR do crachá abre uma página de verificação com a identificação e as capacitações, sem precisar de login. Ela não mostra e-mail nem permissões.' },
         { tipo: 'paragrafo', texto: 'Certificados com PDF anexado mostram o botão Ver certificado. As informações de emergência (alergias, contraindicações, medicamentos e contato) ficam recolhidas e abrem ao tocar; a pessoa escolhe se aparecem no QR.' },
-        { tipo: 'paragrafo', texto: 'Tipo sanguíneo e informações de emergência são preenchidos pela própria pessoa em Configurações. As capacitações e os PDFs são cadastrados em Gestão, na edição do usuário.' },
+        { tipo: 'paragrafo', texto: 'Para mudar tipo sanguíneo e informações de emergência, use o lápis no alto do crachá. Clicar no QR abre a página do crachá numa nova aba.' },
+        { tipo: 'paragrafo', texto: 'O administrador também edita esses dados, além das capacitações e dos PDFs, no cadastro do usuário (Gestão › Cadastros › Usuário).' },
       ],
       relacionados: ['configuracoes', 'gestao-usuarios'],
     },
@@ -231,10 +232,10 @@ window.OrbitaAjuda.registrarSecao({
       aba: 'usuarios',
       titulo: 'Usuários e perfis de acesso',
       corpo: [
-        { tipo: 'paragrafo', texto: 'Em **Usuários** você cria, edita e exclui contas. Cada conta usa um perfil de acesso ou permissões próprias.' },
+        { tipo: 'paragrafo', texto: 'A aba **Usuários** lista as contas. **+ Novo Usuário** e o lápis de editar abrem o formulário em **Cadastros › Usuário**; ao salvar, você volta para a lista. Cada conta usa um perfil de acesso ou permissões próprias.' },
         { tipo: 'paragrafo', texto: 'Um perfil é um conjunto de permissões reaproveitável. A tela mostra uma lista por área (Minha conta, Início, Frota, Estoque, O.S., Análise, Jornada e Gestão), e cada linha tem as colunas Ver, Editar e Criar/Excluir. O botão "todos" marca a coluna inteira do grupo.' },
         { tipo: 'paragrafo', texto: 'Marcar Editar ou Criar/Excluir marca Ver junto. O servidor confere a permissão em toda ação, então esconder um botão não é a única proteção.' },
-        { tipo: 'paragrafo', texto: 'Ao editar um usuário existente, a seção **Capacitações** registra NR-10, NR-35 e outras, com certificado e validade.' },
+        { tipo: 'paragrafo', texto: 'No formulário de um usuário já salvo, a seção **Capacitações** registra NR-10, NR-35 e outras, com certificado, validade e o PDF. Ali também ficam tipo sanguíneo e informações de emergência.' },
       ],
       relacionados: ['acesso', 'gestao-contratos'],
     },
@@ -258,7 +259,7 @@ window.OrbitaAjuda.registrarSecao({
       pagina: 'cadastros',
       titulo: 'Cadastros de análise',
       corpo: [
-        { tipo: 'paragrafo', texto: 'Aqui ficam os catálogos usados para classificar os chamados: categorias, problemas, causas, soluções e resultados. Também ficam os equipamentos e as bases de atendimento.' },
+        { tipo: 'paragrafo', texto: 'Aqui ficam os catálogos usados para classificar os chamados (categorias, problemas, causas, soluções e resultados), os equipamentos, as bases de atendimento e o formulário de usuário.' },
         { tipo: 'paragrafo', texto: 'Os catálogos começam vazios, para usar o vocabulário da sua operação. Um item em uso não é apagado: ele é desativado e some das listas novas, mas continua no histórico.' },
       ],
     },

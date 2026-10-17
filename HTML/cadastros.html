@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=54" />
+  <link rel="stylesheet" href="../CSS/gestao.css?v=12" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=55" />
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
   <link rel="stylesheet" href="../CSS/cadastros.css?v=2" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
@@ -22,6 +23,7 @@
       <button class="tab-btn active" data-tab="analise-operacional" data-nav-label="Parâmetros" data-nav-icone="cadastros">Cadastro de Parâmetros</button>
       <button class="tab-btn" data-tab="ativos" data-nav-label="Ativos" data-nav-icone="veiculo">Equipamentos</button>
       <button class="tab-btn" data-tab="locais" data-nav-label="Locais" data-nav-icone="mapa">Bases de Atendimento</button>
+      <button class="tab-btn" data-tab="usuario" data-nav-label="Usuário" data-nav-icone="usuarios">Usuário</button>
     </div>
     <div class="menu-bottom">
       <button class="menu-icon-btn" id="btn-config">
@@ -114,6 +116,130 @@
     </div>
 
     <!-- ===== ABA: PONTOS E REGIÕES ===== -->
+    <div id="usuario" class="tab-content" data-secao="Usuário">
+      <div class="aba-legenda-linha">
+        <h2 class="aba-legenda" id="titulo-cadastro-usuario">Novo usuário</h2>
+      </div>
+      <hr class="aba-linha">
+      <form id="form-usuario" autocomplete="off">
+        <input type="hidden" id="usuario-id">
+
+        <div class="gestao-secao">
+          <h4>Vínculo de perfil de acesso</h4>
+          <div class="gestao-form-grid">
+            <div class="gestao-form-item">
+              <label for="usuario-perfil">Perfil de acesso vinculado</label>
+              <select id="usuario-perfil">
+                <option value="">Nenhum (sem acesso extra)</option>
+              </select>
+            </div>
+            <div class="gestao-form-item gestao-checkbox-item">
+              <label>
+                <input type="checkbox" id="usuario-usa-customizadas">
+                Usar ajustes sob medida (sobrescrever perfil)
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="gestao-secao">
+          <h4>Dados cadastrais</h4>
+          <div class="gestao-form-grid">
+            <div class="gestao-form-item">
+              <label for="usuario-login">Nome de usuário (login) *</label>
+              <input type="text" id="usuario-login" required>
+            </div>
+            <div class="gestao-form-item" id="campo-senha-criacao">
+              <label for="usuario-senha">Senha operacional *</label>
+              <input type="text" id="usuario-senha" autocomplete="new-password">
+            </div>
+            <div class="gestao-form-item" id="campo-redefinir-senha" style="display:none;">
+              <label>
+                <input type="checkbox" id="usuario-redefinir-senha-toggle">
+                Redefinir senha
+              </label>
+              <input type="text" id="usuario-nova-senha" placeholder="Nova senha" style="display:none; margin-top:6px;" autocomplete="new-password">
+            </div>
+            <div class="gestao-form-item">
+              <label for="usuario-nome">Nome</label>
+              <input type="text" id="usuario-nome">
+            </div>
+            <div class="gestao-form-item">
+              <label for="usuario-email">Endereço de e-mail</label>
+              <input type="email" id="usuario-email">
+            </div>
+            <div class="gestao-form-item">
+              <label for="usuario-cargo">Cargo / nível operacional</label>
+              <input type="text" id="usuario-cargo" placeholder="Ex.: Administrador Geral">
+            </div>
+            <div class="gestao-form-item">
+              <label for="usuario-sangue">Tipo sanguíneo</label>
+              <select id="usuario-sangue">
+                <option value="">Não informado</option>
+                <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+              </select>
+            </div>
+            <div class="gestao-form-item gestao-form-full">
+              <label for="usuario-foto">Link/URL para foto de perfil</label>
+              <input type="url" id="usuario-foto" placeholder="https://...">
+            </div>
+          </div>
+        </div>
+
+        <div class="gestao-secao">
+          <details class="config-emergencia">
+            <summary>Informações de emergência</summary>
+            <div class="gestao-form-grid">
+              <div class="gestao-form-item"><label for="usuario-med-alergias">Alergias</label><input type="text" id="usuario-med-alergias" maxlength="255"></div>
+              <div class="gestao-form-item"><label for="usuario-med-condicoes">Contraindicações e condições de saúde</label><input type="text" id="usuario-med-condicoes" maxlength="255"></div>
+              <div class="gestao-form-item"><label for="usuario-med-medicamentos">Medicamentos de uso contínuo</label><input type="text" id="usuario-med-medicamentos" maxlength="255"></div>
+              <div class="gestao-form-item"><label for="usuario-med-contato">Contato de emergência (nome)</label><input type="text" id="usuario-med-contato" maxlength="120"></div>
+              <div class="gestao-form-item"><label for="usuario-med-telefone">Telefone do contato</label><input type="tel" id="usuario-med-telefone" maxlength="40"></div>
+              <div class="gestao-form-item gestao-checkbox-item"><label><input type="checkbox" id="usuario-med-publico"> Mostrar na leitura do QR do crachá</label></div>
+            </div>
+          </details>
+          </div>
+        </div>
+
+        <div class="gestao-secao gestao-secao-customizada" id="bloco-permissoes-usuario" style="display:none;">
+          <h4>Painel de direitos e permissões do sistema</h4>
+          <div class="gestao-matriz-permissoes" id="matriz-permissoes-usuario"></div>
+        </div>
+
+        <div class="gestao-secao">
+          <h4>Contratos com acesso liberado</h4>
+          <div class="gestao-form-grid">
+            <div class="gestao-form-item gestao-form-full">
+              <label>Marque os contratos que este usuário pode visualizar. Sem nenhum marcado, o acesso segue o padrão do perfil vinculado (ou vê tudo, se não houver perfil).</label>
+              <div id="usuario-contratos-lista" class="checklist-contratos"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gestao-secao" id="bloco-capacitacoes" style="display:none;">
+          <h4>Capacitações</h4>
+          <p class="gestao-ajuda-texto">Aparecem no crachá com a situação da validade. Cargo de eletricista exige NR-10 válida.</p>
+          <div id="usuario-capacitacoes-lista" class="gestao-caps-lista"></div>
+          <div class="gestao-caps-nova">
+            <input type="text" id="cap-nome" placeholder="Capacitação (ex.: NR-10)" list="cap-sugestoes" maxlength="80">
+            <datalist id="cap-sugestoes"><option>NR-10</option><option>NR-10 SEP</option><option>NR-35</option><option>NR-33</option><option>NR-12</option><option>NR-06</option><option>Primeiros socorros</option></datalist>
+            <input type="text" id="cap-certificado" placeholder="Nº do certificado" maxlength="80">
+            <label>Emissão <input type="date" id="cap-emissao"></label>
+            <label>Validade <input type="date" id="cap-validade"></label>
+            <button type="button" class="btn-secundario" id="cap-adicionar">Adicionar</button>
+          </div>
+        </div>
+
+        <div id="usuario-form-feedback" class="gestao-feedback" style="display:none;"></div>
+
+        <div class="gestao-modal-acoes">
+          <button type="button" class="btn-secundario" id="cancelar-cadastro-usuario">Voltar para a lista</button>
+          <button type="submit" class="btn-primario">Salvar</button>
+        </div>
+      </form>
+    </div>
+
     <div id="locais" class="tab-content" data-secao="Bases de Atendimento">
       <h2 class="aba-legenda">Bases de Atendimento</h2>
       <hr class="aba-linha">
@@ -163,17 +289,19 @@
 
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=36"></script>
-  <script src="../SCRIPT/configuracoes.js?v=4"></script>
+  <script src="../SCRIPT/geral.js?v=37"></script>
+  <script src="../SCRIPT/configuracoes.js?v=5"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=8"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=9"></script>
   <script src="../SCRIPT/gestao-nav.js?v=10"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
   <script src="../SCRIPT/cadastros/catalogos.js?v=2"></script>
   <script src="../SCRIPT/cadastros/equipamentos.js?v=3"></script>
   <script src="../SCRIPT/cadastros/locais.js?v=3"></script>
+  <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
+  <script src="../SCRIPT/cadastros/usuario.js?v=1"></script>
   <script src="../SCRIPT/contexto/painel.js?v=2"></script>
   <script src="../SCRIPT/contexto/cadastros.js?v=3"></script>
 

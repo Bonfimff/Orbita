@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=54" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=55" />
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
   <link rel="stylesheet" href="../CSS/gestao.css?v=12" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
@@ -269,108 +269,6 @@
   </div>
 
   <!-- ===== MODAL: NOVO/EDITAR USUÁRIO ===== -->
-  <div id="modal-usuario" class="modal" style="display:none;">
-    <div class="modal-content gestao-modal-content">
-      <button type="button" class="gestao-modal-fechar" id="fechar-modal-usuario" aria-label="Fechar">×</button>
-      <h3 id="titulo-modal-usuario">Novo Usuário</h3>
-
-      <form id="form-usuario" autocomplete="off">
-        <input type="hidden" id="usuario-id">
-
-        <div class="gestao-secao">
-          <h4>Vínculo de perfil de acesso</h4>
-          <div class="gestao-form-grid">
-            <div class="gestao-form-item">
-              <label for="usuario-perfil">Perfil de acesso vinculado</label>
-              <select id="usuario-perfil">
-                <option value="">Nenhum (sem acesso extra)</option>
-              </select>
-            </div>
-            <div class="gestao-form-item gestao-checkbox-item">
-              <label>
-                <input type="checkbox" id="usuario-usa-customizadas">
-                Usar ajustes sob medida (sobrescrever perfil)
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div class="gestao-secao">
-          <h4>Dados cadastrais</h4>
-          <div class="gestao-form-grid">
-            <div class="gestao-form-item">
-              <label for="usuario-login">Nome de usuário (login) *</label>
-              <input type="text" id="usuario-login" required>
-            </div>
-            <div class="gestao-form-item" id="campo-senha-criacao">
-              <label for="usuario-senha">Senha operacional *</label>
-              <input type="text" id="usuario-senha" autocomplete="new-password">
-            </div>
-            <div class="gestao-form-item" id="campo-redefinir-senha" style="display:none;">
-              <label>
-                <input type="checkbox" id="usuario-redefinir-senha-toggle">
-                Redefinir senha
-              </label>
-              <input type="text" id="usuario-nova-senha" placeholder="Nova senha" style="display:none; margin-top:6px;" autocomplete="new-password">
-            </div>
-            <div class="gestao-form-item">
-              <label for="usuario-nome">Nome</label>
-              <input type="text" id="usuario-nome">
-            </div>
-            <div class="gestao-form-item">
-              <label for="usuario-email">Endereço de e-mail</label>
-              <input type="email" id="usuario-email">
-            </div>
-            <div class="gestao-form-item">
-              <label for="usuario-cargo">Cargo / nível operacional</label>
-              <input type="text" id="usuario-cargo" placeholder="Ex.: Administrador Geral">
-            </div>
-            <div class="gestao-form-item gestao-form-full">
-              <label for="usuario-foto">Link/URL para foto de perfil</label>
-              <input type="url" id="usuario-foto" placeholder="https://...">
-            </div>
-          </div>
-        </div>
-
-        <div class="gestao-secao gestao-secao-customizada" id="bloco-permissoes-usuario" style="display:none;">
-          <h4>Painel de direitos e permissões do sistema</h4>
-          <div class="gestao-matriz-permissoes" id="matriz-permissoes-usuario"></div>
-        </div>
-
-        <div class="gestao-secao">
-          <h4>Contratos com acesso liberado</h4>
-          <div class="gestao-form-grid">
-            <div class="gestao-form-item gestao-form-full">
-              <label>Marque os contratos que este usuário pode visualizar. Sem nenhum marcado, o acesso segue o padrão do perfil vinculado (ou vê tudo, se não houver perfil).</label>
-              <div id="usuario-contratos-lista" class="checklist-contratos"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="gestao-secao" id="bloco-capacitacoes" style="display:none;">
-          <h4>Capacitações</h4>
-          <p class="gestao-ajuda-texto">Aparecem no crachá com a situação da validade. Cargo de eletricista exige NR-10 válida.</p>
-          <div id="usuario-capacitacoes-lista" class="gestao-caps-lista"></div>
-          <div class="gestao-caps-nova">
-            <input type="text" id="cap-nome" placeholder="Capacitação (ex.: NR-10)" list="cap-sugestoes" maxlength="80">
-            <datalist id="cap-sugestoes"><option>NR-10</option><option>NR-10 SEP</option><option>NR-35</option><option>NR-33</option><option>NR-12</option><option>NR-06</option><option>Primeiros socorros</option></datalist>
-            <input type="text" id="cap-certificado" placeholder="Nº do certificado" maxlength="80">
-            <label>Emissão <input type="date" id="cap-emissao"></label>
-            <label>Validade <input type="date" id="cap-validade"></label>
-            <button type="button" class="btn-secundario" id="cap-adicionar">Adicionar</button>
-          </div>
-        </div>
-
-        <div id="usuario-form-feedback" class="gestao-feedback" style="display:none;"></div>
-
-        <div class="gestao-modal-acoes">
-          <button type="button" class="btn-secundario" id="cancelar-modal-usuario">Cancelar</button>
-          <button type="submit" class="btn-primario">Salvar alterações</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- ===== MODAL: NOVO/EDITAR PERFIL ===== -->
   <div id="modal-perfil" class="modal" style="display:none;">
     <div class="modal-content gestao-modal-content">
@@ -413,13 +311,14 @@
   </div>
 
   <script src="../SCRIPT/config.js?v=2"></script>
-  <script src="../SCRIPT/gestao.js?v=13"></script>
+  <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
+  <script src="../SCRIPT/gestao.js?v=14"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=36"></script>
-  <script src="../SCRIPT/configuracoes.js?v=4"></script>
+  <script src="../SCRIPT/geral.js?v=37"></script>
+  <script src="../SCRIPT/configuracoes.js?v=5"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=8"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=9"></script>
   <script src="../SCRIPT/gestao-nav.js?v=10"></script>
   <script src="../SCRIPT/gestao-funcionarios.js?v=1"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>

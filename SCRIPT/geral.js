@@ -534,7 +534,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         // QR: abre a página pública de verificação deste crachá.
         if (c.cracha_codigo) {
           const endereco = new URL('cracha.html?c=' + encodeURIComponent(c.cracha_codigo), location.href).href;
-          desenharQr(modalContent.querySelector('#cracha-qr'), endereco);
+          const qr = modalContent.querySelector('#cracha-qr');
+          desenharQr(qr, endereco);
+          // Clicar no QR abre a página do crachá numa nova aba.
+          qr.setAttribute('role', 'link');
+          qr.tabIndex = 0;
+          qr.style.cursor = 'pointer';
+          const abrirPagina = () => window.open(endereco, '_blank', 'noopener');
+          qr.addEventListener('click', abrirPagina);
+          qr.addEventListener('keydown', (e) => { if (e.key === 'Enter') abrirPagina(); });
         }
       } catch (e) { /* sem conexão: fica com os dados locais */ }
     })();
@@ -699,11 +707,67 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
     
     // Fechar modal
-    // Editar: fecha o crachá e abre Configurações (dados, tipo sanguíneo, emergência).
-    document.getElementById('cracha-editar').addEventListener('click', () => {
-      modal.style.display = 'none';
-      clearInterval(window.tokenCountdownInterval);
-      if (window.KernelConfiguracoes) window.KernelConfiguracoes.abrir();
+    // Editar o crachá (tipo sanguíneo e informações de emergência) dentro do
+    // próprio crachá. Nome e e-mail ficam em Configurações.
+    document.getElementById('cracha-editar').addEventListener('click', async () => {
+      const corpo = modalContent;
+      if (corpo.querySelector('.cracha-edicao')) return;
+      let conta = {};
+      try {
+        const r = await fetch(apiUrl('/conta'), { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } });
+        conta = (await r.json()).conta || {};
+      } catch (e) { /* abre vazio */ }
+      const m = conta.medicas || {};
+      const v = (t) => String(t ?? '').replace(/"/g, '&quot;');
+      const tipos = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+      const form = document.createElement('form');
+      form.className = 'cracha-edicao';
+      form.innerHTML = `
+        <h4>Editar crachá</h4>
+        <label>Tipo sanguíneo
+          <select name="tipo_sanguineo"><option value="">Não informado</option>${tipos.map((t) => `<option ${conta.tipo_sanguineo === t ? 'selected' : ''}>${t}</option>`).join('')}</select>
+        </label>
+        <label>Alergias <input name="alergias" maxlength="255" value="${v(m.alergias)}"></label>
+        <label>Contraindicações e condições de saúde <input name="condicoes" maxlength="255" value="${v(m.condicoes)}"></label>
+        <label>Medicamentos de uso contínuo <input name="medicamentos" maxlength="255" value="${v(m.medicamentos)}"></label>
+        <label>Contato de emergência (nome) <input name="emergencia_nome" maxlength="120" value="${v(m.emergencia_nome)}"></label>
+        <label>Telefone do contato <input name="emergencia_telefone" type="tel" maxlength="40" value="${v(m.emergencia_telefone)}"></label>
+        <label class="cracha-edicao-check"><input type="checkbox" name="publico" ${m.publico !== false ? 'checked' : ''}> Mostrar informações de emergência na leitura do QR</label>
+        <p class="cracha-edicao-retorno" role="status"></p>
+        <div class="cracha-edicao-acoes">
+          <button type="button" class="btn-secundario" data-cancelar>Cancelar</button>
+          <button type="submit" class="btn-primario">Salvar</button>
+        </div>`;
+      corpo.querySelectorAll('.cracha-identidade ~ *').forEach((n) => { n.hidden = true; });
+      corpo.querySelector('.cracha-identidade').after(form);
+      const fecharEdicao = () => { form.remove(); corpo.querySelectorAll('.cracha-identidade ~ *').forEach((n) => { n.hidden = false; }); };
+      form.querySelector('[data-cancelar]').addEventListener('click', fecharEdicao);
+      form.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const f = new FormData(form);
+        const retorno = form.querySelector('.cracha-edicao-retorno');
+        retorno.textContent = 'Salvando...';
+        try {
+          const r = await fetch(apiUrl('/conta'), {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + localStorage.getItem('token') },
+            body: JSON.stringify({
+              tipo_sanguineo: f.get('tipo_sanguineo'),
+              medicas: {
+                alergias: f.get('alergias'), condicoes: f.get('condicoes'), medicamentos: f.get('medicamentos'),
+                emergencia_nome: f.get('emergencia_nome'), emergencia_telefone: f.get('emergencia_telefone'),
+                publico: f.get('publico') === 'on',
+              },
+            }),
+          });
+          const d = await r.json();
+          if (d.status !== 'ok') throw new Error(d.mensagem || 'Não foi possível salvar.');
+          clearInterval(window.tokenCountdownInterval);
+          mostrarModalPerfil();   // reabre o crachá já atualizado
+        } catch (e) {
+          retorno.textContent = e.message;
+        }
+      });
     });
 
     document.getElementById('close-profile-modal').addEventListener('click', () => {
