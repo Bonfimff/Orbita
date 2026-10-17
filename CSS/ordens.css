@@ -2806,3 +2806,6 @@ button.ponto-foto-modal-tags {
 .eqi-os-links small { color: #94a3b8; font-size: 12px; flex-basis: 100%; }
 .eqi-os-link { font-size: 13px; font-weight: 700; color: var(--cor-primaria-escura); }
 @media (max-width: 768px) { .eqi-os-resumo { grid-template-columns: repeat(2, 1fr); } }
+
+/* Cadastro da base: arquivos ficam nos equipamentos */
+.bases-dica-arquivos { margin: 0; font-size: 13px; color: #64748b; }
