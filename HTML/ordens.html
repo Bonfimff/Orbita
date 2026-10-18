@@ -124,7 +124,7 @@
               <th>Solicitante</th>
               <th>Tipo</th>
               <th>Prioridade</th>
-              <th>Técnico</th>
+              <th>Responsável</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -524,7 +524,7 @@
           <input type="text" id="filtro-os-solicitante" placeholder="Filtrar por solicitante..." />
         </div>
         <div class="busca-filtro-item">
-          <label for="filtro-os-tecnico">Técnico</label>
+          <label for="filtro-os-tecnico">Responsável</label>
           <input type="text" id="filtro-os-tecnico" placeholder="Filtrar por técnico..." />
         </div>
         <div class="busca-filtro-item">
@@ -554,7 +554,7 @@
               <th data-coluna="contrato">Contrato</th>
               <th data-coluna="tipo_servico">Tipo</th>
               <th data-coluna="prioridade">Prioridade</th>
-              <th data-coluna="tecnico_responsavel">Técnico</th>
+              <th data-coluna="tecnico_responsavel">Responsável</th>
               <th data-coluna="status">Status</th>
               <th data-coluna="data_prevista">Data Prevista</th>
               <th data-coluna="data_conclusao">Conclusão</th>
@@ -672,7 +672,7 @@
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="../SCRIPT/operacional/base-equipamentos.js?v=1"></script>
-  <script src="../SCRIPT/ordens.js?v=31"></script>
+  <script src="../SCRIPT/ordens.js?v=32"></script>
   <script src="../SCRIPT/relatorios/alertas-dashboard.js?v=6"></script>
   <script src="../SCRIPT/relatorios/analise-os.js?v=2"></script>
   <script src="../SCRIPT/operacional/equipe.js?v=8"></script>
@@ -708,7 +708,7 @@
       <button type="button" class="modal-os-fechar" id="btn-fechar-modal-os" aria-label="Fechar" title="Fechar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       <h3 style="margin-bottom:16px;">Editar Ordem de Serviço</h3>
       <div id="edit-os-tecnico-legenda" style="margin-top:-8px; margin-bottom:12px; font-size:13px; color:#555; font-weight:600;">
-        Técnico responsável: -
+        Responsável técnico / da equipe: -
       </div>
       <input type="hidden" id="edit-os-id">
       <input type="hidden" id="edit-os-status-atual">

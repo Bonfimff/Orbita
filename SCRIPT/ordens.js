@@ -142,7 +142,7 @@ function tecnicoExibicao(os) {
 function atualizarLegendaTecnicoModal(os) {
   const el = document.getElementById('edit-os-tecnico-legenda');
   if (!el) return;
-  el.textContent = `Técnico responsável: ${tecnicoExibicao(os)}`;
+  el.textContent = `Responsável técnico / da equipe: ${tecnicoExibicao(os)}`;
 }
 
 function badgePontoStatus(status) {
@@ -2663,8 +2663,7 @@ async function abrirFichaOS(id) {
       ['Solicitante', os.solicitante], ['Setor', os.setor], ['Contrato', os.contrato],
       ['Tipo de serviço', os.tipo_servico], ['Prioridade', badgePrioridade(os.prioridade), { html: true }],
       ['Base de atendimento', bases.join(', ') || 'Não informada', { largo: true }],
-      ['Técnico responsável', tecnicoExibicao(os)],
-      ['Responsável pela equipe', parseListaTexto(os.responsavel_equipe).join(', ')],
+      ['Responsável técnico / da equipe', tecnicoExibicao(os)],
       ['Equipe em atendimento', parseListaTexto(os.equipe_membros).concat(parseListaTexto(os.equipe_adicionais)).join(', ')],
       ['Despacho', os.data_despacho], ['Fechamento', os.data_fechamento],
       ['Veículos', parseListaTexto(os.veiculos_despacho).join(', ')],
