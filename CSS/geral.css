@@ -3503,3 +3503,11 @@ body.fr-aberta { overflow: hidden; }
 /* Mapas: alfinete de base na legenda; lista vazia abaixo do mapa some */
 .pg-mapa-pino { width: 9px; height: 15px; vertical-align: -3px; margin-right: 5px; }
 #bases-mapa-legenda:empty { display: none; }
+/* Mapas: indicador único quando os itens ficariam juntos ou o mapa está afastado */
+.mi-grupo { background: none; border: 0; cursor: zoom-in; }
+.mi-grupo span {
+  display: block; width: 18px; height: 18px; border-radius: 50%; box-sizing: border-box;
+  background: rgba(168, 134, 79, 0.28); border: 2px solid rgba(168, 134, 79, 0.85);
+  box-shadow: 0 0 0 4px rgba(168, 134, 79, 0.14);
+}
+.mi-grupo:hover span { background: rgba(168, 134, 79, 0.45); }
