@@ -71,10 +71,8 @@
     camadas.veiculos.clearLayers();
 
     bases.filter(temPosicao).forEach(b => {
-      const marcador = L.marker([Number(b.latitude), Number(b.longitude)], {
-        icon: L.divIcon({ className: 'pg-mapa-base', iconSize: [16, 16] }),
-        zIndexOffset: -100,
-      }).addTo(camadas.bases);
+      const marcador = window.MapaIcones.base([Number(b.latitude), Number(b.longitude)], { zIndexOffset: -100 }).addTo(camadas.bases);
+      window.MapaIcones.registrar(mapa, marcador);
       const topo = `<strong>${escapar(b.id)}</strong><br>${escapar(b.endereco)}`;
       if (window.EquipamentosDaBase) window.EquipamentosDaBase.ligar(marcador, b.id, topo);
       else marcador.bindPopup(topo);
@@ -85,9 +83,9 @@
       const os = v.operacao && !v.operacao.reservado
         ? `<br>${escapar(v.operacao.numero_os || 'O.S. #' + v.operacao.ordem_id)}`
         : '';
-      L.circleMarker([Number(v.latitude), Number(v.longitude)], {
-        radius: 8, color: '#ffffff', weight: 2, fillColor: CORES[sit], fillOpacity: 0.92,
-      }).addTo(camadas.veiculos).bindPopup(
+      const ponto = window.MapaIcones.veiculo([Number(v.latitude), Number(v.longitude)], CORES[sit]).addTo(camadas.veiculos);
+      window.MapaIcones.registrar(mapa, ponto);
+      ponto.bindPopup(
         `<strong>${escapar(v.placa)}</strong><br>${escapar([v.marca, v.modelo].filter(Boolean).join(' '))}<br>${sit}${os}`
       );
     });

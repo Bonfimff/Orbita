@@ -240,13 +240,8 @@
       const coords = obterCoordenadasVeiculo(veiculo, indice);
       bounds.push(coords);
       const status = situacaoOperacional(veiculo);
-      const marker = L.circleMarker(coords, {
-        radius: 8,
-        color: '#ffffff',
-        weight: 2,
-        fillColor: corMarcador(status),
-        fillOpacity: 0.92,
-      }).addTo(frotaMapaCamada);
+      const marker = window.MapaIcones.veiculo(coords, corMarcador(status)).addTo(frotaMapaCamada);
+      window.MapaIcones.registrar(frotaMapa, marker);
 
       marker.bindPopup(`
         <strong>${escapeHtml(veiculo.placa || 'Sem placa')}</strong><br>

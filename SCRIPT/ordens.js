@@ -391,16 +391,15 @@ async function renderizarMapaBasesGerenciamento() {
   salvarCacheGeocodificacaoBases(cacheGeo);
 
   const basesValidas = basesComPosicao.filter(item => item.posicao);
-  const itensLegenda = [];
 
   basesValidas.forEach(({ base, posicao }) => {
     const id = String(base.id || '').trim() || 'Base';
     const enderecoExibicao = construirEnderecoMapaBase(base) || construirLocalizacaoBase(base);
-    const marcador = L.marker([posicao.lat, posicao.lng]).addTo(basesMapaLeafletCamada);
+    const marcador = window.MapaIcones.base([posicao.lat, posicao.lng]).addTo(basesMapaLeafletCamada);
+    window.MapaIcones.registrar(basesMapaLeaflet, marcador);
     const topoBase = `<strong>📍 ${escapeHtml(id)}</strong><br><span>${escapeHtml(enderecoExibicao)}</span>`;
     if (window.EquipamentosDaBase) window.EquipamentosDaBase.ligar(marcador, id, topoBase);
     else marcador.bindPopup(`<div style="min-width:180px;">${topoBase}</div>`);
-    itensLegenda.push(`<div class="pontos-mapa-legenda-item"><strong>📍 ${escapeHtml(id)}</strong> - ${escapeHtml(enderecoExibicao)}</div>`);
   });
 
   // ---- Veículos: posição estimada (sem GPS real integrado ainda) ----
@@ -409,13 +408,8 @@ async function renderizarMapaBasesGerenciamento() {
     const [lat, lng] = temPosicao ? [Number(veiculo.latitude), Number(veiculo.longitude)] : coordenadaEstimativaVeiculo(veiculo.placa, indice);
     const situacao = (veiculo.status === 'Ativo' && veiculo.operacao && !veiculo.operacao.reservado) ? 'Em operação' : (veiculo.status || '-');
     const cor = corMarcadorVeiculo(situacao);
-    const marcador = L.circleMarker([lat, lng], {
-      radius: 8,
-      color: '#ffffff',
-      weight: 2,
-      fillColor: cor,
-      fillOpacity: 0.92,
-    }).addTo(basesMapaLeafletCamada);
+    const marcador = window.MapaIcones.veiculo([lat, lng], cor).addTo(basesMapaLeafletCamada);
+    window.MapaIcones.registrar(basesMapaLeaflet, marcador);
     marcador.bindPopup(`
       <div style="min-width:180px;">
         <strong>🚗 ${escapeHtml(veiculo.placa || 'Sem placa')}</strong><br>
@@ -424,10 +418,9 @@ async function renderizarMapaBasesGerenciamento() {
         <em style="font-size:11px;color:#888;">${temPosicao ? 'Última posição' : 'Posição estimada'}</em>
       </div>
     `);
-    itensLegenda.push(`<div class="pontos-mapa-legenda-item"><strong>🚗 ${escapeHtml(veiculo.placa || 'Sem placa')}</strong> - ${escapeHtml(situacao)}${temPosicao ? '' : ' (posição estimada)'}</div>`);
   });
 
-  legendaEl.innerHTML = itensLegenda.join('') || '<div class="pontos-mapa-legenda-item">Nenhum ponto localizado no mapa.</div>';
+  legendaEl.innerHTML = '';
 
   const bounds = basesMapaLeafletCamada.getBounds();
   if (bounds.isValid()) {
