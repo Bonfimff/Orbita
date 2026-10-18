@@ -326,14 +326,14 @@ async function renderizarMapaBasesGerenciamento() {
   const mapaEl = document.getElementById('bases-mapa');
   const legendaEl = document.getElementById('bases-mapa-legenda');
   const contagemEl = document.getElementById('bases-mapa-contagem');
-  if (!mapaContainer || !mapaEl || !legendaEl || !contagemEl) return;
+  if (!mapaContainer || !mapaEl || !legendaEl) return;
 
   const [bases, veiculos] = await Promise.all([listarBases(), listarVeiculosParaMapa()]);
 
   if (bases.length === 0 && veiculos.length === 0) {
     mapaContainer.style.display = 'none';
     legendaEl.innerHTML = '';
-    contagemEl.textContent = 'Nenhum veículo ou base cadastrado ainda (ou nenhum dentro dos contratos autorizados).';
+    if (contagemEl) contagemEl.textContent = 'Nenhum veículo ou base cadastrado ainda (ou nenhum dentro dos contratos autorizados).';
     if (basesMapaLeaflet) {
       basesMapaLeaflet.remove();
       basesMapaLeaflet = null;
@@ -343,14 +343,14 @@ async function renderizarMapaBasesGerenciamento() {
   }
 
   mapaContainer.style.display = 'block';
-  contagemEl.textContent = `${veiculos.length} veículo(s) · ${bases.length} base(s)`;
+  if (contagemEl) contagemEl.textContent = `${veiculos.length} veículo(s) · ${bases.length} base(s)`;
 
   if (!window.L) {
     await carregarLeafletSeNecessario();
   }
 
   if (!window.L) {
-    contagemEl.textContent += ' - mapa indisponível.';
+    if (contagemEl) contagemEl.textContent += ' - mapa indisponível.';
     return;
   }
 
@@ -1529,7 +1529,7 @@ async function carregarCronograma() {
     };
     const classeTag = (v) => 'tag-' + String(v || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, '-');
     lista.innerHTML = agenda.map(a => `
-      <div class="cronograma-item" data-id="${a.id}">
+      <div class="cronograma-item linha-clicavel" data-id="${a.id}" tabindex="0">
         <div class="cronograma-item-topo">
           <div class="cronograma-item-tags">
             ${a.numero_os ? `<span class="cronograma-os">${escapeHtml(a.numero_os)}</span>` : ''}
@@ -1548,18 +1548,34 @@ async function carregarCronograma() {
           <span>${ICONES.pessoa}${escapeHtml(a.responsavel_tecnico)}</span>
         </div>
         ${a.observacoes ? `<div class="cronograma-item-obs">${escapeHtml(a.observacoes)}</div>` : ''}
-        <div class="cronograma-item-acoes">
-          <button type="button" class="btn-editar-agendamento" data-id="${a.id}" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
-          <button type="button" class="btn-excluir-agendamento" data-id="${a.id}" title="Excluir"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
-        </div>
       </div>
     `).join('');
 
-    lista.querySelectorAll('.btn-editar-agendamento').forEach(btn => {
-      btn.addEventListener('click', () => abrirPainelAgendamento(Number(btn.dataset.id)));
-    });
-    lista.querySelectorAll('.btn-excluir-agendamento').forEach(btn => {
-      btn.addEventListener('click', () => excluirAgendamento(Number(btn.dataset.id)));
+    // Padrão: clique no cartão abre a ficha; Editar e Excluir ficam nela.
+    lista._agenda = agenda;
+    window.FichaRegistro.ligarTabela(lista, '.cronograma-item[data-id]', (card) => {
+      const a = (lista._agenda || []).find((x) => String(x.id) === card.dataset.id);
+      if (!a) return;
+      const F = window.FichaRegistro;
+      F.abrir({
+        titulo: a.titulo || 'Agendamento',
+        subtitulo: [a.data_agendada, a.hora_inicio && a.hora_fim ? a.hora_inicio + ' às ' + a.hora_fim : ''].filter(Boolean).join(' · '),
+        campos: [
+          ['O.S.', a.numero_os], ['Situação', a.status], ['Prioridade', a.prioridade],
+          ['Responsável', a.responsavel_tecnico], ['Veículo', a.veiculo_placa],
+          ['Local', a.local_endereco, { largo: true }], ['Observações', a.observacoes, { largo: true }],
+        ],
+        editar: () => abrirPainelAgendamento(Number(a.id)),
+        podeEditar: F.pode('os_agendamentos', 'editar'),
+        excluir: async () => {
+          const resp = await fetch(osApiUrl(`agendamentos/${a.id}`), { method: 'DELETE', headers: authHeaders() });
+          const data = await resp.json().catch(() => ({}));
+          if (!resp.ok || data.status !== 'ok') throw new Error(data.mensagem || 'Erro ao excluir agendamento.');
+        },
+        podeExcluir: F.pode('os_agendamentos', 'excluir'),
+        confirmar: 'Excluir este agendamento do cronograma?',
+        aoExcluir: carregarCronograma,
+      });
     });
   } catch (e) {
     console.error('Erro ao carregar cronograma:', e);
@@ -1655,21 +1671,6 @@ async function salvarAgendamento(e) {
     feedback.className = 'gestao-feedback erro';
     feedback.textContent = 'Falha na comunicação com o servidor.';
     feedback.style.display = 'block';
-  }
-}
-
-async function excluirAgendamento(id) {
-  if (!confirm('Excluir este agendamento do cronograma?')) return;
-  try {
-    const resp = await fetch(osApiUrl(`agendamentos/${id}`), { method: 'DELETE', headers: authHeaders() });
-    const data = await resp.json();
-    if (resp.ok && data.status === 'ok') {
-      carregarCronograma();
-    } else {
-      alert(data.mensagem || 'Erro ao excluir agendamento.');
-    }
-  } catch (e) {
-    console.error('Erro ao excluir agendamento:', e);
   }
 }
 
@@ -2571,10 +2572,6 @@ function popularTabelaBusca(ordens) {
       <td data-coluna="data_prevista">${os.data_prevista || '-'}</td>
       <td data-coluna="data_conclusao">${os.data_conclusao || '-'}</td>
       <td data-coluna="descricao" class="os-descricao-cell" title="${(os.descricao || '').replace(/"/g, '&quot;')}">${os.descricao || ''}</td>
-      <td>
-        <button class="btn-acao btn-editar-os" data-id="${os.id}" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
-        <button class="btn-acao btn-excluir-os" data-id="${os.id}" title="Excluir"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
-      </td>
     `;
     tbody.appendChild(row);
   });
@@ -2613,21 +2610,57 @@ function filtrarTabelaOS() {
 //  AÇÕES, Editar / Excluir
 // ============================================================
 
+// Padrão das tabelas: clique na linha abre a ficha da O.S. (só ver). O
+// atendimento (edição) e a exclusão ficam dentro da ficha.
 function adicionarListenersAcoesOS(container) {
-  container.querySelectorAll('.btn-editar-os').forEach(btn => {
-    btn.addEventListener('click', () => abrirModalEdicao(btn.dataset.id));
+  container.querySelectorAll('tr[data-os-id]').forEach(row => { row.tabIndex = 0; row.classList.add('linha-clicavel'); });
+  window.FichaRegistro.ligarTabela(container, 'tr[data-os-id]', (row) => {
+    if (row.dataset.osId) abrirFichaOS(row.dataset.osId);
   });
-  container.querySelectorAll('.btn-excluir-os').forEach(btn => {
-    btn.addEventListener('click', () => confirmarExclusao(btn.dataset.id));
-  });
+}
 
-  container.querySelectorAll('tr').forEach(row => {
-    row.addEventListener('click', event => {
-      if (event.target.closest('button')) return;
-      const osId = row.dataset.osId;
-      if (!osId) return;
-      abrirModalEdicao(osId);
-    });
+// Exposta para a ficha do equipamento abrir a O.S. no mesmo padrão.
+window.abrirFichaOS = (id) => abrirFichaOS(id);
+
+async function abrirFichaOS(id) {
+  const F = window.FichaRegistro;
+  let os;
+  try {
+    const resp = await fetch(osApiUrl(`ordens/buscar/${id}`), { headers: authHeaders() });
+    const data = await resp.json();
+    if (!resp.ok || data.status !== 'ok') throw new Error(data.mensagem || 'Não foi possível abrir a O.S.');
+    os = data.ordem;
+  } catch (e) {
+    alert(e.message);
+    return;
+  }
+  const status = obterStatusEfetivoOS(os);
+  const pontos = (os.pontos || []).map((p) => escapeHtml([p.nome || p.local || p.endereco || '', p.status || ''].filter(Boolean).join(' · '))).filter(Boolean);
+  F.abrir({
+    titulo: os.numero_os || ('O.S. ' + os.id),
+    subtitulo: status === 'Chegada no Local' ? 'Em Atuação no Local' : status,
+    campos: [
+      ['Abertura', os.data_abertura], ['Previsão', os.data_prevista], ['Conclusão', os.data_conclusao],
+      ['Solicitante', os.solicitante], ['Setor', os.setor], ['Contrato', os.contrato],
+      ['Tipo de serviço', os.tipo_servico], ['Prioridade', badgePrioridade(os.prioridade), { html: true }],
+      ['Técnico responsável', tecnicoExibicao(os)], ['Equipe', parseListaTexto(os.equipe_membros).join(', ')],
+      ['Veículos', parseListaTexto(os.veiculos_despacho).join(', ')],
+      ['Descrição', os.descricao, { largo: true }],
+      ['Pontos de atendimento', pontos.join('<br>'), { html: true, largo: true }],
+      ['Diagnóstico', os.diagnostico_equipamento, { largo: true }],
+      ['Procedimento executado', os.procedimento_executado, { largo: true }],
+      ['Situação final', os.situacao_final, { largo: true }],
+    ],
+    editar: () => abrirModalEdicao(os.id),
+    rotuloEditar: status === 'Finalizada' || status === 'Cancelada' ? 'Ver atendimento' : 'Abrir atendimento',
+    excluir: async () => {
+      const resp = await fetch(osApiUrl(`ordens/excluir/${os.id}`), { method: 'DELETE', headers: authHeaders() });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok || data.status !== 'ok') throw new Error(data.mensagem || 'Erro ao excluir.');
+    },
+    podeExcluir: F.pode('os_ordens', 'excluir'),
+    confirmar: 'Deseja realmente excluir esta Ordem de Serviço?',
+    aoExcluir: () => { carregarDashboard(); buscarOrdens(); },
   });
 }
 
@@ -3725,8 +3758,8 @@ function abrirDetalheBase(id) {
     <h4 class="os-detalhe-subtitulo">Materiais instalados</h4>
     ${materiais || '<p class="os-texto-suave">Nenhum material registrado.</p>'}
     <div class="os-detalhe-acoes" data-base-id="${escapeHtml(b.id)}">
-      <button type="button" class="btn-secundario" data-base-acao="editar">Editar</button>
-      <button type="button" class="btn-secundario" data-base-acao="excluir">Excluir</button>
+      <button type="button" class="btn-secundario" data-base-acao="editar" data-permissao="os_bases:editar">Editar</button>
+      <button type="button" class="btn-secundario fr-perigo" data-base-acao="excluir" data-permissao="os_bases:excluir">Excluir</button>
     </div>`);
 }
 

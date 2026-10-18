@@ -311,11 +311,21 @@
       }
     });
     el('eqi-editar').addEventListener('click', () => { const r = atual; irParaCadastro((c) => c.editar(r)); });
+    el('eqi-excluir').addEventListener('click', async () => {
+      const r = atual;
+      if (!r || !confirm('Excluir o equipamento "' + r.codigo + '"?\n\nSe houver ocorrências registradas, ele será apenas desativado.')) return;
+      try {
+        const d = await window.FichaRegistro.apagar('/equipamentos/' + r.id);
+        fechar();
+        alert(d.mensagem || 'Equipamento removido.');
+        carregar();
+      } catch (err) { msg(err.message, 'erro'); }
+    });
     el('eqi-os-lista').addEventListener('click', (e) => {
       const b = e.target.closest('[data-os-abrir]');
-      if (!b || typeof window.abrirModalEdicao !== 'function') return;
+      if (!b || typeof window.abrirFichaOS !== 'function') return;
       fechar();
-      window.abrirModalEdicao(b.dataset.osAbrir);
+      window.abrirFichaOS(b.dataset.osAbrir);
     });
     // Link do mapa (ordens.html#equipamento-<id>): abre a ficha direto.
     const peloEndereco = () => {

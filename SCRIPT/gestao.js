@@ -67,7 +67,7 @@
         const ehVoce = String(u.id) === usuarioLogadoId;
         const avatarSrc = u.foto_url || '../IMG/user-icon.png';
         return `
-          <tr data-usuario-id="${u.id}">
+          <tr data-usuario-id="${u.id}" class="linha-clicavel" tabindex="0">
             <td>
               <div class="gestao-usuario-cell">
                 <img class="gestao-avatar" src="${avatarSrc}" alt="${u.usuario}" onerror="this.src='../IMG/user-icon.png'">
@@ -85,40 +85,40 @@
               </div>
             </td>
             <td>${u.email || '-'}</td>
-            <td>
-              <div class="gestao-acoes-cell">
-                <button type="button" class="gestao-btn-icone gestao-editar-usuario" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
-                <button type="button" class="gestao-btn-icone gestao-excluir-usuario" title="${u.pode_excluir ? 'Excluir' : 'Não é possível excluir este usuário'}" ${u.pode_excluir ? '' : 'disabled'}><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
-              </div>
-            </td>
-          </tr>
+                    </tr>
         `;
       }).join('');
 
-      tbody.querySelectorAll('.gestao-editar-usuario').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = e.target.closest('tr').dataset.usuarioId;
-          window.location.href = 'cadastros.html#usuario-' + id;
-        });
-      });
-      // Um clique (ou toque) na linha abre a edição, como nas outras tabelas.
-      tbody.querySelectorAll('tr[data-usuario-id]').forEach(linha => {
-        linha.classList.add('linha-clicavel');
-        linha.addEventListener('click', (e) => {
-          if (e.target.closest('button, a, input')) return;
-          window.location.href = 'cadastros.html#usuario-' + linha.dataset.usuarioId;
-        });
-      });
-      tbody.querySelectorAll('.gestao-excluir-usuario').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = e.target.closest('tr').dataset.usuarioId;
-          excluirUsuario(id);
-        });
-      });
+      // Padrão das tabelas: clique abre a ficha; Editar e Excluir ficam nela.
+      usuariosCache = dados.usuarios;
+      window.FichaRegistro.ligarTabela(tbody, 'tr[data-usuario-id]', (linha) => abrirFichaUsuario(linha.dataset.usuarioId));
     } catch (error) {
       console.error('Erro ao carregar usuários:', error);
       tbody.innerHTML = '<tr><td colspan="4" style="padding:0.75rem;">Erro de conexão ao carregar usuários.</td></tr>';
     }
+  }
+
+  let usuariosCache = [];
+  function abrirFichaUsuario(id) {
+    const u = usuariosCache.find((x) => String(x.id) === String(id));
+    if (!u) return;
+    const F = window.FichaRegistro;
+    F.abrir({
+      titulo: u.usuario,
+      subtitulo: 'Usuário #' + u.id + (String(u.id) === usuarioLogadoId ? ' · você' : ''),
+      campos: [
+        ['Cargo', u.credencial_acesso || 'Sem cargo definido'],
+        ['Perfil de acesso', (u.perfil_nome || 'Sem perfil vinculado') + (u.usa_permissoes_customizadas ? ' (customizado)' : '')],
+        ['E-mail', u.email || '-'],
+      ],
+      editar: () => { window.location.href = 'cadastros.html#usuario-' + u.id; },
+      podeEditar: F.pode('gestao_usuarios', 'editar'),
+      excluir: () => F.apagar('/usuarios/' + u.id),
+      podeExcluir: F.pode('gestao_usuarios', 'excluir'),
+      semExcluir: u.pode_excluir ? '' : 'Não é possível excluir este usuário',
+      confirmar: 'Excluir este usuário? Essa ação não pode ser desfeita.',
+      aoExcluir: carregarUsuarios,
+    });
   }
 
   async function excluirUsuario(id) {
@@ -169,7 +169,7 @@
 
       grid.innerHTML = perfisCache.map(p => {
         return `
-          <div class="gestao-perfil-card" data-perfil-id="${p.id}">
+          <div class="gestao-perfil-card linha-clicavel" data-perfil-id="${p.id}" tabindex="0">
             <div class="gestao-perfil-card-header">
               <h3>${p.nome}</h3>
               ${p.fabrica ? '<span class="gestao-tag gestao-tag-fabrica">Fábrica</span>' : ''}
@@ -178,24 +178,25 @@
             <div class="gestao-perfil-modulos">
               ${resumoPermissoesPerfil(p.permissoes || {})}
             </div>
-            <div class="gestao-perfil-card-acoes">
-              <button type="button" class="gestao-btn-icone gestao-editar-perfil" title="Editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
-              <button type="button" class="gestao-btn-icone gestao-excluir-perfil" title="${p.fabrica ? 'Perfis de fábrica não podem ser excluídos' : 'Excluir'}" ${p.fabrica ? 'disabled' : ''}><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
-            </div>
           </div>
         `;
       }).join('');
 
-      grid.querySelectorAll('.gestao-editar-perfil').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = e.target.closest('[data-perfil-id]').dataset.perfilId;
-          abrirModalPerfil(perfisCache.find(p => String(p.id) === id));
-        });
-      });
-      grid.querySelectorAll('.gestao-excluir-perfil').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = e.target.closest('[data-perfil-id]').dataset.perfilId;
-          excluirPerfil(id);
+      window.FichaRegistro.ligarTabela(grid, '[data-perfil-id]', (card) => {
+        const p = perfisCache.find((x) => String(x.id) === card.dataset.perfilId);
+        const F = window.FichaRegistro;
+        F.abrir({
+          titulo: p.nome,
+          subtitulo: p.fabrica ? 'Perfil de fábrica' : 'Perfil de acesso',
+          campos: [['Usuários vinculados', String(p.total_usuarios)]],
+          corpo: '<div class="gestao-perfil-modulos">' + resumoPermissoesPerfil(p.permissoes || {}) + '</div>',
+          editar: () => abrirModalPerfil(p),
+          podeEditar: F.pode('gestao_perfis', 'editar'),
+          excluir: () => F.apagar('/perfis/' + p.id),
+          podeExcluir: F.pode('gestao_perfis', 'excluir'),
+          semExcluir: p.fabrica ? 'Perfis de fábrica não podem ser excluídos' : '',
+          confirmar: 'Excluir este perfil de acesso?',
+          aoExcluir: carregarPerfis,
         });
       });
     } catch (error) {
@@ -308,13 +309,7 @@
           <td>${escapeHtml(c.nome)}</td>
           <td>${escapeHtml(c.cnpj || '-')}</td>
           <td>${(c.usuarios || []).map(u => escapeHtml(u.usuario)).join(', ') || '-'}</td>
-          <td>
-            <div class="gestao-acoes-cell">
-              <button type="button" class="gestao-btn-icone gestao-editar-contrato" title="Editar" data-permissao="gestao_contratos:editar"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
-              <button type="button" class="gestao-btn-icone gestao-excluir-contrato" title="Excluir" data-permissao="gestao_contratos:excluir"><svg class="icone-acao" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
-            </div>
-          </td>
-        </tr>
+                </tr>
       `).join('');
     } catch (error) {
       console.error('Erro ao carregar contratos:', error);
@@ -381,9 +376,10 @@
       const dados = await resp.json();
       if (dados.status !== 'ok') {
         alert(dados.mensagem || 'Erro ao excluir contrato.');
-        return;
+        return false;
       }
       carregarContratos();
+      return true;
     } catch (error) {
       console.error('Erro ao excluir contrato:', error);
       alert('Erro de conexão ao excluir o contrato.');
@@ -397,8 +393,6 @@
       const linha = e.target.closest('tr[data-contrato-id]');
       if (!linha) return;
       const id = Number(linha.dataset.contratoId);
-      if (e.target.closest('.gestao-editar-contrato')) { irParaCadastroContrato(id); return; }
-      if (e.target.closest('.gestao-excluir-contrato')) { excluirContrato(id); return; }
       abrirFichaContrato(id);
     });
     tbody.addEventListener('keydown', (e) => {
@@ -407,6 +401,9 @@
     });
     document.getElementById('btn-novo-contrato')?.addEventListener('click', () => irParaCadastroContrato());
     document.getElementById('contrato-ficha-editar')?.addEventListener('click', () => irParaCadastroContrato(contratoFichaId));
+    document.getElementById('contrato-ficha-excluir')?.addEventListener('click', async () => {
+      if (await excluirContrato(contratoFichaId)) document.getElementById('contrato-ficha').hidden = true;
+    });
     const fundo = document.getElementById('contrato-ficha');
     fundo?.addEventListener('click', (e) => {
       if (e.target === fundo || e.target.closest('[data-fechar-contrato]')) fecharFichaContrato();

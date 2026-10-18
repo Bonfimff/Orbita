@@ -95,6 +95,10 @@
         + '<th>Data</th><th>Usuário</th><th>Ação</th><th>Registro</th><th>Mudança</th>'
         + '</tr></thead><tbody>' + linhas + '</tbody></table></div>'
         + '<div class="rel-so-celular"><ul class="rel-cards">' + cards + '</ul></div>';
+      if (window.FichaRegistro) {
+        window.FichaRegistro.ligarConsulta(alvo.querySelector('table'),
+          { titulo: (tr, c) => (c[2] ? c[2].textContent.trim() : 'Registro'), subtitulo: 'Auditoria' });
+      }
 
       const paginas = Math.ceil(dados.total / POR_PAGINA);
       const paginacao = elemento('aud-paginacao');

@@ -11,8 +11,6 @@
   const esc = (t) => String(t == null ? '' : t)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const cab = () => ({ 'Content-Type': 'application/json', Authorization: 'Bearer ' + localStorage.getItem('token') });
-  const ICONE_EDITAR = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>';
-  const ICONE_DESATIVAR = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const irParaCadastro = (id) => { window.location.href = 'cadastros.html#funcionario' + (id ? '-' + id : ''); };
   const voltarParaLista = () => { window.location.href = 'gestao.html#funcionarios'; };
 
@@ -53,17 +51,13 @@
       return;
     }
     tbody.innerHTML = lista.map((f) =>
-      '<tr data-id="' + f.id + '" class="linha-clicavel">' +
+      '<tr data-id="' + f.id + '" class="linha-clicavel" tabindex="0">' +
         '<td>' + esc(f.nome) + '</td>' +
         '<td>' + esc(cpfFormatado(f.cpf) || '-') + '</td>' +
         '<td>' + esc(f.matricula || '-') + '</td>' +
         '<td>' + esc(f.funcao_nome || '-') + '</td>' +
         '<td>' + esc(f.usuario_login || 'Sem login') + '</td>' +
         '<td>' + (f.ativo ? 'Ativo' : 'Inativo') + '</td>' +
-        '<td><div class="gestao-acoes-cell">' +
-          '<button type="button" class="gestao-btn-icone func-editar" title="Editar" data-permissao="gestao_funcionarios:editar">' + ICONE_EDITAR + '</button>' +
-          (f.ativo ? '<button type="button" class="gestao-btn-icone func-desativar" title="Desativar">' + ICONE_DESATIVAR + '</button>' : '') +
-        '</div></td>' +
       '</tr>').join('');
   }
 
@@ -72,14 +66,6 @@
     tbody.addEventListener('click', async (e) => {
       const linha = e.target.closest('tr[data-id]');
       if (!linha) return;
-      if (e.target.closest('.func-desativar')) {
-        const f = funcionarios.find((x) => String(x.id) === linha.dataset.id);
-        if (!confirm('Desativar ' + f.nome + '? Ele deixa de aparecer para novas equipes, mas continua no histórico.')) return;
-        try { await chamar('DELETE', '/funcionarios/' + f.id); await atualizarLista(); } catch (err) { alert(err.message); }
-        return;
-      }
-      // Lápis: edição (Cadastros). Clique na linha: ficha de consulta aqui mesmo.
-      if (e.target.closest('.func-editar')) { irParaCadastro(linha.dataset.id); return; }
       abrirFicha(linha.dataset.id, 'documentos');
     });
     ligarFicha();
@@ -166,6 +152,7 @@
       item('Matrícula', f.matricula) + item('CPF', cpfFormatado(f.cpf || '')) + item('Telefone', f.telefone) +
       item('E-mail', f.email) + item('Admissão', dataBr(f.data_admissao)) + item('Contrato de trabalho', f.tipo_contrato) +
       item('Usuário do sistema', f.usuario_login);
+    el('func-ficha-desativar').hidden = f.ativo === 0;
     el('func-ficha').hidden = false;
     if (window.travarRolagemFundo) window.travarRolagemFundo(true);
     abaFicha(aba || 'documentos');
@@ -205,6 +192,11 @@
       if (b) abaFicha(b.dataset.fichaAba);
     });
     el('func-ficha-editar').addEventListener('click', () => irParaCadastro(fichaId));
+    el('func-ficha-desativar').addEventListener('click', async () => {
+      const f = funcionarios.find((x) => String(x.id) === fichaId);
+      if (!f || !confirm('Desativar ' + f.nome + '? Ele deixa de aparecer para novas equipes, mas continua no histórico.')) return;
+      try { await chamar('DELETE', '/funcionarios/' + f.id); fecharFicha(); await atualizarLista(); } catch (err) { alert(err.message); }
+    });
     el('func-ficha').addEventListener('click', (e) => {
       if (e.target === el('func-ficha') || e.target.closest('[data-fechar-func]')) fecharFicha();
     });

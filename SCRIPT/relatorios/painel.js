@@ -208,6 +208,8 @@
 
     alvo.innerHTML = '<div class="rel-so-desktop">' + tabela + '</div>'
       + '<div class="rel-so-celular">' + cards + '</div>';
+    // Sem detalhe próprio: o clique na linha mostra a ficha com todas as colunas.
+    if (!config.acao && window.FichaRegistro) window.FichaRegistro.ligarConsulta(alvo.querySelector('table'));
   }
 
   function renderizarPaginacao(alvo, total, pagina, limite, aoTrocar) {

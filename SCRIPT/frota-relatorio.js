@@ -161,6 +161,7 @@
   function iniciar() {
     const chips = el('frota-rel-periodos');
     if (!chips) return;
+    if (window.FichaRegistro) window.FichaRegistro.ligarConsulta(el('frota-rel-tabela'), { subtitulo: 'Relatório da frota' });
     chips.addEventListener('click', (e) => {
       const botao = e.target.closest('[data-periodo]');
       if (!botao) return;

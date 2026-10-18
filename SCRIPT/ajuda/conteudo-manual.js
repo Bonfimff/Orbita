@@ -40,6 +40,16 @@ window.OrbitaAjuda.registrarSecao({
       relacionados: ['gestao-usuarios', 'gestao-contratos'],
     },
     {
+      id: 'tabelas',
+      grupo: 'Geral',
+      titulo: 'Tabelas: ver, editar e excluir',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'Todas as tabelas funcionam igual: um clique (ou Enter) no registro abre a ficha dele, só para ver. Nenhuma linha tem botão de editar ou excluir.' },
+        { tipo: 'paragrafo', texto: 'As ações ficam dentro da ficha: **Editar** leva para a edição e **Excluir** (ou Desativar, Cancelar) aparece só para quem tem permissão. Na O.S., o botão **Abrir atendimento** abre a tela de despacho, pontos e fechamento.' },
+        { tipo: 'paragrafo', texto: 'Listas de itens dentro de um formulário que está sendo preenchido (itens de uma retirada, materiais do despacho) continuam com o botão de remover ao lado, porque fazem parte da edição.' },
+      ],
+    },
+    {
       id: 'acesso-contratos',
       grupo: 'Geral',
       titulo: 'Contratos com acesso',

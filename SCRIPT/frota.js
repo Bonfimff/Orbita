@@ -1068,7 +1068,7 @@
         : '-';
 
       return `
-        <tr>
+        <tr data-fr="abast" data-indice="${lista.indexOf(item)}" tabindex="0">
           <td>${escapeHtml(item.data_abastecimento || '-')}</td>
           <td>${escapeHtml(item.hora_abastecimento || '-')}</td>
           <td>${escapeHtml(item.placa || '-')}</td>
@@ -1080,6 +1080,20 @@
     });
 
     tbody.innerHTML = linhas.join('');
+    window.FichaRegistro.ligarTabela(tbody, 'tr[data-fr="abast"]', (linha) => {
+      const item = tbody._lista[Number(linha.dataset.indice)];
+      if (!item) return;
+      window.FichaRegistro.abrir({
+        titulo: 'Abastecimento ' + (item.placa || ''),
+        subtitulo: [item.data_abastecimento, item.hora_abastecimento].filter(Boolean).join(' às '),
+        campos: [
+          ['Placa', item.placa], ['Cartão', item.numero_cartao], ['Data', item.data_abastecimento],
+          ['Hora', item.hora_abastecimento], ['Observação', item.obs, { largo: true }],
+          ['Comprovante', item.comprovante_foto ? `<a href="${item.comprovante_foto}" target="_blank" rel="noopener">Ver foto</a>` : '', { html: true }],
+        ],
+      });
+    });
+    tbody._lista = lista;
   }
 
   function carregarCartoesAbastecimentoLocal() {
@@ -1514,8 +1528,8 @@
       return;
     }
 
-    const linhas = lista.map(item => `
-      <tr>
+    const linhas = lista.map((item, i) => `
+      <tr data-fr="checklist" data-indice="${i}" tabindex="0">
         <td>${escapeHtml(formatDataHoraChecklist(item.created_at))}</td>
         <td>${escapeHtml(item.placa || '-')}</td>
         <td>${escapeHtml(item.motorista || '-')}</td>
@@ -1531,6 +1545,23 @@
     `);
 
     tbody.innerHTML = linhas.join('');
+    tbody._lista = lista;
+    window.FichaRegistro.ligarTabela(tbody, 'tr[data-fr="checklist"]', (linha) => {
+      const item = tbody._lista[Number(linha.dataset.indice)];
+      if (!item) return;
+      window.FichaRegistro.abrir({
+        titulo: 'Checklist ' + (item.placa || ''),
+        subtitulo: formatDataHoraChecklist(item.created_at),
+        campos: [
+          ['Placa', item.placa], ['Motorista', item.motorista], ['Km', item.km],
+          ['Estepe', item.verificacao_estepe], ['Itens do checklist', item.confirmacao_itens_checklist],
+          ['Obs. dos itens', item.obs_itens_checklist, { largo: true }],
+          ['Equipamentos', item.confirmacao_equipamentos], ['Obs. dos equipamentos', item.obs_equipamentos, { largo: true }],
+          ['Observações', item.obs, { largo: true }],
+        ],
+        corpo: montarLinksChecklist(item),
+      });
+    });
   }
 
   async function listarChecklists() {
@@ -2215,7 +2246,7 @@
           </div>
           <div class="frota-alerta-acoes">
             <button type="button" class="btn-secundario btn-sm" data-alerta-acao="feito">Marcar como feito</button>
-            <button type="button" class="btn-secundario btn-sm" data-alerta-acao="excluir">Excluir</button>
+            <button type="button" class="btn-secundario btn-sm" data-alerta-acao="excluir" data-permissao="frota_alertas:excluir">Excluir</button>
           </div>
         </li>`;
     }).join('') + '</ul>';
@@ -2556,9 +2587,9 @@
         ${linhaDetalhe('Obs', escapeHtml(m.obs || ''))}
       </div>
       <div class="frota-detalhe-acoes" data-manut-id="${m.id}">
-        <button type="button" class="btn-secundario" data-manut-acao="editar">Editar</button>
+        <button type="button" class="btn-secundario" data-manut-acao="editar" data-permissao="frota_manutencoes:editar">Editar</button>
         ${aberta ? '<button type="button" class="btn-primario" data-manut-acao="concluir">Concluir</button>' : ''}
-        <button type="button" class="btn-secundario" data-manut-acao="excluir">Excluir</button>
+        <button type="button" class="btn-secundario fr-perigo" data-manut-acao="excluir" data-permissao="frota_manutencoes:excluir">Excluir</button>
       </div>`);
   }
 
@@ -2730,8 +2761,8 @@
         ${linhaDetalhe('Obs', escapeHtml(o.obs || ''))}
       </div>
       <div class="frota-detalhe-acoes" data-oficina-id="${o.id}">
-        <button type="button" class="btn-secundario" data-oficina-acao="editar">Editar</button>
-        <button type="button" class="btn-secundario" data-oficina-acao="excluir">Excluir</button>
+        <button type="button" class="btn-secundario" data-oficina-acao="editar" data-permissao="frota_oficinas:editar">Editar</button>
+        <button type="button" class="btn-secundario fr-perigo" data-oficina-acao="excluir" data-permissao="frota_oficinas:excluir">Excluir</button>
       </div>`);
   }
 
@@ -2765,8 +2796,8 @@
         ${linhaDetalhe('Obs', escapeHtml(c.obs || ''))}
       </div>
       <div class="frota-detalhe-acoes" data-cartao-id="${c.id}">
-        <button type="button" class="btn-secundario" data-cartao-acao="editar">Editar</button>
-        <button type="button" class="btn-secundario" data-cartao-acao="excluir">Excluir</button>
+        <button type="button" class="btn-secundario" data-cartao-acao="editar" data-permissao="frota_abastecimentos:editar">Editar</button>
+        <button type="button" class="btn-secundario fr-perigo" data-cartao-acao="excluir" data-permissao="frota_abastecimentos:excluir">Excluir</button>
       </div>`);
   }
 

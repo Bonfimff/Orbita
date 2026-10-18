@@ -63,7 +63,7 @@
         <h4 class="ficha-titulo">Férias programadas e tiradas</h4>
         <div class="tabela-responsiva">
           <table class="estilo-tabela ficha-tabela">
-            <thead><tr><th>Período aquisitivo</th><th>Início</th><th>Fim</th><th>Dias</th><th>Abono</th><th>Situação</th><th></th></tr></thead>
+            <thead><tr><th>Período aquisitivo</th><th>Início</th><th>Fim</th><th>Dias</th><th>Abono</th><th>Situação</th></tr></thead>
             <tbody data-f="lista"></tbody>
           </table>
         </div>
@@ -106,13 +106,11 @@
           `<option value="${p.inicio}">${dataBr(p.inicio)} a ${dataBr(p.fim)} (saldo ${p.saldo} dias${p.situacao === 'em_aquisicao' ? ', em aquisição' : ''})</option>`).join('') ||
           '<option value="">Sem saldo</option>';
       }
+      ultimas = r.ferias;
       f('lista').innerHTML = r.ferias.slice().reverse().map((x) => `
-        <tr><td>${dataBr(x.periodo_inicio)}</td><td>${dataBr(x.inicio)}</td><td>${dataBr(x.fim)}</td><td>${x.dias}</td>
-          <td>${x.abono_dias || '-'}</td><td><span class="ficha-selo ${x.situacao === 'em_gozo' ? 'ok' : 'neutro'}">${SITUACAO_FERIAS[x.situacao] || x.situacao}</span>
-          ${x.observacao ? `<small>${esc(x.observacao)}</small>` : ''}</td>
-          <td>${podeEditar && x.situacao === 'programada' ? `<button type="button" class="ficha-acao perigo" data-cancelar="${x.id}" title="Cancelar" aria-label="Cancelar férias">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>` : ''}</td></tr>`).join('') ||
-        '<tr><td colspan="7">Nenhuma férias registrada.</td></tr>';
+        <tr class="linha-clicavel" data-ferias="${x.id}" tabindex="0"><td>${dataBr(x.periodo_inicio)}</td><td>${dataBr(x.inicio)}</td><td>${dataBr(x.fim)}</td><td>${x.dias}</td>
+          <td>${x.abono_dias || '-'}</td><td><span class="ficha-selo ${x.situacao === 'em_gozo' ? 'ok' : 'neutro'}">${SITUACAO_FERIAS[x.situacao] || x.situacao}</span></td></tr>`).join('') ||
+        '<tr><td colspan="6">Nenhuma férias registrada.</td></tr>';
       contarDias();
     }
 
@@ -146,14 +144,26 @@
         } catch (e) { feedback(e.message, 'erro'); }
       });
     }
-    f('lista').addEventListener('click', async (e) => {
-      const b = e.target.closest('[data-cancelar]');
-      if (!b || !confirm('Cancelar estas férias programadas?')) return;
-      try {
-        await chamar('DELETE', `/funcionarios/${id}/ferias/${b.dataset.cancelar}`);
-        await carregar();
-        if (opcoes.aoMudar) opcoes.aoMudar();
-      } catch (err) { feedback(err.message, 'erro'); }
+    // Padrão das tabelas: clique abre a ficha das férias; Cancelar fica nela.
+    let ultimas = [];
+    window.FichaRegistro.ligarTabela(f('lista'), 'tr[data-ferias]', (linha) => {
+      const x = ultimas.find((v) => String(v.id) === linha.dataset.ferias);
+      if (!x) return;
+      window.FichaRegistro.abrir({
+        titulo: 'Férias de ' + dataBr(x.inicio) + ' a ' + dataBr(x.fim),
+        subtitulo: SITUACAO_FERIAS[x.situacao] || x.situacao,
+        campos: [
+          ['Período aquisitivo', dataBr(x.periodo_inicio)], ['Dias de descanso', String(x.dias)],
+          ['Abono (dias vendidos)', x.abono_dias ? String(x.abono_dias) : ''], ['Observação', x.observacao, { largo: true }],
+        ],
+        excluir: async () => {
+          await chamar('DELETE', `/funcionarios/${id}/ferias/${x.id}`);
+        },
+        rotuloExcluir: 'Cancelar férias',
+        podeExcluir: podeEditar && x.situacao === 'programada',
+        confirmar: 'Cancelar estas férias programadas?',
+        aoExcluir: async () => { await carregar(); if (opcoes.aoMudar) opcoes.aoMudar(); },
+      });
     });
     raiz.querySelector('[data-f="ir-admissao"]')?.addEventListener('click', () => opcoes.aoPedirAdmissao());
 

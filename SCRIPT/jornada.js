@@ -148,6 +148,7 @@
           <td>${badge(j.status)}</td>
           <td>${escapar(j.observacao || '')}</td>
         </tr>`).join('') || '<tr><td colspan="5">Nenhum registro.</td></tr>';
+      if (window.FichaRegistro) window.FichaRegistro.ligarConsulta(document.getElementById('jor-tabela-historico'), { subtitulo: 'Meu registro de ponto' });
     } catch (e) {
       console.error('[jornada] meu historico', e);
     }

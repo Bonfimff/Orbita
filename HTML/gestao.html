@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=63" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=64" />
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
   <link rel="stylesheet" href="../CSS/gestao.css?v=12" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
@@ -135,7 +135,6 @@
                 <th>Usuário</th>
                 <th>Cargo / Perfil</th>
                 <th>E-mail</th>
-                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -173,7 +172,7 @@
       </div>
       <div class="tabela-responsiva">
         <table class="estilo-tabela" id="tabela-funcionarios">
-          <thead><tr><th>Nome</th><th>CPF</th><th>Matrícula</th><th>Função</th><th>Usuário</th><th>Situação</th><th>Ações</th></tr></thead>
+          <thead><tr><th>Nome</th><th>CPF</th><th>Matrícula</th><th>Função</th><th>Usuário</th><th>Situação</th></tr></thead>
           <tbody><tr><td colspan="7"><div class="carregando-inline" role="status"><span class="carregando-inline-logo"></span><span class="carregando-inline-texto">Carregando...</span></div></td></tr></tbody>
         </table>
       </div>
@@ -202,7 +201,6 @@
               <th>Nome</th>
               <th>CNPJ</th>
               <th>Usuários com acesso</th>
-              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -470,6 +468,7 @@
           <small id="func-ficha-sub"></small>
         </div>
         <div class="contrato-ficha-acoes">
+          <button type="button" class="jor-btn jor-btn-secundario fr-perigo" id="func-ficha-desativar" data-permissao="gestao_funcionarios:excluir">Desativar</button>
           <button type="button" class="jor-btn jor-btn-secundario" id="func-ficha-editar" data-permissao="gestao_funcionarios:editar">Editar</button>
           <button type="button" class="jor-cal-fechar" data-fechar-func aria-label="Fechar">&times;</button>
         </div>
@@ -493,6 +492,7 @@
           <small id="contrato-ficha-sub"></small>
         </div>
         <div class="contrato-ficha-acoes">
+          <button type="button" class="jor-btn jor-btn-secundario fr-perigo" id="contrato-ficha-excluir" data-permissao="gestao_contratos:excluir">Excluir</button>
           <button type="button" class="jor-btn jor-btn-secundario" id="contrato-ficha-editar" data-permissao="gestao_contratos:editar">Editar</button>
           <button type="button" class="jor-cal-fechar" data-fechar-contrato aria-label="Fechar">&times;</button>
         </div>
@@ -555,18 +555,19 @@
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
   <script src="../SCRIPT/operacional/explorador.js?v=4"></script>
-  <script src="../SCRIPT/gestao.js?v=21"></script>
+  <script src="../SCRIPT/gestao.js?v=22"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
   <script src="../SCRIPT/geral.js?v=42"></script>
+  <script src="../SCRIPT/ficha-registro.js?v=1"></script>
   <script src="../SCRIPT/navegacao-subabas.js?v=1"></script>
   <script src="../SCRIPT/configuracoes.js?v=7"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=28"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=29"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
-  <script src="../SCRIPT/cadastros/ferias-ui.js?v=1"></script>
-  <script src="../SCRIPT/gestao-funcionarios.js?v=7"></script>
+  <script src="../SCRIPT/cadastros/ferias-ui.js?v=2"></script>
+  <script src="../SCRIPT/gestao-funcionarios.js?v=8"></script>
   <script src="../SCRIPT/gestao-jornadas.js?v=7"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/relatorios/graficos.js?v=1"></script>

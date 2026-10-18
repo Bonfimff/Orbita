@@ -822,8 +822,8 @@ tabelaProdutos.addEventListener('click', function(event) {
         codigo: cells[2]?.textContent || ''
       };
 
-      // Chama o modal com as opções
-      criarModalEscolhaAcao(dadosProduto, row, cells);
+      // Ficha do produto (todas as colunas); Editar e Excluir ficam nela.
+      abrirFichaProduto(dadosProduto, row, cells);
     }
   }
 });
@@ -832,6 +832,26 @@ tabelaProdutos.addEventListener('click', function(event) {
 // FUNÇÃO AUXILIAR: Criar Modal de Escolha de Ação
 // Cria e exibe um modal com as opções de Editar e Excluir para o produto selecionado.
 //======================================================================================================
+function abrirFichaProduto(dados, row, cells) {
+  const F = window.FichaRegistro;
+  const tabela = row.closest('table');
+  const cab = Array.from(tabela.tHead ? tabela.tHead.rows[0].cells : []);
+  const campos = Array.from(cells)
+    .map((td, i) => { const th = (td.dataset.coluna && cab.find((h) => h.dataset.coluna === td.dataset.coluna)) || cab[i]; return [th ? th.textContent.trim() : '', td.style.display === 'none' ? '' : td.innerHTML.trim(), { html: true }]; })
+    .filter((c) => c[0] && c[1] && c[1] !== '-');
+  F.abrir({
+    titulo: (dados.nome || 'Produto').trim(),
+    subtitulo: 'Produto ' + String(dados.id).trim(),
+    campos: campos,
+    editar: () => editarProdutoComBusca(dados.id),
+    podeEditar: F.pode('estoque_produtos', 'editar'),
+    rotuloEditar: 'Editar produto',
+    excluir: async () => { F.fechar(); await excluirProduto(row, cells); },
+    podeExcluir: F.pode('estoque_produtos', 'excluir'),
+    confirmar: false,
+  });
+}
+
 function criarModalEscolhaAcao(dados, row, cells) {
   // Remove modal existente se houver
   const modalExistente = document.getElementById('modal-escolha-acao');
@@ -3520,6 +3540,7 @@ async function carregarTodasRetiradas() {
     items.forEach(item => {
       const row = document.createElement('tr');
       const idRetirada = item.id_retirada || item.id || '';
+      row.dataset.idRetirada = idRetirada;
       row.innerHTML = `
         <td data-coluna="id">${item.id || ''}</td>
         <td data-coluna="data">${item.data || item.data_retirada || ''}</td>
@@ -3528,39 +3549,10 @@ async function carregarTodasRetiradas() {
         <td data-coluna="quantidade">${item.quantidade || ''}</td>
         <td data-coluna="local">${item.local || ''}</td>
         <td data-coluna="observacao">${item.observacao || ''}</td>
-        <td data-coluna="acao" style="text-align: center;">
-          <button class="btn-retirada-acao" data-id-retirada="${escapeHtml(idRetirada)}" style="
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            transition: all 0.3s;
-          ">
-            📤 Retirada
-          </button>
-        </td>
       `;
       tbody.appendChild(row);
     });
     
-    // Adiciona listeners aos botões de retirada
-    document.querySelectorAll('.btn-retirada-acao').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const idRetirada = this.getAttribute('data-id-retirada');
-        processarRetiradaCompleta(idRetirada);
-      });
-      // Hover effect
-      btn.addEventListener('mouseenter', function() {
-        this.style.background = '#218838';
-      });
-      btn.addEventListener('mouseleave', function() {
-        this.style.background = '#28a745';
-      });
-    });
   } catch (error) {
     console.error('Erro ao carregar retiradas:', error);
   }
@@ -4023,4 +4015,24 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // =================================== FINAL DO SCRIPT =====================================
+});
+//======================================================================================================
+// PADRÃO DAS TABELAS: clique na linha abre a ficha do registro (só ver).
+// As ações do registro ficam dentro da ficha (ex.: concluir a retirada).
+//======================================================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const F = window.FichaRegistro;
+  if (!F) return;
+  const tab = (id) => document.getElementById(id);
+  F.ligarConsulta(tab('tabela-retiradas-lista'), {
+    titulo: (tr, c) => 'Retirada ' + (c[0] ? c[0].textContent.trim() : ''),
+    acoes: (tr) => [{
+      rotulo: 'Concluir retirada', classe: 'fr-primario',
+      fn: (fechar) => { fechar(); processarRetiradaCompleta(tr.dataset.idRetirada); },
+    }],
+  });
+  F.ligarConsulta(tab('tabela-devolucoes-lista'), { titulo: (tr, c) => 'Devolução ' + (c[0] ? c[0].textContent.trim() : '') });
+  F.ligarConsulta(tab('tabela-fornecedores-lista'), { titulo: (tr, c) => (c[1] ? c[1].textContent.trim() : 'Fornecedor'), subtitulo: 'Fornecedor' });
+  F.ligarConsulta(tab('tabela-requisitantes-lista'), { titulo: (tr, c) => (c[1] ? c[1].textContent.trim() : 'Requisitante'), subtitulo: 'Requisitante' });
+  F.ligarConsulta(tab('tabela-kits-lista'), { subtitulo: 'Kit' });
 });

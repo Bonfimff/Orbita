@@ -160,26 +160,22 @@
         config.vazioDetalhe);
     }
 
-    const acoes = (item) =>
-      '<div class="cad-acoes">'
-      + '<button type="button" class="rel-btn-mini" data-editar="' + item.id + '">Editar</button>'
-      + '<button type="button" class="rel-btn-mini" data-alternar="' + item.id + '">'
-      + (item.ativo ? 'Desativar' : 'Ativar') + '</button>'
-      + '<button type="button" class="rel-btn-mini rel-btn-mini-perigo" data-remover="'
-      + item.id + '">Excluir</button></div>';
-
+    // Padrão das tabelas: sem botões na linha. O clique abre a ficha do
+    // registro; Editar, Desativar/Ativar e Excluir ficam dentro dela.
     const tabela = '<table class="rel-tabela"><thead><tr>'
       + colunas.map((c) => '<th' + (c.numerica ? ' class="rel-num"' : '') + '>'
           + escapar(c.titulo) + '</th>').join('')
-      + '<th>Ações</th></tr></thead><tbody>'
-      + itens.map((item) => '<tr' + (item.ativo ? '' : ' class="rel-linha-inativa"') + '>'
+      + '</tr></thead><tbody>'
+      + itens.map((item) => '<tr data-fr-id="' + escapar(item.id) + '" tabindex="0" class="linha-clicavel'
+          + (item.ativo ? '' : ' rel-linha-inativa') + '">'
           + colunas.map((c) => '<td' + (c.numerica ? ' class="rel-num"' : '') + '>'
               + c.valor(item) + '</td>').join('')
-          + '<td>' + acoes(item) + '</td></tr>').join('')
+          + '</tr>').join('')
       + '</tbody></table>';
 
     const cards = '<ul class="rel-cards">'
-      + itens.map((item) => '<li class="rel-card' + (item.ativo ? '' : ' rel-card-inativo') + '">'
+      + itens.map((item) => '<li class="rel-card linha-clicavel' + (item.ativo ? '' : ' rel-card-inativo')
+          + '" data-fr-id="' + escapar(item.id) + '" tabindex="0">'
           + '<div class="rel-card-topo">'
           + '<span class="rel-card-titulo">' + config.tituloCard(item) + '</span>'
           + (item.ativo ? '' : '<span class="rel-tag">inativo</span>')
@@ -188,30 +184,35 @@
           + colunas.filter((c) => !c.ocultarCard)
               .map((c) => '<div><dt>' + escapar(c.titulo) + '</dt><dd>'
                 + c.valor(item) + '</dd></div>').join('')
-          + '</dl>' + acoes(item) + '</li>').join('')
+          + '</dl></li>').join('')
       + '</ul>';
 
     alvo.innerHTML = '<div class="rel-so-desktop">' + tabela + '</div>'
       + '<div class="rel-so-celular">' + cards + '</div>';
 
-    // Delegação por container: as ações existem duas vezes na página (tabela e
-    // cards) e ligar uma por uma duplicaria todos os handlers.
-    alvo.querySelectorAll('[data-editar]').forEach((botao) => {
-      botao.addEventListener('click', () => {
-        const item = itens.find((i) => String(i.id) === botao.dataset.editar);
-        if (item) config.aoEditar(item);
-      });
-    });
-    alvo.querySelectorAll('[data-alternar]').forEach((botao) => {
-      botao.addEventListener('click', () => {
-        const item = itens.find((i) => String(i.id) === botao.dataset.alternar);
-        if (item) config.aoAlternar(item);
-      });
-    });
-    alvo.querySelectorAll('[data-remover]').forEach((botao) => {
-      botao.addEventListener('click', () => {
-        const item = itens.find((i) => String(i.id) === botao.dataset.remover);
-        if (item) config.aoRemover(item);
+    const F = window.FichaRegistro;
+    const chave = config.permissao || 'analise_cadastros';
+    alvo._itensFicha = itens;
+    F.ligarTabela(alvo, '[data-fr-id]', (linha) => {
+      const item = (alvo._itensFicha || []).find((i) => String(i.id) === linha.dataset.frId);
+      if (!item) return;
+      const autoria = blocoAutoria(item);
+      F.abrir({
+        titulo: config.tituloCard(item).replace(/<[^>]+>/g, ''),
+        subtitulo: item.ativo ? 'Ativo' : 'Inativo',
+        campos: colunas.map((c) => [c.titulo, c.valor(item), { html: true }])
+          .filter((c) => c[1] && c[1] !== '-'),
+        corpo: autoria ? '<div class="cad-form-meta">' + autoria + '</div>' : '',
+        editar: () => config.aoEditar(item),
+        podeEditar: F.pode(chave, 'editar'),
+        acoes: [{
+          rotulo: item.ativo ? 'Desativar' : 'Ativar',
+          mostrar: F.pode(chave, 'editar'),
+          fn: (fechar) => { fechar(); config.aoAlternar(item); },
+        }],
+        excluir: async () => { F.fechar(); await config.aoRemover(item); },
+        podeExcluir: F.pode(chave, 'excluir'),
+        confirmar: false,
       });
     });
   }
