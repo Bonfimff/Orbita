@@ -1485,6 +1485,36 @@ document.addEventListener('DOMContentLoaded', function () {
   // O titulo e espelhado da propria .aba-legenda, entao acompanha a troca de aba em
   // qualquer modulo - inclusive nos que reescrevem a legenda por JS (frota/gestao).
   //====================================================================================================
+  //====================================================================================================
+  // Tablet em pé: o painel direito vira gaveta pela direita, aberta por um
+  // botão na barra de cima, para o conteúdo não ficar espremido entre os
+  // dois painéis. A regra de quando vale fica no CSS (geral.css, "Tablet em pé").
+  function iniciarPainelDireitoTablet() {
+    const painel = document.querySelector('.sidebar-right');
+    const barra = document.querySelector('.top-bar-right');
+    if (!painel || !barra || document.querySelector('.painel-direito-toggle')) return;
+    const botao = document.createElement('button');
+    botao.type = 'button';
+    botao.className = 'painel-direito-toggle';
+    botao.setAttribute('aria-label', 'Mostrar painel lateral');
+    botao.title = 'Painel lateral';
+    botao.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></svg>';
+    barra.appendChild(botao);
+    const fundo = document.createElement('div');
+    fundo.className = 'painel-direito-fundo';
+    document.body.appendChild(fundo);
+    const alternar = (abrir) => {
+      painel.classList.toggle('aberto-tablet', abrir);
+      fundo.classList.toggle('ativo', abrir);
+      botao.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+    };
+    botao.addEventListener('click', () => alternar(!painel.classList.contains('aberto-tablet')));
+    fundo.addEventListener('click', () => alternar(false));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') alternar(false); });
+    // Girou para a horizontal: o painel volta a ser fixo.
+    window.matchMedia('(orientation: portrait)').addEventListener?.('change', () => alternar(false));
+  }
+
   function iniciarCabecalhoPainel() {
     const conteudo = document.querySelector('.content');
     if (!conteudo || document.querySelector('.painel-cabecalho')) return;
@@ -1730,6 +1760,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('DOMContentLoaded', function () {
     iniciarNavInferior();
     iniciarCabecalhoPainel();
+    iniciarPainelDireitoTablet();
     iniciarSinoNotificacoes();
   });
 })();

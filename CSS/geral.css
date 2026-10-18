@@ -3344,3 +3344,56 @@ html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after 
 .base-popup-item strong { color: var(--cor-primaria-escura); }
 .base-popup-item small { display: block; color: #94a3b8; font-size: 11px; }
 .base-popup-vazio { color: #94a3b8; }
+
+/* ---------- Tablet em pé ----------
+   Entre o celular e o computador, na vertical: menu esquerdo fixo e o painel
+   direito como gaveta (botão na barra de cima), para sobrar largura ao
+   conteúdo. Na horizontal o tablet continua como computador. */
+.painel-direito-toggle,
+.painel-direito-fundo { display: none; }
+
+@media (min-width: 769px) and (max-width: 1199px) and (orientation: portrait) {
+  body { grid-template-columns: 200px 1fr; }
+  .sidebar-right {
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    z-index: var(--z-drawer);
+    box-shadow: none;
+  }
+  .sidebar-right.aberto-tablet {
+    transform: translateX(0);
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.25);
+  }
+  .painel-direito-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 34px;
+    margin-left: 6px;
+    padding: 0;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: none;
+    color: #fff;
+    cursor: pointer;
+  }
+  .painel-direito-toggle[aria-expanded="true"] { border-color: var(--cor-destaque); color: var(--cor-destaque); }
+  .painel-direito-fundo {
+    display: block;
+    position: fixed;
+    inset: 60px 0 0 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: var(--z-drawer-overlay);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .painel-direito-fundo.ativo { opacity: 1; pointer-events: auto; }
+  /* Barra de cima compacta para caber módulos e o botão do painel numa linha */
+  .top-bar { padding: 0 12px; }
+  .top-bar-right { display: flex; align-items: center; flex-wrap: nowrap; gap: 4px; }
+  .top-bar-right .top-tab { padding: 8px 11px; font-size: 13px; margin: 0; white-space: nowrap; }
+  .account-info { min-width: 0; }
+  #logged-user { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; display: inline-block; vertical-align: middle; }
+}
