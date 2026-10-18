@@ -417,3 +417,11 @@
 .contrato-ficha { max-width: 760px; }
 .contrato-ficha-acoes { display: flex; align-items: center; gap: 6px; }
 .contrato-ficha .ponto-info { grid-template-columns: 1fr; }
+
+/* Calendário fixo na barra lateral direita (tela grande) */
+.jor-cal-lateral { width: 100%; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,.08); }
+.jor-cal-lateral .jor-cal { width: auto; max-width: none; max-height: none; margin: 0; padding: 0; box-shadow: none; background: transparent; border-radius: 0; }
+.jor-cal-lateral .jor-cal-fechar { display: none; }
+.jor-cal-lateral .jor-cal-topo h3 { font-size: 14px; }
+.jor-cal-lateral .jor-cal-dia { font-size: 12px; }
+.jor-cal-lateral .jor-cal-legenda { gap: 6px 10px; font-size: 11px; }

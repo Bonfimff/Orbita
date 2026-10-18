@@ -356,7 +356,36 @@
       console.error('[jornada] calendario', e);
     }
     preencherHoje();
+    posicionarCalendario();
   }
+
+  // Tela grande: o calendário fica fixo na barra lateral direita, abaixo do clima,
+  // e o botão "Ver calendário" some. Tela menor: volta a abrir como janela.
+  const telaGrande = window.matchMedia('(min-width: 1200px)');
+  function posicionarCalendario() {
+    const painel = document.querySelector('#jor-cal .jor-cal, .jor-cal-lateral .jor-cal');
+    const lateral = document.querySelector('.sidebar-right');
+    const fundo = el('jor-cal');
+    if (!painel || !lateral || !fundo) return;
+    const naLateral = telaGrande.matches && getComputedStyle(lateral).display !== 'none';
+    let caixa = lateral.querySelector('.jor-cal-lateral');
+    if (naLateral) {
+      if (!caixa) {
+        caixa = document.createElement('div');
+        caixa.className = 'jor-cal-lateral';
+        lateral.appendChild(caixa);
+      }
+      fecharCalendario();
+      if (painel.parentNode !== caixa) caixa.appendChild(painel);
+      if (!cal.ano) { const h = new Date(); cal.ano = h.getFullYear(); cal.mes = h.getMonth(); }
+      desenharCalendario();
+    } else if (painel.parentNode !== fundo) {
+      fundo.appendChild(painel);
+      if (caixa) caixa.remove();
+    }
+    el('jor-btn-calendario').hidden = naLateral;
+  }
+  telaGrande.addEventListener('change', posicionarCalendario);
 
   function inicializar() {
     if (typeof window.inicializarAbasPadrao === 'function') window.inicializarAbasPadrao();
