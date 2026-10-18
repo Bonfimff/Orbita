@@ -406,26 +406,22 @@
   }
 
   //=========================================================== DRILL-DOWN
+  // Padrão das tabelas: a ficha do ponto abre na janela comum (FichaRegistro).
   async function abrirDetalhePonto(pontoId) {
-    const painel = elemento('rel-detalhe');
-    const overlay = elemento('rel-detalhe-overlay');
-    const corpo = elemento('rel-detalhe-corpo');
-    if (!painel) return;
-
     // Um modal de cada vez: com o bottom sheet de filtros aberto por baixo, o
     // botao Aplicar continuaria clicavel sem estar visivel.
     if (typeof filtros.fecharPainel === 'function') filtros.fecharPainel();
 
-    painel.hidden = false;
-    overlay.hidden = false;
-    document.body.classList.add('rel-detalhe-aberto');
+    const corpo = document.createElement('div');
+    corpo.className = 'rel-ficha-ponto';
+    window.FichaRegistro.abrir({ titulo: 'Ponto', subtitulo: 'Histórico do ponto', corpo: corpo });
     api.estadoCarregando(corpo, 'Carregando histórico do ponto...');
 
     try {
       const dados = await api.buscar('/analitico/ponto/' + pontoId + '/historico', {},
         'detalhe-ponto');
-      elemento('rel-detalhe-titulo').textContent =
-        dados.ponto.codigo + (dados.ponto.nome ? ' · ' + dados.ponto.nome : '');
+      const titulo = document.getElementById('fr-titulo');
+      if (titulo) titulo.textContent = dados.ponto.codigo + (dados.ponto.nome ? ' · ' + dados.ponto.nome : '');
 
       const resumo = dados.resumo || {};
       corpo.innerHTML =
@@ -482,6 +478,27 @@
     if (painel) painel.hidden = true;
     if (overlay) overlay.hidden = true;
     document.body.classList.remove('rel-detalhe-aberto');
+  }
+
+  // Linha de problema numa tabela: ficha com as colunas e a ação de ver os
+  // pontos que tiveram esse problema.
+  function abrirFichaProblema(linha) {
+    const tabela = linha.closest('table');
+    const cab = tabela && tabela.tHead ? Array.from(tabela.tHead.rows[0].cells) : [];
+    const campos = (linha.tagName === 'TR'
+      ? Array.from(linha.cells).map((td, i) => [cab[i] ? cab[i].textContent.trim() : '', td.innerHTML.trim(), { html: true }])
+      : [['Problema', (linha.querySelector('.rel-card-titulo') || {}).innerHTML || '', { html: true }]].concat(
+          Array.from(linha.querySelectorAll('dl > div')).map((d) => [d.querySelector('dt').textContent.trim(), d.querySelector('dd').innerHTML.trim(), { html: true }])))
+      .filter((c) => c[0] && c[1] && c[1] !== '-' && c[0] !== '#');
+    const id = linha.dataset.id;
+    window.FichaRegistro.abrir({
+      titulo: (campos.find((c) => /problema/i.test(c[0])) || campos[0] || ['', 'Problema'])[1].replace(/<[^>]+>/g, ''),
+      subtitulo: 'Problema',
+      campos: campos,
+      acoes: [{ rotulo: 'Ver pontos com este problema', classe: 'fr-primario', fn: (fechar) => {
+        fechar(); filtros.definir('problema_id', id); irParaAba('ranking-pontos');
+      } }],
+    });
   }
 
   //============================================================== NAVEGACAO
@@ -550,6 +567,8 @@
 
       if (acao === 'ponto' && alvo.dataset.id) {
         abrirDetalhePonto(alvo.dataset.id);
+      } else if (acao === 'problema' && alvo.dataset.id && (alvo.tagName === 'TR' || alvo.classList.contains('rel-card'))) {
+        abrirFichaProblema(alvo);
       } else if (acao === 'problema' && alvo.dataset.id) {
         filtros.definir('problema_id', alvo.dataset.id);
         irParaAba('ranking-pontos');

@@ -205,8 +205,8 @@
       + '<div class="rel-aviso rel-aviso-inline rel-pendencia-nota">'
       + api.percentual(resumo.percentual_completo) + ' das ocorrências do período '
       + 'estão com classificação completa. '
-      + api.numero(resumo.sem_equipamento) + ' sem equipamento informado, '
-      + 'isso <b>não</b> é pendência: equipamento pode não se aplicar.</div>';
+      + api.numero(resumo.sem_equipamento) + ' sem equipamento informado '
+      + '<button type="button" class="ajuda-contextual" data-ajuda="relatorios-pendentes" aria-label="Ver no manual" title="Ver no manual">i</button></div>';
 
       alvoKpis.querySelectorAll('[data-motivo-kpi]').forEach((cartao) => {
         cartao.addEventListener('click', () => {
