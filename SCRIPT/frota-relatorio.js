@@ -146,16 +146,11 @@
   }
 
   function baixarTabela() {
-    if (!ultimo || !ultimo.veiculos) return;
+    if (!ultimo || !ultimo.veiculos) return null;
     const cab = ['Placa', 'Veículo', 'Status', 'Km atual', 'O.S.', 'Km em O.S.', 'Manutenções', 'Custo', 'Dias parado', 'Abastecimentos', 'Checklists', 'Alertas vencidos', 'Contratos'];
     const linhas = ultimo.veiculos.map((v) => [v.placa, v.modelo, v.status, v.km_atual ?? '', v.os, v.km_os, v.manutencoes,
-      String(v.custo).replace('.', ','), v.dias_parado, v.abastecimentos, v.checklists, v.alertas_vencidos, (v.contratos || []).join(' | ')]);
-    const csv = [cab].concat(linhas).map((l) => l.map((c) => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\r\n');
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
-    link.download = `relatorio-frota_${ultimo.periodo.inicio}_${ultimo.periodo.fim}.csv`;
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      Number(v.custo) || 0, v.dias_parado, v.abastecimentos, v.checklists, v.alertas_vencidos, (v.contratos || []).join(' | ')]);
+    return { colunas: cab, linhas };
   }
 
   function iniciar() {
@@ -178,7 +173,10 @@
       ['placa', 'contrato', 'tipo'].forEach((c) => { estado[c] = ''; el('frota-rel-' + c).value = ''; });
       carregar();
     });
-    el('frota-rel-baixar').addEventListener('click', baixarTabela);
+    if (window.ExportarTabela) window.ExportarTabela.ligar('#frota-rel-tabela', {
+      titulo: 'Relatório da frota', arquivo: 'relatorio_frota', dados: baixarTabela,
+      subtitulo: () => (ultimo && ultimo.periodo ? 'Período ' + ultimo.periodo.inicio.split('-').reverse().join('/') + ' a ' + ultimo.periodo.fim.split('-').reverse().join('/') : ''),
+    });
 
     // Só consulta quando a aba é aberta pela primeira vez.
     const aba = el('relatorios');

@@ -3380,28 +3380,7 @@ async function confirmarExclusao(id) {
 // ============================================================
 //  EXPORTAR EXCEL
 // ============================================================
-
-function exportarOSParaExcel() {
-  const tabela = document.getElementById('tabela-busca-os');
-  if (!tabela) return;
-  const rows = [];
-  const ths = tabela.querySelectorAll('thead th');
-  const cabecalho = Array.from(ths).map(th => th.textContent.trim()).filter(t => t !== 'Ações');
-  rows.push(cabecalho);
-  tabela.querySelectorAll('tbody tr').forEach(tr => {
-    if (tr.style.display === 'none') return;
-    const tds = Array.from(tr.querySelectorAll('td')).slice(0, cabecalho.length);
-    rows.push(tds.map(td => td.textContent.trim()));
-  });
-  const conteudo = rows.map(r => r.join('\t')).join('\n');
-  const blob = new Blob(['\uFEFF' + conteudo], { type: 'text/tab-separated-values;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `ordens_servico_${new Date().toISOString().slice(0, 10)}.xls`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
+// Baixar planilha: SCRIPT/exportar-tabela.js (ícone no cabeçalho da tabela).
 
 // ============================================================
 //  INIT
@@ -3474,7 +3453,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   // ---- Busca ----
   document.getElementById('btn-buscar-os')?.addEventListener('click', buscarOrdens);
-  document.getElementById('btn-baixar-os')?.addEventListener('click', exportarOSParaExcel);
+  if (window.ExportarTabela) window.ExportarTabela.ligar('#tabela-busca-os', { titulo: 'Ordens de serviço', arquivo: 'ordens_servico' });
 
   // Filtros em tempo real
   ['filtro-os-numero', 'filtro-os-solicitante', 'filtro-os-tecnico'].forEach(id => {

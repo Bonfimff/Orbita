@@ -164,92 +164,16 @@ function carregarRascunhoRetirada() {
   }
 }
 
-function exportarTabelaProdutosParaExcel() {
-
-  const aoa = [];
-  aoa.push([]); // Linha 1 vazia
-  aoa.push(['', ...headers]); // Linha 2: cabeçalho começa em B2
-  data.forEach(row => aoa.push(['', ...row]));
-
-  const ws = XLSX.utils.aoa_to_sheet(aoa);
-
-  // Estilização do cabeçalho (linha 2, colunas B em diante)
-  const colCount = headers.length;
-  // Cabeçalho: linha 2 (índice 1)
-  for (let c = 1; c <= colCount; ++c) {
-    const cell = ws[XLSX.utils.encode_cell({r:1, c:c})];
-    if (cell) {
-      cell.s = {
-        fill: { patternType: 'solid', fgColor: { rgb: '4D4D4D' } },
-        font: { name: 'Calibri', sz: 14, bold: true, color: { rgb: 'FFFF00' } },
-        alignment: { horizontal: 'center', vertical: 'center' },
-        border: {
-          top:    { style: 'thin', color: { rgb: '888888' } },
-          bottom: { style: 'thin', color: { rgb: '888888' } },
-          left:   { style: 'thin', color: { rgb: '888888' } },
-          right:  { style: 'thin', color: { rgb: '888888' } }
-        }
-      };
-    }
-  }
-  // Conteúdo: linhas 3+ (índice 2 em diante)
-  for (let r = 2; r < aoa.length; ++r) {
-    for (let c = 1; c <= colCount; ++c) {
-      const cell = ws[XLSX.utils.encode_cell({r:r, c:c})];
-      if (cell) {
-        cell.s = {
-          font: { name: 'Calibri', sz: 12, bold: false, color: { rgb: '000000' } },
-          alignment: { horizontal: 'left', vertical: 'center' },
-          border: {
-            top:    { style: 'thin', color: { rgb: 'BBBBBB' } },
-            bottom: { style: 'thin', color: { rgb: 'BBBBBB' } },
-            left:   { style: 'thin', color: { rgb: 'BBBBBB' } },
-            right:  { style: 'thin', color: { rgb: 'BBBBBB' } }
-          }
-        };
-      }
-    }
-  }
-
-  // Ajuste automático de largura das colunas (simula autoFit)
-  ws['!cols'] = [{ wch: 2 }]; // Coluna A vazia
-  for (let c = 0; c < colCount; ++c) {
-    let maxLen = headers[c].length;
-    for (let r = 0; r < data.length; ++r) {
-      const val = data[r][c] ? String(data[r][c]) : '';
-      if (val.length > maxLen) maxLen = val.length;
-    }
-    // Ajuste: +2 para espaçamento extra
-    ws['!cols'].push({ wch: maxLen + 2 });
-  }
-
-
-  for (let c = 1; c <= colCount; ++c) {
-    // Topo do cabeçalho
-    const cell = ws[XLSX.utils.encode_cell({r:1, c:c})];
-    if (cell && cell.s && cell.s.border) {
-      cell.s.border.top = { style: 'medium', color: { rgb: '000000' } };
-    }
-    // Base da última linha
-    const lastCell = ws[XLSX.utils.encode_cell({r:aoa.length-1, c:c})];
-    if (lastCell && lastCell.s && lastCell.s.border) {
-      lastCell.s.border.bottom = { style: 'medium', color: { rgb: '000000' } };
-    }
-  }
-
-  // Garante que a tabela comece em B2
-  ws['!ref'] = XLSX.utils.encode_range({ s: { r:1, c:1 }, e: { r: aoa.length-1, c: colCount } });
-
-  // Cria e salva o arquivo
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Produtos');
-  XLSX.writeFile(wb, 'produtos_almoxarifado.xlsx');
+// Baixar planilha: ícone no cabeçalho de cada tabela da Busca (SCRIPT/exportar-tabela.js).
+if (window.ExportarTabela) {
+  [['#Lista-dos-produtos', 'Produtos do estoque', 'produtos_estoque'],
+   ['#tabela-kits-lista', 'Kits', 'kits_estoque'],
+   ['#tabela-retiradas-lista', 'Retiradas', 'retiradas_estoque'],
+   ['#tabela-devolucoes-lista', 'Devoluções', 'devolucoes_estoque'],
+   ['#tabela-fornecedores-lista', 'Fornecedores', 'fornecedores'],
+   ['#tabela-requisitantes-lista', 'Requisitantes', 'requisitantes'],
+  ].forEach(([sel, titulo, arquivo]) => window.ExportarTabela.ligar(sel, { titulo, arquivo }));
 }
-
-// Substitui o evento do botão para exportar a tabela
-document.getElementById('btn-baixar-tabela')?.addEventListener('click', function() {
-  exportarTabelaProdutosParaExcel();
-});
 // Controla qual bloco de busca é exibido conforme o tipo selecionado
 document.addEventListener('DOMContentLoaded', function() {
   const selectTipoBusca = document.getElementById('tipo-busca');

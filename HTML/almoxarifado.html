@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=70" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=71" />
   <link rel="stylesheet" href="../CSS/almoxarifado.css?v=6" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=4" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
@@ -261,7 +261,6 @@
             </div>
           </div>
           <button type="submit" class="btn-primario">Buscar</button>
-          <button type="button" id="btn-baixar-tabela" class="btn-primario" style="background:#475569;">Baixar Tabela</button>
         </div>
       </form>
 
@@ -1027,7 +1026,6 @@
           <button type="button" id="cp-toggle-colunas" class="btn-toggle-colunas">Escolha as colunas a serem exibidas</button>
           <button type="button" id="toggle-colunas-kits" class="btn-toggle-colunas" style="display:none;">Escolha as colunas dos kits</button>
           <button type="submit" id="btn-listarProdutos">Buscar Produtos</button>
-          <button type="button" id="cp-btn-baixar-tabela" class="acao-btn" style="background: #4CAF50; color: #fff;">Baixar Tabela</button>
         </div>
       </form>
 
@@ -1419,7 +1417,8 @@
 
  <script src="../SCRIPT/config.js?v=2"></script>
  <script src="../SCRIPT/xlsx.full.min.js"></script>
- <script src="../SCRIPT/almoxarifado.js?v=7"></script>
+ <script src="../SCRIPT/exportar-tabela.js?v=3"></script>
+ <script src="../SCRIPT/almoxarifado.js?v=8"></script>
 <script>
 // Exibe campos extras de produtos apenas quando "produtos" está selecionado
 document.addEventListener('DOMContentLoaded', function() {

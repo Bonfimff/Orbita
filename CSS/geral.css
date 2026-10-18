@@ -3522,3 +3522,9 @@ body.fr-aberta { overflow: hidden; }
 .mi-filtro { display: flex; gap: 12px; margin-top: 6px; padding: 0 2px; }
 .mi-filtro input { width: auto; margin: 0; padding: 0; }
 .mi-filtro label { display: flex; white-space: nowrap; align-items: center; gap: 4px; cursor: pointer; }
+
+/* Baixar planilha (SCRIPT/exportar-tabela.js): ícone ao lado do funil */
+.et-th { padding-right: 70px !important; }
+.et-th .tf-icone-th:not(.et-icone) { right: 40px; }
+.tf-barra .et-barra { margin-left: 8px; }
+.et-icone.et-carregando, .et-barra.et-carregando { opacity: .4; pointer-events: none; }
