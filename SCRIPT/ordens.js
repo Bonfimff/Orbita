@@ -2622,6 +2622,22 @@ function adicionarListenersAcoesOS(container) {
 // Exposta para a ficha do equipamento abrir a O.S. no mesmo padrão.
 window.abrirFichaOS = (id) => abrirFichaOS(id);
 
+// Relatório em PDF numa nova guia, no leitor do próprio navegador.
+async function abrirRelatorioOS(id) {
+  const aba = window.open('', '_blank');
+  if (aba) aba.document.write('<p style="font-family:sans-serif;padding:24px">Gerando o relatório...</p>');
+  try {
+    const resp = await fetch(osApiUrl(`ordens/${id}/relatorio`), { headers: authHeaders() });
+    if (!resp.ok) { const d = await resp.json().catch(() => ({})); throw new Error(d.mensagem || 'Não foi possível gerar o relatório.'); }
+    const link = URL.createObjectURL(new Blob([await resp.blob()], { type: 'application/pdf' }));
+    if (aba) aba.location.href = link; else window.location.href = link;
+    setTimeout(() => URL.revokeObjectURL(link), 120000);
+  } catch (e) {
+    if (aba) aba.close();
+    alert(e.message);
+  }
+}
+
 async function abrirFichaOS(id) {
   const F = window.FichaRegistro;
   let os;
@@ -2635,7 +2651,10 @@ async function abrirFichaOS(id) {
     return;
   }
   const status = obterStatusEfetivoOS(os);
-  const pontos = (os.pontos || []).map((p) => escapeHtml([p.nome || p.local || p.endereco || '', p.status || ''].filter(Boolean).join(' · '))).filter(Boolean);
+  const finalizada = status === 'Finalizada';
+  const pontos = (os.pontos || []).map((p) => escapeHtml([p.endereco || '', p.complemento || '', p.status || ''].filter(Boolean).join(' · '))).filter(Boolean);
+  // Base de atendimento: a base de cada ponto (sem repetir).
+  const bases = [...new Set((os.pontos || []).map((p) => p.id_cliente).filter(Boolean))];
   F.abrir({
     titulo: os.numero_os || ('O.S. ' + os.id),
     subtitulo: status === 'Chegada no Local' ? 'Em Atuação no Local' : status,
@@ -2643,7 +2662,11 @@ async function abrirFichaOS(id) {
       ['Abertura', os.data_abertura], ['Previsão', os.data_prevista], ['Conclusão', os.data_conclusao],
       ['Solicitante', os.solicitante], ['Setor', os.setor], ['Contrato', os.contrato],
       ['Tipo de serviço', os.tipo_servico], ['Prioridade', badgePrioridade(os.prioridade), { html: true }],
-      ['Técnico responsável', tecnicoExibicao(os)], ['Equipe', parseListaTexto(os.equipe_membros).join(', ')],
+      ['Base de atendimento', bases.join(', ') || 'Não informada', { largo: true }],
+      ['Técnico responsável', tecnicoExibicao(os)],
+      ['Responsável pela equipe', parseListaTexto(os.responsavel_equipe).join(', ')],
+      ['Equipe em atendimento', parseListaTexto(os.equipe_membros).concat(parseListaTexto(os.equipe_adicionais)).join(', ')],
+      ['Despacho', os.data_despacho], ['Fechamento', os.data_fechamento],
       ['Veículos', parseListaTexto(os.veiculos_despacho).join(', ')],
       ['Descrição', os.descricao, { largo: true }],
       ['Pontos de atendimento', pontos.join('<br>'), { html: true, largo: true }],
@@ -2651,6 +2674,7 @@ async function abrirFichaOS(id) {
       ['Procedimento executado', os.procedimento_executado, { largo: true }],
       ['Situação final', os.situacao_final, { largo: true }],
     ],
+    acoes: [{ rotulo: 'Ver relatório (PDF)', mostrar: finalizada, fn: () => abrirRelatorioOS(os.id) }],
     editar: () => abrirModalEdicao(os.id),
     rotuloEditar: status === 'Finalizada' || status === 'Cancelada' ? 'Ver atendimento' : 'Abrir atendimento',
     excluir: async () => {

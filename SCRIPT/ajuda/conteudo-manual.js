@@ -238,6 +238,7 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'paragrafo', texto: 'Abra a O.S. pela Busca. Na janela dela você faz o despacho: equipe, veículos e materiais. Um funcionário ou veículo que já está em outra O.S. aberta não pode ser alocado de novo; a mensagem diz em qual está.' },
         { tipo: 'paragrafo', texto: 'Os materiais ficam planejados até a utilização ser confirmada. Ao confirmar, o estoque é descontado. Para corrigir depois disso, use o estorno, que devolve a quantidade sem apagar o registro.' },
         { tipo: 'paragrafo', texto: 'Ao finalizar, a O.S. fecha, o agendamento ligado a ela é concluído e os veículos voltam a ficar disponíveis. Dependendo do seu perfil, você só finaliza O.S. em que está na equipe.' },
+        { tipo: 'paragrafo', texto: 'Um clique numa O.S. (na Busca ou em Ordens Recentes) abre a ficha dela: base de atendimento, técnico, responsável e equipe, pontos, diagnóstico e fechamento. Na O.S. finalizada, **Ver relatório (PDF)** abre o relatório completo, com fotos, numa nova guia do navegador, sem precisar de programa instalado.' },
       ],
       relacionados: ['os-bases', 'estoque-movimentacoes'],
     },

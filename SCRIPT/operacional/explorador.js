@@ -212,12 +212,16 @@
     async function abrir(item, baixar) {
       if (item.tipo === 'pasta') { ir(item.id); return; }
       const a = item.obj;
-      const visualiza = /^(application\/pdf|image\/|text\/)/.test(a.mime || '');
+      const ext = (a.nome.split('.').pop() || '').toLowerCase();
+      const PELO_NOME = { pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', txt: 'text/plain' };
+      const tipo = /^(application\/pdf|image\/|text\/)/.test(a.mime || '') ? a.mime : (PELO_NOME[ext] || '');
+      const visualiza = Boolean(tipo);
       const aba = !baixar && visualiza ? window.open('about:blank', '_blank') : null;
       try {
         const resp = await fetch(url(`${base}/arquivos/${a.id}`), { headers: auth() });
         if (!resp.ok) { const d = await resp.json().catch(() => ({})); throw new Error(d.mensagem || 'Não foi possível abrir o arquivo.'); }
-        const link = URL.createObjectURL(await resp.blob());
+        const conteudo = await resp.blob();
+        const link = URL.createObjectURL(visualiza ? new Blob([conteudo], { type: tipo }) : conteudo);
         if (aba) {
           aba.location.href = link;
         } else {
