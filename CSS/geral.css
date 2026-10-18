@@ -3511,3 +3511,14 @@ body.fr-aberta { overflow: hidden; }
   box-shadow: 0 0 0 4px rgba(168, 134, 79, 0.14);
 }
 .mi-grupo:hover span { background: rgba(168, 134, 79, 0.45); }
+
+/* Busca e seletor sobre os mapas */
+.mi-ctl { width: 230px; max-width: calc(100vw - 80px); background: var(--cor-fundo, #fff); border: 1px solid rgba(0,0,0,.15); border-radius: 8px; padding: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.15); font-size: 13px; color: inherit; }
+.mi-busca { width: 100%; box-sizing: border-box; padding: 6px 8px; border: 1px solid rgba(0,0,0,.2); border-radius: 6px; font: inherit; background: transparent; color: inherit; }
+.mi-resultados { max-height: 200px; overflow: auto; margin-top: 4px; }
+.mi-resultados button { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 5px 6px; border-radius: 4px; cursor: pointer; font: inherit; color: inherit; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mi-resultados button:hover, .mi-resultados button:focus { background: rgba(0,0,0,.07); }
+.mi-vazio { padding: 5px 6px; opacity: .7; }
+.mi-filtro { display: flex; gap: 12px; margin-top: 6px; padding: 0 2px; }
+.mi-filtro input { width: auto; margin: 0; padding: 0; }
+.mi-filtro label { display: flex; white-space: nowrap; align-items: center; gap: 4px; cursor: pointer; }

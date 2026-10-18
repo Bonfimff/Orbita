@@ -73,6 +73,8 @@
       mapa._mi = [];
       mapa._miGrupos = L.layerGroup().addTo(mapa);
       limitarAoBrasil(mapa);
+      mapa._miOcultos = { base: false, veiculo: false };
+      criarControle(mapa);
       const agendar = () => { clearTimeout(mapa._miT); mapa._miT = setTimeout(() => ajustar(mapa), 30); };
       mapa.on('zoomend', () => ajustar(mapa));
       mapa.on('layeradd layerremove', (e) => { if (e.layer && e.layer._miGrupo) return; agendar(); });
@@ -93,7 +95,9 @@
     if (!mapa._mi) return;
     const zoom = mapa.getZoom();
     const s = escala(zoom);
-    const ativos = mapa._mi.filter((m) => mapa.hasLayer(m));
+    const ocultos = mapa._miOcultos || {};
+    mapa._mi.forEach((m) => { if (ocultos[m._miTipo] && mapa.hasLayer(m)) mostrar(m, false); });
+    const ativos = mapa._mi.filter((m) => mapa.hasLayer(m) && !ocultos[m._miTipo]);
     ativos.forEach((m) => {
       if (m._miTipo === 'base') m.setIcon(iconeBase(s));
       else if (m.setRadius) {
@@ -130,6 +134,74 @@
       });
       mapa._miGrupos.addLayer(ind);
     });
+  }
+
+  // Nome pesquisável: título, ou texto do balão.
+  function nomeDe(m) {
+    if (m._miNome) return m._miNome;
+    if (m.options && m.options.title) return m.options.title;
+    const p = m.getPopup && m.getPopup();
+    let c = p ? p.getContent() : '';
+    if (typeof c === 'function') c = c(m);
+    if (c && c.nodeType) return (c.textContent || '').trim();
+    const d = document.createElement('div');
+    d.innerHTML = String(c || '').replace(/<br\s*\/?>/gi, ' · ');
+    return (d.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function sem(t) { return String(t || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase(); }
+
+  // Busca e seletor de exibição sobre o mapa.
+  function criarControle(mapa) {
+    const Ctl = L.Control.extend({
+      options: { position: 'topright' },
+      onAdd() {
+        const box = L.DomUtil.create('div', 'mi-ctl');
+        box.innerHTML = '<input type="search" class="mi-busca" placeholder="Buscar veículo ou base" aria-label="Buscar veículo ou base">'
+          + '<div class="mi-resultados" hidden></div>'
+          + '<div class="mi-filtro">'
+          + '<label><input type="checkbox" data-tipo="base" checked> Bases</label>'
+          + '<label><input type="checkbox" data-tipo="veiculo" checked> Veículos</label></div>';
+        L.DomEvent.disableClickPropagation(box);
+        L.DomEvent.disableScrollPropagation(box);
+        const input = box.querySelector('.mi-busca');
+        const res = box.querySelector('.mi-resultados');
+        const ir = (m) => {
+          mapa.setView(m.getLatLng(), Math.max(mapa.getZoom(), 15));
+          if (m.getPopup && m.getPopup()) setTimeout(() => m.openPopup(), 300);
+          res.hidden = true;
+        };
+        const buscar = () => {
+          const q = sem(input.value.trim());
+          if (!q) { res.hidden = true; res.innerHTML = ''; return; }
+          const achados = mapa._mi.filter((m) => mapa.hasLayer(m) && !mapa._miOcultos[m._miTipo] && sem(nomeDe(m)).includes(q)).slice(0, 8);
+          res.innerHTML = '';
+          if (!achados.length) res.innerHTML = '<div class="mi-vazio">Nada encontrado</div>';
+          achados.forEach((m) => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.textContent = (m._miTipo === 'base' ? '📍 ' : '🚗 ') + nomeDe(m).slice(0, 70);
+            b.addEventListener('click', () => ir(m));
+            res.appendChild(b);
+          });
+          res.hidden = false;
+        };
+        input.addEventListener('input', buscar);
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); const b = res.querySelector('button'); if (b) b.click(); }
+          if (e.key === 'Escape') { input.value = ''; buscar(); }
+        });
+        box.querySelectorAll('.mi-filtro input').forEach((c) => c.addEventListener('change', () => {
+          mapa._miOcultos[c.dataset.tipo] = !c.checked;
+          if (c.checked) mapa._mi.forEach((m) => { if (m._miTipo === c.dataset.tipo) { mostrar(m, true); if (!c.checked) m.closePopup(); } });
+          else mapa._mi.forEach((m) => { if (m._miTipo === c.dataset.tipo) m.closePopup && m.closePopup(); });
+          ajustar(mapa);
+          buscar();
+        }));
+        return box;
+      },
+    });
+    new Ctl().addTo(mapa);
   }
 
   window.MapaIcones = { base, veiculo, registrar, ajustar, escala };
