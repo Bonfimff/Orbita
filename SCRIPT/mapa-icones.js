@@ -68,8 +68,10 @@
   }
 
   // Prepara o mapa (limite, busca e seletor) logo ao criar, mesmo antes dos pontos.
-  function preparar(mapa) {
+  // opcoes.tipos: quais tipos o mapa mostra (padrão base e veículo); o seletor só lista esses.
+  function preparar(mapa, opcoes) {
     if (!mapa || mapa._mi) return mapa;
+    mapa._miTipos = (opcoes && opcoes.tipos) || ['base', 'veiculo'];
     {
       mapa._mi = [];
       mapa._miGrupos = L.layerGroup().addTo(mapa);
@@ -165,11 +167,12 @@
       options: { position: 'topright' },
       onAdd() {
         const box = L.DomUtil.create('div', 'mi-ctl');
-        box.innerHTML = '<input type="search" class="mi-busca" placeholder="Buscar veículo ou base" aria-label="Buscar veículo ou base">'
+        const rotulo = mapa._miTipos.length > 1 ? 'Buscar veículo ou base' : (mapa._miTipos[0] === 'base' ? 'Buscar base' : 'Buscar veículo');
+        box.innerHTML = `<input type="search" class="mi-busca" placeholder="${rotulo}" aria-label="${rotulo}">`
           + '<div class="mi-resultados" hidden></div>'
           + '<div class="mi-filtro">'
-          + '<label><input type="checkbox" data-tipo="base" checked> Bases</label>'
-          + '<label><input type="checkbox" data-tipo="veiculo" checked> Veículos</label></div>';
+          + (mapa._miTipos.length > 1 ? mapa._miTipos.map((t) => `<label><input type="checkbox" data-tipo="${t}" checked> ${t === 'base' ? 'Bases' : 'Veículos'}</label>`).join('') : '')
+          + '</div>';
         L.DomEvent.disableClickPropagation(box);
         L.DomEvent.disableScrollPropagation(box);
         const input = box.querySelector('.mi-busca');

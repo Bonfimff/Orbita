@@ -27,11 +27,6 @@
 
 /* ---- Estado da jornada ---- */
 .jor-status-card { position: relative; overflow: hidden; }
-.jor-status-card::before {
-  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #cbd5e1;
-}
-.jor-status-aberta::before { background: var(--cor-sucesso); }
-.jor-status-pausada::before { background: var(--cor-aviso); }
 
 .jor-status-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 

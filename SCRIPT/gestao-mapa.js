@@ -105,16 +105,6 @@
   }
 
   document.addEventListener('click', e => {
-    const botao = e.target.closest('.pg-mapa-camadas [data-camada]');
-    if (botao && mapa) {
-      const camada = camadas[botao.dataset.camada];
-      const ligar = !mapa.hasLayer(camada);
-      if (ligar) camada.addTo(mapa); else mapa.removeLayer(camada);
-      botao.classList.toggle('ativo', ligar);
-      botao.setAttribute('aria-pressed', String(ligar));
-      enquadrar();
-      return;
-    }
     // A aba pode ter ficado oculta: corrige o tamanho ao voltar ao painel.
     if (e.target.closest('[data-tab="painel-geral"]') && mapa) setTimeout(() => mapa.invalidateSize(), 80);
   });

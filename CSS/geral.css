@@ -3520,6 +3520,7 @@ body.fr-aberta { overflow: hidden; }
 .mi-resultados button:hover, .mi-resultados button:focus { background: rgba(0,0,0,.07); }
 .mi-vazio { padding: 5px 6px; opacity: .7; }
 .mi-filtro { display: flex; gap: 12px; margin-top: 6px; padding: 0 2px; }
+.mi-filtro:empty { display: none; }
 .mi-filtro input { width: auto; margin: 0; padding: 0; }
 .mi-filtro label { display: flex; white-space: nowrap; align-items: center; gap: 4px; cursor: pointer; }
 
