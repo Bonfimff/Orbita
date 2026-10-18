@@ -46,6 +46,7 @@ window.OrbitaAjuda.registrarSecao({
       corpo: [
         { tipo: 'paragrafo', texto: 'Todas as tabelas funcionam igual: um clique (ou Enter) no registro abre a ficha dele, só para ver. Nenhuma linha tem botão de editar ou excluir.' },
         { tipo: 'paragrafo', texto: 'As ações ficam dentro da ficha: **Editar** leva para a edição e **Excluir** (ou Desativar, Cancelar) aparece só para quem tem permissão. Na O.S., o botão **Abrir atendimento** abre a tela de despacho, pontos e fechamento.' },
+        { tipo: 'paragrafo', texto: 'Os filtros e a busca de cada tabela ficam recolhidos. Para abrir, use o ícone de funil no primeiro cabeçalho da tabela (no celular, o botão **Filtros** acima da lista). Quando há algum filtro preenchido, o ícone mostra um ponto dourado. Tabelas sem filtros próprios têm uma busca rápida que esconde as linhas que não combinam com o texto.' },
         { tipo: 'paragrafo', texto: 'Listas de itens dentro de um formulário que está sendo preenchido (itens de uma retirada, materiais do despacho) continuam com o botão de remover ao lado, porque fazem parte da edição.' },
       ],
     },

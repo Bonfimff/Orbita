@@ -3458,3 +3458,44 @@ body.fr-aberta { overflow: hidden; }
   color: #b42318 !important;
   border-color: #e7867b !important;
 }
+
+/* ---------- Filtros das tabelas (SCRIPT/filtros-tabela.js) ----------
+   Ícone discreto no cabeçalho da tabela; os campos ficam num painel recolhido. */
+.tf-oculta { display: none !important; }
+.tf-th { position: relative; padding-right: 38px !important; }
+.tf-icone {
+  display: inline-flex; align-items: center; gap: 6px; position: relative;
+  border: 1px solid #cbd5e1; background: #fff; color: #475569; border-radius: 8px;
+  padding: 5px 10px; font-size: 13px; font-weight: 600; cursor: pointer; line-height: 1;
+}
+.tf-icone:hover, .tf-icone[aria-expanded="true"] { border-color: var(--cor-primaria); color: var(--cor-primaria); }
+.tf-icone-th {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  padding: 5px; border-color: currentColor; background: transparent; color: inherit; opacity: 0.7;
+}
+.tf-icone-th:hover, .tf-icone-th[aria-expanded="true"] { opacity: 1; border-color: var(--cor-primaria); color: inherit; background: rgba(168, 134, 79, 0.25); }
+.tf-icone.tf-ativo::after {
+  content: ''; position: absolute; top: -3px; right: -3px; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cor-primaria); border: 2px solid #fff;
+}
+.tf-barra { display: none; justify-content: flex-end; margin: 0 0 8px; }
+.tf-barra.tf-barra-sempre { display: flex; }
+.tf-painel {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 14px; margin: 0 0 12px;
+  padding: 14px; background: #fff; border: 1px solid #e6e2d8; border-radius: 12px;
+}
+.tf-painel[hidden] { display: none; }
+.tf-painel .tf-campos { display: contents; }
+.tf-painel .tf-campos > * { margin: 0 !important; }
+.tf-painel .busca-filtros, .tf-painel .cronograma-filtros, .tf-painel .jor-filtros, .tf-painel .rel-cronicos-parametros {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; background: none; border: 0; box-shadow: none; padding: 0; margin: 0;
+}
+.tf-busca { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: #1F2D3D; min-width: 240px; flex: 1 1 260px; }
+.tf-busca input, .tf-painel input[type="search"], .tf-painel input[type="text"], .tf-painel input[type="date"], .tf-painel input[type="number"], .tf-painel select {
+  font: inherit; font-weight: 400; padding: 8px 10px; border: 1px solid #d5dde3; border-radius: 8px; box-sizing: border-box; min-height: 38px; background: #fff;
+}
+@media (max-width: 768px) {
+  .tf-barra.tf-com-th { display: flex; }
+  .tf-painel { flex-direction: column; align-items: stretch; }
+  .tf-busca { min-width: 0; }
+}
