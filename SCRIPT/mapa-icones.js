@@ -3,8 +3,9 @@
 // Base = alfinete padrão do mapa. Veículo = bolinha na cor da situação.
 // - Sempre na posição real.
 // - Diminuem aos poucos conforme o mapa se afasta.
-// - Quando ficariam encostados (ou com o mapa muito afastado), somem e dão
-//   lugar a um indicador único e discreto naquele lugar; o clique aproxima.
+// - Nunca saem do ponto: só mudam de tamanho.
+// - Ficam visíveis até a visão de um estado inteiro (zoom 7). Mais longe que
+//   isso, os próximos viram um indicador único e discreto; o clique aproxima.
 // - O mapa fica limitado ao Brasil.
 //
 // Uso: const m = MapaIcones.base([lat, lng]).addTo(camada); MapaIcones.registrar(mapa, m);
@@ -16,13 +17,14 @@
   const CDN = 'https://unpkg.com/leaflet@1.9.4/dist/images/';
   const PIN = [25, 41];
   const RAIO_VEICULO = 8;
-  const DISTANCIA = 30;       // px: abaixo disso, vira indicador único
-  const ZOOM_SO_INDICADOR = 8; // deste zoom para baixo, só indicadores
+  const DISTANCIA = 30;        // px: na visão de país, grupos por proximidade
+  const ZOOM_AGRUPAR = 6;      // deste zoom para baixo (mais longe que um estado), agrupa
   const BRASIL = [[-34.2, -74.5], [5.6, -28.6]];
 
-  // Escala pelo zoom: diminui de forma contínua ao afastar (1,1 no zoom 17 ou mais).
+  // Escala pelo zoom: diminui de forma contínua ao afastar
+  // (1,1 no zoom 17 ou mais; 0,4 na visão de estado, zoom 7).
   function escala(zoom) {
-    return Math.max(0.5, Math.min(1.1, 0.5 + (zoom - 8) * 0.067));
+    return Math.max(0.4, Math.min(1.1, 0.4 + (zoom - 7) * 0.07));
   }
 
   function iconeBase(s) {
@@ -94,13 +96,20 @@
     const ativos = mapa._mi.filter((m) => mapa.hasLayer(m));
     ativos.forEach((m) => {
       if (m._miTipo === 'base') m.setIcon(iconeBase(s));
-      else if (m.setRadius) m.setRadius(Math.max(4, Math.round(RAIO_VEICULO * s)));
+      else if (m.setRadius) {
+        m.setRadius(Math.max(3, RAIO_VEICULO * s));
+        m.setStyle({ weight: s < 0.6 ? 1 : 2 });
+      }
     });
 
     mapa._miGrupos.clearLayers();
     const pontos = ativos.map((m) => ({ m, p: mapa.latLngToLayerPoint(m.getLatLng()) }));
     const usados = new Set();
-    const soIndicador = zoom <= ZOOM_SO_INDICADOR;
+    // Até a visão de estado: cada um no seu ponto, sem agrupar.
+    if (zoom > ZOOM_AGRUPAR) {
+      ativos.forEach((m) => mostrar(m, true));
+      return;
+    }
     pontos.forEach((a, i) => {
       if (usados.has(i)) return;
       const grupo = [a];
@@ -108,15 +117,16 @@
       pontos.forEach((b, j) => {
         if (!usados.has(j) && grupo.some((g) => g.p.distanceTo(b.p) < DISTANCIA)) { grupo.push(b); usados.add(j); }
       });
-      if (grupo.length === 1 && !soIndicador) { mostrar(a.m, true); return; }
+      if (grupo.length === 1) { mostrar(a.m, true); return; }
       grupo.forEach((g) => mostrar(g.m, false));
       // Indicador no centro real do grupo; o clique aproxima até os itens aparecerem.
       const limites = L.latLngBounds(grupo.map((g) => g.m.getLatLng()));
       const ind = L.marker(limites.getCenter(), { icon: iconeGrupo(), keyboard: true, title: 'Aproxime para ver', zIndexOffset: 500 });
       ind._miGrupo = true;
       ind.on('click', () => {
-        if (grupo.length === 1 || limites.getNorthEast().equals(limites.getSouthWest())) mapa.setView(limites.getCenter(), Math.max(zoom + 3, ZOOM_SO_INDICADOR + 2));
-        else mapa.fitBounds(limites.pad(0.6), { maxZoom: Math.max(zoom + 3, ZOOM_SO_INDICADOR + 2) });
+        // Aproxima pelo menos até a visão de estado, onde os itens aparecem.
+        if (limites.getNorthEast().equals(limites.getSouthWest())) mapa.setView(limites.getCenter(), ZOOM_AGRUPAR + 3);
+        else mapa.fitBounds(limites.pad(0.3), { maxZoom: ZOOM_AGRUPAR + 3 });
       });
       mapa._miGrupos.addLayer(ind);
     });
