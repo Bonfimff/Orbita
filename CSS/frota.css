@@ -1035,3 +1035,17 @@ td .frota-status-badge + small { display: block; margin-top: 3px; }
 @media (max-width: 768px) {
   #relatorios .painel-resumo .rel-kpi-detalhe { display: none; }
 }
+
+/* Ficha da manutenção: registro do serviço executado */
+.frota-manut-servico { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+.frota-manut-campo { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: #1F2D3D; }
+.frota-manut-campo textarea, .frota-manut-campo input { font: inherit; font-weight: 400; padding: 8px 10px; border: 1px solid #d5dde3; border-radius: 8px; box-sizing: border-box; width: 100%; }
+.frota-manut-largo { grid-column: 1 / -1; }
+.frota-manut-servico-acoes { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+@media (max-width: 600px) { .frota-manut-servico { grid-template-columns: 1fr; } }
+
+.frota-manut-finalizar-barra { display: flex; justify-content: flex-end; margin: 10px 0 4px; }
+.frota-manut-finalizacao { margin-top: 10px; padding: 14px; border: 1px solid #e6dcc8; border-radius: 12px; background: #fdfaf4; }
+.frota-manut-pre { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .03em; }
+.frota-manut-abertura { margin-bottom: 14px; opacity: .9; }
+.frota-manut-relatorio { margin-top: 6px; padding: 12px 14px; border-left: 3px solid #1a9e55; background: #f3faf6; border-radius: 8px; }

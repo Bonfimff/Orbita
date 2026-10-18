@@ -185,6 +185,8 @@ window.OrbitaAjuda.registrarSecao({
       corpo: [
         { tipo: 'paragrafo', texto: 'Uma manutenção pode ser agendada ou já começar em andamento. Enquanto está em andamento, o veículo fica "em manutenção" e não pode ir para uma O.S. Ao concluir ou cancelar, ele volta a ficar ativo.' },
         { tipo: 'paragrafo', texto: 'O abastecimento registra placa, cartão, data e comprovante. O checklist registra a quilometragem, a conferência de itens e as fotos; uma quilometragem maior que a atual atualiza o veículo.' },
+        { tipo: 'paragrafo', texto: 'Na ficha da manutenção dá para trocar o status com um clique (Agendada, Em andamento, Cancelada). Para concluir, use **Finalizar manutenção**: o formulário já traz os dados da abertura (veículo, oficina, entrada, km e problema) e pede os serviços realizados, as peças, o resultado final, o custo, a data e o km de saída, a garantia do serviço e notas.' },
+        { tipo: 'paragrafo', texto: 'Ao finalizar, o veículo volta a ficar Ativo, o km dele é atualizado e a ficha passa a mostrar o **Relatório de finalização**, com o botão **Imprimir relatório** (dá para salvar em PDF pela impressão).' },
       ],
       relacionados: ['frota-veiculos', 'frota-relatorio'],
     },

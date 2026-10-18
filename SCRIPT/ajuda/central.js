@@ -58,7 +58,7 @@
     if (carregamento) return carregamento;
     carregamento = Promise.all(ARQUIVOS_CONTEUDO.map((arquivo) => new Promise((resolve) => {
       const script = document.createElement('script');
-      script.src = BASE + arquivo + '?v=30';
+      script.src = BASE + arquivo + '?v=31';
       // Um arquivo de conteudo que falhe nao pode derrubar a Central inteira:
       // resolve mesmo em erro, e a secao correspondente simplesmente nao aparece.
       script.onload = resolve;
