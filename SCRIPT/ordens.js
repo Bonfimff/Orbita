@@ -374,6 +374,7 @@ async function renderizarMapaBasesGerenciamento() {
   }).addTo(basesMapaLeaflet);
 
   basesMapaLeafletCamada = L.featureGroup().addTo(basesMapaLeaflet);
+  if (window.MapaIcones) window.MapaIcones.preparar(basesMapaLeaflet);
 
   // ---- Bases: usa lat/long já salvo; só geocodifica o que ainda não tem ----
   const cacheGeo = carregarCacheGeocodificacaoBases();

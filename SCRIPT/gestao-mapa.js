@@ -66,6 +66,7 @@
       }).addTo(mapa);
       camadas.bases = L.featureGroup().addTo(mapa);
       camadas.veiculos = L.featureGroup().addTo(mapa);
+      if (window.MapaIcones) window.MapaIcones.preparar(mapa);
     }
     camadas.bases.clearLayers();
     camadas.veiculos.clearLayers();

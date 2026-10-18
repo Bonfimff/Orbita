@@ -67,9 +67,10 @@
     mapa.setMinZoom(Math.max(3, mapa.getBoundsZoom(limites, true) - 0));
   }
 
-  function registrar(mapa, marcador) {
-    if (!mapa || !marcador) return marcador;
-    if (!mapa._mi) {
+  // Prepara o mapa (limite, busca e seletor) logo ao criar, mesmo antes dos pontos.
+  function preparar(mapa) {
+    if (!mapa || mapa._mi) return mapa;
+    {
       mapa._mi = [];
       mapa._miGrupos = L.layerGroup().addTo(mapa);
       limitarAoBrasil(mapa);
@@ -80,6 +81,13 @@
       mapa.on('layeradd layerremove', (e) => { if (e.layer && e.layer._miGrupo) return; agendar(); });
       mapa.on('resize', () => limitarAoBrasil(mapa));
     }
+    return mapa;
+  }
+
+  function registrar(mapa, marcador) {
+    if (!mapa || !marcador) return marcador;
+    preparar(mapa);
+    mapa._mi = mapa._mi.filter((m) => mapa.hasLayer(m));
     mapa._mi.push(marcador);
     clearTimeout(mapa._miT);
     mapa._miT = setTimeout(() => ajustar(mapa), 30);
@@ -204,5 +212,5 @@
     new Ctl().addTo(mapa);
   }
 
-  window.MapaIcones = { base, veiculo, registrar, ajustar, escala };
+  window.MapaIcones = { preparar, base, veiculo, registrar, ajustar, escala };
 })();

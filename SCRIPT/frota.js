@@ -220,6 +220,7 @@
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(frotaMapa);
       frotaMapaCamada = L.layerGroup().addTo(frotaMapa);
+      if (window.MapaIcones) window.MapaIcones.preparar(frotaMapa);
     }
 
     if (frotaMapaCamada) {
