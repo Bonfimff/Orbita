@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
   <link rel="stylesheet" href="../CSS/gestao.css?v=12" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
-  <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
+  <link rel="stylesheet" href="../CSS/ajuda.css?v=3" />
   <link rel="stylesheet" href="../CSS/ficha.css?v=2" />
   <link rel="stylesheet" href="../CSS/explorador.css?v=1" />
   <link rel="stylesheet" href="../CSS/jornada.css?v=9" />
@@ -337,7 +337,7 @@
               </div>
 
               <label class="ponto-campo" id="escala-bloco-ref" hidden>
-                <span>Um dia de trabalho (para contar o revezamento)</span>
+                <span>Um dia de trabalho <button type="button" class="ajuda-contextual" data-ajuda="ponto-escalas" aria-label="Ver no manual" title="Ver no manual">i</button></span>
                 <input type="date" id="escala-ref">
               </label>
 
@@ -349,8 +349,7 @@
                   <label class="ponto-campo"><span>Intervalo (min)</span><input type="number" id="escala-intervalo" min="0" max="600" step="5" placeholder="60"></label>
                 </div>
                 <div id="escala-bloco-por-dia" hidden>
-                  <span class="escala-rotulo">Horário por dia da semana</span>
-                  <p class="ponto-dica escala-dica">Mude só o dia que for diferente (ex.: sexta saindo às 16:00).</p>
+                  <span class="escala-rotulo">Horário por dia da semana <button type="button" class="ajuda-contextual" data-ajuda="ponto-escalas" aria-label="Ver no manual" title="Ver no manual">i</button></span>
                   <div class="escala-por-dia" id="escala-por-dia"></div>
                 </div>
               </div>
@@ -361,14 +360,13 @@
               <div class="jor-mensagem" id="escala-msg"></div>
 
               <div class="escala-cal-cab">
-                <span class="escala-rotulo">Calendário da escala</span>
+                <span class="escala-rotulo">Calendário da escala <button type="button" class="ajuda-contextual" data-ajuda="ponto-escalas" aria-label="Ver no manual" title="Ver no manual">i</button></span>
                 <div class="escala-cal-nav">
                   <button type="button" class="jor-cal-nav" id="escala-mes-ant" aria-label="Mês anterior">&#8249;</button>
                   <strong id="escala-mes"></strong>
                   <button type="button" class="jor-cal-nav" id="escala-mes-prox" aria-label="Próximo mês">&#8250;</button>
                 </div>
               </div>
-              <p class="ponto-dica escala-dica">Clique num dia para mudar só aquela data: folga, trabalho extra, outro horário, feriado trabalhado, banco de horas ou dia justificado (atestado).</p>
               <div class="escala-previa-semana"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
               <div class="escala-previa" id="escala-previa"></div>
               <div class="escala-legenda">
@@ -442,8 +440,7 @@
     <form class="jor-cal ponto-modal" id="ponto-form-lancar" role="dialog" aria-modal="true" aria-labelledby="ponto-lancar-titulo">
       <div class="ponto-modal-topo">
         <div>
-          <h3 id="ponto-lancar-titulo">Lançar jornada</h3>
-          <small>Para quando o funcionário não conseguiu registrar o ponto.</small>
+          <h3 id="ponto-lancar-titulo">Lançar jornada <button type="button" class="ajuda-contextual" data-ajuda="ponto-lancar" aria-label="Ver no manual" title="Ver no manual">i</button></h3>
         </div>
         <button type="button" class="jor-cal-fechar" data-fechar aria-label="Fechar">&times;</button>
       </div>
@@ -456,7 +453,6 @@
         <label class="ponto-campo"><span>Intervalo até</span><input type="time" id="lancar-int-fim"></label>
         <label class="ponto-campo ponto-largo"><span>Motivo</span><input type="text" id="lancar-motivo" maxlength="200" required placeholder="Ex.: celular sem bateria"></label>
       </div>
-      <p class="ponto-dica">Saída antes da entrada conta como o dia seguinte (turno da noite).</p>
       <div class="jor-mensagem" id="ponto-lancar-msg"></div>
       <div class="ponto-form-acoes">
         <button type="button" class="jor-btn jor-btn-secundario" data-fechar>Cancelar</button>
@@ -558,16 +554,16 @@
 
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
-  <script src="../SCRIPT/operacional/explorador.js?v=3"></script>
+  <script src="../SCRIPT/operacional/explorador.js?v=4"></script>
   <script src="../SCRIPT/gestao.js?v=21"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=40"></script>
+  <script src="../SCRIPT/geral.js?v=41"></script>
   <script src="../SCRIPT/navegacao-subabas.js?v=1"></script>
-  <script src="../SCRIPT/configuracoes.js?v=6"></script>
+  <script src="../SCRIPT/configuracoes.js?v=7"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=27"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=28"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="../SCRIPT/cadastros/ferias-ui.js?v=1"></script>
   <script src="../SCRIPT/gestao-funcionarios.js?v=7"></script>

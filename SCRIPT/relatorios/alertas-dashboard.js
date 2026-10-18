@@ -154,7 +154,7 @@
           }).join('') + '</ul>'
         + (dados.sem_equipamento
            ? '<small class="os-pendencia-nota">' + dados.sem_equipamento
-             + ' sem equipamento informado, não é erro: equipamento pode não se aplicar.</small>'
+             + ' sem equipamento informado <button type="button" class="ajuda-contextual" data-ajuda="relatorios-pendentes" aria-label="Ver no manual" title="Ver no manual">i</button></small>'
            : '');
 
       alvoPendencias.querySelectorAll('[data-motivo]').forEach((linha) => {

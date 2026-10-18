@@ -93,6 +93,7 @@
           ${podeAlterar ? `<button type="button" class="exp-btn exp-btn-texto" data-exp="nova-pasta" title="Nova pasta">${iconePasta(false, false)}<span>Nova pasta</span></button>
           <button type="button" class="exp-btn exp-btn-texto" data-exp="enviar" title="Enviar arquivos"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg><span>Enviar</span></button>` : ''}
           <button type="button" class="exp-btn" data-exp="modo" title="Alternar Ícones / Detalhes" aria-label="Alternar exibição"></button>
+          <button type="button" class="ajuda-contextual exp-ajuda" data-ajuda="explorador" aria-label="Ver no manual" title="Ver no manual">i</button>
         </div>
       </div>
       <div class="exp-area" tabindex="0" role="listbox" aria-multiselectable="true"></div>
@@ -173,7 +174,7 @@
       area.innerHTML = (modo === 'detalhes' ? '<div class="exp-cab"><span>Nome</span><span>Data de modificação</span><span>Tipo</span><span>Tamanho</span></div>' : '') +
         pastas.map((p) => itemHtml('p:' + p.id, p.nome, iconePasta(p.protegida, grande), dataHora(p.criado_em), p.protegida ? 'Pasta protegida' : 'Pasta de arquivos', '', p.bloqueada ? ' bloqueada' : '')).join('') +
         arquivos.map((a) => itemHtml('a:' + a.id, a.nome, iconeArquivo(a.nome, grande), dataHora(a.alterado_em || a.enviado_em), tipoDe(a.nome)[2], tamanho(a.tamanho))).join('') +
-        (pastas.length || arquivos.length ? '' : `<div class="exp-vazio">Esta pasta está vazia.${podeAlterar ? '<br><small>Arraste arquivos para cá ou use o botão direito para criar uma pasta.</small>' : ''}</div>`);
+        (pastas.length || arquivos.length ? '' : '<div class="exp-vazio">Esta pasta está vazia.</div>');
       const total = pastas.length + arquivos.length;
       statusItens.textContent = total + (total === 1 ? ' item' : ' itens') + (selecao.size ? ` · ${selecao.size} selecionado${selecao.size > 1 ? 's' : ''}` : '');
     }

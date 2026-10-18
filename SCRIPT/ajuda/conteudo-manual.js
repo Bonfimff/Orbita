@@ -7,7 +7,7 @@
 window.OrbitaAjuda.META = {
   produto: 'KERNEL',
   versao: 'versão 1.0',
-  atualizadoEm: '17/10/2026',
+  atualizadoEm: '18/10/2026',
 };
 
 window.OrbitaAjuda.registrarSecao({
@@ -40,11 +40,24 @@ window.OrbitaAjuda.registrarSecao({
       relacionados: ['gestao-usuarios', 'gestao-contratos'],
     },
     {
+      id: 'acesso-contratos',
+      grupo: 'Geral',
+      titulo: 'Contratos com acesso',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'Usuários, bases e veículos podem ser ligados a contratos. Quem está ligado a contratos só vê o que pertence a eles.' },
+        { tipo: 'paragrafo', texto: '**Usuário:** marque os contratos que ele pode ver. Sem nenhum marcado, vale o padrão do perfil vinculado; sem perfil, ele vê tudo.' },
+        { tipo: 'paragrafo', texto: '**Base:** sem nenhum contrato marcado, a base fica visível para todos que têm acesso a Ordens de Serviço.' },
+        { tipo: 'paragrafo', texto: '**Veículo:** sem nenhum contrato marcado, o veículo fica visível para todos que têm acesso à Frota.' },
+      ],
+      relacionados: ['acesso', 'gestao-contratos'],
+    },
+    {
       id: 'configuracoes',
       grupo: 'Geral',
       titulo: 'Configurações e troca de senha',
       corpo: [
         { tipo: 'paragrafo', texto: 'Abra pela engrenagem, no rodapé do menu. Em **Minha conta** você corrige nome e e-mail.' },
+        { tipo: 'paragrafo', texto: 'Em **Previsão do tempo** você liga ou desliga o clima no painel lateral. A mudança vale ao recarregar a página.' },
         { tipo: 'passos', itens: [
           'Em **Trocar senha**, digite a senha atual.',
           'Digite a nova senha duas vezes. Ela precisa ter pelo menos 6 caracteres e ser diferente da atual.',
@@ -76,6 +89,19 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'paragrafo', texto: 'No computador, o painel da direita mostra informações da página e, no topo, a logo alternando com a previsão do tempo. As bolinhas embaixo trocam na hora; com o mouse em cima, a troca automática para.' },
         { tipo: 'paragrafo', texto: 'No celular, esse painel abre pelo sino, no canto de cima. Lá a previsão fica fixa no topo.' },
         { tipo: 'nota', texto: 'Por enquanto a previsão usa dados de teste.' },
+      ],
+    },
+    {
+      id: 'explorador',
+      grupo: 'Geral',
+      titulo: 'Pastas e arquivos',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'Equipamentos, contratos e funcionários guardam arquivos num explorador parecido com o do Windows. Organize em pastas como preferir (ex.: Admissão, Folhas de ponto, Contracheques, Fichas técnicas).' },
+        { tipo: 'paragrafo', texto: '**Nova pasta** e **Enviar** ficam na barra de cima. Também dá para arrastar arquivos do computador para dentro da janela.' },
+        { tipo: 'paragrafo', texto: 'Clique com o botão direito num item (ou no espaço vazio) para abrir, baixar, renomear, copiar, recortar, colar, excluir ou proteger. Atalhos: Ctrl+C, Ctrl+X, Ctrl+V, Delete, F2 para renomear e Backspace para subir de pasta.' },
+        { tipo: 'paragrafo', texto: 'Pastas copiadas podem ser coladas em outro equipamento, contrato ou funcionário do mesmo tipo.' },
+        { tipo: 'paragrafo', texto: 'O botão ao lado do (i) alterna entre ícones e detalhes (nome, data, tipo e tamanho).' },
+        { tipo: 'paragrafo', texto: '**Pastas protegidas** (cadeado) dependem da permissão "Pastas protegidas" do perfil: com Ver a pessoa enxerga a pasta fechada; com Editar ela abre o conteúdo. Sem permissão o conteúdo nem é carregado.' },
       ],
     },
 
@@ -204,6 +230,21 @@ window.OrbitaAjuda.registrarSecao({
       relacionados: ['os-bases', 'estoque-movimentacoes'],
     },
     {
+      id: 'equipamentos',
+      grupo: 'Ordens de Serviço',
+      pagina: 'ordens',
+      aba: 'bases',
+      titulo: 'Bases e equipamentos',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'Em **O.S. › Bases e Equipamentos**, o seletor troca entre o mapa das bases e a lista de equipamentos. Clicar numa base no mapa mostra os equipamentos dela; clicar num equipamento abre a ficha.' },
+        { tipo: 'paragrafo', texto: 'Todo equipamento pertence a uma base. Um equipamento pode ser um único material ou um conjunto de materiais (ex.: nobreak com baterias); a lista fica na aba **Composição** da ficha.' },
+        { tipo: 'paragrafo', texto: 'Fotos, documentos e fichas técnicas ficam na aba **Arquivos** do equipamento, não na base. Quando uma O.S. é finalizada, o relatório em PDF é gerado sozinho na pasta "O.S. finalizadas" de cada equipamento envolvido, e é refeito se a O.S. mudar.' },
+        { tipo: 'paragrafo', texto: 'A aba **O.S.** da ficha resume os atendimentos da base, com link para o relatório completo.' },
+        { tipo: 'paragrafo', texto: 'Equipamento nunca é obrigatório numa O.S. Cadastre (em **O.S. › Cadastros › Equipamentos**) apenas os ativos que a operação realmente identifica em campo.' },
+      ],
+      relacionados: ['explorador', 'os-bases'],
+    },
+    {
       id: 'os-bases',
       grupo: 'Ordens de Serviço',
       pagina: 'ordens',
@@ -256,6 +297,18 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'paragrafo', texto: 'Em **Gestão › Funcionários**, um clique no funcionário abre a ficha ali mesmo, com **Documentos** (enviar, baixar, mover e ver arquivos) e **Férias** (consultar e programar). Só o lápis ou **Editar** leva ao cadastro, para mudar os dados.' },
       ],
     },
+    {
+      id: 'funcionario-ficha',
+      grupo: 'Gestão',
+      pagina: 'cadastros',
+      titulo: 'Ficha do funcionário',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'A ficha tem **Dados**, **Admissão**, **Documentos** e **Férias**. O tempo de casa é calculado pela data de admissão e, se houver, pela de desligamento.' },
+        { tipo: 'paragrafo', texto: 'Contrato assinado, documentos pessoais, ASO e demais papéis da admissão ficam em **Documentos**, no explorador de pastas.' },
+        { tipo: 'paragrafo', texto: 'As capacitações aparecem no crachá com a situação da validade. Cargo de eletricista exige NR-10 válida.' },
+      ],
+      relacionados: ['explorador', 'cracha'],
+    },
 
     //------------------------------------------------- Cadastros / Relatórios / Ponto
     {
@@ -269,6 +322,21 @@ window.OrbitaAjuda.registrarSecao({
       ],
     },
     {
+      id: 'cadastros-campos',
+      grupo: 'Cadastros',
+      titulo: 'Campos dos cadastros',
+      corpo: [
+        { tipo: 'paragrafo', texto: '**Código:** deixe em branco para gerar automaticamente (EQ-0001 nos equipamentos, P-0001 nas bases). É estável, mesmo se o nome mudar.' },
+        { tipo: 'paragrafo', texto: '**Ordem:** define a posição nas listas de seleção.' },
+        { tipo: 'paragrafo', texto: '**Ativo:** um item inativo some das listas de seleção, mas o histórico é preservado.' },
+        { tipo: 'paragrafo', texto: '**Prazo de reincidência:** se o problema voltar dentro desse prazo depois do encerramento, o sistema sugere reincidência. Padrão: 30 dias.' },
+        { tipo: 'paragrafo', texto: '**Solução sugerida:** apenas sugestão de preenchimento. A solução continua sendo escolhida em cada ocorrência.' },
+        { tipo: 'paragrafo', texto: '**Grupo:** agrupador fixo usado nos gráficos executivos.' },
+        { tipo: 'paragrafo', texto: '**Base do equipamento:** onde ele está instalado. Materiais e arquivos ficam na ficha do equipamento. Mudar o ponto abre um novo período no histórico de alocação; o passado não é reescrito.' },
+        { tipo: 'paragrafo', texto: '**Contrato da base:** define quem enxerga a base nos relatórios.' },
+      ],
+    },
+    {
       id: 'relatorios',
       grupo: 'Relatórios',
       pagina: 'relatorios',
@@ -276,6 +344,49 @@ window.OrbitaAjuda.registrarSecao({
       corpo: [
         { tipo: 'paragrafo', texto: 'Analisa as O.S. pelo período e pelos filtros escolhidos: chamados por problema, pontos que mais se repetem, reincidência, pontos crônicos e causas.' },
         { tipo: 'paragrafo', texto: 'Os números dependem de as O.S. estarem classificadas. A aba **Classificação Pendente** mostra o que falta preencher.' },
+      ],
+    },
+    {
+      id: 'relatorios-reincidencia',
+      grupo: 'Relatórios',
+      pagina: 'relatorios',
+      aba: 'reincidencia',
+      titulo: 'Reincidência',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'A lista de pontos com problemas repetidos vem do histórico: mesmo ponto e mesmo problema mais de uma vez no período.' },
+        { tipo: 'paragrafo', texto: 'As sugestões de reincidência vinculada são só sugestões do sistema. Apenas as confirmadas entram nos indicadores.' },
+      ],
+    },
+    {
+      id: 'relatorios-cronicos',
+      grupo: 'Relatórios',
+      pagina: 'relatorios',
+      aba: 'cronicos',
+      titulo: 'Pontos crônicos',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'Um ponto é crônico quando teve pelo menos o mínimo de ocorrências escolhido, com intervalo médio entre elas abaixo do máximo informado. Ajuste os dois campos e clique em Aplicar.' },
+        { tipo: 'paragrafo', texto: 'Não há nota composta: o critério aparece abaixo dos filtros e o cálculo pode ser conferido na mão.' },
+      ],
+    },
+    {
+      id: 'relatorios-pendentes',
+      grupo: 'Relatórios',
+      pagina: 'relatorios',
+      aba: 'pendentes',
+      titulo: 'Classificações pendentes',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'Mostra as ocorrências que ainda não têm todos os campos de análise preenchidos.' },
+        { tipo: 'paragrafo', texto: 'Falta de equipamento não conta como pendência nem como erro: o equipamento pode não se aplicar ao atendimento.' },
+      ],
+    },
+    {
+      id: 'relatorios-auditoria',
+      grupo: 'Relatórios',
+      pagina: 'relatorios',
+      aba: 'auditoria',
+      titulo: 'Auditoria',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'Registro permanente de quem criou, alterou, ativou ou desativou cada cadastro, e de cada classificação de O.S. Nada é apagado desta lista.' },
       ],
     },
     {
@@ -290,6 +401,28 @@ window.OrbitaAjuda.registrarSecao({
         { tipo: 'paragrafo', texto: 'Com horário definido, a **Folha de Ponto** mostra as horas previstas, o saldo de cada dia e o saldo do mês (banco de horas).' },
         { tipo: 'paragrafo', texto: 'Em **Gestão › Controle de Ponto**, quem tem a permissão "Ponto da equipe" vê a **Folha de Ponto** de cada funcionário por mês (entrada, intervalo, saída, horas, faltas e feriados), quem está em expediente agora e o histórico. Um clique numa linha abre a jornada com a linha do tempo, onde dá para corrigir a entrada ou a saída informando o motivo.' },
         { tipo: 'paragrafo', texto: '**+ Lançar jornada** registra um dia que o funcionário não conseguiu marcar. O lançamento pede um motivo e aparece na folha com a marca "ajuste". A folha pode ser impressa com espaço para as assinaturas.' },
+      ],
+    },
+    {
+      id: 'ponto-escalas',
+      grupo: 'Ponto',
+      pagina: 'gestao',
+      titulo: 'Montar a escala',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'Em **Gestão › Controle de Ponto › Escalas**, escolha o funcionário e o tipo de escala, o horário padrão e o intervalo.' },
+        { tipo: 'paragrafo', texto: 'Nas escalas de revezamento (12x36, 24x48, 24x72), informe **um dia de trabalho**: a partir dele o sistema conta os dias seguintes.' },
+        { tipo: 'paragrafo', texto: 'Em **Horário por dia da semana**, mude só o dia que for diferente (ex.: sexta saindo às 16:00).' },
+        { tipo: 'paragrafo', texto: 'No **Calendário da escala**, clique num dia para mudar só aquela data: folga, trabalho extra, outro horário, feriado trabalhado, banco de horas ou dia justificado (atestado).' },
+      ],
+    },
+    {
+      id: 'ponto-lancar',
+      grupo: 'Ponto',
+      pagina: 'gestao',
+      titulo: 'Lançar jornada',
+      corpo: [
+        { tipo: 'paragrafo', texto: 'Use quando o funcionário não conseguiu registrar o ponto. Informe o dia, a entrada, a saída, o intervalo e o motivo; o dia aparece na folha com a marca "ajuste".' },
+        { tipo: 'paragrafo', texto: 'Saída antes da entrada conta como o dia seguinte (turno da noite).' },
       ],
     },
   ],

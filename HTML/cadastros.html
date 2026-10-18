@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../CSS/explorador.css?v=1" />
   <link rel="stylesheet" href="../CSS/cadastros.css?v=2" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
-  <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
+  <link rel="stylesheet" href="../CSS/ajuda.css?v=3" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Cadastros</title>
 </head>
@@ -176,18 +176,16 @@
         </div>
 
         <div class="gestao-secao">
-          <h4>Contratos com acesso liberado</h4>
+          <h4>Contratos com acesso liberado <button type="button" class="ajuda-contextual" data-ajuda="acesso-contratos" aria-label="Ver no manual" title="Ver no manual">i</button></h4>
           <div class="gestao-form-grid">
             <div class="gestao-form-item gestao-form-full">
-              <label>Marque os contratos que este usuário pode visualizar. Sem nenhum marcado, o acesso segue o padrão do perfil vinculado (ou vê tudo, se não houver perfil).</label>
               <div id="usuario-contratos-lista" class="checklist-contratos"></div>
             </div>
           </div>
         </div>
 
         <div class="gestao-secao" id="bloco-pessoa-usuario" hidden>
-          <h4>Crachá, emergência e certificados</h4>
-          <p class="gestao-ajuda-texto">Tipo sanguíneo, informações de emergência e certificados ficam no cadastro do funcionário ligado a este usuário.</p>
+          <h4>Crachá, emergência e certificados <button type="button" class="ajuda-contextual" data-ajuda="cracha" aria-label="Ver no manual" title="Ver no manual">i</button></h4>
           <a class="btn-secundario" id="usuario-abrir-funcionario" href="#">Abrir cadastro de funcionário</a>
         </div>
 
@@ -301,17 +299,14 @@
               <input type="date" id="func-desligamento">
             </div>
             <div class="gestao-form-item">
-              <label>Tempo de casa</label>
+              <label>Tempo de casa <button type="button" class="ajuda-contextual" data-ajuda="funcionario-ficha" aria-label="Ver no manual" title="Ver no manual">i</button></label>
               <div class="ficha-tempo" id="func-tempo-casa">-</div>
             </div>
           </div>
-          <p class="ficha-dica">Contrato assinado, documentos pessoais, ASO e demais papéis da admissão ficam em
-            <button type="button" class="ficha-link" data-ir-fsec="documentos">Documentos</button>.</p>
         </div>
 
         <!-- Documentos: explorador de arquivos (pastas livres) -->
         <div data-fsec-painel="documentos" hidden>
-          <p class="ficha-dica ficha-dica-docs">Organize em pastas como preferir (ex.: Admissão, Folhas de ponto, Contracheques). Botão direito para criar pastas, renomear, copiar e excluir.</p>
           <div id="ficha-explorador"></div>
         </div>
 
@@ -411,23 +406,23 @@
 
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=40"></script>
+  <script src="../SCRIPT/geral.js?v=41"></script>
   <script src="../SCRIPT/navegacao-subabas.js?v=1"></script>
-  <script src="../SCRIPT/configuracoes.js?v=6"></script>
+  <script src="../SCRIPT/configuracoes.js?v=7"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=27"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=28"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
-  <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
+  <script src="../SCRIPT/cadastros/formulario.js?v=3"></script>
   <script src="../SCRIPT/cadastros/catalogos.js?v=2"></script>
   <script src="../SCRIPT/cadastros/locais.js?v=3"></script>
   <script src="../SCRIPT/permissoes-matriz.js?v=1"></script>
-  <script src="../SCRIPT/cadastros/capacitacoes-ui.js?v=1"></script>
+  <script src="../SCRIPT/cadastros/capacitacoes-ui.js?v=2"></script>
   <script src="../SCRIPT/cadastros/usuario.js?v=4"></script>
   <script src="../SCRIPT/gestao-funcionarios.js?v=6"></script>
-  <script src="../SCRIPT/operacional/explorador.js?v=3"></script>
+  <script src="../SCRIPT/operacional/explorador.js?v=4"></script>
   <script src="../SCRIPT/cadastros/ferias-ui.js?v=1"></script>
   <script src="../SCRIPT/cadastros/funcionario-ficha.js?v=3"></script>
   <script src="../SCRIPT/cadastros/contrato.js?v=1"></script>

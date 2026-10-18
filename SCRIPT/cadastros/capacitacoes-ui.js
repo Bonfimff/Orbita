@@ -19,7 +19,6 @@
   function montar(raiz) {
     let base = null;
     raiz.innerHTML = `
-      <p class="gestao-ajuda-texto">Aparecem no crachá com a situação da validade. Cargo de eletricista exige NR-10 válida.</p>
       <div class="gestao-caps-lista" data-caps-lista></div>
       <div class="gestao-caps-nova">
         <input type="text" data-cap="nome" placeholder="Capacitação (ex.: NR-10)" list="cap-sugestoes-comum" maxlength="80">

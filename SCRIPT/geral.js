@@ -1516,6 +1516,13 @@ document.addEventListener('DOMContentLoaded', function () {
       return (texto || '').replace(/[⬀-⯿←-⇿■-◿]/g, '').trim();
     }
 
+    // Texto da legenda sem o (i) da ajuda contextual.
+    function textoLegenda(el) {
+      const copia = el.cloneNode(true);
+      copia.querySelectorAll('.ajuda-contextual').forEach((b) => b.remove());
+      return copia.textContent;
+    }
+
     // A sub-aba ativa (Entrada/Retirada/...) e marcada de dois jeitos no projeto:
     // por classe .active ou por style inline com o teal da marca. Cobre os dois.
     // Trata como o mesmo nome variacoes de caixa/plural ("Busca" x "Buscas"),
@@ -1551,7 +1558,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         const btnDaTela = aba && document.querySelector('.menu .tab-btn[data-tab="' + aba.id + '"]');
         const btnMenu = btnDaTela || document.querySelector('.menu .tab-btn.active');
-        nomeAba = limpar(btnMenu ? btnMenu.textContent : (legenda ? legenda.textContent : ''));
+        nomeAba = limpar(btnMenu ? btnMenu.textContent : (legenda ? textoLegenda(legenda) : ''));
       }
 
       let subAba = '';
@@ -1562,7 +1569,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // Sem sub-aba explicita, a legenda ainda pode nomear a tela atual - mas
       // so quando acrescenta informacao ("Busca" x "Buscas" nao acrescenta).
       if (!subAba && legenda) {
-        const daLegenda = limpar(legenda.textContent);
+        const daLegenda = limpar(textoLegenda(legenda));
         if (daLegenda && !mesmoNome(daLegenda, nomeAba)) subAba = daLegenda;
       }
 
@@ -1576,7 +1583,15 @@ document.addEventListener('DOMContentLoaded', function () {
       // mudanca de comportamento fora disso.
       const subareaFixa = window.__painelSubareaFixa;
 
-      elTitulo.textContent = subareaFixa || subAba || nomeAba;
+      // No celular a legenda some: o (i) dela vai junto para o título.
+      const titulo = subareaFixa || subAba || nomeAba;
+      const ajudaLegenda = legenda && legenda.querySelector('.ajuda-contextual');
+      const chave = titulo + '|' + (ajudaLegenda ? ajudaLegenda.dataset.ajuda : '');
+      if (elTitulo.dataset.chave !== chave) {
+        elTitulo.dataset.chave = chave;
+        elTitulo.textContent = titulo;
+        if (ajudaLegenda) elTitulo.append(' ', ajudaLegenda.cloneNode(true));
+      }
 
       const partes = [];
       if (nomeModulo) partes.push(nomeModulo);

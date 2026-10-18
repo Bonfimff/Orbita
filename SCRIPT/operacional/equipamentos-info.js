@@ -186,9 +186,6 @@
         ${atual.pode_alterar ? `<button type="button" class="eqi-acao" data-mat-editar="${m.id}" title="Alterar" aria-label="Alterar">${ICONE.editar}</button>
         <button type="button" class="eqi-acao perigo" data-mat-excluir="${m.id}" title="Remover" aria-label="Remover">${ICONE.excluir}</button>` : ''}
       </li>`).join('') || '<li class="eqi-vazio">Nenhum material na composição.</li>';
-    el('eqi-mat-dica').textContent = mats.length === 1
-      ? 'Equipamento formado por um único material.'
-      : (atual.pode_alterar ? 'Um equipamento pode ser um único material ou um conjunto de materiais.' : '');
     limparFormMaterial();
   }
 

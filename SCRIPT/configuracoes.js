@@ -92,9 +92,8 @@
           </section>
 
           <section class="config-bloco">
-            <h3>Previsão do tempo</h3>
+            <h3>Previsão do tempo <button type="button" class="ajuda-contextual" data-ajuda="configuracoes" aria-label="Ver no manual" title="Ver no manual">i</button></h3>
             <label class="config-check"><input type="checkbox" id="config-clima"> Mostrar no painel lateral</label>
-            <p class="config-nota">A mudança vale ao recarregar a página.</p>
           </section>
         </div>
       </div>`;

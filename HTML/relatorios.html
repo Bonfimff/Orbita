@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
   <link rel="stylesheet" href="../CSS/cadastros.css?v=1" />
   <link rel="stylesheet" href="../CSS/gestao-nav.css?v=4" />
-  <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
+  <link rel="stylesheet" href="../CSS/ajuda.css?v=3" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Relatórios</title>
 </head>
@@ -231,22 +231,20 @@
     <!-- ===== ABA: REINCIDÊNCIA ===== -->
     <div id="reincidencia" class="tab-content" data-secao="Reincidência">
       <div class="aba-legenda-linha">
-        <h2 class="aba-legenda">Reincidência</h2>
+        <h2 class="aba-legenda">Reincidência <button type="button" class="ajuda-contextual" data-ajuda="relatorios-reincidencia" aria-label="Ver no manual" title="Ver no manual">i</button></h2>
       </div>
       <hr class="aba-linha">
 
       <section class="rel-bloco" id="rel-bloco-sugestoes">
         <div class="rel-bloco-cabecalho">
-          <h3>Sugestões aguardando revisão</h3>
-          <small class="rel-ajuda">O sistema apenas sugere. Só as confirmadas entram nos indicadores de reincidência vinculada.</small>
+          <h3>Sugestões aguardando revisão <button type="button" class="ajuda-contextual" data-ajuda="relatorios-reincidencia" aria-label="Ver no manual" title="Ver no manual">i</button></h3>
         </div>
         <div id="rel-sugestoes"></div>
       </section>
 
       <section class="rel-bloco">
         <div class="rel-bloco-cabecalho">
-          <h3>Pontos com problemas repetidos</h3>
-          <small class="rel-ajuda">Derivado do histórico: mesmo ponto e mesmo problema mais de uma vez no período.</small>
+          <h3>Pontos com problemas repetidos <button type="button" class="ajuda-contextual" data-ajuda="relatorios-reincidencia" aria-label="Ver no manual" title="Ver no manual">i</button></h3>
         </div>
         <div class="rel-tabela-area" id="rel-tabela-reincidencia"></div>
         <div class="rel-paginacao" id="rel-paginacao-reincidencia"></div>
@@ -256,7 +254,7 @@
     <!-- ===== ABA: PONTOS CRÔNICOS ===== -->
     <div id="cronicos" class="tab-content" data-secao="Pontos Crônicos">
       <div class="aba-legenda-linha">
-        <h2 class="aba-legenda">Pontos Crônicos</h2>
+        <h2 class="aba-legenda">Pontos Crônicos <button type="button" class="ajuda-contextual" data-ajuda="relatorios-cronicos" aria-label="Ver no manual" title="Ver no manual">i</button></h2>
       </div>
       <hr class="aba-linha">
 
@@ -308,15 +306,9 @@
     <!-- ===== ABA: CLASSIFICAÇÃO PENDENTE ===== -->
     <div id="pendentes" class="tab-content" data-secao="Classificações Pendentes">
       <div class="aba-legenda-linha">
-        <h2 class="aba-legenda">Classificações Pendentes</h2>
+        <h2 class="aba-legenda">Classificações Pendentes <button type="button" class="ajuda-contextual" data-ajuda="relatorios-pendentes" aria-label="Ver no manual" title="Ver no manual">i</button></h2>
       </div>
       <hr class="aba-linha">
-
-      <p class="rel-ajuda rel-ajuda-bloco">
-        Ocorrências que ainda não têm todos os campos analíticos preenchidos.
-        Ausência de equipamento não conta como pendência, equipamento pode
-        simplesmente não se aplicar ao atendimento.
-      </p>
 
       <div class="painel-cards" id="rel-pendencias-kpis"></div>
 
@@ -339,14 +331,9 @@
 
     <div id="auditoria" class="tab-content" data-secao="Auditoria">
       <div class="aba-legenda-linha">
-        <h2 class="aba-legenda">Auditoria</h2>
+        <h2 class="aba-legenda">Auditoria <button type="button" class="ajuda-contextual" data-ajuda="relatorios-auditoria" aria-label="Ver no manual" title="Ver no manual">i</button></h2>
       </div>
       <hr class="aba-linha">
-
-      <p class="rel-ajuda rel-ajuda-bloco">
-        Registro permanente de quem criou, alterou, ativou ou desativou cada
-        cadastro, e de cada classificação de O.S. Nada é apagado desta lista.
-      </p>
 
       <div class="cad-cabecalho">
         <select id="aud-entidade" class="cad-filtro">
@@ -388,19 +375,19 @@
 
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=40"></script>
+  <script src="../SCRIPT/geral.js?v=41"></script>
   <script src="../SCRIPT/navegacao-subabas.js?v=1"></script>
-  <script src="../SCRIPT/configuracoes.js?v=6"></script>
+  <script src="../SCRIPT/configuracoes.js?v=7"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=27"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=28"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
   <script src="../SCRIPT/relatorios/graficos.js?v=1"></script>
   <script src="../SCRIPT/relatorios/filtros.js?v=8"></script>
   <script src="../SCRIPT/relatorios/painel.js?v=6"></script>
-  <script src="../SCRIPT/relatorios/extras.js?v=3"></script>
+  <script src="../SCRIPT/relatorios/extras.js?v=4"></script>
   <script src="../SCRIPT/cadastros/auditoria.js?v=1"></script>
   <script src="../SCRIPT/contexto/painel.js?v=2"></script>
   <script src="../SCRIPT/contexto/relatorios.js?v=2"></script>

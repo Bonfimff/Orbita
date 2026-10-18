@@ -40,8 +40,10 @@
   function renderizarCampo(campo, valor) {
     const id = 'cf-' + campo.nome;
     const obrigatorio = campo.obrigatorio ? ' <span class="cad-obrigatorio">*</span>' : '';
+    // Texto de ajuda do campo: (i) com a dica ao passar o mouse; o clique abre o manual.
     const ajuda = campo.ajuda
-      ? '<small class="cad-ajuda">' + escapar(campo.ajuda) + '</small>' : '';
+      ? ' <button type="button" class="ajuda-contextual" data-ajuda="' + escapar(campo.topico || 'cadastros-campos')
+        + '" title="' + escapar(campo.ajuda) + '" aria-label="' + escapar(campo.ajuda) + '">i</button>' : '';
 
     let controle;
     if (campo.tipo === 'select') {
@@ -69,8 +71,8 @@
     }
 
     return '<div class="cad-campo' + (campo.largo ? ' cad-campo-largo' : '') + '">'
-      + '<label for="' + id + '">' + escapar(campo.rotulo) + obrigatorio + '</label>'
-      + controle + ajuda + '</div>';
+      + '<label for="' + id + '">' + escapar(campo.rotulo) + obrigatorio + ajuda + '</label>'
+      + controle + '</div>';
   }
 
   function coletar(campos) {

@@ -58,7 +58,7 @@
     if (carregamento) return carregamento;
     carregamento = Promise.all(ARQUIVOS_CONTEUDO.map((arquivo) => new Promise((resolve) => {
       const script = document.createElement('script');
-      script.src = BASE + arquivo + '?v=27';
+      script.src = BASE + arquivo + '?v=28';
       // Um arquivo de conteudo que falhe nao pode derrubar a Central inteira:
       // resolve mesmo em erro, e a secao correspondente simplesmente nao aparece.
       script.onload = resolve;
@@ -442,6 +442,11 @@
   }
 
   function abrirTopico(id) {
+    // O conteúdo do manual carrega sob demanda: espera antes de achar o tópico.
+    return carregarConteudo().then(() => abrirTopicoCarregado(id));
+  }
+
+  function abrirTopicoCarregado(id) {
     const secao = secaoDoTopico(id);
     if (!secao) {
       // Topico ainda nao documentado: abre a Central em vez de nao fazer nada.

@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="../CSS/geral.css?v=61" />
   <link rel="stylesheet" href="../CSS/ordens.css?v=42" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <link rel="stylesheet" href="../CSS/ajuda.css?v=2" />
+  <link rel="stylesheet" href="../CSS/ajuda.css?v=3" />
   <link rel="stylesheet" href="../CSS/relatorios.css?v=9" />
   <link rel="stylesheet" href="../CSS/cadastros.css?v=2" />
   <link rel="stylesheet" href="../CSS/explorador.css?v=1" />
@@ -163,7 +163,7 @@
 
     <!-- ===== ABA: BASES ===== -->
     <div id="bases" class="tab-content">
-      <h2 class="aba-legenda">Bases e Equipamentos</h2>
+      <h2 class="aba-legenda">Bases e Equipamentos <button type="button" class="ajuda-contextual" data-ajuda="equipamentos" aria-label="Ver no manual" title="Ver no manual">i</button></h2>
       <hr class="aba-linha">
 
       <div class="opcoes-abas" id="bases-seletor" role="tablist">
@@ -221,8 +221,7 @@
     <div id="cronograma" class="tab-content">
       <div class="cronograma-header">
         <div>
-          <h2 class="aba-legenda">Cronograma</h2>
-          <p class="cronograma-subtitulo">Atividades e despacho diário de equipes</p>
+          <h2 class="aba-legenda">Cronograma <button type="button" class="ajuda-contextual" data-ajuda="os-bases" aria-label="Ver no manual" title="Ver no manual">i</button></h2>
         </div>
         <button type="button" class="btn-primario" id="btn-agendar" data-permissao="os_agendamentos:excluir">+ Agendar</button>
       </div>
@@ -251,12 +250,8 @@
       </div>
 
       <div id="os-sub-equipamento" class="os-subaba">
-      <p class="rel-ajuda rel-ajuda-bloco">
-          Equipamento nunca é obrigatório numa O.S. Cadastre apenas os ativos que
-          a operação realmente identifica em campo.
-        </p>
-
         <div class="cad-cabecalho">
+          <button type="button" class="ajuda-contextual" data-ajuda="equipamentos" aria-label="Ver no manual" title="Ver no manual">i</button>
           <div class="cad-busca">
             <input type="search" id="eq-busca" placeholder="Código, nome, série ou patrimônio..." autocomplete="off">
           </div>
@@ -373,8 +368,7 @@
             </div>
 
             <div class="os-form-item os-form-full">
-              <label>Contratos com acesso a esta base</label>
-              <small class="os-campo-ajuda">Sem nenhum marcado, a base fica visível para todos os usuários com acesso a Ordens de Serviço.</small>
+              <label>Contratos com acesso a esta base <button type="button" class="ajuda-contextual" data-ajuda="acesso-contratos" aria-label="Ver no manual" title="Ver no manual">i</button></label>
               <div id="base-contratos-lista" class="checklist-contratos"></div>
             </div>
 
@@ -395,7 +389,6 @@
               <div id="base-materiais-lista" class="base-materiais-lista"></div>
             </div>
 
-            <p class="os-form-item os-form-full bases-dica-arquivos">Fotos, documentos e fichas técnicas ficam nos equipamentos da base (O.S. › Bases e Equipamentos › Equipamentos).</p>
 
             <div class="os-form-item os-form-full">
               <div class="bases-actions">
@@ -638,6 +631,7 @@
       </div>
 
       <section data-eqi-painel="composicao">
+        <p class="eqi-ajuda">Composição <button type="button" class="ajuda-contextual" data-ajuda="equipamentos" aria-label="Ver no manual" title="Ver no manual">i</button></p>
         <ul class="eqi-materiais" id="eqi-materiais"></ul>
         <form class="eqi-mat-form" id="eqi-mat-form" autocomplete="off" hidden>
           <input type="hidden" id="eqi-mat-id">
@@ -649,7 +643,6 @@
           <button type="submit" class="btn-primario" id="eqi-mat-salvar">Adicionar</button>
           <button type="button" class="eqi-link" id="eqi-mat-cancelar" hidden>Cancelar</button>
         </form>
-        <p class="eqi-dica" id="eqi-mat-dica"></p>
       </section>
 
       <section data-eqi-painel="arquivos" hidden>
@@ -671,27 +664,27 @@
 
   <script src="../SCRIPT/config.js?v=2"></script>
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
-  <script src="../SCRIPT/geral.js?v=40"></script>
+  <script src="../SCRIPT/geral.js?v=41"></script>
   <script src="../SCRIPT/navegacao-subabas.js?v=1"></script>
-  <script src="../SCRIPT/configuracoes.js?v=6"></script>
+  <script src="../SCRIPT/configuracoes.js?v=7"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
   <script src="../SCRIPT/clima-painel.js?v=8"></script>
-  <script src="../SCRIPT/ajuda/central.js?v=27"></script>
+  <script src="../SCRIPT/ajuda/central.js?v=28"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="../SCRIPT/operacional/base-equipamentos.js?v=1"></script>
   <script src="../SCRIPT/ordens.js?v=28"></script>
-  <script src="../SCRIPT/relatorios/alertas-dashboard.js?v=5"></script>
+  <script src="../SCRIPT/relatorios/alertas-dashboard.js?v=6"></script>
   <script src="../SCRIPT/relatorios/analise-os.js?v=2"></script>
   <script src="../SCRIPT/operacional/equipe.js?v=8"></script>
   <script src="../SCRIPT/operacional/frota.js?v=3"></script>
   <script src="../SCRIPT/operacional/materiais.js?v=2"></script>
   <script src="../SCRIPT/relatorios/api.js?v=2"></script>
-  <script src="../SCRIPT/cadastros/formulario.js?v=2"></script>
+  <script src="../SCRIPT/cadastros/formulario.js?v=3"></script>
   <script src="../SCRIPT/cadastros/equipamentos.js?v=5"></script>
-  <script src="../SCRIPT/operacional/explorador.js?v=3"></script>
-  <script src="../SCRIPT/operacional/equipamentos-info.js?v=4"></script>
+  <script src="../SCRIPT/operacional/explorador.js?v=4"></script>
+  <script src="../SCRIPT/operacional/equipamentos-info.js?v=5"></script>
 
   <!-- Modal de informações -->
   <div id="info-modal" class="modal" style="display: none;">

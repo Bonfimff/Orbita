@@ -92,8 +92,7 @@
 
       const texto = elemento('cr-criterio-texto');
       if (texto) {
-        texto.textContent = 'Critério aplicado: ' + (dados.criterio || '')
-          + '. Sem score composto, o cálculo é reproduzível na mão.';
+        texto.textContent = 'Critério aplicado: ' + (dados.criterio || '') + '.';
       }
 
       tabelaOuCards(alvo, dados.itens, [
