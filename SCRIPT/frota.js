@@ -2374,10 +2374,32 @@
       </div>
       <h4 class="frota-detalhe-subtitulo">Alertas de manutenção</h4>
       <div id="frota-detalhe-alertas">${htmlListaAlertas(placa)}</div>
-      ${htmlFormAlerta(v)}`;
+      ${htmlFormAlerta(v)}
+      <h4 class="frota-detalhe-subtitulo">Arquivos do veículo</h4>
+      <div id="frota-veiculo-arquivos"><p class="frota-vazio">Carregando arquivos...</p></div>`;
     abrirDetalhe(`${v.modelo || 'Veículo'} · ${placa}`, html);
     const corpo = document.getElementById('frota-detalhe-corpo');
     corpo.dataset.placa = placa;
+    carregarArquivosVeiculo(v);
+  }
+
+  // Pasta do veículo (mesmo explorador dos equipamentos). Os relatórios de
+  // manutenção finalizada entram sozinhos em "Manutenções finalizadas".
+  async function carregarArquivosVeiculo(v) {
+    const alvo = document.getElementById('frota-veiculo-arquivos');
+    if (!alvo || !v.id || !window.Explorador) { if (alvo) alvo.innerHTML = ''; return; }
+    try {
+      const r = await chamarApi(`explorador/veiculos/${v.id}/arquivos`);
+      if (!document.body.contains(alvo)) return;
+      window.Explorador.montar(alvo, {
+        base: '/explorador/veiculos/' + v.id,
+        podeAlterar: typeof window.temPermissao !== 'function' || window.temPermissao('frota_veiculos', 'editar'),
+        dados: r.dados,
+        raizNome: v.placa,
+      });
+    } catch (err) {
+      alvo.innerHTML = `<p class="frota-vazio">${escapeHtml(err.message)}</p>`;
+    }
   }
 
   async function aposMudarAlertas(placa) {
@@ -2592,8 +2614,7 @@
         <div class="frota-status-rapido" role="group" aria-label="Status da manutenção">
           ${['Agendada', 'Em andamento', 'Concluída', 'Cancelada'].map(st => `<button type="button" data-manut-status="${st}" class="${m.status === st ? 'ativo' : ''}">${st}</button>`).join('')}
         </div>
-        ${aberta ? '<div class="frota-manut-finalizar-barra"><button type="button" class="btn-primario" data-manut-acao="abrir-finalizacao">Finalizar manutenção</button></div>' : ''}
-        <div class="frota-manut-finalizacao" hidden></div>
+        ${m.status === 'Concluída' ? '<div class="frota-manut-finalizar-barra"><button type="button" class="btn-secundario fr-perigo" data-manut-acao="reabrir">Cancelar finalização</button></div>' : ''}
       </div>
       <div class="frota-detalhe-acoes" data-manut-id="${m.id}">
         <button type="button" class="btn-secundario fr-perigo" data-manut-acao="excluir" data-permissao="frota_manutencoes:excluir">Excluir</button>
@@ -2604,32 +2625,22 @@
   // ---------------------------------------------- finalização da manutenção
   const RESULTADOS_MANUTENCAO = ['Resolvido', 'Resolvido parcialmente', 'Não resolvido'];
 
-  // Dados da abertura, já preenchidos: só para conferir na finalização e no relatório.
-  function htmlDadosAbertura(m) {
-    return `<div class="frota-detalhe-grade frota-manut-abertura">
-        ${linhaDetalhe('Veículo', escapeHtml([m.placa, m.marca, m.modelo].filter(Boolean).join(' · ')))}
-        ${linhaDetalhe('Tipo', escapeHtml(m.tipo))}
-        ${linhaDetalhe('Oficina', escapeHtml(m.nome_oficina || ''))}
-        ${linhaDetalhe('Responsável', escapeHtml(m.responsavel || ''))}
-        ${linhaDetalhe('Entrada', formatarDataBR(m.data_entrada))}
-        ${linhaDetalhe('Km na entrada', formatarKm(m.km_entrada))}
-        ${linhaDetalhe('Problema / serviço solicitado', escapeHtml(m.descricao || ''))}
-      </div>`;
+  // Janela de finalização: só os campos que precisam ser preenchidos.
+  function abrirFinalizacao(m) {
+    abrirDetalhe(`Finalizar manutenção · ${m.placa}`, htmlFormFinalizacao(m));
+    document.querySelector('#frota-detalhe-corpo [data-fin="servicos_realizados"]')?.focus();
   }
 
   function htmlFormFinalizacao(m) {
     const hoje = hojeLocalISO();
     return `
-      <h4 class="frota-detalhe-subtitulo">Finalização da manutenção</h4>
-      <p class="frota-manut-pre">Dados da abertura</p>
-      ${htmlDadosAbertura(m)}
-      <div class="frota-manut-servico">
+      <div class="frota-manut-servico" data-manut-id="${m.id}">
         <label class="frota-manut-campo frota-manut-largo"><span>Serviços realizados *</span>
           <textarea rows="3" data-fin="servicos_realizados" placeholder="O que foi feito no veículo">${escapeHtml(m.servicos_realizados || '')}</textarea></label>
         <label class="frota-manut-campo frota-manut-largo"><span>Peças trocadas</span>
           <textarea rows="2" data-fin="pecas_trocadas">${escapeHtml(m.pecas_trocadas || '')}</textarea></label>
         <label class="frota-manut-campo"><span>Resultado final *</span>
-          <select data-fin="resultado">${RESULTADOS_MANUTENCAO.map(x => `<option${m.resultado === x ? ' selected' : ''}>${x}</option>`).join('')}</select></label>
+          <select data-fin="resultado" class="frota-manut-select">${RESULTADOS_MANUTENCAO.map(x => `<option${m.resultado === x ? ' selected' : ''}>${x}</option>`).join('')}</select></label>
         <label class="frota-manut-campo"><span>Custo total (R$)</span>
           <input type="number" min="0" step="0.01" data-fin="custo" value="${m.custo ?? ''}"></label>
         <label class="frota-manut-campo"><span>Data de saída</span>
@@ -2665,31 +2676,8 @@
           ${linhaDetalhe('Notas', escapeHtml(m.notas_finalizacao || ''))}
           ${linhaDetalhe('Finalizado por', escapeHtml([m.finalizado_por, m.finalizado_em ? formatarDataBR(String(m.finalizado_em).slice(0, 10)) : ''].filter(Boolean).join(' em ')))}
         </div>
-        <div class="frota-manut-servico-acoes" data-manut-id="${m.id}">
-          <button type="button" class="btn-secundario" data-manut-acao="imprimir-relatorio">Imprimir relatório</button>
-        </div>
+        <p class="frota-manut-pre frota-manut-pasta">O relatório em PDF está na pasta do veículo, em "Manutenções finalizadas".</p>
       </section>`;
-  }
-
-  // Relatório para imprimir ou salvar em PDF pelo navegador.
-  function imprimirRelatorioManutencao(m) {
-    const linha = (r, v) => (v ? `<tr><th>${escapeHtml(r)}</th><td>${escapeHtml(v)}</td></tr>` : '');
-    const garantia = m.garantia_dias ? `${m.garantia_dias} dias${m.garantia_ate ? ' (até ' + formatarDataBR(m.garantia_ate) + ')' : ''}` : '';
-    const janela = window.open('', '_blank');
-    if (!janela) { avisoRapido('Libere pop-ups para imprimir o relatório.', 'erro'); return; }
-    janela.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório de manutenção ${escapeHtml(m.placa)}</title>
-      <style>body{font-family:Arial,sans-serif;color:#1F2D3D;margin:32px}h1{font-size:20px;margin:0 0 4px}h2{font-size:15px;margin:22px 0 8px;border-bottom:1px solid #ccc;padding-bottom:4px}
-      table{width:100%;border-collapse:collapse}th{text-align:left;width:34%;color:#555;font-weight:600;vertical-align:top;padding:5px 8px 5px 0}td{padding:5px 0;white-space:pre-line}
-      .assin{display:flex;gap:40px;margin-top:60px}.assin div{flex:1;border-top:1px solid #333;text-align:center;padding-top:6px;font-size:12px}small{color:#666}</style></head><body>
-      <h1>Relatório de manutenção</h1><small>Veículo ${escapeHtml(m.placa)} · emitido em ${formatarDataBR(hojeLocalISO())}</small>
-      <h2>Abertura</h2><table>${linha('Veículo', [m.placa, m.marca, m.modelo].filter(Boolean).join(' · '))}${linha('Tipo', m.tipo)}${linha('Oficina', m.nome_oficina)}
-      ${linha('Responsável', m.responsavel)}${linha('Entrada', formatarDataBR(m.data_entrada))}${linha('Km na entrada', m.km_entrada != null ? formatarKm(m.km_entrada) : '')}${linha('Problema / serviço solicitado', m.descricao)}</table>
-      <h2>Serviço executado</h2><table>${linha('Serviços realizados', m.servicos_realizados)}${linha('Peças trocadas', m.pecas_trocadas)}${linha('Custo total', m.custo != null ? custoBR(m.custo) : '')}</table>
-      <h2>Finalização</h2><table>${linha('Resultado final', m.resultado)}${linha('Saída', formatarDataBR(m.data_saida))}${linha('Km na saída', m.km_saida != null ? formatarKm(m.km_saida) : '')}
-      ${linha('Garantia', garantia)}${linha('Condições da garantia', m.garantia_obs)}${linha('Notas', m.notas_finalizacao)}${linha('Finalizado por', m.finalizado_por)}</table>
-      <div class="assin"><div>Responsável pela oficina</div><div>Responsável pela frota</div></div>
-      <script>window.onload=function(){window.print();}<\/script></body></html>`);
-    janela.document.close();
   }
 
   function coletarFormularioManutencao() {
@@ -2814,10 +2802,7 @@
         if (!manut || manut.status === novo) return;
         // Concluir passa pela finalização (serviço, resultado, garantia).
         if (novo === 'Concluída') {
-          const caixa = botaoStatus.closest('[data-manut-id]').querySelector('.frota-manut-finalizacao');
-          caixa.innerHTML = htmlFormFinalizacao(manut);
-          caixa.hidden = false;
-          caixa.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          abrirFinalizacao(manut);
           return;
         }
         try {
@@ -2842,24 +2827,20 @@
           abrirCadastro('frota-sub-manutencao', 'frota-manut-status');
           return;
         }
-        if (botao.dataset.manutAcao === 'abrir-finalizacao') {
-          const caixa = botao.closest('[data-manut-id]').querySelector('.frota-manut-finalizacao');
-          caixa.innerHTML = htmlFormFinalizacao(manut);
-          caixa.hidden = false;
-          botao.closest('.frota-manut-finalizar-barra').hidden = true;
-          caixa.querySelector('[data-fin="servicos_realizados"]').focus();
-          return;
-        }
         if (botao.dataset.manutAcao === 'cancelar-finalizacao') {
           abrirDetalheManutencao(id);
           return;
         }
-        if (botao.dataset.manutAcao === 'imprimir-relatorio') {
-          imprimirRelatorioManutencao(manut);
+        if (botao.dataset.manutAcao === 'reabrir') {
+          if (!confirm(`Cancelar a finalização da manutenção do veículo ${manut.placa}? Ela volta para Em andamento e o relatório sai da pasta do veículo.`)) return;
+          await chamarApi(`frota/manutencoes/${id}/reabrir`, 'POST', {});
+          await recarregarManutencoesEVeiculos();
+          abrirDetalheManutencao(id);
+          avisoRapido('Finalização cancelada. A manutenção voltou para Em andamento.');
           return;
         }
         if (botao.dataset.manutAcao === 'confirmar-finalizacao') {
-          const caixa = botao.closest('.frota-manut-finalizacao');
+          const caixa = botao.closest('.frota-manut-servico');
           const campo = (n) => (caixa.querySelector(`[data-fin="${n}"]`)?.value || '').trim();
           if (!campo('servicos_realizados')) { avisoRapido('Descreva os serviços realizados.', 'erro'); return; }
           const dados = {};
@@ -2871,7 +2852,7 @@
           } finally { botao.disabled = false; }
           await recarregarManutencoesEVeiculos();
           abrirDetalheManutencao(id);
-          avisoRapido('Manutenção finalizada. O relatório está na ficha.');
+          avisoRapido('Manutenção finalizada. O relatório está na pasta do veículo.');
           return;
         }
         if (botao.dataset.manutAcao === 'concluir') {

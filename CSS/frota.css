@@ -1049,3 +1049,11 @@ td .frota-status-badge + small { display: block; margin-top: 3px; }
 .frota-manut-pre { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .03em; }
 .frota-manut-abertura { margin-bottom: 14px; opacity: .9; }
 .frota-manut-relatorio { margin-top: 6px; padding: 12px 14px; background: #f8f6f1; border-radius: 10px; }
+
+.frota-manut-campo select, .frota-manut-select {
+  font: inherit; font-weight: 400; padding: 8px 34px 8px 10px; border: 1px solid #d5dde3; border-radius: 8px;
+  width: 100%; box-sizing: border-box; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+  appearance: none; -webkit-appearance: none; color: #1F2D3D; cursor: pointer; height: auto;
+}
+.frota-manut-campo select:focus, .frota-manut-campo input:focus, .frota-manut-campo textarea:focus { outline: none; border-color: var(--cor-primaria); }
+.frota-manut-pasta { margin: 10px 0 0; text-transform: none; letter-spacing: 0; font-weight: 500; }
