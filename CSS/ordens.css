@@ -44,7 +44,6 @@
 
 .cronograma-item {
   border: 1px solid #edf1f3;
-  border-left: 3px solid var(--cor-primaria);
   border-radius: 12px;
   padding: 14px 16px 10px;
   background: #fff;
@@ -1670,7 +1669,6 @@ body.modal-foto-ponto-aberto {
   margin-top: 22px;
   background: #fff;
   border: 1px solid #fde68a;
-  border-left: 4px solid var(--cor-aviso);
   border-radius: 12px;
   padding: 14px 16px;
 }
@@ -1868,7 +1866,6 @@ body.modal-foto-ponto-aberto {
   flex-wrap: wrap;
   background: #fffbeb;
   border: 1px solid #fde68a;
-  border-left: 4px solid var(--cor-aviso);
   border-radius: 8px;
   padding: 10px 14px;
 }
@@ -2768,7 +2765,7 @@ button.ponto-foto-modal-tags {
 .eqi-acao:hover { background: #f1f5f9; color: var(--cor-destaque); }
 .eqi-acao.perigo:hover { background: #fdecec; color: var(--cor-erro); }
 
-.eqi-historico { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 2px solid #eef1f4; }
+.eqi-historico { list-style: none; margin: 0; padding: 0; }
 .eqi-historico li { padding: 0 0 10px 10px; display: flex; flex-direction: column; font-size: 13px; }
 .eqi-historico li.atual strong { color: var(--cor-primaria-escura); }
 .eqi-historico small { color: #94a3b8; }

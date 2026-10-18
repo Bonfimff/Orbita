@@ -144,7 +144,6 @@ body {
   padding: 15px 20px;
   text-align: left;
   cursor: pointer;
-  border-left: 4px solid transparent;
   font-size: 16px;
   color: #FFFFFF;
   transition: all 0.2s;
@@ -157,7 +156,7 @@ body {
 }
 
 .menu button.active {
-  border-left-color: #A8864F;
+  background-color: rgba(168, 134, 79, 0.14);
   font-weight: bold;
   color: #A8864F;
 }
@@ -805,8 +804,7 @@ button[type="submit"]:hover, .btn-primario:hover {
   padding: 10px;
   margin-bottom: 10px;
   background-color: #FFFFFF;
-  border-left: 4px solid var(--cor-destaque);
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 14px;
   color: #060606;
 }
@@ -856,13 +854,11 @@ button[type="submit"]:hover, .btn-primario:hover {
 }
 
 .sidebar-right li.ctx-alerta {
-  border-left-color: #d97706;
   background-color: #fffbeb;
   color: #92400e;
 }
 
 .sidebar-right li.ctx-status {
-  border-left-color: #cbd5e1;
 }
 
 .sidebar-right li.ctx-atalho {
@@ -3293,7 +3289,7 @@ html.sem-animacoes *, html.sem-animacoes *::before, html.sem-animacoes *::after 
 .cracha-emergencia summary::-webkit-details-marker { display: none; }
 .cracha-emergencia summary svg { color: #c62828; }
 .cracha-emergencia[open] summary { color: #1F2D3D; }
-.cracha-emergencia dl { margin: 10px 0 0; padding: 10px 12px; border-left: 2px solid #f3c9c9; }
+.cracha-emergencia dl { margin: 10px 0 0; padding: 10px 12px; background: #fdf4f4; border-radius: 8px; }
 .emerg-tel { color: #c62828; font-weight: 700; text-decoration: none; white-space: nowrap; }
 .emerg-tel::before { content: "\260E  "; }
 
@@ -3430,3 +3426,35 @@ body.fr-aberta { overflow: hidden; }
 .linha-clicavel, tr[data-fr] { cursor: pointer; }
 .linha-clicavel:hover td, tr[data-fr]:hover td { background: #faf7f1; }
 .linha-clicavel:focus-visible, tr[data-fr]:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: -2px; }
+
+/* ---------- Botões dentro das janelas de visualização ----------
+   Regra do sistema inteiro: na visualização de um registro (fichas, detalhes,
+   calendários), os botões são leves, só borda e texto, sem fundo cheio.
+   Excluir e ações destrutivas ficam com texto vermelho. O seletor de status
+   (.frota-status-rapido) continua preenchido para mostrar o selecionado. */
+:is(.fr-janela, .frota-detalhe, .os-detalhe, .eqi-fundo, .jor-cal, .acao-modal)
+  :is(.btn-primario, .btn-secundario, .jor-btn, .eqi-editar, .fr-btn, .acao-btn, .rel-btn, .btn-sm):not(.frota-status-rapido button) {
+  background: #fff !important;
+  color: #1F2D3D !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: none !important;
+  font-weight: 600;
+  border-radius: 8px;
+}
+:is(.fr-janela, .frota-detalhe, .os-detalhe, .eqi-fundo, .jor-cal, .acao-modal)
+  :is(.btn-primario, .btn-secundario, .jor-btn, .eqi-editar, .fr-btn, .acao-btn, .rel-btn, .btn-sm):not(:disabled):hover {
+  border-color: var(--cor-primaria) !important;
+  color: var(--cor-primaria) !important;
+  background: #fff !important;
+}
+:is(.fr-janela, .frota-detalhe, .os-detalhe, .eqi-fundo, .jor-cal, .acao-modal)
+  :is(.fr-perigo, .jor-btn-perigo, .acao-btn-perigo, [data-manut-acao="excluir"], [data-oficina-acao="excluir"], [data-cartao-acao="excluir"], [data-base-acao="excluir"], [data-alerta-acao="excluir"], .ponto-foto-modal-excluir, .frota-checklist-modal-excluir):not(.frota-status-rapido button) {
+  color: #b42318 !important;
+  border-color: #f1b4ae !important;
+}
+:is(.fr-janela, .frota-detalhe, .os-detalhe, .eqi-fundo, .jor-cal, .acao-modal)
+  :is(.fr-perigo, .jor-btn-perigo, .acao-btn-perigo, [data-manut-acao="excluir"]):not(:disabled):not(.frota-status-rapido button):hover {
+  background: #fdecea !important;
+  color: #b42318 !important;
+  border-color: #e7867b !important;
+}

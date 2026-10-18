@@ -636,8 +636,6 @@ body.rel-filtros-aberto .rel-filtros {
   display: flex;
   gap: 12px;
   font-size: 13px;
-  padding-left: 12px;
-  border-left: 2px solid #e2e8f0;
 }
 
 .rel-cronologia-data {

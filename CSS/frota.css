@@ -946,12 +946,12 @@ body.frota-checklist-modal-aberto {
   gap: 10px;
   padding: 10px 12px;
   border: 1px solid #edf1f3;
-  border-left: 3px solid #9CC77A;
   border-radius: 10px;
+  background: #f6faf2;
 }
-.frota-alerta-item.perto { border-left-color: #E3A857; }
-.frota-alerta-item.vencido { border-left-color: #C9584A; }
-.frota-alerta-item.sem-base { border-left-color: #B9BDC2; }
+.frota-alerta-item.perto { background: color-mix(in srgb, #E3A857 14%, #fff); }
+.frota-alerta-item.vencido { background: color-mix(in srgb, #C9584A 14%, #fff); }
+.frota-alerta-item.sem-base { background: color-mix(in srgb, #B9BDC2 14%, #fff); }
 .frota-alerta-item small { display: block; color: #7A8794; font-size: 12px; margin-top: 2px; }
 .frota-alerta-acoes { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
 .frota-alerta-tag {
@@ -1048,4 +1048,4 @@ td .frota-status-badge + small { display: block; margin-top: 3px; }
 .frota-manut-finalizacao { margin-top: 10px; padding: 14px; border: 1px solid #e6dcc8; border-radius: 12px; background: #fdfaf4; }
 .frota-manut-pre { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .03em; }
 .frota-manut-abertura { margin-bottom: 14px; opacity: .9; }
-.frota-manut-relatorio { margin-top: 6px; padding: 12px 14px; border-left: 3px solid #1a9e55; background: #f3faf6; border-radius: 8px; }
+.frota-manut-relatorio { margin-top: 6px; padding: 12px 14px; background: #f8f6f1; border-radius: 10px; }

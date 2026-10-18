@@ -3636,7 +3636,7 @@ function criarModalConfirmarRetirada(idRetirada, itensRetirada) {
         ⚠️ Retirada Completa
       </h2>
       
-      <div style="background-color: #fff3cd; border-left: 4px solid #ff9800; padding: 15px; margin: 20px 0; border-radius: 4px;">
+      <div style="background-color: #fff3cd; border: 1px solid #f5d38a; padding: 15px; margin: 20px 0; border-radius: 4px;">
         <p style="margin: 0; color: #856404; font-weight: bold;">
           ⚡ ATENÇÃO: Todos os itens desta retirada serão retirados juntos!
         </p>
@@ -4016,6 +4016,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // =================================== FINAL DO SCRIPT =====================================
 });
+
 //======================================================================================================
 // PADRÃO DAS TABELAS: clique na linha abre a ficha do registro (só ver).
 // As ações do registro ficam dentro da ficha (ex.: concluir a retirada).

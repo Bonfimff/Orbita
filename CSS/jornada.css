@@ -203,7 +203,7 @@
 .ponto-dia { font-weight: 700; }
 .ponto-fds td { background: #fafbfc; }
 .ponto-feriado td { background: rgba(37, 99, 235, .05); }
-.ponto-falta td:first-child { box-shadow: inset 3px 0 0 var(--cor-erro); }
+.ponto-falta td { background: color-mix(in srgb, var(--cor-erro) 7%, #fff); }
 .ponto-situacao { font-size: 12px; color: #64748b; }
 .ponto-falta .ponto-situacao { color: var(--cor-erro); font-weight: 700; }
 .ponto-feriado .ponto-situacao { color: #2563eb; }
@@ -222,7 +222,7 @@
 .ponto-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin: 0; }
 .ponto-info dt { font-size: 11px; color: #94a3b8; font-weight: 600; }
 .ponto-info dd { margin: 2px 0 0; font-size: 14px; color: #1F2D3D; }
-.ponto-eventos { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 2px solid #eef1f4; }
+.ponto-eventos { list-style: none; margin: 0; padding: 0; }
 .ponto-eventos li { position: relative; padding: 0 0 10px 10px; display: flex; flex-direction: column; gap: 1px; font-size: 13px; }
 .ponto-eventos li::before { content: ""; position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; border: 2px solid #fff; }
 .ponto-eventos li.ev-inicio::before { background: var(--cor-sucesso); }
@@ -269,7 +269,7 @@
   border: 0; border-radius: 8px; background: transparent; text-align: left; font: inherit; cursor: pointer;
 }
 .escala-item:hover { background: #f8fafc; }
-.escala-item.ativo { background: #f4f1ea; box-shadow: inset 3px 0 0 var(--cor-primaria); }
+.escala-item.ativo { background: #f4f1ea; color: var(--cor-primaria); }
 .escala-item-nome { font-size: 14px; font-weight: 700; color: #1F2D3D; }
 .escala-item-info { font-size: 12px; color: #94a3b8; }
 .escala-chip { margin-top: 2px; padding: 2px 8px; border-radius: 999px; background: rgba(168, 134, 79, .14); color: var(--cor-primaria-escura); font-size: 11px; font-weight: 700; }
@@ -403,8 +403,8 @@
 /* Folha: linhas com ajuste */
 .ponto-feriado td { background: rgba(67, 160, 71, .06); }
 .ponto-feriado .ponto-situacao { color: #2e7d32; }
-.ponto-aj-justificado td:first-child { box-shadow: inset 3px 0 0 var(--borda-justificado); }
-.ponto-aj-folga_banco td:first-child, .ponto-aj-extra_banco td:first-child { box-shadow: inset 3px 0 0 var(--borda-banco); }
+.ponto-aj-justificado td { background: color-mix(in srgb, var(--borda-justificado) 12%, #fff); }
+.ponto-aj-folga_banco td, .ponto-aj-extra_banco td { background: color-mix(in srgb, var(--borda-banco) 14%, #fff); }
 .ponto-tag-folga { background: #f1f5f9; color: #64748b; }
 .ponto-tag-folga_banco, .ponto-tag-extra_banco { background: #f3eefe; color: #6d4bc4; }
 .ponto-tag-justificado { background: #fff4de; color: #92610a; }
@@ -415,7 +415,7 @@
 :root { --borda-ferias: #5bb5c9; }
 .lg-ferias { box-shadow: inset 0 0 0 2px var(--borda-ferias); }
 .jor-cal-dia.aj-ferias, .escala-previa-dia.aj-ferias { box-shadow: inset 0 0 0 2px var(--borda-ferias); background: #f0f9fb; color: #1f6f80; font-weight: 400; }
-.ponto-aj-ferias td:first-child { box-shadow: inset 3px 0 0 var(--borda-ferias); }
+.ponto-aj-ferias td { background: color-mix(in srgb, var(--borda-ferias) 12%, #fff); }
 .ponto-tag-ferias { background: #e6f5f8; color: #1f6f80; }
 
 /* Ficha do contrato (Gestão › Contratos) */

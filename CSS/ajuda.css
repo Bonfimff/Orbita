@@ -168,7 +168,6 @@ body.ajuda-aberta {
 .ajuda-indice-item {
   background: none;
   border: none;
-  border-left: 3px solid transparent;
   text-align: left;
   padding: 8px 10px;
   font-size: 13.5px;
@@ -184,7 +183,6 @@ body.ajuda-aberta {
 }
 
 .ajuda-indice-item.active {
-  border-left-color: var(--cor-primaria);
   color: var(--cor-primaria);
   font-weight: 700;
   background: #fff;
@@ -292,13 +290,11 @@ body.ajuda-aberta {
 
 .ajuda-aviso {
   background: #fff7ed;
-  border-left: 4px solid var(--cor-aviso);
   color: #7c3f12;
 }
 
 .ajuda-nota {
   background: #F5F0E7;
-  border-left: 4px solid var(--cor-primaria);
   color: #5A4626;
 }
 
@@ -336,8 +332,9 @@ body.ajuda-aberta {
 /* ---------------------------------------------------------------- FAQ */
 .ajuda-faq-item {
   margin-bottom: 16px;
-  padding-left: 14px;
-  border-left: 3px solid #e2e8f0;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-radius: 8px;
 }
 
 .ajuda-faq-pergunta {
@@ -501,7 +498,6 @@ body.ajuda-aberta {
   }
 
   .ajuda-indice-item.active {
-    border-left-color: transparent;
     border-bottom-color: var(--cor-primaria);
   }
 
