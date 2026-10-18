@@ -112,17 +112,12 @@
     }
   }
 
+  // A visão geral de férias fica em Controle de Ponto › Férias; carrega ao abrir.
   function iniciarFerias() {
-    const abas = el('func-subabas');
-    if (!abas) return;
+    if (!el('tabela-ferias')) return;
     let carregou = false;
-    abas.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-fsub]');
-      if (!b) return;
-      abas.querySelectorAll('[data-fsub]').forEach((x) => x.classList.toggle('ativo', x === b));
-      el('func-sub-lista').hidden = b.dataset.fsub !== 'lista';
-      el('func-sub-ferias').hidden = b.dataset.fsub !== 'ferias';
-      if (b.dataset.fsub === 'ferias' && !carregou) { carregou = true; carregarFerias(); }
+    document.addEventListener('ponto:ferias', () => {
+      if (!carregou) { carregou = true; carregarFerias(); }
     });
     document.querySelector('#tabela-ferias tbody').addEventListener('click', (e) => {
       const linha = e.target.closest('[data-ferias-id]');
@@ -182,7 +177,7 @@
     if (el('func-ficha').hidden) return;
     el('func-ficha').hidden = true;
     if (window.travarRolagemFundo) window.travarRolagemFundo(false);
-    if (feriasMudou && !el('func-sub-ferias').hidden) carregarFerias();
+    if (feriasMudou && el('ponto-sec-ferias') && !el('ponto-sec-ferias').hidden) carregarFerias();
   }
 
   function ligarFicha() {

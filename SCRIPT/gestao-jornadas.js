@@ -724,7 +724,9 @@
   // ---------------------------------------------------------- SUBABAS
   function mostrarSecao(qual) {
     document.querySelectorAll('#ponto-subabas .top-tab2').forEach((b) => b.classList.toggle('ativo', b.dataset.ponto === qual));
-    ['folha', 'agora', 'historico', 'escalas'].forEach((s) => { el('ponto-sec-' + s).hidden = s !== qual; });
+    ['folha', 'agora', 'historico', 'escalas', 'ferias'].forEach((s) => { el('ponto-sec-' + s).hidden = s !== qual; });
+    // Férias: a tabela é de gestao-funcionarios.js, que escuta este aviso.
+    if (qual === 'ferias') document.dispatchEvent(new CustomEvent('ponto:ferias'));
     if (qual === 'agora') carregarAgora();
     if (qual === 'historico') buscarHistorico();
     if (qual === 'escalas') carregarEscalas();
