@@ -44,7 +44,7 @@
     el('titulo-cadastro-usuario').textContent = u ? `Editar usuário ${u.usuario}` : 'Novo usuário';
     el('usuario-id').value = u ? u.id : '';
     el('usuario-login').value = u ? u.usuario : '';
-    el('usuario-login').disabled = !!u;
+    el('usuario-login').disabled = false;
     el('usuario-nome').value = u ? (u.nome || '') : '';
     el('usuario-email').value = u ? (u.email || '') : '';
     el('usuario-cargo').value = u ? (u.credencial_acesso || '') : '';
@@ -121,6 +121,7 @@
       url = `/usuarios/${editandoId}`;
       method = 'PUT';
       if (el('usuario-redefinir-senha-toggle').checked) payload.nova_senha = el('usuario-nova-senha').value;
+      payload.usuario = el('usuario-login').value.trim();
     } else {
       payload.usuario = el('usuario-login').value;
       payload.senha = el('usuario-senha').value;

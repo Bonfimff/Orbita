@@ -83,7 +83,7 @@
       return '<tr class="' + (it.feito ? 'feito' : '') + '"><td>' + esc(it.nome) + (it.codigo ? '<br><small>Cód. ' + esc(it.codigo) + '</small>' : '') +
         '</td><td class="num">' + qtdTxt + '</td><td class="num">R$ ' + moeda(it.valor) + '</td><td>' + sit +
         '</td><td class="num"><button type="button" class="btn-secundario nota-usar" data-acao="usar" data-i="' + i + '">' +
-        (it.feito ? 'Lançado' : 'Preencher') + '</button></td></tr>';
+        (it.feito ? 'Na lista' : 'Preencher') + '</button></td></tr>';
     }).join('');
     caixa.innerHTML = '<div class="entrada-nota-topo"><strong>Nota ' + esc(nota.numero || '-') + '</strong><span>' + esc(nota.fornecedor || '') +
       '</span><span>' + (nota.data ? nota.data.split('-').reverse().join('/') : '') + '</span><span>' + nota.itens.length + ' item(ns)</span>' +
@@ -136,7 +136,7 @@
     if (nota.fornecedor) escolherOpcao('fornecedor-entrada', nota.fornecedor);
     if (nota.data) definir('data-compra-entrada', nota.data);
     const aviso = Number.isInteger(it.quantidade) ? '' : ' A nota traz ' + it.quantidade.toLocaleString('pt-BR') + ' ' + it.unidade + '; o estoque conta em inteiros, confira a quantidade.';
-    avisar((s.novo ? 'Item novo preenchido: complete categoria, local e os demais dados e salve.' : 'Entrada do item #' + s.id + ' preenchida. Confira e salve.') + aviso, aviso ? 'erro' : 'ok');
+    avisar((s.novo ? 'Item novo preenchido: complete categoria, local e os demais dados e clique em Acrescentar à lista.' : 'Item #' + s.id + ' preenchido. Confira e clique em Acrescentar à lista.') + aviso, aviso ? 'erro' : 'ok');
     el('form-entrada-produto').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -190,7 +190,7 @@
     // Entrada salva com sucesso: o item levado ao formulário fica marcado como lançado.
     const fb = el('entrada-feedback');
     if (fb) new MutationObserver(() => {
-      if (nota && atual !== null && fb.classList.contains('entrada-feedback-ok') && /registrada|cadastrado/i.test(fb.textContent)) {
+      if (nota && atual !== null && fb.classList.contains('entrada-feedback-ok') && /acrescentado à lista|registrada|cadastrado/i.test(fb.textContent)) {
         nota.itens[atual].feito = true;
         atual = null;
         carregarNomes().then(desenhar, desenhar);

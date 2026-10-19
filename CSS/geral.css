@@ -3544,3 +3544,35 @@ body.fr-aberta { overflow: hidden; }
   .opcoes-abas { flex-wrap: wrap; overflow-x: visible; row-gap: 6px; }
   .entrada-header:has(> .aba-trilha) > .opcoes-abas { justify-content: flex-end; max-width: 100%; }
 }
+
+/* Configurações: previsão do tempo desligada esconde na hora o clima (painel lateral e gaveta do sino) */
+html.sem-clima .clima-palco .clima-cartao, html.sem-clima .clima-pontos, html.sem-clima .clima-gaveta { display: none !important; }
+html.sem-clima .clima-palco .clima-face.logo { opacity: 1; transform: none; pointer-events: auto; }
+.config-senha-abrir { align-self: flex-start; }
+.config-senha-acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Editor de imagem (SCRIPT/editor-imagem.js) */
+.ei-fundo { position: fixed; inset: 0; z-index: calc(var(--z-modal) + 400); display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(15, 23, 42, .55); }
+.ei-janela { width: min(760px, 100%); max-height: calc(100dvh / var(--zv, 1) - 32px); display: flex; flex-direction: column; background: #fff; border-radius: 14px; overflow: hidden; }
+.ei-topo { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #eee; }
+.ei-x { border: 0; background: none; font-size: 24px; line-height: 1; cursor: pointer; color: #475569; }
+.ei-area { flex: 1 1 auto; min-height: 260px; height: 52vh; display: flex; align-items: center; justify-content: center; background: #f4f5f7; padding: 4px; }
+.ei-tela { touch-action: none; max-width: 100%; max-height: 100%; }
+.ei-controles { display: flex; flex-wrap: wrap; gap: 12px 24px; padding: 12px 16px; border-top: 1px solid #eee; }
+.ei-grupo { display: flex; flex-direction: column; gap: 6px; }
+.ei-rotulo { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: #6b6b6b; }
+.ei-formatos { display: flex; flex-wrap: wrap; gap: 6px; }
+.ei-formatos button { padding: 6px 10px; border: 1px solid #cfc8bb; border-radius: 8px; background: #fff; color: #262626; font: inherit; font-size: 13px; cursor: pointer; }
+.ei-formatos button.ativo { border-color: var(--cor-primaria); color: var(--cor-primaria-escura, #86683A); background: rgba(168, 134, 79, .1); font-weight: 600; }
+.ei-formatos button:disabled { opacity: .45; cursor: default; }
+.ei-tolerancia { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #475569; }
+.ei-dica { font-size: 12px; color: var(--cor-primaria-escura, #86683A); }
+.ei-rodape { display: flex; justify-content: flex-end; gap: 10px; padding: 12px 16px; border-top: 1px solid #eee; }
+.ei-ampliar { position: fixed; inset: 0; z-index: calc(var(--z-modal) + 400); display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(15, 23, 42, .8); cursor: zoom-out; }
+.ei-ampliar img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px; background: #fff; }
+.ei-ampliar-fechar { position: absolute; top: 12px; right: 16px; border: 0; background: none; color: #fff; font-size: 32px; cursor: pointer; }
+@media (max-width: 768px) {
+  .ei-fundo { padding: 0; align-items: stretch; }
+  .ei-janela { width: 100%; max-height: none; border-radius: 0; }
+  .ei-area { height: auto; }
+}

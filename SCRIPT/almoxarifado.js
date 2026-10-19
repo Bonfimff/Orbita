@@ -3961,13 +3961,3 @@ document.addEventListener('DOMContentLoaded', () => {
   F.ligarConsulta(tab('tabela-requisitantes-lista'), { titulo: (tr, c) => (c[1] ? c[1].textContent.trim() : 'Requisitante'), subtitulo: 'Requisitante' });
   F.ligarConsulta(tab('tabela-kits-lista'), { subtitulo: 'Kit' });
 });
-
-// Retirada: "Outro" em Local de destino mostra o campo para informar o local.
-(function () {
-  const sel = document.getElementById('retirada-local');
-  const caixa = document.getElementById('outro-local-container');
-  if (!sel || !caixa) return;
-  const atualizar = () => { caixa.hidden = sel.value !== 'Outro'; };
-  sel.addEventListener('change', atualizar);
-  atualizar();
-})();

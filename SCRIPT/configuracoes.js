@@ -25,6 +25,7 @@
   function aplicarPreferencias() {
     if (window.KernelEscala) window.KernelEscala.aplicar();
     document.documentElement.classList.toggle('sem-animacoes', lerPref(PREF.animacoes, 'sim') === 'nao');
+    document.documentElement.classList.toggle('sem-clima', lerPref(PREF.clima, 'sim') === 'nao');
   }
   aplicarPreferencias();
   window.KernelPreferencias = {
@@ -66,6 +67,7 @@
             <h3>Minha conta</h3>
             <form id="config-conta" autocomplete="off">
               <div class="config-linha-info" id="config-usuario"></div>
+              <label>Usuário do login <input type="text" id="config-login" maxlength="50" autocomplete="username" required></label>
               <label>Nome <input type="text" id="config-nome" maxlength="150" required></label>
               <label>E-mail <input type="email" id="config-email" maxlength="150"></label>
               <button type="submit" class="btn-primario">Salvar dados</button>
@@ -74,13 +76,17 @@
           </section>
 
           <section class="config-bloco">
-            <h3>Trocar senha</h3>
-            <form id="config-senha" autocomplete="off">
+            <h3>Senha</h3>
+            <button type="button" class="btn-secundario config-senha-abrir" id="config-senha-abrir" aria-expanded="false" aria-controls="config-senha">Trocar senha</button>
+            <form id="config-senha" autocomplete="off" hidden>
               <label>Senha atual <input type="password" id="config-senha-atual" autocomplete="current-password" required></label>
               <label>Nova senha <input type="password" id="config-senha-nova" autocomplete="new-password" minlength="6" required></label>
               <label>Repita a nova senha <input type="password" id="config-senha-repete" autocomplete="new-password" minlength="6" required></label>
               <label class="config-check"><input type="checkbox" id="config-senha-ver"> Mostrar senhas</label>
-              <button type="submit" class="btn-primario">Trocar senha</button>
+              <div class="config-senha-acoes">
+                <button type="button" class="btn-secundario" id="config-senha-cancelar">Cancelar</button>
+                <button type="submit" class="btn-primario">Salvar nova senha</button>
+              </div>
               <p class="config-retorno" id="config-senha-retorno" role="status"></p>
             </form>
           </section>
@@ -117,7 +123,25 @@
     const clima = janela.querySelector('#config-clima');
     texto.addEventListener('change', () => { gravarPref(PREF.texto, texto.value); aplicarPreferencias(); });
     anim.addEventListener('change', () => { gravarPref(PREF.animacoes, anim.checked ? 'nao' : 'sim'); aplicarPreferencias(); });
-    clima.addEventListener('change', () => gravarPref(PREF.clima, clima.checked ? 'sim' : 'nao'));
+    clima.addEventListener('change', () => {
+      gravarPref(PREF.clima, clima.checked ? 'sim' : 'nao');
+      aplicarPreferencias();
+      if (clima.checked && window.ClimaPainel) window.ClimaPainel.iniciar();
+    });
+
+    // Trocar senha: os campos só aparecem quando pedidos.
+    const formSenha = janela.querySelector('#config-senha');
+    const abrirSenha = janela.querySelector('#config-senha-abrir');
+    const mostrarSenha = (abrir) => {
+      formSenha.hidden = !abrir;
+      abrirSenha.hidden = abrir;
+      abrirSenha.setAttribute('aria-expanded', String(abrir));
+      if (abrir) formSenha.querySelector('input').focus();
+      else { formSenha.reset(); mostrarRetorno(janela.querySelector('#config-senha-retorno'), '', false); }
+    };
+    abrirSenha.addEventListener('click', () => mostrarSenha(true));
+    janela.querySelector('#config-senha-cancelar').addEventListener('click', () => mostrarSenha(false));
+    janela._mostrarSenha = mostrarSenha;
 
     janela.querySelector('#config-senha-ver').addEventListener('change', (e) => {
       janela.querySelectorAll('#config-senha input[type="password"], #config-senha input[data-era-senha]').forEach((campo) => {
@@ -129,10 +153,19 @@
     janela.querySelector('#config-conta').addEventListener('submit', async (e) => {
       e.preventDefault();
       const retorno = janela.querySelector('#config-conta-retorno');
-      await enviar('/conta', {
+      const login = janela.querySelector('#config-login').value.trim();
+      const ok = await enviar('/conta', {
+        usuario: login,
         nome: janela.querySelector('#config-nome').value,
         email: janela.querySelector('#config-email').value,
       }, retorno);
+      // Login novo: atualiza o que este navegador guarda (o acesso continua valendo).
+      if (ok) {
+        try {
+          const salvo = JSON.parse(localStorage.getItem('usuario') || 'null');
+          if (salvo && typeof salvo === 'object') { salvo.username = login; salvo.usuario = login; localStorage.setItem('usuario', JSON.stringify(salvo)); }
+        } catch (erro) { /* sem dados guardados */ }
+      }
     });
 
     // Renovar: o campo de senha só aparece depois de clicar no botão.
@@ -205,7 +238,8 @@
       const dados = await resp.json();
       if (dados.status !== 'ok') throw new Error(dados.mensagem);
       const c = dados.conta;
-      usuario.innerHTML = `Usuário: <strong>${escapar(c.usuario)}</strong>${c.cargo ? ' · ' + escapar(c.cargo) : ''}`;
+      usuario.innerHTML = c.cargo ? 'Cargo: <strong>' + escapar(c.cargo) + '</strong>' : '';
+      janela.querySelector('#config-login').value = c.usuario;
       janela.querySelector('#config-nome').value = c.nome;
       janela.querySelector('#config-email').value = c.email;
       bloquear('#config-conta', !c.pode_editar_dados, 'Seu perfil não permite alterar estes dados.');
@@ -250,6 +284,7 @@
     janela.querySelector('#config-texto-nivel').value = String(window.KernelEscala ? window.KernelEscala.nivel() : 0);
     janela.querySelector('#config-sem-animacoes').checked = lerPref(PREF.animacoes, 'sim') === 'nao';
     janela.querySelector('#config-clima').checked = lerPref(PREF.clima, 'sim') !== 'nao';
+    if (janela._mostrarSenha) janela._mostrarSenha(false);
     janela.querySelectorAll('.config-retorno').forEach((r) => mostrarRetorno(r, '', false));
     janela.classList.add('aberta');
     if (window.travarRolagemFundo) window.travarRolagemFundo(true);

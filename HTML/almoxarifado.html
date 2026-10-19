@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <script src="../SCRIPT/escala-tela.js?v=1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=73" />
-  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=12" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=75" />
+  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=13" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=4" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Estoque</title>
@@ -607,12 +607,25 @@
           </div>
           <div class="entrada-acoes">
             <button type="button" id="btn-carregar-nota" class="btn-secundario">Carregar nota (XML)</button>
-            <button id="btn-add" class="btn-primario" type="submit">Salvar entrada</button>
+            <button type="button" id="btn-cancelar-edicao-entrada" class="btn-secundario" hidden>Cancelar edição</button>
+            <button type="submit" id="btn-acrescentar-entrada" class="btn-secundario">Acrescentar à lista</button>
           </div>
         </div>
         <input type="file" id="input-carregar-nota-movimentacao" accept=".xml,text/xml,application/xml" style="display: none;">
         <div class="entrada-feedback" id="entrada-feedback" hidden></div>
       </form>
+      <div class="tabela-itens entrada-lista" id="entrada-lista" hidden>
+        <div class="entrada-lista-topo">
+          <h3>Itens desta entrada <span id="entrada-lista-total"></span></h3>
+          <button type="button" id="btn-add" class="btn-primario" disabled>Salvar entrada</button>
+        </div>
+        <div class="tabela-produtos">
+          <table id="tabela-entrada-itens" class="estilo-tabela">
+            <thead><tr><th>Produto</th><th>ID</th><th>Quantidade</th><th>Custo</th><th>Nota</th><th>Local</th><th>Contratos</th><th>Imagem</th><th>Ações</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
 
@@ -829,15 +842,8 @@
             <div>
               <label for="retirada-local">LOCAL DE DESTINO</label>
               <select id="retirada-local" name="retirada-local" required class="inline-style-199b6f">
-                <option value="">Selecione</option>
-                <option value="Obra A">Obra A</option>
-                <option value="Obra B">Obra B</option>
-                <option value="Outro">Outro</option>
+                <option value="">Carregando bases...</option>
               </select>
-            </div>
-            <div id="outro-local-container" hidden>
-              <label for="retirada-outro-local">INFORME O LOCAL</label>
-              <input type="text" id="retirada-outro-local" name="retirada-outro-local" class="inline-style-199b6f" />
             </div>
             <div>
               <label for="retirada-finalidade">FINALIDADE</label>
@@ -1548,7 +1554,7 @@
  <script src="../SCRIPT/config.js?v=2"></script>
  <script src="../SCRIPT/xlsx.full.min.js"></script>
  <script src="../SCRIPT/exportar-tabela.js?v=3"></script>
- <script src="../SCRIPT/almoxarifado.js?v=9"></script>
+ <script src="../SCRIPT/almoxarifado.js?v=10"></script>
 <script>
 // Exibe campos extras de produtos apenas quando "produtos" está selecionado
 document.addEventListener('DOMContentLoaded', function() {
@@ -1569,17 +1575,18 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
   <script src="../SCRIPT/geral.js?v=43"></script>
   <script src="../SCRIPT/ficha-registro.js?v=1"></script>
-  <script src="../SCRIPT/filtros-tabela.js?v=2"></script>
+  <script src="../SCRIPT/filtros-tabela.js?v=3"></script>
   <script src="../SCRIPT/navegacao-subabas.js?v=2"></script>
-  <script src="../SCRIPT/configuracoes.js?v=8"></script>
+  <script src="../SCRIPT/configuracoes.js?v=9"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
   <script src="../SCRIPT/clima-ferro.js?v=14"></script>
-  <script src="../SCRIPT/clima-painel.js?v=8"></script>
+  <script src="../SCRIPT/clima-painel.js?v=9"></script>
   <script src="../SCRIPT/ajuda/central.js?v=34"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
-  <script src="../SCRIPT/outos.js?v=3"></script>
-  <script src="../SCRIPT/estoque-contratos.js?v=4"></script>
-  <script src="../SCRIPT/entrada-nota.js?v=1"></script>
+  <script src="../SCRIPT/outos.js?v=4"></script>
+  <script src="../SCRIPT/editor-imagem.js?v=1"></script>
+  <script src="../SCRIPT/estoque-contratos.js?v=6"></script>
+  <script src="../SCRIPT/entrada-nota.js?v=2"></script>
   <script src="../SCRIPT/estoque-baixa.js?v=1"></script>
   <script src="../SCRIPT/estoque-transferencia.js?v=1"></script>
   <script src="../SCRIPT/pre-tranferencia.js"></script>

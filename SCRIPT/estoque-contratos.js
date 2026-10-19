@@ -101,56 +101,258 @@
     return limpo;
   }
 
-  async function salvarEntrada(evento) {
-    evento.preventDefault();
-    evento.stopImmediatePropagation();
-    const quantidade = parseInt(valor('quantidade-entrada'), 10) || 0;
-    const id = valor('id-entrada');
-    const nome = valor('nome-produto-entrada');
-    if (quantidade <= 0) { feedbackEntrada('Informe a quantidade da entrada.', 'erro'); return; }
-    if (!id && !nome) { feedbackEntrada('Informe o ID de um item existente ou o nome de um item novo.', 'erro'); return; }
-    const lista = linhasContrato();
-    const reservado = lista.reduce((s, c) => s + c.quantidade, 0);
-    if (reservado > quantidade) {
-      feedbackEntrada('A soma por contrato (' + reservado + ') passa da quantidade da entrada (' + quantidade + ').', 'erro');
-      return;
-    }
-    const corpo = {
-      id: id || null,
-      codigo: valor('codigo-entrada'),
-      nome_produto: nome,
-      categoria: valor('categoria-entrada'),
-      quantidade: quantidade,
-      numero_serie: valor('numero-serie-entrada'),
-      unid_medida: valor('unid-medida-entrada'),
-      estoque_minimo: valor('estoque-minimo-entrada'),
-      numero_nota: valor('numero-nota-entrada'),
-      fornecedor: valor('fornecedor-entrada'),
-      patrimonio: valor('patrimonio'),
-      local_estoque: valor('local-estoque'),
-      custo: custoNumero(valor('custo-entrada')),
-      garantia: valor('garantia-entrada'),
-      data_validade: valor('data-validade-entrada'),
-      data_compra: valor('data-compra-entrada'),
-      contratos: lista,
+  // ----- Entrada em lista: acrescenta itens, confere na tabela e salva tudo no fim -----
+  // Campos do formulário -> nome no corpo enviado a /estoque/entrada.
+  const CAMPOS = {
+    'id-entrada': 'id', 'codigo-entrada': 'codigo', 'nome-produto-entrada': 'nome_produto',
+    'categoria-entrada': 'categoria', 'quantidade-entrada': 'quantidade', 'numero-serie-entrada': 'numero_serie',
+    'unid-medida-entrada': 'unid_medida', 'estoque-minimo-entrada': 'estoque_minimo',
+    'numero-nota-entrada': 'numero_nota', 'fornecedor-entrada': 'fornecedor', 'patrimonio': 'patrimonio',
+    'local-estoque': 'local_estoque', 'custo-entrada': 'custo', 'garantia-entrada': 'garantia',
+    'data-validade-entrada': 'data_validade', 'data-compra-entrada': 'data_compra',
+  };
+  // Dados da nota: continuam preenchidos ao acrescentar o próximo item.
+  const DA_NOTA = ['numero-nota-entrada', 'fornecedor-entrada', 'data-compra-entrada', 'local-estoque', 'patrimonio'];
+  const SEM_IMAGEM = '../IMG/Sem_imagem.png';
+  const lista = [];
+  let editando = null;      // índice do item da lista em edição
+  let imagemNova = null;    // imagem escolhida para o item do formulário (data URL)
+
+  function lerFormulario() {
+    const campos = {};
+    Object.keys(CAMPOS).forEach((id) => { campos[id] = valor(id); });
+    return campos;
+  }
+
+  function validar(campos, contratosItem) {
+    const quantidade = parseInt(campos['quantidade-entrada'], 10) || 0;
+    if (quantidade <= 0) return 'Informe a quantidade da entrada.';
+    if (!campos['id-entrada'] && !campos['nome-produto-entrada']) return 'Informe o ID de um item existente ou o nome de um item novo.';
+    const reservado = contratosItem.reduce((s, c) => s + c.quantidade, 0);
+    if (reservado > quantidade) return 'A soma por contrato (' + reservado + ') passa da quantidade da entrada (' + quantidade + ').';
+    return '';
+  }
+
+  function corpoDo(item) {
+    const corpo = { contratos: item.contratos };
+    Object.keys(CAMPOS).forEach((id) => { corpo[CAMPOS[id]] = item.campos[id]; });
+    corpo.id = corpo.id || null;
+    corpo.quantidade = parseInt(corpo.quantidade, 10) || 0;
+    corpo.custo = custoNumero(corpo.custo);
+    return corpo;
+  }
+
+  function textoOpcao(id, v) {
+    const sel = el(id);
+    if (!sel || sel.tagName !== 'SELECT' || !v) return v || '';
+    const op = Array.from(sel.options).find((o) => o.value === v);
+    return op ? op.textContent.trim() : v;
+  }
+
+  function mostrarImagem(src) {
+    const img = el('preview-entrada');
+    if (img) img.src = src || SEM_IMAGEM;
+  }
+
+  function limparItem() {
+    const manter = {};
+    DA_NOTA.forEach((id) => { manter[id] = valor(id); });
+    el('form-entrada-produto').reset();
+    DA_NOTA.forEach((id) => { if (el(id)) el(id).value = manter[id]; });
+    el('entrada-contratos-linhas').innerHTML = '';
+    imagemNova = null;
+    mostrarImagem(null);
+    editando = null;
+    atualizarResumoEntrada();
+    atualizarBotoes();
+  }
+
+  function preencherItem(n) {
+    const item = lista[n];
+    Object.keys(item.campos).forEach((id) => { if (el(id)) el(id).value = item.campos[id]; });
+    const box = el('entrada-contratos-linhas');
+    box.innerHTML = '';
+    item.contratos.forEach((c) => {
+      adicionarLinhaContrato();
+      const linha = box.lastElementChild;
+      linha.querySelector('select').value = String(c.contrato_id);
+      linha.querySelector('input').value = c.quantidade;
+    });
+    imagemNova = item.imagem;
+    mostrarImagem(item.imagem || item.imagemExistente);
+    editando = n;
+    atualizarResumoEntrada();
+    atualizarBotoes();
+    desenharLista();
+    el('form-entrada-produto').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function acrescentar(evento) {
+    if (evento) { evento.preventDefault(); evento.stopImmediatePropagation(); }
+    const campos = lerFormulario();
+    const contratosItem = linhasContrato();
+    const erro = validar(campos, contratosItem);
+    if (erro) { feedbackEntrada(erro, 'erro'); return; }
+    const imgAtual = el('preview-entrada') ? el('preview-entrada').getAttribute('src') : '';
+    const item = {
+      campos, contratos: contratosItem, imagem: imagemNova,
+      imagemExistente: !imagemNova && imgAtual && !/Sem_imagem/.test(imgAtual) ? imgAtual : null, erro: '',
     };
-    const botao = el('btn-add');
-    if (botao) botao.disabled = true;
-    try {
-      const resp = await fetch(apiUrl('/estoque/entrada'), {
-        method: 'POST', headers: cabecalhos(), body: JSON.stringify(corpo),
-      });
-      const dados = await resp.json().catch(() => ({}));
-      if (!resp.ok || dados.status !== 'ok') throw new Error(dados.mensagem || 'Não foi possível registrar a entrada.');
-      feedbackEntrada(dados.mensagem, 'ok');
-      el('form-entrada-produto').reset();
-      el('entrada-contratos-linhas').innerHTML = '';
-      atualizarResumoEntrada();
-    } catch (e) {
-      feedbackEntrada(e.message, 'erro');
-    } finally {
-      if (botao) botao.disabled = false;
+    const nome = campos['nome-produto-entrada'] || ('Item #' + campos['id-entrada']);
+    if (editando !== null) { lista[editando] = item; feedbackEntrada('Item atualizado na lista: ' + nome + '.', 'ok'); }
+    else { lista.push(item); feedbackEntrada('Item acrescentado à lista: ' + nome + '. Continue ou clique em Salvar entrada.', 'ok'); }
+    limparItem();
+    desenharLista();
+    const primeiro = el('id-entrada');
+    if (primeiro) primeiro.focus({ preventScroll: true });
+  }
+
+  function desenharLista() {
+    const corpo = document.querySelector('#tabela-entrada-itens tbody');
+    const bloco = el('entrada-lista');
+    if (!corpo || !bloco) return;
+    bloco.hidden = !lista.length;
+    el('entrada-lista-total').textContent = lista.length + ' item(ns) · ' +
+      lista.reduce((s, it) => s + (parseInt(it.campos['quantidade-entrada'], 10) || 0), 0) + ' unidade(s)';
+    corpo.innerHTML = lista.map((it, n) => {
+      const c = it.campos;
+      const reservas = it.contratos.length ? it.contratos.reduce((s, x) => s + x.quantidade, 0) + ' reservado(s)' : '-';
+      return '<tr tabindex="0" data-item="' + n + '" class="' + (n === editando ? 'em-edicao ' : '') + (it.erro ? 'com-erro' : '') + '">' +
+        '<td>' + escapar(c['nome-produto-entrada'] || '-') + (it.erro ? '<br><small class="entrada-item-erro">' + escapar(it.erro) + '</small>' : '') + '</td>' +
+        '<td>' + escapar(c['id-entrada'] || 'Novo') + '</td>' +
+        '<td>' + escapar(c['quantidade-entrada']) + '</td>' +
+        '<td>' + escapar(c['custo-entrada'] || '-') + '</td>' +
+        '<td>' + escapar(c['numero-nota-entrada'] || '-') + '</td>' +
+        '<td>' + escapar(textoOpcao('local-estoque', c['local-estoque']) || '-') + '</td>' +
+        '<td>' + escapar(reservas) + '</td>' +
+        '<td>' + (it.imagem ? 'Nova' : '-') + '</td>' +
+        '<td><button type="button" class="btn-secundario" data-remover-item="' + n + '">Remover</button></td></tr>';
+    }).join('');
+    atualizarBotoes();
+  }
+
+  function atualizarBotoes() {
+    const add = el('btn-acrescentar-entrada');
+    if (add) add.textContent = editando !== null ? 'Atualizar item' : 'Acrescentar à lista';
+    const cancelar = el('btn-cancelar-edicao-entrada');
+    if (cancelar) cancelar.hidden = editando === null;
+    const salvar = el('btn-add');
+    if (salvar) {
+      salvar.textContent = lista.length ? 'Salvar entrada (' + lista.length + ')' : 'Salvar entrada';
+      salvar.disabled = !lista.length;
     }
+  }
+
+  async function enviarImagem(produtoId, dataUrl) {
+    const resp = await fetch(apiUrl('/produtos/' + produtoId + '/imagem/enviar'), {
+      method: 'POST', headers: cabecalhos(), body: JSON.stringify({ imagem_base64: dataUrl }),
+    });
+    const d = await resp.json().catch(() => ({}));
+    if (!resp.ok || d.status !== 'ok') throw new Error(d.mensagem || 'Não foi possível salvar a imagem.');
+  }
+
+  async function salvarTudo(evento) {
+    if (evento) evento.preventDefault();
+    if (!lista.length) { feedbackEntrada('Acrescente ao menos um item à lista.', 'erro'); return; }
+    if (editando !== null) { feedbackEntrada('Termine a edição do item (Atualizar item ou Cancelar) antes de salvar.', 'erro'); return; }
+    const botao = el('btn-add');
+    botao.disabled = true;
+    let ok = 0;
+    const avisos = [];
+    for (let n = 0; n < lista.length;) {
+      const item = lista[n];
+      botao.textContent = 'Salvando ' + (ok + 1) + '...';
+      try {
+        const resp = await fetch(apiUrl('/estoque/entrada'), { method: 'POST', headers: cabecalhos(), body: JSON.stringify(corpoDo(item)) });
+        const dados = await resp.json().catch(() => ({}));
+        if (!resp.ok || dados.status !== 'ok') throw new Error(dados.mensagem || 'Não foi possível registrar.');
+        if (item.imagem && dados.produto_id) {
+          try { await enviarImagem(dados.produto_id, item.imagem); } catch (e) { avisos.push('Imagem do item #' + dados.produto_id + ': ' + e.message); }
+        }
+        lista.splice(n, 1);
+        ok++;
+      } catch (e) {
+        item.erro = e.message;
+        n++;
+      }
+    }
+    desenharLista();
+    if (!lista.length) {
+      feedbackEntrada('Entrada registrada: ' + ok + ' item(ns) salvos.' + (avisos.length ? ' ' + avisos.join(' ') : ''), avisos.length ? 'erro' : 'ok');
+    } else {
+      feedbackEntrada(ok + ' item(ns) salvos; ' + lista.length + ' com problema continuam na lista. Clique no item para corrigir.' +
+        (avisos.length ? ' ' + avisos.join(' ') : ''), 'erro');
+    }
+    atualizarBotoes();
+  }
+
+  // Imagem do item: clique abre carregar/trocar e ampliar; o editor corta e retira o fundo.
+  function ligarImagemEntrada() {
+    const caixa = document.querySelector('#form-entrada-produto .image-preview-container');
+    const img = el('preview-entrada');
+    if (!caixa || !img) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.style.display = 'none';
+    caixa.appendChild(input);
+    caixa.classList.add('mov-imagem-editavel');
+    caixa.setAttribute('role', 'button');
+    caixa.tabIndex = 0;
+    caixa.title = 'Carregar ou trocar a imagem';
+    let menu = null;
+    const fecharMenu = () => { if (menu) { menu.remove(); menu = null; } };
+    const temImagem = () => !/Sem_imagem/.test(img.getAttribute('src') || '');
+    const abrirMenu = () => {
+      fecharMenu();
+      menu = document.createElement('div');
+      menu.className = 'mov-imagem-menu';
+      menu.innerHTML = '<button type="button" data-img="carregar">' + (temImagem() ? 'Trocar imagem' : 'Carregar imagem') + '</button>' +
+        (temImagem() ? '<button type="button" data-img="ampliar">Ampliar</button>' : '') +
+        (imagemNova ? '<button type="button" data-img="desfazer">Desfazer troca</button>' : '');
+      caixa.appendChild(menu);
+    };
+    caixa.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-img]');
+      if (b) {
+        e.stopPropagation();
+        const acao = b.dataset.img;
+        fecharMenu();
+        if (acao === 'carregar') input.click();
+        else if (acao === 'ampliar' && window.EditorImagem) window.EditorImagem.ampliar(img.src, valor('nome-produto-entrada'));
+        else if (acao === 'desfazer') { imagemNova = null; mostrarImagem(editando !== null ? lista[editando].imagemExistente : null); }
+        return;
+      }
+      if (e.target === input) return;
+      menu ? fecharMenu() : abrirMenu();
+    });
+    caixa.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrirMenu(); } });
+    document.addEventListener('click', (e) => { if (menu && !caixa.contains(e.target)) fecharMenu(); });
+    input.addEventListener('change', async () => {
+      const arq = input.files[0];
+      input.value = '';
+      if (!arq) return;
+      try {
+        const pronta = window.EditorImagem ? await window.EditorImagem.abrir(arq) : null;
+        if (!pronta) return;
+        imagemNova = pronta;
+        mostrarImagem(pronta);
+        feedbackEntrada('Imagem pronta. Ela é salva junto com o item ao salvar a entrada.', 'ok');
+      } catch (e) {
+        feedbackEntrada(e.message, 'erro');
+      }
+    });
+  }
+
+  // Retirada e Devolução: a imagem só amplia.
+  function ligarAmpliar(id) {
+    const img = el(id);
+    if (!img) return;
+    img.classList.add('mov-imagem-ampliavel');
+    img.addEventListener('click', () => {
+      if (/Sem_imagem/.test(img.getAttribute('src') || '') || !window.EditorImagem) return;
+      window.EditorImagem.ampliar(img.src, img.alt);
+    });
   }
 
   // ===================== RETIRADA =====================
@@ -202,8 +404,26 @@
     };
   }
 
+  // Local de destino da retirada: sempre as bases cadastradas.
+  async function carregarBasesDestino() {
+    const sel = el('retirada-local');
+    if (!sel) return;
+    try {
+      const resp = await fetch(apiUrl('/bases'), { headers: cabecalhos() });
+      const dados = await resp.json();
+      const bases = (dados && dados.bases) || [];
+      const atual = sel.value;
+      sel.innerHTML = '<option value="">' + (bases.length ? 'Selecione a base' : 'Nenhuma base cadastrada') + '</option>' +
+        bases.map((b) => '<option value="' + escapar(b.id) + '">' + escapar(b.id + (b.endereco ? ' · ' + b.endereco : '')) + '</option>').join('');
+      sel.value = atual;
+    } catch (e) {
+      sel.innerHTML = '<option value="">Não foi possível carregar as bases</option>';
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     carregarContratos();
+    carregarBasesDestino();
 
     el('entrada-contratos-add')?.addEventListener('click', async () => {
       if (!contratos.length) await carregarContratos();
@@ -211,11 +431,32 @@
       adicionarLinhaContrato();
     });
     el('quantidade-entrada')?.addEventListener('input', atualizarResumoEntrada);
-    el('form-entrada-produto')?.addEventListener('submit', salvarEntrada, true);
-    el('btn-add')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      el('form-entrada-produto')?.dispatchEvent(new Event('submit', { cancelable: true }));
-    });
+    el('form-entrada-produto')?.addEventListener('submit', acrescentar, true);
+    el('btn-add')?.addEventListener('click', salvarTudo);
+    el('btn-cancelar-edicao-entrada')?.addEventListener('click', () => { limparItem(); desenharLista(); feedbackEntrada('Edição cancelada; o item continua na lista como estava.', 'ok'); });
+    const tabelaItens = el('tabela-entrada-itens');
+    if (tabelaItens) {
+      tabelaItens.addEventListener('click', (e) => {
+        const rem = e.target.closest('[data-remover-item]');
+        if (rem) {
+          const n = Number(rem.dataset.removerItem);
+          lista.splice(n, 1);
+          if (editando === n) limparItem(); else if (editando !== null && editando > n) editando--;
+          desenharLista();
+          return;
+        }
+        const linha = e.target.closest('tr[data-item]');
+        if (linha) preencherItem(Number(linha.dataset.item));
+      });
+      tabelaItens.addEventListener('keydown', (e) => {
+        const linha = e.target.closest('tr[data-item]');
+        if (linha && e.key === 'Enter') preencherItem(Number(linha.dataset.item));
+      });
+    }
+    ligarImagemEntrada();
+    ligarAmpliar('retirada-produto-img');
+    ligarAmpliar('devolucao-produto-img');
+    atualizarBotoes();
 
     ['retirada-produto', 'retirada-quantidade', 'retirada-contrato'].forEach((id) => {
       el(id)?.addEventListener('change', verificarRetirada);

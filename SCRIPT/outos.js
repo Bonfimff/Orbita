@@ -651,7 +651,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             console.log('📦 Locais de destino encontrados na busca alternativa:', locaisEncontrados);
             
             const seletoresLocalDestino = [
-                'retirada-local', 'local-destino', 'destino-local', 'local-retirada',
+                'local-destino', 'destino-local', 'local-retirada',
                 'devolucao-local', 'transferencia-destino', 'local-transferencia',
                 'destino-transferencia', 'local-destino-entrada', 'local-destino-cadastro',
                 'local-destino-consulta', 'destino-entrada', 'destino-cadastro', 'destino-consulta'
@@ -689,7 +689,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.log('📦 Dados de exemplo criados para locais de destino:', locaisExemplo);
         
         const seletoresLocalDestino = [
-            'retirada-local', 'local-destino', 'destino-local', 'local-retirada',
+            'local-destino', 'destino-local', 'local-retirada',
             'devolucao-local', 'transferencia-destino', 'local-transferencia',
             'destino-transferencia', 'local-destino-entrada', 'local-destino-cadastro',
             'local-destino-consulta', 'destino-entrada', 'destino-cadastro', 'destino-consulta'
