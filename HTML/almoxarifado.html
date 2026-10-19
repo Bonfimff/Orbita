@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <script src="../SCRIPT/escala-tela.js?v=1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../CSS/geral.css?v=90" />
-  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=13" />
+  <link rel="stylesheet" href="../CSS/geral.css?v=92" />
+  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=14" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=4" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Estoque</title>
@@ -1020,39 +1020,40 @@
   <!-- Conteúdo da aba Requisitantes -->
   <form id="form-requisitantes">
     <div class="form-group linha inline-style-f12ec8">
-      <!-- Coluna 1: Informações do requisitante -->
       <div class="form-coluna">
-        <div>
-          <label for="nome-requisitante">Nome</label>
-          <input type="text" id="nome-requisitante" name="nome-requisitante" required />
-        </div>
-        <div>
-          <label for="departamento-requisitante">Departamento</label>
-          <input type="text" id="departamento-requisitante" name="departamento-requisitante" required />
-        </div>
-        <div>
-          <label for="email-requisitante">E-mail</label>
-          <input type="email" id="email-requisitante" name="email-requisitante" required />
-        </div>
-        <div>
-          <label for="telefone-requisitante">Telefone</label>
-          <input type="tel" id="telefone-requisitante" name="telefone-requisitante" required />
-        </div>
+            <div>
+              <label for="nome-requisitante">NOME</label>
+              <input type="text" id="nome-requisitante" name="nome-requisitante" required />
+            </div>
+            <div>
+              <label for="departamento-requisitante">DEPARTAMENTO</label>
+              <input type="text" id="departamento-requisitante" name="departamento-requisitante" required />
+            </div>
+            <div>
+              <label for="cargo-requisitante">CARGO</label>
+              <input type="text" id="cargo-requisitante" name="cargo-requisitante" required />
+            </div>
       </div>
-
-      <!-- Coluna 2: Informações adicionais -->
       <div class="form-coluna">
-        <div>
-          <label for="cargo-requisitante">Cargo</label>
-          <input type="text" id="cargo-requisitante" name="cargo-requisitante" required />
-        </div>
-        <div>
-          <label for="observacoes-requisitante">Observações</label>
+            <div>
+              <label for="email-requisitante">E-MAIL</label>
+              <input type="email" id="email-requisitante" name="email-requisitante" required />
+            </div>
+            <div>
+              <label for="telefone-requisitante">TELEFONE</label>
+              <input type="tel" id="telefone-requisitante" name="telefone-requisitante" required />
+            </div>
+      </div>
+      <div class="form-coluna">
+        <div class="mov-alto3">
+          <label for="observacoes-requisitante">OBSERVAÇÕES</label>
           <textarea id="observacoes-requisitante" name="observacoes-requisitante"></textarea>
         </div>
       </div>
     </div>
-    <button id="btn-salvar-requisitante-cadastro" type="button" class="btn-primario btn-salvar-cadastro">Salvar Requisitante</button>
+    <div class="form-buttons">
+      <button id="btn-salvar-requisitante-cadastro" type="button" class="btn-primario btn-salvar-cadastro">Salvar requisitante</button>
+    </div>
   </form>
 </div>
 
@@ -1071,14 +1072,13 @@
       <hr class="aba-linha">
       <form id="form-fornecedores">
         <div class="form-group linha inline-style-f12ec8">
-          <!-- Coluna 1: Informações do fornecedor -->
           <div class="form-coluna">
             <div>
-              <label for="nome-fornecedor">Nome</label>
+              <label for="nome-fornecedor">NOME</label>
               <input type="text" id="nome-fornecedor" name="nome-fornecedor" required />
             </div>
             <div>
-              <label for="nome-fornecedor">Representante</label>
+              <label for="nome-representante">REPRESENTANTE</label>
               <input type="text" id="nome-representante" name="nome-representante" required />
             </div>
             <div>
@@ -1086,42 +1086,67 @@
               <input type="text" id="cnpj-fornecedor" name="cnpj-fornecedor" required />
             </div>
             <div>
-              <label for="email-fornecedor">E-mail</label>
+              <label for="email-fornecedor">E-MAIL</label>
               <input type="email" id="email-fornecedor" name="email-fornecedor" required />
             </div>
-            <div>
-              <label for="telefone-fornecedor">Telefone</label>
-              <input type="tel" id="telefone-fornecedor" name="telefone-fornecedor" required />
-            </div>
           </div>
-
-          <!-- Coluna 2: Endereço e observações -->
           <div class="form-coluna">
             <div>
-              <label for="endereco-fornecedor">Endereço</label>
+              <label for="telefone-fornecedor">TELEFONE</label>
+              <input type="tel" id="telefone-fornecedor" name="telefone-fornecedor" required />
+            </div>
+            <div>
+              <label for="endereco-fornecedor">ENDEREÇO</label>
               <input type="text" id="endereco-fornecedor" name="endereco-fornecedor" required />
             </div>
             <div>
-              <label for="cidade-fornecedor">Cidade</label>
+              <label for="cidade-fornecedor">CIDADE</label>
               <input type="text" id="cidade-fornecedor" name="cidade-fornecedor" required />
             </div>
             <div>
-              <label for="estado-fornecedor">Estado</label>
+              <label for="estado-fornecedor">ESTADO</label>
               <select id="estado-fornecedor" name="estado-fornecedor" required>
                 <option value="">Selecione</option>
-                <option value="SP">São Paulo</option>
-                <option value="RJ">Rio de Janeiro</option>
+                <option value="AC">Acre</option>
+                <option value="AL">Alagoas</option>
+                <option value="AP">Amapá</option>
+                <option value="AM">Amazonas</option>
+                <option value="BA">Bahia</option>
+                <option value="CE">Ceará</option>
+                <option value="DF">Distrito Federal</option>
+                <option value="ES">Espírito Santo</option>
+                <option value="GO">Goiás</option>
+                <option value="MA">Maranhão</option>
+                <option value="MT">Mato Grosso</option>
+                <option value="MS">Mato Grosso do Sul</option>
                 <option value="MG">Minas Gerais</option>
-                <!-- Adicione outros estados conforme necessário -->
+                <option value="PA">Pará</option>
+                <option value="PB">Paraíba</option>
+                <option value="PR">Paraná</option>
+                <option value="PE">Pernambuco</option>
+                <option value="PI">Piauí</option>
+                <option value="RJ">Rio de Janeiro</option>
+                <option value="RN">Rio Grande do Norte</option>
+                <option value="RS">Rio Grande do Sul</option>
+                <option value="RO">Rondônia</option>
+                <option value="RR">Roraima</option>
+                <option value="SC">Santa Catarina</option>
+                <option value="SP">São Paulo</option>
+                <option value="SE">Sergipe</option>
+                <option value="TO">Tocantins</option>
               </select>
             </div>
-            <div>
-              <label for="observacoes-fornecedor">Observações</label>
+          </div>
+          <div class="form-coluna">
+            <div class="mov-alto4">
+              <label for="observacoes-fornecedor">OBSERVAÇÕES</label>
               <textarea id="observacoes-fornecedor" name="observacoes-fornecedor"></textarea>
             </div>
           </div>
         </div>
-        <button id="btn-salvar-fornecedor-cadastro" type="button" class="btn-primario btn-salvar-cadastro">Salvar Fornecedor</button>
+        <div class="form-buttons">
+          <button id="btn-salvar-fornecedor-cadastro" type="button" class="btn-primario btn-salvar-cadastro">Salvar fornecedor</button>
+        </div>
       </form>
 
       <!-- Tabela de fornecedores removida -->
@@ -1247,44 +1272,42 @@
       </div>
       <hr class="aba-linha">
       <form id="form-kits">
-  <div class="form-group linha inline-style-f12ec8" style="display: flex; gap: 24px; flex-wrap: wrap;">
-    <!-- Coluna 1: Nome do Kit, Produto, Quantidade -->
-    <div class="form-coluna" style="flex: 1 1 200px; min-width: 180px; max-width: 300px;">
-      <div>
-        <label for="nome-kit-cadastro">Nome do Kit</label>
-        <input type="text" id="nome-kit-cadastro" name="nome-kit-cadastro" required />
-      </div>
-      <div>
-        <label for="produto-kit-cadastro">Produto</label>
-        <input type="text" id="produto-kit-cadastro" name="produto-kit-cadastro" required />
-      </div>
-      <div>
-        <label for="quantidade-kit-cadastro">Quantidade</label>
-        <input type="number" id="quantidade-kit-cadastro" name="quantidade-kit-cadastro" required />
-      </div>
-    </div>
-    <!-- Coluna 2: Categoria, Observação -->
-    <div class="form-coluna" style="flex: 1 1 200px; min-width: 180px; max-width: 300px;">
-      <div>
-        <label for="categoria-kit-cadastro">Categoria</label>
-        <input type="text" id="categoria-kit-cadastro" name="categoria-kit-cadastro" />
-      </div>
-      <div>
-        <label for="observacao-kit-cadastro">Observação</label>
-        <input type="text" id="observacao-kit-cadastro" name="observacao-kit-cadastro" />
-      </div>
-    </div>
-    <!-- Coluna 3: Imagem do kit (opcional) -->
-    <div class="form-coluna" style="flex: 0 0 240px; min-width:220px; max-width:320px; align-items:center; justify-content:flex-start;">
-      <div class="image-preview-container" style="width: 180px; height: 180px; border: 2px solid #475569; border-radius: 8px; background-color: #f9f9f9; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 10px;">
-       <img id="preview-kit-cadastro" src="../IMG/Sem_imagem.png" alt="Imagem do Kit" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: pointer; transition: transform 0.2s ease;" title="Clique para expandir"  onerror="this.onerror=null;this.src='../IMG/Sem_imagem.png';" />
-      </div>
-    <!-- (removido) preview duplicado de imagem do produto no cadastro de kit -->
-    </div>
-  </div>
-  <button id="btn-cancelar-kit" class="acao-btn">Cancelar</button>
-  <button id="btn-adicionar-item-kit" class="acao-btn" type="button">Adicionar item</button>
-  <button id="btn-salvar-kit" class="acao-btn" type="button" >Salvar Kit</button>
+        <div class="form-group linha inline-style-f12ec8">
+          <div class="form-coluna">
+            <div>
+              <label for="nome-kit-cadastro">NOME DO KIT</label>
+              <input type="text" id="nome-kit-cadastro" name="nome-kit-cadastro" required />
+            </div>
+            <div>
+              <label for="categoria-kit-cadastro">CATEGORIA</label>
+              <input type="text" id="categoria-kit-cadastro" name="categoria-kit-cadastro" />
+            </div>
+          </div>
+          <div class="form-coluna">
+            <div>
+              <label for="produto-kit-cadastro">PRODUTO</label>
+              <input type="text" id="produto-kit-cadastro" name="produto-kit-cadastro" required />
+            </div>
+            <div>
+              <label for="quantidade-kit-cadastro">QUANTIDADE</label>
+              <input type="number" id="quantidade-kit-cadastro" name="quantidade-kit-cadastro" required />
+            </div>
+            <div>
+              <label for="observacao-kit-cadastro">OBSERVAÇÃO</label>
+              <input type="text" id="observacao-kit-cadastro" name="observacao-kit-cadastro" />
+            </div>
+          </div>
+          <div class="form-coluna">
+            <div class="image-preview-container mov-alto3">
+              <img id="preview-kit-cadastro" src="../IMG/Sem_imagem.png" alt="Imagem do produto do kit" class="image-preview-img" onerror="this.onerror=null;this.src='../IMG/Sem_imagem.png';" />
+            </div>
+          </div>
+        </div>
+        <div class="form-buttons">
+          <button id="btn-cancelar-kit" class="btn-secundario" type="button">Cancelar</button>
+          <button id="btn-adicionar-item-kit" class="btn-secundario" type="button">Adicionar item</button>
+          <button id="btn-salvar-kit" class="btn-primario" type="button">Salvar kit</button>
+        </div>
 </form>
 
       <!-- Seletor de colunas para a tabela de kits -->
@@ -1331,117 +1354,110 @@
       <!-- Conteúdo da aba Cadastro de Produtos -->
       <form id="form-cadastro-produto">
         <div class="form-group linha inline-style-f12ec8">
-          <!-- Coluna 1: Identificação -->
           <div class="form-coluna">
             <div>
-              <label for="codigo">CÓDIGO</label>
-              <input type="text" id="codigo" name="codigo" required />
+            <label for="nome-produto">NOME DO PRODUTO</label>
+            <input type="text" id="nome-produto" name="nome-produto" required />
             </div>
             <div>
-              <label for="categoria">CATEGORIA</label>
-              <select id="categoria" name="categoria" required>
+            <label for="outros-nomes-produto">OUTROS NOMES</label>
+            <input type="text" id="outros-nomes-produto" name="outros-nomes-produto" placeholder="Separe por vírgula. Ex.: enforca gato, abraçadeira pequena" />
+            </div>
+            <div>
+            <label for="codigo">CÓDIGO</label>
+            <input type="text" id="codigo" name="codigo" required />
+            </div>
+            <div>
+            <label for="marca-cadastro">MARCA</label>
+            <input type="text" id="marca-cadastro" name="marca" />
+            </div>
+            <div>
+            <label for="categoria">CATEGORIA</label>
+            <select id="categoria" name="categoria" required>
                 <option value="">Selecione</option>
                 <option value="Elétrico">Elétrico</option>
                 <option value="Mecânico">Mecânico</option>
                 <option value="Hidráulico">Hidráulico</option>
-              </select>
+            </select>
             </div>
             <div>
-              <label for="quantidade">QUANTIDADE</label>
-              <input type="number" id="quantidade" name="quantidade" required />
+            <label for="quantidade">QUANTIDADE</label>
+            <input type="number" id="quantidade" name="quantidade" required />
             </div>
             <div>
-              <label for="numero-serie">NÚMERO DE SÉRIE</label>
-              <input type="text" id="numero-serie" name="numero-serie" />
+            <label for="numero-serie">NÚMERO DE SÉRIE</label>
+            <input type="text" id="numero-serie" name="numero-serie" />
             </div>
-
-            <label for="retirada-observacoes">OBSERVAÇÕES</label>
-              <textarea id="observacoes-cadastro"  class="textarea-grande"></textarea>
-            
-
           </div>
-          <!-- Coluna 2: Logística e origem -->
           <div class="form-coluna">
             <div>
-              <label for="unid-medida">UNIDADE DE MEDIDA</label>
-              <select id="unid-medida" name="unid-medida" required>
+            <label for="unid-medida">UNIDADE DE MEDIDA</label>
+            <select id="unid-medida" name="unid-medida" required>
                 <option value="">Selecione</option>
                 <option value="cm">Centímetro</option>
                 <option value="m">Metro</option>
                 <option value="unidade">UN</option>
                 <option value="litro">Litro</option>
                 <option value="kg">Kg</option>
-              </select>
+            </select>
             </div>
             <div>
-              <label for="estoque-minimo">ESTOQUE MÍNIMO</label>
-              <input type="number" id="estoque-minimo" name="estoque-minimo" />
+            <label for="estoque-minimo">ESTOQUE MÍNIMO</label>
+            <input type="number" id="estoque-minimo" name="estoque-minimo" />
             </div>
             <div>
-              <label for="numero-nota">NÚMERO DA NOTA</label>
-              <input type="text" id="numero-nota" name="numero-nota"
-                     pattern="[\d\-.,/ ]*" title="Apenas números e os caracteres - . , / são permitidos" />
+            <label for="numero-nota">NÚMERO DA NOTA</label>
+            <input type="text" id="numero-nota" name="numero-nota"
+            pattern="[\d\-.,/ ]*" title="Apenas números e os caracteres - . , / são permitidos" />
             </div>
             <div>
-              <label for="fornecedor">FORNECEDOR</label>
-              <select id="fornecedor" name="fornecedor" required>
+            <label for="fornecedor">FORNECEDOR</label>
+            <select id="fornecedor" name="fornecedor" required>
                 <option value="">Selecione</option>
                 <option value="Fornecedor X">BMB MATERIAL DE CONSTRUCAO S.A.</option>
                 <option value="Fornecedor Y">Fornecedor Y</option>
-              </select>
+            </select>
             </div>
             <div>
-              <label for="patrimonio">PATRIMÔNIO</label>
-              <select id="patrimonio-cadastro" name="patrimonio" required>
+            <label for="data-compra">DATA DA COMPRA</label>
+            <input type="date" id="data-compra" name="data-compra" />
+            </div>
+            <div>
+            <label for="patrimonio-cadastro">PATRIMÔNIO</label>
+            <select id="patrimonio-cadastro" name="patrimonio" required>
                 <option value="">Selecione</option>
                 <option value="Duque de caxias">Contrato Duque de caxias</option>
                 <option value="Volta redonda">Contrato Volta redonda</option>
-              </select>
+            </select>
             </div>
             <div>
-              <label for="local-estoque-">LOCAL ESTOQUE</label>
-              <select id="local-estoque-cadastro" name="local-estoque" required>
+            <label for="local-estoque-cadastro">LOCAL ESTOQUE</label>
+            <select id="local-estoque-cadastro" name="local-estoque" required>
                 <option value="">Selecione</option>
                 <option value="Almoxarifado">Estoque</option>
                 <option value="Depósito Central">Estoque</option>
-              </select>
+            </select>
             </div>
-            <div>
-              <label for="local-estoque-">MARCA</label>
-              <input type="text" id="marca-cadastro" name="custo" class="custo-input" required />
-            </div>
-
           </div>
-
-          <!-- Coluna 3: Financeiro + Imagem -->
           <div class="form-coluna">
-            <div class="image-preview-container">
-              <img id="preview" src="../IMG/Sem_imagem.png" alt="Ícone de imagem" class="image-preview-img"  onerror="this.onerror=null;this.src='../IMG/Sem_imagem.png';" />
-              <input type="file" id="input-carregar-img-cadastro" accept=".xml" style="display: none;">
+            <div class="image-preview-container mov-alto2">
+              <img id="preview" src="../IMG/Sem_imagem.png" alt="Imagem do produto" class="image-preview-img" onerror="this.onerror=null;this.src='../IMG/Sem_imagem.png';" />
             </div>
             <div>
-              <label for="nome-produto">NOME DO PRODUTO</label>
-              <input type="text" id="nome-produto" name="nome-produto" required />
+            <label for="custo">CUSTO</label>
+            <input type="text" id="custo" name="custo" class="custo-input" required />
             </div>
             <div>
-              <label for="outros-nomes-produto">OUTROS NOMES</label>
-              <input type="text" id="outros-nomes-produto" name="outros-nomes-produto" placeholder="Separe por vírgula. Ex.: enforca gato, abraçadeira pequena" />
+            <label for="garantia">TERMINO DA GARANTIA</label>
+            <input type="date" id="garantia" name="garantia" />
             </div>
             <div>
-              <label for="custo">CUSTO</label>
-              <input type="text" id="custo" name="custo" class="custo-input" required />
+            <label for="data-validade">DATA VALIDADE</label>
+            <input type="date" id="data-validade" name="data-validade" />
             </div>
-            <div>
-              <label for="garantia">TERMINO DA GARANTIA</label>
-              <input type="date" id="garantia" name="garantia" />
-            </div>
-            <div>
-              <label for="data-validade">DATA VALIDADE</label>
-              <input type="date" id="data-validade" name="data-validade" />
-            </div>
-              <div>
-              <label for="data-compra">DATA DA COMPRA</label>
-              <input type="date" id="data-compra" name="data-compra" />
+            <div class="mov-alto2">
+              <label for="observacoes-cadastro">OBSERVAÇÕES</label>
+              <textarea id="observacoes-cadastro" class="textarea-grande"></textarea>
             </div>
           </div>
         </div>
@@ -1471,8 +1487,10 @@
       </div>
     </div>
 
-        <button id="btn-novoProduto" class="acao-btn" type= add-produto>Salvar novo produto </button>
-        <button type="button" id="btn-carregar-nota-cadastro" class="acao-btn">Carregar Nota ⭳</button>
+        <div class="form-buttons">
+          <button type="button" id="btn-carregar-nota-cadastro" class="btn-secundario">Carregar nota (XML)</button>
+          <button id="btn-novoProduto" class="btn-primario" type="submit">Salvar produto</button>
+        </div>
         <input type="file" id="input-carregar-nota-cadastro" accept=".xml" style="display: none;">
       </form>
     </div>
@@ -1554,7 +1572,7 @@
  <script src="../SCRIPT/config.js?v=2"></script>
  <script src="../SCRIPT/xlsx.full.min.js"></script>
  <script src="../SCRIPT/exportar-tabela.js?v=3"></script>
- <script src="../SCRIPT/almoxarifado.js?v=11"></script>
+ <script src="../SCRIPT/almoxarifado.js?v=12"></script>
 <script>
 // Exibe campos extras de produtos apenas quando "produtos" está selecionado
 document.addEventListener('DOMContentLoaded', function() {
@@ -1584,7 +1602,8 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="../SCRIPT/ajuda/central.js?v=34"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="../SCRIPT/outos.js?v=5"></script>
-  <script src="../SCRIPT/editor-imagem.js?v=1"></script>
+  <script src="../SCRIPT/editor-imagem.js?v=4"></script>
+  <script src="../SCRIPT/imagem-item.js?v=1"></script>
   <script src="../SCRIPT/estoque-contratos.js?v=6"></script>
   <script src="../SCRIPT/entrada-nota.js?v=2"></script>
   <script src="../SCRIPT/estoque-baixa.js?v=1"></script>

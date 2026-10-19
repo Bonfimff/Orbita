@@ -1064,30 +1064,30 @@
 /* ===== Movimentações (Entrada, Retirada, Devolução): três colunas alinhadas =====
    Cada campo ocupa uma linha de altura fixa; imagem e observações ocupam várias linhas,
    assim cada campo fica na mesma altura do vizinho das outras colunas. */
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) > .linha {
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-kits, #form-outros) > .linha {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0 24px !important;
   align-items: start;
 }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) > .linha > .form-coluna {
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-kits, #form-outros) > .linha > .form-coluna {
   display: grid; grid-auto-rows: 62px; row-gap: 12px;
   min-width: 0; max-width: none; flex: none; margin: 0; padding: 0;
 }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) .form-coluna > div:not(.image-preview-container) {
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-kits, #form-outros) .form-coluna > div:not(.image-preview-container) {
   display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; min-width: 0; margin: 0; width: auto;
 }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) .form-coluna > [hidden] { display: none !important; }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) .form-coluna label { margin: 0; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) .form-coluna :is(input, select) { height: 38px; width: 100%; box-sizing: border-box; margin: 0; }
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-kits, #form-outros) .form-coluna > [hidden] { display: none !important; }
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-kits, #form-outros) .form-coluna label { margin: 0; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-kits, #form-outros) .form-coluna :is(input, select) { height: 38px; width: 100%; box-sizing: border-box; margin: 0; }
 .mov-alto2 { grid-row: span 2; }
 .mov-alto3 { grid-row: span 3; }
 .mov-alto4 { grid-row: span 4; }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) .form-coluna > :is(.mov-alto3, .mov-alto4) { justify-content: flex-start !important; }
-:is(#form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) .form-coluna textarea {
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-kits, #form-outros) .form-coluna > :is(.mov-alto3, .mov-alto4) { justify-content: flex-start !important; }
+:is(#form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-outros) .form-coluna textarea {
   flex: 1; width: 100%; height: auto; min-height: 0; box-sizing: border-box; resize: none; margin: 0;
 }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) .form-coluna > .mov-alto2 {
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-kits, #form-outros) .form-coluna > .mov-alto2 {
   width: 100% !important; max-width: none !important; height: 100% !important; margin: 0 !important;
   box-sizing: border-box; display: flex; align-items: center; justify-content: center;
   border: 1px solid #ccc; border-radius: 8px; background: #fff; overflow: hidden;
@@ -1097,15 +1097,15 @@
 #retirada-aviso-contrato { position: relative; z-index: 1; }
 
 @media (max-width: 768px) {
-  :is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) > .linha { grid-template-columns: 1fr; gap: 12px !important; }
-  :is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) > .linha > .form-coluna { grid-auto-rows: auto; }
+  :is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-kits, #form-outros) > .linha { grid-template-columns: 1fr; gap: 12px !important; }
+  :is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-kits, #form-outros) > .linha > .form-coluna { grid-auto-rows: auto; }
   .mov-alto2 { min-height: 150px; }
   .mov-alto3, .mov-alto4 { grid-row: auto; }
-  :is(#form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) .form-coluna textarea { min-height: 100px; }
+  :is(#form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-outros) .form-coluna textarea { min-height: 100px; }
 }
 
 /* Botões das movimentações: afastados dos campos */
-:is(#form-retiradas, #form-devolucao, #form-baixa, #form-transferencia) .form-buttons { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px; }
+:is(#form-retiradas, #form-devolucao, #form-baixa, #form-transferencia, #form-requisitantes, #form-fornecedores, #form-cadastro-produto, #form-kits, #form-outros) .form-buttons { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px; }
 .mov-saldo { height: 38px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; background: #f4f2ee; font-weight: 600; color: #444; box-sizing: border-box; }
 .mov-saldo.mov-saldo-erro { color: #9B3B32; }
 
@@ -1168,7 +1168,7 @@
 }
 
 /* Imagem do item sem borda em volta (computador e celular) */
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna > .mov-alto2 { border: 0 !important; background: transparent !important; border-radius: 12px; }
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-cadastro-produto, #form-kits) .form-coluna > .mov-alto2, #form-kits .form-coluna > .mov-alto3 { border: 0 !important; background: transparent !important; border-radius: 12px; }
 #form-retiradas img.mov-alto2, #form-devolucao .mov-alto2 img, #form-entrada-produto .mov-alto2 img { border: 0 !important; border-radius: 12px; }
 .mov-imagem-editavel { position: relative; cursor: pointer; overflow: visible !important; }
 .mov-imagem-editavel:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
@@ -1189,3 +1189,18 @@
 #tabela-entrada-itens tbody tr.em-edicao td { background: rgba(168, 134, 79, .12); }
 #tabela-entrada-itens tbody tr.com-erro td { background: #fbf0ee; }
 .entrada-item-erro { color: #9B3B32; font-weight: 600; }
+
+/* Cadastros do estoque: caixas de texto de várias linhas não viram caixa de imagem */
+:is(#form-cadastro-produto, #form-transferencia) .form-coluna > div.mov-alto2:not(.image-preview-container) { border: 0; background: transparent; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; overflow: visible; }
+#form-kits .form-coluna > .mov-alto3 { height: 100% !important; display: flex; align-items: center; justify-content: center; }
+:is(#form-cadastro-produto, #form-kits) .image-preview-container img { width: 100%; height: 100%; max-height: none; object-fit: contain; border: 0 !important; border-radius: 12px; }
+@media (max-width: 768px) {
+  #form-cadastro-produto > .linha { display: grid !important; grid-template-columns: minmax(104px, 36%) minmax(0, 1fr); gap: 12px !important; }
+  #form-cadastro-produto > .linha > .form-coluna { display: contents; }
+  #form-cadastro-produto .form-coluna > * { grid-column: 1 / -1; }
+  #form-cadastro-produto .form-coluna > .image-preview-container { grid-column: 1; grid-row: 1 / span 3; min-height: 0; height: 100% !important; }
+  #form-cadastro-produto .form-coluna > :has(#nome-produto) { grid-column: 2; grid-row: 1; }
+  #form-cadastro-produto .form-coluna > :has(#codigo) { grid-column: 2; grid-row: 2; }
+  #form-cadastro-produto .form-coluna > :has(#quantidade) { grid-column: 2; grid-row: 3; }
+  #form-kits .form-coluna > .mov-alto3 { min-height: 160px; }
+}

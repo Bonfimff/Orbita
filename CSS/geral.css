@@ -3590,3 +3590,10 @@ html.sem-clima .clima-palco .clima-face.logo { opacity: 1; transform: none; poin
   .tf-com-toolbar > .tf-barra { margin: 0; }
   .tf-icone { padding: 7px 10px; }
 }
+
+.ei-grupo-largo { flex: 1 1 260px; }
+.ei-grupo-largo .ei-tolerancia input { flex: 1; }
+
+.ei-area { position: relative; }
+.ei-ocupado { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.65); font-weight: 600; color: #1F2D3D; }
+.ei-ocupado[hidden] { display: none; }

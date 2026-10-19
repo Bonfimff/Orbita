@@ -1937,6 +1937,13 @@ document.getElementById("btn-novoProduto").addEventListener("click", async funct
     const data = await response.json();
 
     if (response.ok && data.status === "ok") {
+      // Imagem escolhida no cadastro: vai para o servidor agora que o item tem número.
+      if (window.ImagemItem && window.ImagemItem.temPendente('preview')) {
+        try { await window.ImagemItem.enviarPendente('preview', data.id || produtoIdEdicao); }
+        catch (erroImg) { mensagemSucesso += ' A imagem não foi salva: ' + erroImg.message; }
+      }
+      const imgCadastro = document.getElementById('preview');
+      if (imgCadastro) imgCadastro.src = '../IMG/Sem_imagem.png';
       if (Array.isArray(data.outros_nomes_conflito) && data.outros_nomes_conflito.length) {
         mensagemSucesso += '\n\nEstes nomes não foram salvos porque já pertencem a outro item: ' + data.outros_nomes_conflito.join(', ');
       }
@@ -1971,28 +1978,10 @@ document.getElementById("btn-novoProduto").addEventListener("click", async funct
   }
 });
 
-  const previewImg = document.getElementById('preview');
-  const inputImagem = document.getElementById('input-carregar-img-cadastro'); // ID corrigido
-
-  if (previewImg && inputImagem) {
-    // Evento de clique na imagem para abrir o seletor de arquivos
-    previewImg.addEventListener('click', function () {
-      inputImagem.click(); // Simula o clique no input de arquivo
-    });
-
-    // Evento para exibir a imagem selecionada
-    inputImagem.addEventListener('change', function (event) {
-      const file = event.target.files[0]; 
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          previewImg.src = e.target.result; 
-        };
-        reader.readAsDataURL(file); 
-      }
-    });
-  } else {
-    console.error('Erro: Elementos de imagem ou input não encontrados no DOM.');
+  // Imagem do produto (cadastro): carregar/trocar com o editor; Kits: só ampliar (a imagem é a do produto).
+  if (window.ImagemItem) {
+    window.ImagemItem.ligar('preview');
+    window.ImagemItem.ligar('preview-kit-cadastro', { somenteAmpliar: true });
   }
 
   // Referências às abas e botões
