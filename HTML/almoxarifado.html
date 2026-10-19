@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=72" />
-  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=9" />
+  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=10" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=4" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Estoque</title>
@@ -628,10 +628,74 @@
       </div>
       </div>
       <hr class="aba-linha">
-      <form id="form-transferencia">
-       <!-- Conteúdo da antiga aba transferência -->
-        <button type="submit">Salvar Transferência</button>
+      <form id="form-transferencia" novalidate>
+        <div class="form-group linha inline-style-f12ec8">
+          <div class="form-coluna">
+            <div>
+              <label for="transf-data">DATA</label>
+              <input type="date" id="transf-data" required />
+            </div>
+            <div>
+              <label for="transf-filial">FILIAL DE DESTINO</label>
+              <input type="text" id="transf-filial" list="lista-filiais-transf" autocomplete="off" required />
+              <datalist id="lista-filiais-transf"></datalist>
+            </div>
+            <div>
+              <label for="transf-responsavel">RESPONSÁVEL PELA SAÍDA</label>
+              <input type="text" id="transf-responsavel" />
+            </div>
+          </div>
+          <div class="form-coluna">
+            <div>
+              <label for="transf-transportador">TRANSPORTADOR / VEÍCULO</label>
+              <input type="text" id="transf-transportador" />
+            </div>
+            <div class="mov-alto2">
+              <label for="transf-observacao">OBSERVAÇÃO</label>
+              <textarea id="transf-observacao"></textarea>
+            </div>
+          </div>
+          <div class="form-coluna">
+            <div>
+              <label for="transf-produto">PRODUTO</label>
+              <input type="text" id="transf-produto" list="lista-produtos-transf" autocomplete="off" />
+              <datalist id="lista-produtos-transf"></datalist>
+            </div>
+            <div>
+              <label for="transf-quantidade">QUANTIDADE</label>
+              <input type="number" id="transf-quantidade" min="1" />
+            </div>
+            <div>
+              <label>SALDO ATUAL</label>
+              <div class="mov-saldo" id="transf-saldo">Escolha o produto</div>
+            </div>
+          </div>
+        </div>
+        <div class="entrada-feedback" id="transf-feedback" hidden></div>
+        <div class="form-buttons">
+          <button type="button" id="transf-limpar" class="btn-secundario">Limpar</button>
+          <button type="button" id="transf-acrescentar" class="btn-secundario">Acrescentar item</button>
+          <button type="submit" id="transf-salvar" class="btn-primario">Registrar transferência</button>
+        </div>
       </form>
+      <div class="tabela-itens">
+        <h3>Itens desta transferência</h3>
+        <div class="tabela-produtos">
+          <table id="tabela-transf-itens" class="estilo-tabela">
+            <thead><tr><th>Produto</th><th>Quantidade</th><th>Saldo atual</th><th>Ações</th></tr></thead>
+            <tbody><tr><td colspan="4">Nenhum item acrescentado.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="tabela-itens">
+        <h3>Transferências registradas</h3>
+        <div class="tabela-produtos">
+          <table id="tabela-transferencias" class="estilo-tabela">
+            <thead><tr><th>Nº</th><th>Data</th><th>Filial de destino</th><th>Itens</th><th>Quantidade</th><th>Responsável</th></tr></thead>
+            <tbody><tr><td colspan="6">Nenhuma transferência registrada.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
 
@@ -1504,7 +1568,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
   <script src="../SCRIPT/geral.js?v=42"></script>
   <script src="../SCRIPT/ficha-registro.js?v=1"></script>
-  <script src="../SCRIPT/filtros-tabela.js?v=1"></script>
+  <script src="../SCRIPT/filtros-tabela.js?v=2"></script>
   <script src="../SCRIPT/navegacao-subabas.js?v=1"></script>
   <script src="../SCRIPT/configuracoes.js?v=7"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
@@ -1516,6 +1580,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="../SCRIPT/estoque-contratos.js?v=4"></script>
   <script src="../SCRIPT/entrada-nota.js?v=1"></script>
   <script src="../SCRIPT/estoque-baixa.js?v=1"></script>
+  <script src="../SCRIPT/estoque-transferencia.js?v=1"></script>
   <script src="../SCRIPT/pre-tranferencia.js"></script>
 
 

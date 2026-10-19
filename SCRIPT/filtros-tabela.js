@@ -46,7 +46,7 @@
     'estoque-busca': ['#form-busca .busca-controle-item:nth-of-type(2)', '#form-busca button[type="submit"]'],
   };
   // Tabelas que são parte de um formulário em preenchimento ou de uma ficha: sem ícone.
-  const IGNORAR = '#tabela-retiradas, #tabela-devolucoes, #tabelaProdutos, #tabela-kits-lista-cadastro, #tabela-parametros, ' +
+  const IGNORAR = '#tabela-retiradas, #tabela-devolucoes, #tabela-transf-itens, #tabelaProdutos, #tabela-kits-lista-cadastro, #tabela-parametros, ' +
     '.fr-janela table, .frota-detalhe table, .eqi-fundo table, .jor-cal table, .modal table, .ficha-tabela, #ponto-tabela';
 
   const ICONE = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8z"/></svg>';
