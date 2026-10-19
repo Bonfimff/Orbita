@@ -1500,10 +1500,9 @@
           <select id="parametro-outros" name="parametro-outros" required>
             <option value="">Selecione</option>
             <option value="categoria">Categoria</option>
-            <option value="unidade-medida">Unidade de Medida</option>
+            <option value="unidadeMedida">Unidade de medida</option>
             <option value="patrimonio">Patrimônio</option>
-            <option value="local-estoque">Local Estoque</option>
-            <option value="local-destino">Local de Destino</option>
+            <option value="localEstoque">Local de estoque</option>
             <option value="finalidade">Finalidade</option>
           </select>
         </div>
@@ -1512,7 +1511,8 @@
         </div>
       </div>
     </div>
-    <button type="submit" class="btn-primario">Salvar</button>
+    <div class="entrada-feedback" id="parametros-feedback" hidden></div>
+    <div class="form-buttons"><button type="submit" class="btn-primario">Salvar</button></div>
   </form>
 
   <!-- Tabela de parâmetros -->
@@ -1522,10 +1522,10 @@
       <table id="tabela-parametros" class="estilo-tabela">
         <thead>
           <tr class="inline-style-881bd5">
+            <th class="inline-style-f91e21">Tipo</th>
             <th class="inline-style-f91e21">Nome</th>
             <th class="inline-style-f91e21">Endereço</th>
             <th class="inline-style-f91e21">Observações</th>
-            <th class="inline-style-f91e21">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -1554,7 +1554,7 @@
  <script src="../SCRIPT/config.js?v=2"></script>
  <script src="../SCRIPT/xlsx.full.min.js"></script>
  <script src="../SCRIPT/exportar-tabela.js?v=3"></script>
- <script src="../SCRIPT/almoxarifado.js?v=10"></script>
+ <script src="../SCRIPT/almoxarifado.js?v=11"></script>
 <script>
 // Exibe campos extras de produtos apenas quando "produtos" está selecionado
 document.addEventListener('DOMContentLoaded', function() {
@@ -1575,7 +1575,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="../SCRIPT/logo-liquido.js?v=2"></script>
   <script src="../SCRIPT/geral.js?v=43"></script>
   <script src="../SCRIPT/ficha-registro.js?v=1"></script>
-  <script src="../SCRIPT/filtros-tabela.js?v=3"></script>
+  <script src="../SCRIPT/filtros-tabela.js?v=4"></script>
   <script src="../SCRIPT/navegacao-subabas.js?v=2"></script>
   <script src="../SCRIPT/configuracoes.js?v=9"></script>
   <script src="../SCRIPT/protecao-print.js?v=3"></script>
@@ -1583,12 +1583,13 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="../SCRIPT/clima-painel.js?v=9"></script>
   <script src="../SCRIPT/ajuda/central.js?v=34"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
-  <script src="../SCRIPT/outos.js?v=4"></script>
+  <script src="../SCRIPT/outos.js?v=5"></script>
   <script src="../SCRIPT/editor-imagem.js?v=1"></script>
   <script src="../SCRIPT/estoque-contratos.js?v=6"></script>
   <script src="../SCRIPT/entrada-nota.js?v=2"></script>
   <script src="../SCRIPT/estoque-baixa.js?v=1"></script>
   <script src="../SCRIPT/estoque-transferencia.js?v=1"></script>
+  <script src="../SCRIPT/parametros-estoque.js?v=1"></script>
   <script src="../SCRIPT/pre-tranferencia.js"></script>
 
 

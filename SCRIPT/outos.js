@@ -1003,7 +1003,11 @@ function validarCamposObrigatoriosRetirada() {
         }
     }
     if (faltando.length > 0) {
-        alert('Preencha todos os campos obrigatórios antes de selecionar um kit!');
+        const nomes = faltando.map((id) => {
+            const rot = document.querySelector('label[for="' + id + '"]');
+            return rot ? rot.textContent.trim().toLowerCase().replace(/^./, (c) => c.toUpperCase()) : id;
+        });
+        alert('Antes de escolher um kit, falta preencher: ' + nomes.join(', ') + '.');
         return false;
     }
     return true;

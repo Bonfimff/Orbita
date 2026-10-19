@@ -435,8 +435,10 @@ document.addEventListener('DOMContentLoaded', function () {
         : document.getElementById('retirada-local').value;
       const finalidade = document.getElementById('retirada-finalidade').value;
 
-      if (!produto || !quantidade || !local || !finalidade) {
-        alert('Preencha todos os campos obrigatórios antes de adicionar o item.');
+      const faltando = [[produto, 'Produto'], [quantidade, 'Quantidade'], [local, 'Local de destino'], [finalidade, 'Finalidade']]
+        .filter(([v]) => !v).map(([, nome]) => nome);
+      if (faltando.length) {
+        alert('Falta preencher: ' + faltando.join(', ') + '.');
         return;
       }
 
@@ -1272,9 +1274,10 @@ async function enviarRetirada() {
     };
 
     // Validar campos obrigatórios
-    if (!dadosRetirada.data || !dadosRetirada.requisitante || !dadosRetirada.responsavel || 
-        !dadosRetirada.local_destino || !dadosRetirada.finalidade) {
-      alert('Preencha todos os campos obrigatórios antes de enviar a retirada.');
+    const faltando = [[dadosRetirada.data, 'Data'], [dadosRetirada.requisitante, 'Requisitante'], [dadosRetirada.responsavel, 'Responsável'],
+      [dadosRetirada.local_destino, 'Local de destino'], [dadosRetirada.finalidade, 'Finalidade']].filter(([v]) => !v).map(([, nome]) => nome);
+    if (faltando.length) {
+      alert('Falta preencher: ' + faltando.join(', ') + '.');
       return;
     }
 
@@ -2024,111 +2027,7 @@ if (previewImgEntrada && inputImagemEntrada) {
 }
 
 // Novos códigos para a funcionalidade de parâmetros
-const parametroSelect = document.getElementById("parametro-outros");
-const camposDinamicos = document.getElementById("campos-dinamicos");
-const tabelaParametros = document.getElementById("tabela-parametros");
-const formOutros = document.getElementById("form-outros");
-
-// Campos dinâmicos para cada parâmetro
-const camposPorParametro = {
-  categoria: `
-    <div>
-      <label for="nome-categoria">Nome da Categoria:</label>
-      <input type="text" id="nome-categoria" name="nome-categoria" required />
-    </div>
-  `,
-  "unidade-medida": `
-    <div>
-      <label for="valor-unidade">Valor da Unidade de Medida:</label>
-      <input type="text" id="valor-unidade" name="valor-unidade" required />
-    </div>
-  `,
-  patrimonio: `
-    <div>
-      <label for="nome-patrimonio">Nome:</label>
-      <input type="text" id="nome-patrimonio" name="nome-patrimonio" required />
-    </div>
-    <div>
-      <label for="endereco-patrimonio">Endereço:</label>
-      <input type="text" id="endereco-patrimonio" name="endereco-patrimonio" required />
-    </div>
-    <div>
-      <label for="obs-patrimonio">Observações:</label>
-      <textarea id="obs-patrimonio" name="obs-patrimonio"></textarea>
-    </div>
-  `,
-  "local-estoque": `
-    <div>
-      <label for="nome-local-estoque">Nome:</label>
-      <input type="text" id="nome-local-estoque" name="nome-local-estoque" required />
-    </div>
-    <div>
-      <label for="endereco-local-estoque">Endereço:</label>
-      <input type="text" id="endereco-local-estoque" name="endereco-local-estoque" required />
-    </div>
-    <div>
-      <label for="obs-local-estoque">Observações:</label>
-      <textarea id="obs-local-estoque" name="obs-local-estoque"></textarea>
-    </div>
-  `,
-  "local-destino": `
-    <div>
-      <label for="nome-local-destino">Nome:</label>
-      <input type="text" id="nome-local-destino" name="nome-local-destino" required />
-    </div>
-    <div>
-      <label for="endereco-local-destino">Endereço:</label>
-      <input type="text" id="endereco-local-destino" name="endereco-local-destino" required />
-    </div>
-    <div>
-      <label for="obs-local-destino">Observações:</label>
-      <textarea id="obs-local-destino" name="obs-local-destino"></textarea>
-    </div>
-  `,
-  finalidade: `
-    <div>
-      <label for="nome-finalidade">Nome da Finalidade:</label>
-      <input type="text" id="nome-finalidade" name="nome-finalidade" required />
-    </div>
-  `,
-};
-
-// Atualiza os campos dinâmicos com base no parâmetro selecionado
-parametroSelect.addEventListener("change", function () {
-  const parametro = parametroSelect.value;
-  camposDinamicos.innerHTML = camposPorParametro[parametro] || "";
-});
-
-// Adiciona os dados na tabela ao salvar
-formOutros.addEventListener("submit", function (event) {
-  event.preventDefault();
-
-  const parametro = parametroSelect.value;
-  if (!parametro) {
-    alert("Selecione um parâmetro para cadastrar.");
-    return;
-  }
-
-  const nome = document.querySelector(`#nome-${parametro.replace("-", "-")}`)?.value || "";
-  const endereco = document.querySelector(`#endereco-${parametro.replace("-", "-")}`)?.value || "";
-  const observacoes = document.querySelector(`#obs-${parametro.replace("-", "-")}`)?.value || "";
-
-  const newRow = document.createElement("tr");
-  newRow.innerHTML = `
-    <td>${nome}</td>
-    <td>${endereco}</td>
-    <td>${observacoes}</td>
-    <td>
-      <button type="button" class="btn-editar">Editar</button>
-      <button type="button" class="btn-excluir">Excluir</button>
-    </td>
-  `;
-  tabelaParametros.appendChild(newRow);
-
-  // Limpa o formulário
-  formOutros.reset();
-  camposDinamicos.innerHTML = "";
-});
+// Parâmetros (Cadastros): SCRIPT/parametros-estoque.js grava no banco e atualiza as listas.
 
   // ===== GERADOR DE CHECKBOXES PARA COLUNAS DE PRODUTOS =====
   const colunasProdutos = [
