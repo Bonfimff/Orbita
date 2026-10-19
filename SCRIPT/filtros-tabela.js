@@ -67,6 +67,14 @@
     return alvo.closest('.tabela-responsiva, .tabela-produtos, .frota-tabela-wrap, .rel-tabela-area') || alvo;
   }
 
+  function barraVizinha(ancora) {
+    let el = ancora.previousElementSibling;
+    while (el && (el.classList.contains('tf-painel') || el.classList.contains('tf-barra'))) el = el.previousElementSibling;
+    if (!el || el.tagName !== 'DIV' || el.hidden) return null;
+    if (!el.querySelector('button') || el.querySelector('table, textarea, input:not([type="hidden"]), select, h1, h2, h3')) return null;
+    return el.children.length <= 4 ? el : null;
+  }
+
   function criarGrupo(g) {
     const alvo = q(g.alvo);
     if (!alvo || alvo.dataset.tfGrupo) return null;
@@ -90,7 +98,10 @@
       if (!painel.contains(el)) filtros.appendChild(el);
     }));
     if (!filtros.children.length) filtros.remove();
-    ancora.parentNode.insertBefore(barra, ancora);
+    // Barra de botões logo acima (ex.: "+ Novo"): o botão Filtros vai para a mesma linha.
+    const vizinho = barraVizinha(ancora);
+    if (vizinho) { vizinho.classList.add('tf-com-toolbar'); vizinho.insertBefore(barra, vizinho.firstChild); }
+    else ancora.parentNode.insertBefore(barra, ancora);
     ancora.parentNode.insertBefore(painel, ancora);
     grupo.barra = barra;
     grupo.painel = painel;
