@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=72" />
-  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=7" />
+  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=9" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=4" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Estoque</title>
@@ -485,6 +485,8 @@
           </div>
         </div>
         <hr class="aba-linha">
+      <!-- Itens da nota carregada (SCRIPT/entrada-nota.js) -->
+      <div id="entrada-nota" class="entrada-nota" hidden></div>
       <!-- Conteúdo da antiga aba Entrada -->
       <form id="form-entrada-produto" novalidate>
         <div class="form-group linha inline-style-f12ec8">
@@ -593,19 +595,22 @@
           </div>
         </div>
 
-        <div class="entrada-contratos" id="entrada-contratos">
-          <div class="entrada-contratos-cabecalho">
-            <span class="entrada-contratos-titulo">Contratos</span>
-            <span class="entrada-contratos-ajuda" id="entrada-contratos-resumo">Sem contrato: o item fica livre para qualquer contrato.</span>
+        <div class="entrada-rodape">
+          <div class="entrada-contratos" id="entrada-contratos">
+            <div class="entrada-contratos-cabecalho">
+              <span class="entrada-contratos-titulo">Contratos</span>
+              <span class="entrada-contratos-ajuda" id="entrada-contratos-resumo">Sem contrato: o item fica livre para qualquer contrato.</span>
+              <button type="button" id="entrada-contratos-add" class="entrada-contratos-add">+ Reservar para um contrato</button>
+            </div>
+            <div id="entrada-contratos-linhas"></div>
           </div>
-          <div id="entrada-contratos-linhas"></div>
-          <button type="button" id="entrada-contratos-add" class="entrada-contratos-add">+ Reservar quantidade para um contrato</button>
+          <div class="entrada-acoes">
+            <button type="button" id="btn-carregar-nota" class="btn-secundario">Carregar nota (XML)</button>
+            <button id="btn-add" class="btn-primario" type="submit">Salvar entrada</button>
+          </div>
         </div>
+        <input type="file" id="input-carregar-nota-movimentacao" accept=".xml,text/xml,application/xml" style="display: none;">
         <div class="entrada-feedback" id="entrada-feedback" hidden></div>
-
-        <button id="btn-add" class="acao-btn" type= add-produto>Salvar entrada</button>
-        <button type="button" id="btn-carregar-nota" class="acao-btn">Carregar Nota ⭳</button>
-        <input type="file" id="input-carregar-nota-movimentacao" accept=".xml" style="display: none;">
       </form>
     </div>
 
@@ -643,10 +648,70 @@
       </div>
       </div>
       <hr class="aba-linha">
-      <form id="form-baixa">
-       <!-- Conteúdo da antiga aba baixa -->
-        <button type="submit">Salvar Baixa</button>
+      <form id="form-baixa" novalidate>
+        <div class="form-group linha inline-style-f12ec8">
+          <div class="form-coluna">
+            <div>
+              <label for="baixa-data">DATA</label>
+              <input type="date" id="baixa-data" required />
+            </div>
+            <div>
+              <label for="baixa-motivo">MOTIVO</label>
+              <select id="baixa-motivo" required>
+                <option value="">Selecione</option>
+                <option>Avaria</option>
+                <option>Perda</option>
+                <option>Vencimento</option>
+                <option>Furto ou extravio</option>
+                <option>Consumo interno</option>
+                <option>Descarte</option>
+                <option>Outro</option>
+              </select>
+            </div>
+            <div>
+              <label for="baixa-responsavel">RESPONSÁVEL</label>
+              <input type="text" id="baixa-responsavel" />
+            </div>
+          </div>
+          <div class="form-coluna">
+            <div class="mov-alto3">
+              <label for="baixa-observacao">OBSERVAÇÃO</label>
+              <textarea id="baixa-observacao"></textarea>
+            </div>
+          </div>
+          <div class="form-coluna">
+            <div>
+              <label for="baixa-produto">PRODUTO</label>
+              <input type="text" id="baixa-produto" list="lista-produtos-baixa" autocomplete="off" required />
+              <datalist id="lista-produtos-baixa"></datalist>
+            </div>
+            <div>
+              <label for="baixa-quantidade">QUANTIDADE</label>
+              <input type="number" id="baixa-quantidade" min="1" required />
+            </div>
+            <div>
+              <label>SALDO ATUAL</label>
+              <div class="mov-saldo" id="baixa-saldo">Escolha o produto</div>
+            </div>
+          </div>
+        </div>
+        <div class="entrada-feedback" id="baixa-feedback" hidden></div>
+        <div class="form-buttons">
+          <button type="button" id="baixa-cancelar" class="btn-secundario">Limpar</button>
+          <button type="submit" id="baixa-salvar" class="btn-primario">Registrar baixa</button>
+        </div>
       </form>
+      <div class="tabela-itens">
+        <h3>Baixas registradas</h3>
+        <div class="tabela-produtos">
+          <table id="tabela-baixas" class="estilo-tabela">
+            <thead>
+              <tr><th>Data</th><th>Item</th><th>Quantidade</th><th>Motivo</th><th>Responsável</th><th>Observação</th></tr>
+            </thead>
+            <tbody><tr><td colspan="6">Nenhuma baixa registrada.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- Aba Retiradas -->
@@ -1448,7 +1513,9 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="../SCRIPT/ajuda/central.js?v=34"></script>
   <script src="../SCRIPT/gestao-nav.js?v=13"></script>
   <script src="../SCRIPT/outos.js?v=2"></script>
-  <script src="../SCRIPT/estoque-contratos.js?v=3"></script>
+  <script src="../SCRIPT/estoque-contratos.js?v=4"></script>
+  <script src="../SCRIPT/entrada-nota.js?v=1"></script>
+  <script src="../SCRIPT/estoque-baixa.js?v=1"></script>
   <script src="../SCRIPT/pre-tranferencia.js"></script>
 
 

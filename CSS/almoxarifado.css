@@ -1064,30 +1064,30 @@
 /* ===== Movimentações (Entrada, Retirada, Devolução): três colunas alinhadas =====
    Cada campo ocupa uma linha de altura fixa; imagem e observações ocupam várias linhas,
    assim cada campo fica na mesma altura do vizinho das outras colunas. */
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao) > .linha {
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa) > .linha {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0 24px !important;
   align-items: start;
 }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao) > .linha > .form-coluna {
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa) > .linha > .form-coluna {
   display: grid; grid-auto-rows: 62px; row-gap: 12px;
   min-width: 0; max-width: none; flex: none; margin: 0; padding: 0;
 }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna > div:not(.image-preview-container) {
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa) .form-coluna > div:not(.image-preview-container) {
   display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; min-width: 0; margin: 0; width: auto;
 }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna > [hidden] { display: none !important; }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna label { margin: 0; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna :is(input, select) { height: 38px; width: 100%; box-sizing: border-box; margin: 0; }
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa) .form-coluna > [hidden] { display: none !important; }
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa) .form-coluna label { margin: 0; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa) .form-coluna :is(input, select) { height: 38px; width: 100%; box-sizing: border-box; margin: 0; }
 .mov-alto2 { grid-row: span 2; }
 .mov-alto3 { grid-row: span 3; }
 .mov-alto4 { grid-row: span 4; }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna > :is(.mov-alto3, .mov-alto4) { justify-content: flex-start !important; }
-:is(#form-retiradas, #form-devolucao) .form-coluna textarea {
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa) .form-coluna > :is(.mov-alto3, .mov-alto4) { justify-content: flex-start !important; }
+:is(#form-retiradas, #form-devolucao, #form-baixa) .form-coluna textarea {
   flex: 1; width: 100%; height: auto; min-height: 0; box-sizing: border-box; resize: none; margin: 0;
 }
-:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna > .mov-alto2 {
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa) .form-coluna > .mov-alto2 {
   width: 100% !important; max-width: none !important; height: 100% !important; margin: 0 !important;
   box-sizing: border-box; display: flex; align-items: center; justify-content: center;
   border: 1px solid #ccc; border-radius: 8px; background: #fff; overflow: hidden;
@@ -1097,9 +1097,53 @@
 #retirada-aviso-contrato { position: relative; z-index: 1; }
 
 @media (max-width: 768px) {
-  :is(#form-entrada-produto, #form-retiradas, #form-devolucao) > .linha { grid-template-columns: 1fr; gap: 12px !important; }
-  :is(#form-entrada-produto, #form-retiradas, #form-devolucao) > .linha > .form-coluna { grid-auto-rows: auto; }
+  :is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa) > .linha { grid-template-columns: 1fr; gap: 12px !important; }
+  :is(#form-entrada-produto, #form-retiradas, #form-devolucao, #form-baixa) > .linha > .form-coluna { grid-auto-rows: auto; }
   .mov-alto2 { min-height: 150px; }
   .mov-alto3, .mov-alto4 { grid-row: auto; }
-  :is(#form-retiradas, #form-devolucao) .form-coluna textarea { min-height: 100px; }
+  :is(#form-retiradas, #form-devolucao, #form-baixa) .form-coluna textarea { min-height: 100px; }
 }
+
+/* Botões das movimentações: afastados dos campos */
+:is(#form-retiradas, #form-devolucao, #form-baixa) .form-buttons { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px; }
+.mov-saldo { height: 38px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; background: #f4f2ee; font-weight: 600; color: #444; box-sizing: border-box; }
+.mov-saldo.mov-saldo-erro { color: #9B3B32; }
+
+/* Entrada: contratos compactos ao lado de Carregar nota e Salvar */
+.entrada-rodape { display: flex; align-items: center; gap: 16px; margin: 20px 0 12px; }
+.entrada-rodape .entrada-contratos { flex: 1 1 auto; min-width: 0; margin: 0; padding: 10px 14px; }
+.entrada-rodape .entrada-contratos-cabecalho { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin: 0; }
+.entrada-rodape .entrada-contratos-ajuda { flex: 1 1 200px; font-size: 12px; }
+.entrada-rodape .entrada-contratos-add { padding: 6px 10px !important; font-size: 12px !important; }
+.entrada-rodape #entrada-contratos-linhas:not(:empty) { margin-top: 10px; }
+.entrada-acoes { display: flex; gap: 10px; flex: 0 0 auto; }
+@media (max-width: 768px) {
+  .entrada-rodape { flex-direction: column; align-items: stretch; }
+  .entrada-acoes { flex-direction: column-reverse; }
+}
+
+/* Itens da nota fiscal carregada na Entrada */
+.entrada-nota { margin: 0 0 18px; border: 1px solid #e6e2d8; border-radius: 12px; background: #fff; overflow: hidden; }
+.entrada-nota-topo { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 12px 14px; background: #faf8f4; border-bottom: 1px solid #ece6db; }
+.entrada-nota-topo strong { font-size: 14px; }
+.entrada-nota-topo span { font-size: 13px; color: #6b6b6b; }
+.entrada-nota-topo button { margin-left: auto; }
+.entrada-nota-itens { width: 100%; border-collapse: collapse; font-size: 13px; }
+.entrada-nota-itens th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .3px; color: #6b6b6b; padding: 8px 10px; border-bottom: 1px solid #eee; }
+.entrada-nota-itens td { padding: 8px 10px; border-bottom: 1px solid #f1efea; vertical-align: middle; }
+.entrada-nota-itens tr:last-child td { border-bottom: 0; }
+.entrada-nota-itens tr.feito td { opacity: .55; }
+.entrada-nota-itens .num { text-align: right; white-space: nowrap; }
+.nota-situacao { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #eef7ef; color: #1f6b33; }
+.nota-situacao.novo { background: #f4f2ee; color: #6b5a3a; }
+.nota-associar { display: flex; gap: 6px; margin-top: 6px; }
+.nota-associar input { flex: 1; min-width: 0; height: 32px; padding: 0 8px; border: 1px solid #ddd8cf; border-radius: 6px; font: inherit; font-size: 13px; }
+.nota-associar button, .entrada-nota-itens .nota-usar { padding: 6px 10px !important; font-size: 12px !important; white-space: nowrap; }
+@media (max-width: 768px) {
+  .entrada-nota-itens thead { display: none; }
+  .entrada-nota-itens tr { display: block; padding: 8px 10px; border-bottom: 1px solid #eee; }
+  .entrada-nota-itens td { display: block; border: 0; padding: 3px 0; text-align: left !important; }
+}
+.nota-outro-nome { font-size: 12px; color: #6b6b6b; margin-top: 2px; }
+.entrada-nota button { background: #fff !important; color: #262626 !important; border: 1px solid #cfc8bb !important; border-radius: 8px !important; box-shadow: none !important; cursor: pointer; }
+.entrada-nota button:hover { border-color: var(--cor-primaria) !important; color: var(--cor-primaria-escura, #86683A) !important; }
