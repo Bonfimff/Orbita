@@ -103,8 +103,10 @@
     const r = aba.getBoundingClientRect();
     flutuante.hidden = false;
     const largura = flutuante.offsetWidth;
-    flutuante.style.top = Math.round(r.bottom + 6) + 'px';
-    flutuante.style.left = Math.round(Math.min(Math.max(8, r.left + r.width / 2 - largura / 2), window.innerWidth - largura - 8)) + 'px';
+    // Coordenadas da tela convertidas para a escala da interface (SCRIPT/escala-tela.js).
+    const zv = (window.KernelEscala && window.KernelEscala.fator()) || 1;
+    flutuante.style.top = Math.round((r.bottom + 6) / zv) + 'px';
+    flutuante.style.left = Math.round(Math.min(Math.max(8, r.left + r.width / 2 - largura * zv / 2), window.innerWidth - largura * zv - 8) / zv) + 'px';
   }
 
   function ligarTopo() {

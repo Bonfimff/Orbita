@@ -9,7 +9,7 @@
   'use strict';
 
   const PREF = {
-    texto: 'kernel.pref.texto',        // 'normal' | 'grande'
+    texto: 'kernel.pref.texto',        // '0' a '3': tamanho da interface (SCRIPT/escala-tela.js)
     animacoes: 'kernel.pref.animacoes', // 'sim' | 'nao'
     clima: 'kernel.pref.clima',         // 'sim' | 'nao'
   };
@@ -23,7 +23,7 @@
 
   // Aplica já no carregamento (antes do resto da página montar).
   function aplicarPreferencias() {
-    document.documentElement.classList.toggle('texto-grande', lerPref(PREF.texto, 'normal') === 'grande');
+    if (window.KernelEscala) window.KernelEscala.aplicar();
     document.documentElement.classList.toggle('sem-animacoes', lerPref(PREF.animacoes, 'sim') === 'nao');
   }
   aplicarPreferencias();
@@ -87,7 +87,14 @@
 
           <section class="config-bloco">
             <h3>Aparência</h3>
-            <label class="config-check"><input type="checkbox" id="config-texto-grande"> Texto maior</label>
+            <label class="config-campo" for="config-texto-nivel">Tamanho do texto e da tela
+              <select id="config-texto-nivel">
+                <option value="0">Padrão</option>
+                <option value="1">Maior</option>
+                <option value="2">Muito maior</option>
+                <option value="3">Máximo</option>
+              </select>
+            </label>
             <label class="config-check"><input type="checkbox" id="config-sem-animacoes"> Reduzir animações</label>
           </section>
 
@@ -105,10 +112,10 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && janela.classList.contains('aberta')) fechar(); });
 
     // Preferências: aplicam na hora.
-    const texto = janela.querySelector('#config-texto-grande');
+    const texto = janela.querySelector('#config-texto-nivel');
     const anim = janela.querySelector('#config-sem-animacoes');
     const clima = janela.querySelector('#config-clima');
-    texto.addEventListener('change', () => { gravarPref(PREF.texto, texto.checked ? 'grande' : 'normal'); aplicarPreferencias(); });
+    texto.addEventListener('change', () => { gravarPref(PREF.texto, texto.value); aplicarPreferencias(); });
     anim.addEventListener('change', () => { gravarPref(PREF.animacoes, anim.checked ? 'nao' : 'sim'); aplicarPreferencias(); });
     clima.addEventListener('change', () => gravarPref(PREF.clima, clima.checked ? 'sim' : 'nao'));
 
@@ -240,7 +247,7 @@
     janela.querySelector('#config-sessao-senha').value = '';
     clearInterval(relogio);
     relogio = setInterval(atualizarTempoSessao, 15000);
-    janela.querySelector('#config-texto-grande').checked = lerPref(PREF.texto, 'normal') === 'grande';
+    janela.querySelector('#config-texto-nivel').value = String(window.KernelEscala ? window.KernelEscala.nivel() : 0);
     janela.querySelector('#config-sem-animacoes').checked = lerPref(PREF.animacoes, 'sim') === 'nao';
     janela.querySelector('#config-clima').checked = lerPref(PREF.clima, 'sim') !== 'nao';
     janela.querySelectorAll('.config-retorno').forEach((r) => mostrarRetorno(r, '', false));

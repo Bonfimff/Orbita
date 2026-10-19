@@ -410,8 +410,9 @@
         : `<button type="button" role="menuitem" data-acao="${o[0]}"${o[2] ? ' class="forte"' : ''}><span>${esc(o[1])}</span>${o[3] ? `<kbd>${o[3]}</kbd>` : ''}</button>`)).join('');
       document.body.appendChild(menu);
       const r = menu.getBoundingClientRect();
-      menu.style.left = Math.min(x, window.innerWidth - r.width - 6) + 'px';
-      menu.style.top = Math.min(y, window.innerHeight - r.height - 6) + 'px';
+      const zv = (window.KernelEscala && window.KernelEscala.fator()) || 1;
+      menu.style.left = Math.min(x, window.innerWidth - r.width - 6) / zv + 'px';
+      menu.style.top = Math.min(y, window.innerHeight - r.height - 6) / zv + 'px';
       menu.querySelector('button')?.focus();
       menu.addEventListener('click', (e) => {
         const b = e.target.closest('[data-acao]');

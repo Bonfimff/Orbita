@@ -699,8 +699,8 @@
   padding: 28px 28px 22px;
   border-radius: 10px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.22);
-  width: min(960px, calc(100vw - 28px));
-  max-height: calc(100vh - 28px);
+  width: min(960px, calc(calc(100vw / var(--zv, 1)) - 28px));
+  max-height: calc(calc(100vh / var(--zv, 1)) - 28px);
   overflow-y: auto;
   box-sizing: border-box;
 }
@@ -1512,7 +1512,7 @@
   position: relative;
   z-index: 1;
   width: min(680px, 100%);
-  max-height: calc(100vh - 40px);
+  max-height: calc(calc(100vh / var(--zv, 1)) - 40px);
   overflow: auto;
   border-radius: 14px;
   background: #000;
@@ -1544,7 +1544,7 @@
 
 .ponto-foto-modal-imagem {
   width: 100%;
-  max-height: calc(100vh - 40px);
+  max-height: calc(calc(100vh / var(--zv, 1)) - 40px);
   object-fit: contain;
   border-radius: 14px;
   display: block;
@@ -1647,7 +1647,7 @@ body.modal-foto-ponto-aberto {
   }
 
   .ponto-foto-modal-imagem {
-    max-height: 60vh;
+    max-height: calc(60vh / var(--zv, 1));
   }
 }
 
@@ -2060,7 +2060,7 @@ body.modal-foto-ponto-aberto {
     flex: 1 1 auto;
     min-width: 0;
     padding: 5px 3px;
-    font-size: clamp(8.5px, 2.6vw, 11px);
+    font-size: clamp(8.5px, calc(2.6vw / var(--zv, 1)), 11px);
     letter-spacing: -0.2px;
   }
 }
@@ -2183,7 +2183,7 @@ body.modal-foto-ponto-aberto {
 .foto-confirma {
   width: 100%;
   max-width: 380px;
-  max-height: calc(100vh - 32px);
+  max-height: calc(calc(100vh / var(--zv, 1)) - 32px);
   overflow-y: auto;
   background: #fff;
   border-radius: 12px;
@@ -2201,7 +2201,7 @@ body.modal-foto-ponto-aberto {
   display: flex;
   justify-content: center;
 }
-.foto-confirma-imagem img { display: block; max-width: 100%; max-height: 42vh; object-fit: contain; }
+.foto-confirma-imagem img { display: block; max-width: 100%; max-height: calc(42vh / var(--zv, 1)); object-fit: contain; }
 .foto-confirma-campo { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #6b6b6b; font-weight: 500; }
 .foto-confirma-campo select,
 .foto-confirma-campo input {
@@ -2613,7 +2613,7 @@ button.ponto-foto-modal-tags {
   position: relative;
   width: 100%;
   max-width: 600px;
-  max-height: calc(100dvh - 32px);
+  max-height: calc(calc(100dvh / var(--zv, 1)) - 32px);
   overflow-y: auto;
   background: #fff;
   border-radius: 16px;
@@ -2652,7 +2652,7 @@ button.ponto-foto-modal-tags {
 
 @media (max-width: 600px) {
   .os-detalhe { align-items: flex-end; padding: 0; }
-  .os-detalhe-cartao { max-width: none; border-radius: 16px 16px 0 0; max-height: 90dvh; }
+  .os-detalhe-cartao { max-width: none; border-radius: 16px 16px 0 0; max-height: calc(90dvh / var(--zv, 1)); }
   .os-detalhe-grade { grid-template-columns: minmax(0, 1fr); }
   .os-lista-filtros button { width: 100%; }
 }
@@ -2692,7 +2692,7 @@ button.ponto-foto-modal-tags {
 }
 .eqi-fundo[hidden] { display: none; }
 .eqi-modal {
-  width: 100%; max-width: 640px; max-height: 92vh; overflow-y: auto;
+  width: 100%; max-width: 640px; max-height: calc(92vh / var(--zv, 1)); overflow-y: auto;
   background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 20px 50px rgba(15, 23, 42, .25);
 }
 .eqi-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }

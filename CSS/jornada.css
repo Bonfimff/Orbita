@@ -112,7 +112,7 @@
 }
 .jor-cal-fundo[hidden] { display: none; }
 .jor-cal {
-  width: 100%; max-width: 400px; max-height: 92vh; overflow-y: auto;
+  width: 100%; max-width: 400px; max-height: calc(92vh / var(--zv, 1)); overflow-y: auto;
   background: #fff; border-radius: 16px; padding: 18px; box-shadow: 0 20px 50px rgba(15, 23, 42, .25);
 }
 .jor-cal-topo { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }

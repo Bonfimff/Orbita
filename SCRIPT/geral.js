@@ -611,7 +611,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       fotoExpandida.src = imagemUsuario || '../IMG/default-user.png';
       fotoExpandida.style.cssText = `
         max-width: 100%;
-        max-height: 80vh;
+        max-height: calc(80vh / var(--zv, 1));
         border-radius: 10px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         animation: zoomIn 0.3s ease;
@@ -1169,7 +1169,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function ajustarTopoDrawer() {
       const barra = document.querySelector('.top-bar');
       const topo = barra ? Math.max(0, Math.round(barra.getBoundingClientRect().bottom)) : 0;
-      // Ancorado em top/bottom (e não em 100vh) para acompanhar a altura
+      // Ancorado em top/bottom (e não em calc(100vh / var(--zv, 1))) para acompanhar a altura
       // real visível no celular, que muda com a barra do navegador.
       menu.style.top = topo + 'px';
       menu.style.bottom = '0';

@@ -1021,7 +1021,7 @@ function validarCamposObrigatoriosRetirada() {
             overlay.id = 'overlay-itens-kit-retirada';
             overlay.style.cssText = `
                 position: fixed;
-                top: 0; left: 0; width: 100vw; height: 100vh;
+                top: 0; left: 0; width: calc(100vw / var(--zv, 1)); height: calc(100vh / var(--zv, 1));
                 background: rgba(0,0,0,0.35);
                 z-index: 9998;
             `;
@@ -1041,8 +1041,8 @@ function validarCamposObrigatoriosRetirada() {
                 box-shadow: 0 8px 32px #06060622, 0 1.5px 0 #bdbdbd;
                 z-index: 9999;
                 min-width: 340px;
-                max-width: 90vw;
-                max-height: 80vh;
+                max-width: calc(90vw / var(--zv, 1));
+                max-height: calc(80vh / var(--zv, 1));
                 overflow-y: auto;
                 font-size: 1.08em;
                 color: #060606;
@@ -1506,7 +1506,7 @@ function expandirImagemUniversal(imagemSrc, produtoId, nomeProduto, tipo) {
     imagem.src = imagemSrc;
     imagem.style.cssText = `
         max-width: 100%;
-        max-height: 70vh;
+        max-height: calc(70vh / var(--zv, 1));
         border-radius: 5px;
         margin-bottom: 15px;
     `;

@@ -13,7 +13,7 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: calc(100vh / var(--zv, 1));
   background-color: #f6f5f2;
 }
 
