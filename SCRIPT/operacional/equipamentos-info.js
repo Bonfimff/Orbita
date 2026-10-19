@@ -265,6 +265,8 @@
       const b = e.target.closest('[data-bases-ver]');
       if (b) mostrarVista(b.dataset.basesVer);
     });
+    // Aba de abertura: Equipamentos.
+    mostrarVista('equipamentos');
     el('eqi-busca').addEventListener('input', desenhar);
     el('eqi-tipo').addEventListener('change', desenhar);
     el('eqi-local').addEventListener('change', desenhar);

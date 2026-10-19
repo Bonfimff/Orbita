@@ -165,11 +165,11 @@
       <hr class="aba-linha">
 
       <div class="opcoes-abas" id="bases-seletor" role="tablist">
-        <button type="button" class="top-tab2 active" data-bases-ver="bases">Bases</button>
-        <button type="button" class="top-tab2" data-bases-ver="equipamentos">Equipamentos</button>
+        <button type="button" class="top-tab2 active" data-bases-ver="equipamentos">Equipamentos</button>
+        <button type="button" class="top-tab2" data-bases-ver="bases">Bases</button>
       </div>
 
-      <div id="bases-vista-bases">
+      <div id="bases-vista-bases" hidden>
       <div class="os-lista-filtros">
         <input type="search" id="bases-busca" placeholder="Buscar por ID, endereço ou contrato">
         <button type="button" class="btn-primario" id="btn-nova-base" data-permissao="os_bases:excluir">Cadastrar base</button>
@@ -190,7 +190,7 @@
       </div>
       </div>
 
-      <div id="bases-vista-equipamentos" hidden>
+      <div id="bases-vista-equipamentos">
         <div class="os-lista-filtros eqi-filtros">
           <input type="search" id="eqi-busca" placeholder="Buscar por código, nome, série ou patrimônio">
           <select id="eqi-tipo"><option value="">Todos os tipos</option></select>
@@ -685,7 +685,7 @@
   <script src="../SCRIPT/cadastros/formulario.js?v=4"></script>
   <script src="../SCRIPT/cadastros/equipamentos.js?v=5"></script>
   <script src="../SCRIPT/operacional/explorador.js?v=7"></script>
-  <script src="../SCRIPT/operacional/equipamentos-info.js?v=6"></script>
+  <script src="../SCRIPT/operacional/equipamentos-info.js?v=7"></script>
 
   <!-- Modal de informações -->
   <div id="info-modal" class="modal" style="display: none;">
