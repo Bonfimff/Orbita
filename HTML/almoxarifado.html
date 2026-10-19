@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../CSS/geral.css?v=72" />
-  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=6" />
+  <link rel="stylesheet" href="../CSS/almoxarifado.css?v=7" />
   <link rel="stylesheet" href="../CSS/ajuda.css?v=4" />
   <link rel="icon" href="../IMG/Icone.png" type="image/png">
   <title>Estoque</title>
@@ -571,7 +571,7 @@
 
           <!-- Coluna 3: Financeiro + Imagem -->
           <div class="form-coluna">
-            <div class="image-preview-container">
+            <div class="image-preview-container mov-alto2">
               <img id="preview-entrada" src="../IMG/Sem_imagem.png" alt="Ícone de imagem" class="image-preview-img"  onerror="this.onerror=null;this.src='../IMG/Sem_imagem.png';" />
             </div>
             <div>
@@ -704,10 +704,10 @@
                 <option value="Obra B">Obra B</option>
                 <option value="Outro">Outro</option>
               </select>
-              <div id="outro-local-container" class="inline-style-3e5771">
-                <label for="retirada-outro-local">INFORME O LOCAL</label>
-                <input type="text" id="retirada-outro-local" name="retirada-outro-local" class="inline-style-199b6f" />
-              </div>
+            </div>
+            <div id="outro-local-container" hidden>
+              <label for="retirada-outro-local">INFORME O LOCAL</label>
+              <input type="text" id="retirada-outro-local" name="retirada-outro-local" class="inline-style-199b6f" />
             </div>
             <div>
               <label for="retirada-finalidade">FINALIDADE</label>
@@ -719,14 +719,14 @@
                 <option value="Estoque externo">Estoque externo</option>
               </select>
             </div>
-            <div>
+            <div class="mov-alto3">
               <label for="retirada-observacoes">OBSERVAÇÕES</label>
               <textarea id="retirada-observacoes" name="retirada-observacoes" class="inline-style-23811f"></textarea>
             </div>
           </div>
           <!-- Coluna direita: Imagem e Produto -->
           <div class="form-coluna">
-            <img id="retirada-produto-img" src="../IMG/Sem_imagem.png" alt="Imagem do Produto" class="inline-style-9c7011" onerror="this.onerror=null;this.src='../IMG/Sem_imagem.png';">
+            <img id="retirada-produto-img" src="../IMG/Sem_imagem.png" alt="Imagem do Produto" class="inline-style-9c7011 mov-alto2" onerror="this.onerror=null;this.src='../IMG/Sem_imagem.png';">
             <div class="inline-style-199b6f">
               <label for="retirada-produto">PRODUTO</label>
               <input type="text" id="retirada-produto" name="retirada-produto" list="lista-produtos" class="inline-style-199b6f" />
@@ -790,7 +790,7 @@
       <hr class="aba-linha">
       <form id="form-devolucao">
         <div class="form-group linha inline-style-f12ec8">
-          <div class="inline-style-03497c">
+          <div class="form-coluna">
             <div>
               <label for="devolucao-id">ID DA RETIRADA</label>
               <input  id="devolucao-id" name="devolucao-id" list="lista-ids-retirada" required />
@@ -816,23 +816,23 @@
               <input type="text" id="devolucao-responsavel" name="devolucao-responsavel" required />
             </div>
           </div>
-          <div class="inline-style-686f3e">
-            <div class="inline-style-6fcd68">
-              <div class="inline-style-57ff79">
-                <label for="devolucao-observacao">OBSERVAÇÃO</label>
-                <textarea id="devolucao-observacao" name="devolucao-observacao" class="inline-style-28ae09"></textarea>
-              </div>
-              <div class="image-preview-container inline-style-fdf84b" id="devolucao-image-preview-container">
-                <img id="devolucao-produto-img" src="../IMG/Sem_imagem.png" alt="Imagem do Produto" class="image-preview inline-style-72b195"  onerror="this.onerror=null;this.src='../IMG/Sem_imagem.png';" />
-              </div>
+          <div class="form-coluna">
+            <div class="mov-alto4">
+              <label for="devolucao-observacao">OBSERVAÇÃO</label>
+              <textarea id="devolucao-observacao" name="devolucao-observacao"></textarea>
+            </div>
+          </div>
+          <div class="form-coluna">
+            <div class="image-preview-container mov-alto2" id="devolucao-image-preview-container">
+              <img id="devolucao-produto-img" src="../IMG/Sem_imagem.png" alt="Imagem do Produto" class="image-preview-img"  onerror="this.onerror=null;this.src='../IMG/Sem_imagem.png';" />
             </div>
             <div>
               <label for="devolucao-produto">PRODUTO</label>
-              <input type="text" id="devolucao-produto" name="devolucao-produto" list="lista-produtos" required class="inline-style-199b6f" />
+              <input type="text" id="devolucao-produto" name="devolucao-produto" list="lista-produtos" required />
             </div>
             <div>
               <label for="devolucao-quantidade">QUANTIDADE</label>
-              <input type="number" id="devolucao-quantidade" name="devolucao-quantidade" min="1" required class="inline-style-199b6f" />
+              <input type="number" id="devolucao-quantidade" name="devolucao-quantidade" min="1" required />
             </div>
           </div>
         </div>
@@ -1418,7 +1418,7 @@
  <script src="../SCRIPT/config.js?v=2"></script>
  <script src="../SCRIPT/xlsx.full.min.js"></script>
  <script src="../SCRIPT/exportar-tabela.js?v=3"></script>
- <script src="../SCRIPT/almoxarifado.js?v=8"></script>
+ <script src="../SCRIPT/almoxarifado.js?v=9"></script>
 <script>
 // Exibe campos extras de produtos apenas quando "produtos" está selecionado
 document.addEventListener('DOMContentLoaded', function() {

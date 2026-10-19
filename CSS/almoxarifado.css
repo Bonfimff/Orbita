@@ -1060,3 +1060,46 @@
     display: none !important;
   }
 }
+
+/* ===== Movimentações (Entrada, Retirada, Devolução): três colunas alinhadas =====
+   Cada campo ocupa uma linha de altura fixa; imagem e observações ocupam várias linhas,
+   assim cada campo fica na mesma altura do vizinho das outras colunas. */
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao) > .linha {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 24px !important;
+  align-items: start;
+}
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao) > .linha > .form-coluna {
+  display: grid; grid-auto-rows: 62px; row-gap: 12px;
+  min-width: 0; max-width: none; flex: none; margin: 0; padding: 0;
+}
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna > div:not(.image-preview-container) {
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; min-width: 0; margin: 0; width: auto;
+}
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna > [hidden] { display: none !important; }
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna label { margin: 0; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna :is(input, select) { height: 38px; width: 100%; box-sizing: border-box; margin: 0; }
+.mov-alto2 { grid-row: span 2; }
+.mov-alto3 { grid-row: span 3; }
+.mov-alto4 { grid-row: span 4; }
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna > :is(.mov-alto3, .mov-alto4) { justify-content: flex-start !important; }
+:is(#form-retiradas, #form-devolucao) .form-coluna textarea {
+  flex: 1; width: 100%; height: auto; min-height: 0; box-sizing: border-box; resize: none; margin: 0;
+}
+:is(#form-entrada-produto, #form-retiradas, #form-devolucao) .form-coluna > .mov-alto2 {
+  width: 100% !important; max-width: none !important; height: 100% !important; margin: 0 !important;
+  box-sizing: border-box; display: flex; align-items: center; justify-content: center;
+  border: 1px solid #ccc; border-radius: 8px; background: #fff; overflow: hidden;
+}
+:is(#form-entrada-produto, #form-devolucao) .mov-alto2 img { width: 100%; height: 100%; max-height: none; object-fit: contain; border: 0; }
+#form-retiradas img.mov-alto2 { object-fit: contain; padding: 4px; }
+#retirada-aviso-contrato { position: relative; z-index: 1; }
+
+@media (max-width: 768px) {
+  :is(#form-entrada-produto, #form-retiradas, #form-devolucao) > .linha { grid-template-columns: 1fr; gap: 12px !important; }
+  :is(#form-entrada-produto, #form-retiradas, #form-devolucao) > .linha > .form-coluna { grid-auto-rows: auto; }
+  .mov-alto2 { min-height: 150px; }
+  .mov-alto3, .mov-alto4 { grid-row: auto; }
+  :is(#form-retiradas, #form-devolucao) .form-coluna textarea { min-height: 100px; }
+}
